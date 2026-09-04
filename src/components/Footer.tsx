@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Youtube, Twitter, Disc as Discord, Shield, Check, Send, ChevronRight, Lock } from 'lucide-react';
 import { PageTab } from '../types';
 import { VaultLogo } from './VaultLogo';
+import { YOUTUBE_CHANNEL } from '../lib/constants';
 
 interface FooterProps {
   onSelectTab: (tab: PageTab) => void;
@@ -57,11 +58,11 @@ export const Footer: React.FC<FooterProps> = ({
             {/* Social Icons */}
             <div className="flex items-center gap-3 pt-2">
               <a
-                href="https://www.youtube.com"
+                href={YOUTUBE_CHANNEL.url}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 hover:border-red-500/60 hover:bg-white/10 hover:text-red-400 text-gray-300 flex items-center justify-center backdrop-blur-md transition-colors"
-                title="Game Vault Forum on YouTube"
+                title={`Game Vault Forum on YouTube (${YOUTUBE_CHANNEL.handle})`}
               >
                 <Youtube className="w-4 h-4 fill-current" />
               </a>
@@ -141,13 +142,13 @@ export const Footer: React.FC<FooterProps> = ({
               </li>
               <li>
                 <a
-                  href="https://www.youtube.com"
+                  href={YOUTUBE_CHANNEL.url}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-cyan-300 transition-colors flex items-center gap-1.5 group text-left"
                 >
                   <ChevronRight className="w-3 h-3 text-gray-600 group-hover:text-cyan-400 transition-colors" />
-                  <span>YouTube Channel Hub</span>
+                  <span>YouTube Channel ({YOUTUBE_CHANNEL.handle})</span>
                 </a>
               </li>
               <li>

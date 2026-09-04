@@ -1,4 +1,7 @@
 import { Video, Game, Article, Review, Guide, ForumTopic, UserAccount, ForumCategory } from '../types';
+import { YOUTUBE_CHANNEL } from '../lib/constants';
+
+export { YOUTUBE_CHANNEL };
 
 export const INITIAL_USER: UserAccount = {
   id: 'usr_gv_01',

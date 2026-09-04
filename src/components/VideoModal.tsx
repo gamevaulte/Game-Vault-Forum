@@ -1,6 +1,7 @@
 import React from 'react';
 import { X, Youtube, ThumbsUp, Bookmark, Share2, Calendar, Clock, Eye, Gamepad2, Check } from 'lucide-react';
 import { Video } from '../types';
+import { YOUTUBE_CHANNEL } from '../lib/constants';
 
 interface VideoModalProps {
   video: Video | null;
@@ -142,8 +143,9 @@ export const VideoModal: React.FC<VideoModalProps> = ({
                 <Youtube className="w-5 h-5 text-white fill-current" />
               </div>
               <div>
-                <p className="text-sm font-bold text-white font-['Rajdhani'] uppercase tracking-wider">
-                  Game Vault Forum YouTube Channel
+                <p className="text-sm font-bold text-white font-['Rajdhani'] uppercase tracking-wider flex items-center gap-1.5">
+                  <span>{YOUTUBE_CHANNEL.name}</span>
+                  <span className="text-red-400 font-mono text-xs font-normal">({YOUTUBE_CHANNEL.handle})</span>
                 </p>
                 <p className="text-xs text-gray-400">
                   Subscribe for high-production gaming essays, deep lore, and hardware breakdowns.
@@ -151,7 +153,7 @@ export const VideoModal: React.FC<VideoModalProps> = ({
               </div>
             </div>
             <a
-              href="https://www.youtube.com"
+              href={YOUTUBE_CHANNEL.subscribeUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="px-5 py-2.5 bg-red-600 hover:bg-red-500 text-white rounded-full text-xs font-['Rajdhani'] font-bold uppercase tracking-wider shrink-0 transition-all shadow-md shadow-red-950/40"

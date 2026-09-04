@@ -29,6 +29,7 @@ import {
   Platform,
   PageTab
 } from '../types';
+import { YOUTUBE_CHANNEL } from '../lib/constants';
 
 interface HomeViewProps {
   videos: Video[];
@@ -116,13 +117,13 @@ export const HomeView: React.FC<HomeViewProps> = ({
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
             <a
               id="hero-watch-youtube"
-              href="https://www.youtube.com"
+              href={YOUTUBE_CHANNEL.url}
               target="_blank"
               rel="noopener noreferrer"
               className="w-full sm:w-auto px-7 py-3 bg-white hover:bg-gray-100 text-black font-['Rajdhani'] font-bold text-sm tracking-wider uppercase rounded-full shadow-xl shadow-white/10 flex items-center justify-center gap-2.5 transition-all transform hover:-translate-y-0.5"
             >
               <Youtube className="w-4 h-4 fill-current text-red-600" />
-              <span>Watch on YouTube</span>
+              <span>Watch on YouTube ({YOUTUBE_CHANNEL.handle})</span>
             </a>
 
             <button
@@ -668,22 +669,22 @@ export const HomeView: React.FC<HomeViewProps> = ({
             </div>
 
             <h2 className="text-3xl sm:text-4xl font-extrabold uppercase font-['Rajdhani'] tracking-wide text-white">
-              Subscribe to Game Vault Forum on YouTube
+              Subscribe to <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-rose-400">{YOUTUBE_CHANNEL.handle}</span> on YouTube
             </h2>
 
             <p className="text-gray-300 text-sm sm:text-base font-['Inter'] leading-relaxed">
-              Don't miss our latest gameplay showcases, deep mechanical breakdowns, hardware optimization guides, and honest critiques. Join thousands of gamers exploring the digital vault.
+              Don't miss our latest gameplay showcases, deep mechanical breakdowns, hardware optimization guides, and honest critiques on our official channel <strong className="text-white">{YOUTUBE_CHANNEL.handle}</strong>. Join thousands of gamers exploring the digital vault.
             </p>
 
             <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-4">
               <a
-                href="https://www.youtube.com"
+                href={YOUTUBE_CHANNEL.url}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full sm:w-auto px-8 py-3 bg-white hover:bg-gray-100 text-black font-['Rajdhani'] font-bold text-sm uppercase tracking-wider rounded-full shadow-xl shadow-white/10 flex items-center justify-center gap-2.5 transition-all transform hover:-translate-y-0.5"
               >
                 <Youtube className="w-4 h-4 fill-current text-red-600" />
-                <span>Subscribe on YouTube</span>
+                <span>Visit {YOUTUBE_CHANNEL.handle}</span>
               </a>
 
               <button

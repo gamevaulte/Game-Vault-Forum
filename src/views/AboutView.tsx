@@ -13,6 +13,7 @@ import {
   ExternalLink 
 } from 'lucide-react';
 import { VaultLogo } from '../components/VaultLogo';
+import { YOUTUBE_CHANNEL } from '../lib/constants';
 
 interface AboutViewProps {
   onNavigateTab: (tab: any) => void;
@@ -41,13 +42,13 @@ export const AboutView: React.FC<AboutViewProps> = ({ onNavigateTab }) => {
 
         <div className="pt-2 flex flex-wrap items-center justify-center gap-4">
           <a
-            href="https://www.youtube.com"
+            href={YOUTUBE_CHANNEL.url}
             target="_blank"
             rel="noopener noreferrer"
             className="px-7 py-3 bg-red-600 hover:bg-red-500 text-white font-['Rajdhani'] font-bold text-sm tracking-wider uppercase rounded-xl shadow-lg shadow-red-950/60 flex items-center gap-2 transition-all transform hover:-translate-y-0.5"
           >
             <Youtube className="w-5 h-5 fill-current" />
-            <span>Watch Us on YouTube</span>
+            <span>Watch {YOUTUBE_CHANNEL.handle} on YouTube</span>
           </a>
 
           <button
@@ -71,14 +72,26 @@ export const AboutView: React.FC<AboutViewProps> = ({ onNavigateTab }) => {
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
-          <div className="p-5 rounded-2xl bg-[#0b0d17] border border-[#1e2338] space-y-2">
-            <div className="flex items-center gap-2 text-red-400 font-bold font-['Rajdhani'] uppercase text-base">
-              <Youtube className="w-5 h-5 fill-current" />
-              The YouTube Channel
+          <div className="p-5 rounded-2xl bg-[#0b0d17] border border-[#1e2338] space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-red-400 font-bold font-['Rajdhani'] uppercase text-base">
+                <Youtube className="w-5 h-5 fill-current" />
+                The YouTube Channel
+              </div>
+              <span className="text-xs font-mono text-gray-400">{YOUTUBE_CHANNEL.handle}</span>
             </div>
             <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
               4K mechanical breakdowns, zero-hype honest reviews, boss walkthroughs, and deep lore retrospectives exploring why great games succeed.
             </p>
+            <a
+              href={YOUTUBE_CHANNEL.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-red-400 hover:text-red-300 transition-colors pt-1"
+            >
+              <span>Visit {YOUTUBE_CHANNEL.handle}</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
           </div>
 
           <div className="p-5 rounded-2xl bg-[#0b0d17] border border-[#1e2338] space-y-2">

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Search, Youtube, User, Menu, X, Bookmark, Sparkles, LogOut } from 'lucide-react';
 import { PageTab, UserAccount } from '../types';
 import { VaultLogo } from './VaultLogo';
+import { YOUTUBE_CHANNEL } from '../lib/constants';
 
 interface HeaderProps {
   currentTab: PageTab;
@@ -96,11 +97,11 @@ export const Header: React.FC<HeaderProps> = ({
           {/* YouTube Channel Button */}
           <a
             id="header-youtube-btn"
-            href="https://www.youtube.com"
+            href={YOUTUBE_CHANNEL.url}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-['Rajdhani'] font-bold uppercase tracking-wider text-white bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-500 hover:to-rose-600 rounded-lg shadow-lg shadow-red-950/40 border border-red-500/30 transition-all transform hover:scale-[1.02]"
-            title="Game Vault Forum on YouTube"
+            title={`Game Vault Forum on YouTube (${YOUTUBE_CHANNEL.handle})`}
           >
             <Youtube className="w-4 h-4 fill-white" />
             <span className="hidden sm:inline">YouTube</span>
@@ -184,13 +185,13 @@ export const Header: React.FC<HeaderProps> = ({
               Search Vault Database
             </button>
             <a
-              href="https://www.youtube.com"
+              href={YOUTUBE_CHANNEL.url}
               target="_blank"
               rel="noopener noreferrer"
               className="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-red-600 hover:bg-red-700 text-white rounded-xl text-sm font-bold font-['Rajdhani'] uppercase tracking-wider shadow-md shadow-red-950/50"
             >
               <Youtube className="w-4 h-4 fill-white" />
-              Watch on YouTube
+              Watch @gamevaultforum on YouTube
             </a>
             {onSignOut && (
               <button
