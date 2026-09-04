@@ -39,6 +39,9 @@ import { GuidesView } from './views/GuidesView';
 import { ForumView } from './views/ForumView';
 import { AboutView } from './views/AboutView';
 
+// Vercel Web Analytics
+import { Analytics } from '@vercel/analytics/react';
+
 export default function App() {
   // Navigation Routing State
   const [currentTab, setCurrentTab] = useState<PageTab>('home');
@@ -496,6 +499,9 @@ export default function App() {
 
       {/* Toast Notification Layer */}
       <Toast toasts={toasts} onCloseToast={removeToast} />
+
+      {/* Vercel Web Analytics */}
+      <Analytics />
     </div>
   );
 }
