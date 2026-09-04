@@ -93,8 +93,37 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
           </p>
 
           {/* Full content */}
-          <div className="text-slate-300 space-y-4 text-sm sm:text-base leading-relaxed whitespace-pre-line font-['Inter']">
-            {article.content}
+          <div className="space-y-4 text-sm sm:text-base leading-relaxed font-['Inter']">
+            {article.content.split('\n\n').map((block, idx) => {
+              const trimmed = block.trim();
+              if (!trimmed) return null;
+              if (trimmed.startsWith('## ')) {
+                return (
+                  <h2
+                    key={idx}
+                    className="text-xl sm:text-2xl font-bold font-['Rajdhani'] uppercase tracking-wider text-white pt-6 pb-2 border-b border-[#252a42] flex items-center gap-2"
+                  >
+                    <span className="w-2 h-2 rounded-full bg-red-500 inline-block shrink-0"></span>
+                    <span>{trimmed.replace(/^##\s*/, '')}</span>
+                  </h2>
+                );
+              }
+              if (trimmed.startsWith('### ')) {
+                return (
+                  <h3
+                    key={idx}
+                    className="text-base sm:text-lg font-bold font-['Rajdhani'] uppercase tracking-wider text-purple-300 pt-3 pb-1"
+                  >
+                    {trimmed.replace(/^###\s*/, '')}
+                  </h3>
+                );
+              }
+              return (
+                <p key={idx} className="text-slate-300 leading-relaxed whitespace-pre-line">
+                  {trimmed}
+                </p>
+              );
+            })}
           </div>
 
           {/* Tags */}
