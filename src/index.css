@@ -1,0 +1,122 @@
+@import "tailwindcss";
+
+@theme {
+  --font-rajdhani: 'Rajdhani', sans-serif;
+  --font-space: 'Space Grotesk', sans-serif;
+  --font-orbitron: 'Orbitron', monospace;
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --color-vault-bg: #050507;
+  --color-vault-surface: rgba(255, 255, 255, 0.03);
+  --color-vault-card: rgba(255, 255, 255, 0.03);
+  --color-vault-card-hover: rgba(255, 255, 255, 0.06);
+  --color-vault-border: rgba(255, 255, 255, 0.1);
+  --color-vault-border-glow: rgba(147, 51, 234, 0.35);
+  --color-vault-purple: #9333ea;
+  --color-vault-purple-glow: rgba(147, 51, 234, 0.25);
+  --color-vault-cyan: #38bdf8;
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+    font-family: var(--font-sans);
+    scroll-behavior: smooth;
+    background-color: #050507;
+  }
+}
+
+/* Custom sleek scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(5, 5, 7, 0.8);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.28);
+}
+
+/* Frosted Glass Theme Utilities */
+.glass-panel {
+  background-color: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.glass-card {
+  background-color: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-card:hover {
+  background-color: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.7), 0 0 30px rgba(147, 51, 234, 0.12);
+  transform: translateY(-2px);
+}
+
+.glass-pill {
+  background-color: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.glass-pill-active {
+  background-color: rgba(147, 51, 234, 0.3);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(168, 85, 247, 0.45);
+  color: #fff;
+  box-shadow: 0 0 15px rgba(147, 51, 234, 0.25);
+}
+
+.glass-modal {
+  background-color: rgba(7, 8, 12, 0.85);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.85), 0 0 50px rgba(147, 51, 234, 0.12);
+}
+
+.glass-input {
+  background-color: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #f3f4f6;
+}
+
+.glass-input:focus {
+  background-color: rgba(255, 255, 255, 0.07);
+  border-color: rgba(168, 85, 247, 0.5);
+  box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.2);
+  outline: none;
+}
+
+/* Vault subtle grid with frosted transparency */
+.bg-vault-grid {
+  background-size: 40px 40px;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+}
+
+/* Ambient glow animations */
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 0.55; transform: scale(1.06); }
+}
+
+.animate-vault-glow {
+  animation: pulseGlow 7s ease-in-out infinite;
+}
