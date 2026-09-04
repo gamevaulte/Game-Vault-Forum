@@ -51,7 +51,7 @@ export interface Article {
   title: string;
   excerpt: string;
   content: string;
-  category: 'Gaming News' | 'Opinions' | 'Gaming Culture' | 'Industry' | 'Tips' | 'Features' | 'Gaming Stories';
+  category: 'Gaming News' | 'Opinions' | 'Gaming Culture' | 'Industry' | 'Tips' | 'Features' | 'Gaming Stories' | 'Tactical Analysis';
   author: {
     name: string;
     avatar: string;

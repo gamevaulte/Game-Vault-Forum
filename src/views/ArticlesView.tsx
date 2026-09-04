@@ -12,6 +12,7 @@ export const ArticlesView: React.FC<ArticlesViewProps> = ({ articles, onSelectAr
 
   const categories = [
     'All',
+    'Tactical Analysis',
     'Gaming Culture',
     'Opinions',
     'Tips',

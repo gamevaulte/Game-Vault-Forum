@@ -237,55 +237,9 @@ export const MOCK_GAMES: Game[] = [
 
 export const MOCK_ARTICLES: Article[] = [
   {
-    id: 'art-1',
-    title: 'Why Some Games Keep Us Playing for Years',
-    category: 'Gaming Culture',
-    excerpt: 'Examining the delicate equilibrium between emergent mechanics, social connection, and progression loops that turn games into second homes.',
-    content: `What separates a game you complete over a weekend from a digital world you inhabit for half a decade? When we examine titles like World of Warships, Elden Ring, or World of Warcraft, the answer is rarely just graphics or story length.
-
-The secret lies in "emergent depth"—systems that interact in unpredictable ways, leaving room for player mastery to flourish. In rigid cinematic adventures, you are experiencing the developer's script. In systemic sandbox games, you are crafting personal folklore.
-
-Furthermore, community friction and camaraderie amplify retention. When players gather in forums, subreddits, and voice channels to dissect strategies, share loadouts, and celebrate improbable victories, the game transcends software and transforms into a shared culture.`,
-    author: {
-      name: 'Marcus Vance',
-      avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=120&auto=format&fit=crop&q=80',
-      role: 'Lead Vault Editor'
-    },
-    publicationDate: 'Sept 2, 2026',
-    readingTime: '6 min read',
-    featuredImage: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&auto=format&fit=crop&q=80',
-    tags: ['Psychology', 'Design', 'Community'],
-    views: '18.4K',
-    likes: 842
-  },
-  {
-    id: 'art-2',
-    title: '5 Things Every New Gamer Should Know',
-    category: 'Tips',
-    excerpt: 'From calibrating your display settings to ignoring toxic metagaming, here is essential foundational wisdom for anyone stepping into gaming.',
-    content: `Gaming has evolved from a niche basement hobby into the premier storytelling medium of our century. But diving in today can feel overwhelming.
-
-1. Frame Pacing Matters More Than Peak FPS: A rock-solid 60 FPS frame time chart delivers far better immersion than an erratic 140 FPS with stutter spikes.
-2. Play What Draws You, Not What Trends: Do not feel pressured to sink 400 hours into competitive ranked grinds if you find peace in isometric puzzle adventures.
-3. Ergonomics Is Not Optional: A supportive chair, correct wrist angles, and a 20-20-20 screen break protocol will protect your passion for decades.
-4. Back Up Your Local Saves: Cloud syncing can glitch; keeping manual archive folders of your beloved 100-hour playthroughs is true peace of mind.
-5. Join a Kind Community: Platforms like Game Vault Forum thrive because civil discussion elevates the gaming experience far beyond algorithmic social media shouting.`,
-    author: {
-      name: 'Elena Rostova',
-      avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=120&auto=format&fit=crop&q=80',
-      role: 'Community Specialist'
-    },
-    publicationDate: 'Aug 28, 2026',
-    readingTime: '4 min read',
-    featuredImage: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=800&auto=format&fit=crop&q=80',
-    tags: ['Beginner', 'Advice', 'Hardware'],
-    views: '24.1K',
-    likes: 1205
-  },
-  {
-    id: 'art-3',
+    id: 'art-wows',
     title: 'Why World of Warships Is More Interesting Than I Expected — A Tactical Analysis',
-    category: 'Opinions',
+    category: 'Tactical Analysis',
     excerpt: 'The more you look at World of Warships through a tactical lens, the less it feels like a conventional shooting game and the more it resembles a constant exercise in positioning, timing, information, risk management, and decision making.',
     content: `There are games that make you feel busy, and then there are games that make you think. Those two things aren't always the same.
 
@@ -705,16 +659,62 @@ And when those three things come together, a battle can feel less like a random 
 
 That, more than anything, is what makes World of Warships more interesting than I expected.`,
     author: {
-      name: 'David "Anchor" K.',
-      avatar: 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=120&auto=format&fit=crop&q=80',
-      role: 'Tactical Analyst'
+      name: 'Joel Ayuba',
+      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80',
+      role: 'Founder of Game Vault Forum'
     },
-    publicationDate: 'Aug 20, 2026',
+    publicationDate: 'Sept 4, 2026',
     readingTime: '11 min read',
     featuredImage: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=800&auto=format&fit=crop&q=80',
-    tags: ['World of Warships', 'Tactics', 'Analysis', 'PC Gaming'],
-    views: '16.4K',
-    likes: 982
+    tags: ['World of Warships', 'Tactics', 'Analysis', 'PC Gaming', 'Strategy'],
+    views: '19.8K',
+    likes: 1240
+  },
+  {
+    id: 'art-1',
+    title: 'Why Some Games Keep Us Playing for Years',
+    category: 'Gaming Culture',
+    excerpt: 'Examining the delicate equilibrium between emergent mechanics, social connection, and progression loops that turn games into second homes.',
+    content: `What separates a game you complete over a weekend from a digital world you inhabit for half a decade? When we examine titles like World of Warships, Elden Ring, or World of Warcraft, the answer is rarely just graphics or story length.
+
+The secret lies in "emergent depth"—systems that interact in unpredictable ways, leaving room for player mastery to flourish. In rigid cinematic adventures, you are experiencing the developer's script. In systemic sandbox games, you are crafting personal folklore.
+
+Furthermore, community friction and camaraderie amplify retention. When players gather in forums, subreddits, and voice channels to dissect strategies, share loadouts, and celebrate improbable victories, the game transcends software and transforms into a shared culture.`,
+    author: {
+      name: 'Marcus Vance',
+      avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=120&auto=format&fit=crop&q=80',
+      role: 'Lead Vault Editor'
+    },
+    publicationDate: 'Sept 2, 2026',
+    readingTime: '6 min read',
+    featuredImage: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&auto=format&fit=crop&q=80',
+    tags: ['Psychology', 'Design', 'Community'],
+    views: '18.4K',
+    likes: 842
+  },
+  {
+    id: 'art-2',
+    title: '5 Things Every New Gamer Should Know',
+    category: 'Tips',
+    excerpt: 'From calibrating your display settings to ignoring toxic metagaming, here is essential foundational wisdom for anyone stepping into gaming.',
+    content: `Gaming has evolved from a niche basement hobby into the premier storytelling medium of our century. But diving in today can feel overwhelming.
+
+1. Frame Pacing Matters More Than Peak FPS: A rock-solid 60 FPS frame time chart delivers far better immersion than an erratic 140 FPS with stutter spikes.
+2. Play What Draws You, Not What Trends: Do not feel pressured to sink 400 hours into competitive ranked grinds if you find peace in isometric puzzle adventures.
+3. Ergonomics Is Not Optional: A supportive chair, correct wrist angles, and a 20-20-20 screen break protocol will protect your passion for decades.
+4. Back Up Your Local Saves: Cloud syncing can glitch; keeping manual archive folders of your beloved 100-hour playthroughs is true peace of mind.
+5. Join a Kind Community: Platforms like Game Vault Forum thrive because civil discussion elevates the gaming experience far beyond algorithmic social media shouting.`,
+    author: {
+      name: 'Elena Rostova',
+      avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=120&auto=format&fit=crop&q=80',
+      role: 'Community Specialist'
+    },
+    publicationDate: 'Aug 28, 2026',
+    readingTime: '4 min read',
+    featuredImage: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=800&auto=format&fit=crop&q=80',
+    tags: ['Beginner', 'Advice', 'Hardware'],
+    views: '24.1K',
+    likes: 1205
   },
   {
     id: 'art-4',
@@ -942,7 +942,7 @@ export const MOCK_FORUM_TOPICS: ForumTopic[] = [
     id: 'topic-1',
     title: 'Game Vault Forum Official Announcement: YouTube Channel Road Map & 2026 Schedule',
     author: {
-      name: 'VaultAdmin',
+      name: 'Joel Ayuba',
       avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80',
       badge: 'Founder',
       isStaff: true
