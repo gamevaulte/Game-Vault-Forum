@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, User, Bookmark, Award, Shield, Film, Gamepad2, BookOpen, Star, Compass, ExternalLink } from 'lucide-react';
+import { X, User, Bookmark, Award, Shield, Film, Gamepad2, BookOpen, Star, Compass, ExternalLink, LogOut, Mail } from 'lucide-react';
 import { UserAccount, Video, Game, Article, Review, Guide } from '../types';
 
 interface AuthProfileModalProps {
@@ -16,6 +16,7 @@ interface AuthProfileModalProps {
   onSelectArticle: (a: Article) => void;
   onSelectReview: (r: Review) => void;
   onSelectGuide: (g: Guide) => void;
+  onSignOut?: () => void;
   initialTab?: 'profile' | 'guidelines';
 }
 
@@ -33,6 +34,7 @@ export const AuthProfileModal: React.FC<AuthProfileModalProps> = ({
   onSelectArticle,
   onSelectReview,
   onSelectGuide,
+  onSignOut,
   initialTab = 'profile'
 }) => {
   const [activeTab, setActiveTab] = useState<'profile' | 'guidelines'>(initialTab);
@@ -113,8 +115,14 @@ export const AuthProfileModal: React.FC<AuthProfileModalProps> = ({
                     </span>
                   </div>
                   <p className="text-xs text-slate-400 font-mono">{user.username} • Joined {user.joinDate}</p>
+                  {user.email && (
+                    <p className="text-xs text-purple-300 font-mono flex items-center gap-1.5 justify-center sm:justify-start">
+                      <Mail className="w-3.5 h-3.5 text-purple-400" />
+                      {user.email}
+                    </p>
+                  )}
 
-                  <div className="flex items-center justify-center sm:justify-start gap-4 pt-2 text-xs text-slate-300">
+                  <div className="flex items-center justify-center sm:justify-start gap-4 pt-2 text-xs text-slate-300 flex-wrap">
                     <span className="flex items-center gap-1">
                       <Award className="w-3.5 h-3.5 text-amber-400" />
                       <strong>{user.reputation}</strong> Rep
@@ -123,6 +131,18 @@ export const AuthProfileModal: React.FC<AuthProfileModalProps> = ({
                       <Bookmark className="w-3.5 h-3.5 text-cyan-400" />
                       <strong>{totalSaved}</strong> Saved Items
                     </span>
+                    {onSignOut && (
+                      <button
+                        onClick={() => {
+                          onClose();
+                          onSignOut();
+                        }}
+                        className="ml-auto px-3 py-1 bg-red-600/20 hover:bg-red-600/30 text-red-300 border border-red-500/30 rounded-lg text-xs font-['Rajdhani'] font-bold uppercase tracking-wider flex items-center gap-1.5 transition-colors cursor-pointer"
+                      >
+                        <LogOut className="w-3.5 h-3.5" />
+                        Sign Out
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>

@@ -23,6 +23,11 @@ import { GuideModal } from './components/GuideModal';
 import { ForumTopicModal } from './components/ForumTopicModal';
 import { NewTopicModal } from './components/NewTopicModal';
 import { AuthProfileModal } from './components/AuthProfileModal';
+import { AuthGate } from './components/AuthGate';
+
+// Firebase Auth
+import { onAuthStateChanged, signOut, User as FirebaseUser } from 'firebase/auth';
+import { auth } from './lib/firebase';
 
 // Views
 import { HomeView } from './views/HomeView';
@@ -62,6 +67,47 @@ export default function App() {
     }
     return DEFAULT_USER;
   });
+
+  // Firebase Auth State
+  const [firebaseUser, setFirebaseUser] = useState<FirebaseUser | null>(null);
+  const [authLoading, setAuthLoading] = useState(true);
+
+  // Synchronize with Firebase Auth
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (fbUser) => {
+      // If user registered with email/password and their email is not verified, do not sign them in
+      const isPasswordUser = fbUser?.providerData.some((p) => p.providerId === 'password');
+      if (fbUser && isPasswordUser && !fbUser.emailVerified) {
+        setFirebaseUser(null);
+        setAuthLoading(false);
+        return;
+      }
+
+      setFirebaseUser(fbUser);
+      setAuthLoading(false);
+      if (fbUser) {
+        setUser((prev) => ({
+          ...prev,
+          id: fbUser.uid,
+          name: fbUser.displayName || fbUser.email?.split('@')[0] || 'Vault Operative',
+          username: `@${(fbUser.displayName || fbUser.email?.split('@')[0] || 'operative').toLowerCase().replace(/\s+/g, '_')}`,
+          email: fbUser.email || undefined,
+          avatar: fbUser.photoURL || prev.avatar || DEFAULT_USER.avatar
+        }));
+      }
+    });
+    return () => unsubscribe();
+  }, []);
+
+  const handleSignOut = async () => {
+    try {
+      await signOut(auth);
+      addToast('Signed out of Game Vault.', 'info');
+    } catch (err) {
+      console.error('Sign out error', err);
+      addToast('Failed to sign out. Please try again.', 'info');
+    }
+  };
 
   // Modal State
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
@@ -221,6 +267,37 @@ export default function App() {
     setIsProfileOpen(true);
   };
 
+  // 1. Initial Auth Loading State
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-[#050507] flex flex-col items-center justify-center p-4 text-white font-sans">
+        <div className="relative w-16 h-16 mb-4 flex items-center justify-center">
+          <div className="absolute inset-0 rounded-full border-2 border-purple-500/20 border-t-purple-500 animate-spin" />
+          <div className="w-8 h-8 rounded-full bg-purple-600/20 backdrop-blur-md flex items-center justify-center">
+            <span className="w-2.5 h-2.5 rounded-full bg-purple-400 animate-pulse" />
+          </div>
+        </div>
+        <p className="text-xs font-['Rajdhani'] uppercase tracking-widest text-gray-400 font-bold">
+          Connecting to Game Vault Security...
+        </p>
+      </div>
+    );
+  }
+
+  // 2. Authentication Gate: Users must register or login before accessing the drive / platform
+  if (!firebaseUser) {
+    return (
+      <div className="min-h-screen bg-[#050507] text-gray-100 flex flex-col relative selection:bg-purple-600 selection:text-white">
+        <AuthGate
+          onSuccess={() => {
+            addToast('Welcome to Game Vault Forum!', 'success');
+          }}
+        />
+        <Toast toasts={toasts} onCloseToast={removeToast} />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#050507] text-gray-100 flex flex-col selection:bg-purple-600 selection:text-white font-['Inter'] relative overflow-x-hidden">
       {/* Frosted Glass Ambient Atmospheric Lighting */}
@@ -235,6 +312,7 @@ export default function App() {
         onOpenSearch={() => setIsSearchOpen(true)}
         onOpenProfile={handleOpenProfile}
         user={user}
+        onSignOut={handleSignOut}
       />
 
       {/* Main Content Area */}
@@ -412,6 +490,7 @@ export default function App() {
         onSelectArticle={setSelectedArticle}
         onSelectReview={setSelectedReview}
         onSelectGuide={setSelectedGuide}
+        onSignOut={handleSignOut}
         initialTab={profileInitialTab}
       />
 

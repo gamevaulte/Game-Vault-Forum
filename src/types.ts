@@ -137,6 +137,7 @@ export interface UserAccount {
   id: string;
   name: string;
   username: string;
+  email?: string;
   avatar: string;
   badge: string;
   reputation: number;

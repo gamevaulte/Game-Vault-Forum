@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Youtube, User, Menu, X, Bookmark, Sparkles } from 'lucide-react';
+import { Search, Youtube, User, Menu, X, Bookmark, Sparkles, LogOut } from 'lucide-react';
 import { PageTab, UserAccount } from '../types';
 import { VaultLogo } from './VaultLogo';
 
@@ -9,6 +9,7 @@ interface HeaderProps {
   onOpenSearch: () => void;
   onOpenProfile: () => void;
   user: UserAccount;
+  onSignOut?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -16,7 +17,8 @@ export const Header: React.FC<HeaderProps> = ({
   onSelectTab,
   onOpenSearch,
   onOpenProfile,
-  user
+  user,
+  onSignOut
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -121,6 +123,21 @@ export const Header: React.FC<HeaderProps> = ({
             </span>
           </button>
 
+          {/* Sign Out Action */}
+          {onSignOut && (
+            <button
+              id="header-signout-btn"
+              onClick={onSignOut}
+              className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-gray-400 hover:text-red-300 bg-white/5 hover:bg-red-500/10 border border-white/10 hover:border-red-500/30 rounded-lg backdrop-blur-md transition-all"
+              title="Sign Out of Game Vault"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              <span className="hidden lg:inline text-[11px] font-['Rajdhani'] font-bold uppercase tracking-wider">
+                Exit
+              </span>
+            </button>
+          )}
+
           {/* Mobile Menu Hamburger */}
           <button
             id="mobile-menu-toggle"
@@ -175,6 +192,18 @@ export const Header: React.FC<HeaderProps> = ({
               <Youtube className="w-4 h-4 fill-white" />
               Watch on YouTube
             </a>
+            {onSignOut && (
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  onSignOut();
+                }}
+                className="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-white/5 hover:bg-red-500/10 text-gray-300 hover:text-red-300 rounded-xl text-sm font-bold font-['Rajdhani'] uppercase tracking-wider border border-white/10 hover:border-red-500/30 transition-colors"
+              >
+                <LogOut className="w-4 h-4 text-red-400" />
+                Sign Out of Vault
+              </button>
+            )}
           </div>
         </div>
       )}
