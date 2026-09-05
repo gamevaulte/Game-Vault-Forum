@@ -181,6 +181,18 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
               </h3>
             );
           }
+          if (trimmed.split('\n').every((line) => line.trim().startsWith('•') || line.trim().startsWith('-'))) {
+            return (
+              <ul key={idx} className="space-y-2.5 my-4 pl-2">
+                {trimmed.split('\n').map((line, lIdx) => (
+                  <li key={lIdx} className="flex items-start gap-3 text-gray-300">
+                    <span className="w-1.5 h-1.5 rounded-full bg-purple-400 mt-2.5 shrink-0 shadow-sm shadow-purple-500/50" />
+                    <span>{line.trim().replace(/^[•\-]\s*/, '')}</span>
+                  </li>
+                ))}
+              </ul>
+            );
+          }
           return (
             <p key={idx} className="leading-relaxed whitespace-pre-line text-gray-300">
               {trimmed}
