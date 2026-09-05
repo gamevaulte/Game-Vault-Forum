@@ -41,6 +41,9 @@ import { GuidePageView } from './views/GuidePageView';
 import { TopicPageView } from './views/TopicPageView';
 import { NewTopicPageView } from './views/NewTopicPageView';
 import { GuidelinesPageView } from './views/GuidelinesPageView';
+import { PrivacyPolicyView } from './views/PrivacyPolicyView';
+import { TermsOfServiceView } from './views/TermsOfServiceView';
+import { CookiePolicyView } from './views/CookiePolicyView';
 
 // Firebase Auth
 import { onAuthStateChanged, signOut, User as FirebaseUser } from 'firebase/auth';
@@ -502,6 +505,27 @@ export default function App() {
           canonicalPath: '/guidelines'
         });
         break;
+      case 'privacy':
+        updatePageSeo({
+          title: 'Privacy Policy | Game Vault Forum',
+          description: 'Review the Game Vault Forum Privacy Policy: our data protection practices, encryption standards, and user privacy rights.',
+          canonicalPath: '/privacy'
+        });
+        break;
+      case 'terms':
+        updatePageSeo({
+          title: 'Terms of Service | Game Vault Forum',
+          description: 'Review the Game Vault Forum Terms of Service: community rules, content ownership, and platform terms of use.',
+          canonicalPath: '/terms'
+        });
+        break;
+      case 'cookies':
+        updatePageSeo({
+          title: 'Cookie Policy & Browser Storage | Game Vault Forum',
+          description: 'Learn how Game Vault Forum utilizes browser local storage and essential session cookies without invasive third-party trackers.',
+          canonicalPath: '/cookies'
+        });
+        break;
       case 'about':
         updatePageSeo({
           title: 'About Game Vault Forum | Founded by Joel Ayuba',
@@ -850,11 +874,45 @@ export default function App() {
           <GuidelinesPageView
             onBack={() => navigate('/forum')}
             onNavigateTab={(t) => navigate(t === 'home' ? '/' : `/${t}`)}
+            onNavigateLegal={(page) => navigate(page === 'guidelines' ? '/guidelines' : `/${page}`)}
           />
         );
       }
 
-      // 9. Standard Hub Views with Unique SEO URLs
+      // 9. Privacy Policy Page View with Unique URL
+      case 'privacy': {
+        return (
+          <PrivacyPolicyView
+            onBack={() => navigate('/')}
+            onNavigateTab={(t) => navigate(t === 'home' ? '/' : `/${t}`)}
+            onNavigateLegal={(page) => navigate(page === 'guidelines' ? '/guidelines' : `/${page}`)}
+          />
+        );
+      }
+
+      // 10. Terms of Service Page View with Unique URL
+      case 'terms': {
+        return (
+          <TermsOfServiceView
+            onBack={() => navigate('/')}
+            onNavigateTab={(t) => navigate(t === 'home' ? '/' : `/${t}`)}
+            onNavigateLegal={(page) => navigate(page === 'guidelines' ? '/guidelines' : `/${page}`)}
+          />
+        );
+      }
+
+      // 11. Cookie Policy Page View with Unique URL
+      case 'cookies': {
+        return (
+          <CookiePolicyView
+            onBack={() => navigate('/')}
+            onNavigateTab={(t) => navigate(t === 'home' ? '/' : `/${t}`)}
+            onNavigateLegal={(page) => navigate(page === 'guidelines' ? '/guidelines' : `/${page}`)}
+          />
+        );
+      }
+
+      // 12. Standard Hub Views with Unique SEO URLs
       case 'videos':
         return (
           <VideosView
@@ -971,6 +1029,9 @@ export default function App() {
         onSelectTab={(tab) => navigate(tab === 'home' ? '/' : `/${tab}`)}
         onSubscribeNewsletter={handleSubscribeNewsletter}
         onOpenGuidelines={() => navigate('/guidelines')}
+        onOpenPrivacy={() => navigate('/privacy')}
+        onOpenTerms={() => navigate('/terms')}
+        onOpenCookies={() => navigate('/cookies')}
       />
 
       {/* Global Search Modal */}

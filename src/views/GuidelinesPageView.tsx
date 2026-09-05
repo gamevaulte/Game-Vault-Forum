@@ -5,13 +5,14 @@ import { PageTab } from '../types';
 interface GuidelinesPageViewProps {
   onBack: () => void;
   onNavigateTab: (tab: PageTab) => void;
+  onNavigateLegal?: (page: 'guidelines' | 'privacy' | 'terms' | 'cookies') => void;
 }
 
-export const GuidelinesPageView: React.FC<GuidelinesPageViewProps> = ({ onBack, onNavigateTab }) => {
+export const GuidelinesPageView: React.FC<GuidelinesPageViewProps> = ({ onBack, onNavigateTab, onNavigateLegal }) => {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-8 animate-in fade-in duration-300">
-      {/* Top Breadcrumb */}
-      <div className="flex items-center justify-between gap-4 border-b border-white/10 pb-4">
+      {/* Top Breadcrumb & Quick Switcher */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-4">
         <button
           onClick={onBack}
           className="flex items-center gap-2 text-xs sm:text-sm font-['Rajdhani'] font-bold uppercase tracking-wider text-purple-400 hover:text-purple-300 transition-colors cursor-pointer group"
@@ -20,8 +21,29 @@ export const GuidelinesPageView: React.FC<GuidelinesPageViewProps> = ({ onBack, 
           <span>Back to Vault</span>
         </button>
 
-        <div className="text-xs text-gray-500 font-mono">
-          URL: /guidelines
+        {/* Legal Hub Navigation Pill Tabs */}
+        <div className="flex flex-wrap items-center gap-2 text-xs font-['Rajdhani'] uppercase tracking-wider font-semibold">
+          <span className="px-3 py-1.5 rounded-lg bg-purple-600/20 text-purple-300 border border-purple-500/30">
+            Guidelines
+          </span>
+          <button
+            onClick={() => onNavigateLegal?.('privacy') || onNavigateTab('forum')}
+            className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
+          >
+            Privacy Policy
+          </button>
+          <button
+            onClick={() => onNavigateLegal?.('terms') || onNavigateTab('forum')}
+            className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
+          >
+            Terms of Service
+          </button>
+          <button
+            onClick={() => onNavigateLegal?.('cookies') || onNavigateTab('forum')}
+            className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
+          >
+            Cookie Policy
+          </button>
         </div>
       </div>
 

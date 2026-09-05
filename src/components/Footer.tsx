@@ -8,12 +8,18 @@ interface FooterProps {
   onSelectTab: (tab: PageTab) => void;
   onSubscribeNewsletter: (email: string) => void;
   onOpenGuidelines: () => void;
+  onOpenPrivacy?: () => void;
+  onOpenTerms?: () => void;
+  onOpenCookies?: () => void;
 }
 
 export const Footer: React.FC<FooterProps> = ({
   onSelectTab,
   onSubscribeNewsletter,
-  onOpenGuidelines
+  onOpenGuidelines,
+  onOpenPrivacy,
+  onOpenTerms,
+  onOpenCookies
 }) => {
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
@@ -205,16 +211,25 @@ export const Footer: React.FC<FooterProps> = ({
         <div className="pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-500">
           <p>© 2026 Game Vault Forum. All rights reserved.</p>
           <div className="flex flex-wrap items-center gap-4 sm:gap-6">
-            <button onClick={onOpenGuidelines} className="hover:text-gray-300 transition-colors">
+            <button onClick={onOpenGuidelines} className="hover:text-gray-300 transition-colors cursor-pointer">
               Community Guidelines
             </button>
-            <button onClick={onOpenGuidelines} className="hover:text-gray-300 transition-colors">
+            <button 
+              onClick={onOpenPrivacy || onOpenGuidelines} 
+              className="hover:text-gray-300 transition-colors cursor-pointer"
+            >
               Privacy Policy
             </button>
-            <button onClick={onOpenGuidelines} className="hover:text-gray-300 transition-colors">
+            <button 
+              onClick={onOpenTerms || onOpenGuidelines} 
+              className="hover:text-gray-300 transition-colors cursor-pointer"
+            >
               Terms of Service
             </button>
-            <button onClick={onOpenGuidelines} className="hover:text-gray-300 transition-colors">
+            <button 
+              onClick={onOpenCookies || onOpenGuidelines} 
+              className="hover:text-gray-300 transition-colors cursor-pointer"
+            >
               Cookie Policy
             </button>
           </div>

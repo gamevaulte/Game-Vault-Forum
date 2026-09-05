@@ -19,6 +19,9 @@ export type Route =
   | { type: 'about' }
   | { type: 'profile' }
   | { type: 'guidelines' }
+  | { type: 'privacy' }
+  | { type: 'terms' }
+  | { type: 'cookies' }
   | { type: 'login' }
   | { type: 'register' };
 
@@ -71,6 +74,9 @@ export function parseRoute(rawPath: string): Route {
   if (seg1 === 'about' || seg1 === 'about-game-vault') return { type: 'about' };
   if (seg1 === 'profile') return { type: 'profile' };
   if (seg1 === 'guidelines' || seg1 === 'community-guidelines') return { type: 'guidelines' };
+  if (seg1 === 'privacy' || seg1 === 'privacy-policy') return { type: 'privacy' };
+  if (seg1 === 'terms' || seg1 === 'terms-of-service' || seg1 === 'tos') return { type: 'terms' };
+  if (seg1 === 'cookies' || seg1 === 'cookie-policy') return { type: 'cookies' };
   if (seg1 === 'login' || seg1 === 'signin') return { type: 'login' };
   if (seg1 === 'register' || seg1 === 'signup') return { type: 'register' };
 
@@ -113,6 +119,12 @@ export function routeToUrl(route: Route): string {
       return '/profile';
     case 'guidelines':
       return '/guidelines';
+    case 'privacy':
+      return '/privacy';
+    case 'terms':
+      return '/terms';
+    case 'cookies':
+      return '/cookies';
     case 'login':
       return '/login';
     case 'register':
