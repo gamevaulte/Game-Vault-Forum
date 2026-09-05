@@ -19,7 +19,7 @@ export const INITIAL_USER: UserAccount = {
     guides: ['guide-1'],
     topics: ['topic-1']
   },
-  likedIds: ['vid-1', 'art-1', 'rev-1']
+  likedIds: []
 };
 
 export const DEFAULT_USER = INITIAL_USER;
@@ -38,7 +38,7 @@ export const MOCK_VIDEOS: Video[] = [
     category: 'Deep Dive',
     isFeatured: true,
     thumbnail: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&auto=format&fit=crop&q=80',
-    likes: 3410
+    likes: 0
   },
   {
     id: 'vid-2',
@@ -52,7 +52,7 @@ export const MOCK_VIDEOS: Video[] = [
     youtubeId: 'q73K94x2P6M',
     category: 'Gameplay',
     thumbnail: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=800&auto=format&fit=crop&q=80',
-    likes: 2150
+    likes: 0
   },
   {
     id: 'vid-3',
@@ -66,7 +66,7 @@ export const MOCK_VIDEOS: Video[] = [
     youtubeId: 'UnA7tepsc7s',
     category: 'Review',
     thumbnail: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=800&auto=format&fit=crop&q=80',
-    likes: 5890
+    likes: 0
   },
   {
     id: 'vid-4',
@@ -80,7 +80,7 @@ export const MOCK_VIDEOS: Video[] = [
     youtubeId: 'lP_8hPq2VnQ',
     category: 'Guide',
     thumbnail: 'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=800&auto=format&fit=crop&q=80',
-    likes: 1940
+    likes: 0
   },
   {
     id: 'vid-5',
@@ -94,7 +94,7 @@ export const MOCK_VIDEOS: Video[] = [
     youtubeId: '1T22wN1jl4w',
     category: 'Deep Dive',
     thumbnail: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800&auto=format&fit=crop&q=80',
-    likes: 4200
+    likes: 0
   },
   {
     id: 'vid-6',
@@ -108,7 +108,7 @@ export const MOCK_VIDEOS: Video[] = [
     youtubeId: '0sOnhD3n3gM',
     category: 'Tech',
     thumbnail: 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=800&auto=format&fit=crop&q=80',
-    likes: 3820
+    likes: 0
   }
 ];
 
@@ -668,7 +668,7 @@ That, more than anything, is what makes World of Warships more interesting than 
     featuredImage: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=800&auto=format&fit=crop&q=80',
     tags: ['World of Warships', 'Tactics', 'Analysis', 'PC Gaming', 'Strategy'],
     views: '19.8K',
-    likes: 1240
+    likes: 0
   },
   {
     id: 'art-1',
@@ -690,7 +690,7 @@ Furthermore, community friction and camaraderie amplify retention. When players 
     featuredImage: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&auto=format&fit=crop&q=80',
     tags: ['Psychology', 'Design', 'Community'],
     views: '18.4K',
-    likes: 842
+    likes: 0
   },
   {
     id: 'art-2',
@@ -714,7 +714,7 @@ Furthermore, community friction and camaraderie amplify retention. When players 
     featuredImage: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=800&auto=format&fit=crop&q=80',
     tags: ['Beginner', 'Advice', 'Hardware'],
     views: '24.1K',
-    likes: 1205
+    likes: 0
   },
   {
     id: 'art-4',
@@ -736,7 +736,7 @@ At Game Vault Forum, our archive honors these touchstones not just as entertainm
     featuredImage: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&auto=format&fit=crop&q=80',
     tags: ['History', 'Retrospective', 'Masterpieces'],
     views: '31.2K',
-    likes: 1890
+    likes: 0
   }
 ];
 
@@ -940,6 +940,7 @@ export const MOCK_FORUM_CATEGORIES: ForumCategory[] = [
 export const MOCK_FORUM_TOPICS: ForumTopic[] = [
   {
     id: 'topic-1',
+    likes: 0,
     title: 'Game Vault Forum Official Announcement: YouTube Channel Road Map & 2026 Schedule',
     author: {
       name: 'Joel Ayuba',
@@ -969,7 +970,7 @@ Share your video requests, talk gaming with civil peers, and let us know what fe
         },
         content: 'Love the dark vault aesthetic and typography! Looking forward to more deep dives into RPG mechanics like your Baldur’s Gate analysis.',
         timestamp: 'Yesterday at 6:40 PM',
-        likes: 18
+        likes: 0
       },
       {
         id: 'rep-2',
@@ -980,12 +981,13 @@ Share your video requests, talk gaming with civil peers, and let us know what fe
         },
         content: 'That World of Warships breakdown video brought me here. Glad to finally see a creator tackle high tier positioning honestly instead of just clickbait.',
         timestamp: '12 min ago',
-        likes: 9
+        likes: 0
       }
     ]
   },
   {
     id: 'topic-2',
+    likes: 0,
     title: 'Why do modern open-world games struggle with meaningful exploration after Elden Ring?',
     author: {
       name: 'NordicBlade',
@@ -1010,12 +1012,13 @@ Share your video requests, talk gaming with civil peers, and let us know what fe
         },
         content: 'Cost and accessibility. Publishers fear that if 60% of players miss a handcrafted dungeon because there was no GPS marker, that content budget was "wasted". But the mystery is exactly what creates emotional resonance.',
         timestamp: 'Yesterday at 11:20 AM',
-        likes: 24
+        likes: 0
       }
     ]
   },
   {
     id: 'topic-3',
+    likes: 0,
     title: 'RTX 5000 Series vs OLED Gaming Monitors: Where should you spend your upgrade budget first?',
     author: {
       name: 'FramePacer',
@@ -1033,6 +1036,7 @@ Share your video requests, talk gaming with civil peers, and let us know what fe
   },
   {
     id: 'topic-4',
+    likes: 0,
     title: 'Helldivers 2 Super Helldive Squad Coordination Tactics & Stratagem loadouts',
     author: {
       name: 'MajorVanguard',
@@ -1050,6 +1054,7 @@ Share your video requests, talk gaming with civil peers, and let us know what fe
   },
   {
     id: 'topic-5',
+    likes: 0,
     title: 'PlayStation State of Play reactions: What are you most excited for in 2026/2027?',
     author: {
       name: 'SonySentry',

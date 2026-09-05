@@ -30,10 +30,20 @@ import {
 
 interface AuthGateProps {
   onSuccess?: () => void;
+  onClose?: () => void;
+  isModal?: boolean;
+  initialMode?: 'signin' | 'register';
+  promptMessage?: string;
 }
 
-export const AuthGate: React.FC<AuthGateProps> = ({ onSuccess }) => {
-  const [activeMode, setActiveMode] = useState<'signin' | 'register' | 'verification' | 'forgot-password'>('signin');
+export const AuthGate: React.FC<AuthGateProps> = ({
+  onSuccess,
+  onClose,
+  isModal = false,
+  initialMode = 'signin',
+  promptMessage
+}) => {
+  const [activeMode, setActiveMode] = useState<'signin' | 'register' | 'verification' | 'forgot-password'>(initialMode);
   const [verificationEmail, setVerificationEmail] = useState('');
 
   // Forgot Password States
@@ -265,13 +275,33 @@ export const AuthGate: React.FC<AuthGateProps> = ({ onSuccess }) => {
   };
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center p-4 sm:p-6 lg:p-8 relative overflow-hidden font-sans">
+    <div className={`${isModal ? 'fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 overflow-y-auto' : 'min-h-screen w-full flex items-center justify-center p-4 sm:p-6 lg:p-8 relative overflow-hidden font-sans'}`}>
+      {/* Modal Backdrop */}
+      {isModal && (
+        <div 
+          className="fixed inset-0 bg-[#05060a]/85 backdrop-blur-md transition-opacity" 
+          onClick={onClose}
+        />
+      )}
+
       {/* Dynamic Ambient Background Glows */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[500px] bg-purple-900/15 blur-[120px] rounded-full pointer-events-none" />
       <div className="absolute bottom-1/4 right-1/4 w-[450px] h-[350px] bg-cyan-900/10 blur-[100px] rounded-full pointer-events-none" />
 
       {/* Main Frosted Glass Card */}
-      <div className="relative w-full max-w-xl bg-white/[0.04] backdrop-blur-2xl border border-white/10 rounded-3xl shadow-2xl shadow-black/80 overflow-hidden z-10 animate-in fade-in zoom-in-95 duration-300">
+      <div className="relative w-full max-w-xl bg-[#0d0f1a]/95 backdrop-blur-2xl border border-white/10 rounded-3xl shadow-2xl shadow-black/80 overflow-hidden z-10 animate-in fade-in zoom-in-95 duration-300 max-h-[92vh] overflow-y-auto">
+        {/* Modal Close Button */}
+        {onClose && (
+          <button
+            onClick={onClose}
+            type="button"
+            className="absolute top-4 right-4 z-20 p-2 text-gray-400 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl backdrop-blur-md transition-all cursor-pointer"
+            aria-label="Close"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        )}
+
         {/* Top Decorative Header */}
         <div className="p-6 sm:p-8 text-center border-b border-white/10 bg-white/[0.02]">
           <div className="flex justify-center mb-3">
@@ -284,8 +314,16 @@ export const AuthGate: React.FC<AuthGateProps> = ({ onSuccess }) => {
             Vault Operative Access
           </h2>
           <p className="text-xs text-gray-400 mt-1 max-w-md mx-auto">
-            Authentication is required to enter the Game Vault, access gameplay analyses, and join civil community discussions.
+            Sign in or create an account to like posts, publish comments, and join civil community discussions.
           </p>
+
+          {/* Prompt Message Banner */}
+          {promptMessage && (
+            <div className="mt-4 p-3 rounded-2xl bg-purple-950/50 border border-purple-500/40 flex items-center justify-center gap-2.5 text-xs text-purple-200 shadow-inner">
+              <Sparkles className="w-4 h-4 text-purple-400 shrink-0 animate-pulse" />
+              <span className="font-medium font-['Space_Grotesk']">{promptMessage}</span>
+            </div>
+          )}
 
           {/* Mode Switcher Tabs */}
           <div className="grid grid-cols-2 gap-2 mt-6 p-1 bg-black/40 border border-white/10 rounded-2xl backdrop-blur-md">

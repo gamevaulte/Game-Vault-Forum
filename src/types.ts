@@ -28,6 +28,7 @@ export interface Video {
   isFeatured?: boolean;
   thumbnail: string;
   likes: number;
+  comments?: PostComment[];
 }
 
 export interface Game {
@@ -63,7 +64,23 @@ export interface Article {
   tags: string[];
   views: string;
   likes: number;
+  comments?: ArticleComment[];
 }
+
+export interface PostComment {
+  id: string;
+  author: {
+    name: string;
+    avatar: string;
+    badge?: string;
+  };
+  content: string;
+  timestamp: string;
+  likes: number;
+}
+
+export type ArticleComment = PostComment;
+export type VideoComment = PostComment;
 
 export type ScoreLabel = 'Masterpiece' | 'Excellent' | 'Very Good' | 'Good' | 'Average' | 'Not Recommended';
 
@@ -130,6 +147,7 @@ export interface ForumTopic {
   isLocked?: boolean;
   tags: string[];
   initialPost: string;
+  likes: number;
   replies: ForumReply[];
 }
 
