@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { getSeoSlug, updatePageSeo } from '../lib/seo';
 import { 
   ArrowLeft, 
   Pin, 
@@ -61,6 +62,17 @@ export const TopicPageView: React.FC<TopicPageViewProps> = ({
     setReplyText('');
   };
 
+  const topicSlug = getSeoSlug(topic);
+
+  useEffect(() => {
+    updatePageSeo({
+      title: `${topic.title} - ${topic.category}`,
+      description: topic.initialPost ? topic.initialPost.slice(0, 160) : 'Join the discussion on Game Vault Forum.',
+      canonicalPath: `/forum/${topicSlug}`,
+      ogType: 'article'
+    });
+  }, [topic.title, topic.category, topic.initialPost, topicSlug]);
+
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-8 animate-in fade-in duration-300">
       {/* Top Breadcrumb */}
@@ -74,7 +86,7 @@ export const TopicPageView: React.FC<TopicPageViewProps> = ({
         </button>
 
         <div className="flex items-center gap-2 text-xs text-gray-500 font-mono">
-          <span className="hidden sm:inline">URL: /forum/{topic.id}</span>
+          <span className="hidden sm:inline">URL: /forum/{topicSlug}</span>
           <span className="px-2.5 py-0.5 text-xs font-['Rajdhani'] font-bold uppercase tracking-wider bg-purple-900/40 text-purple-300 rounded border border-purple-700/40">
             {topic.category}
           </span>

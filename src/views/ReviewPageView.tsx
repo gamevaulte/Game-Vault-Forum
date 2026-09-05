@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { getSeoSlug, updatePageSeo } from '../lib/seo';
 import { 
   ArrowLeft, 
   Star, 
@@ -28,6 +29,17 @@ export const ReviewPageView: React.FC<ReviewPageViewProps> = ({
   onBack,
   onNavigateTab
 }) => {
+  const reviewSlug = getSeoSlug({ id: review.id, title: `${review.gameTitle} review` });
+
+  useEffect(() => {
+    updatePageSeo({
+      title: `${review.gameTitle} Review - Score: ${review.score}/10 (${review.scoreLabel})`,
+      description: review.shortVerdict,
+      canonicalPath: `/reviews/${reviewSlug}`,
+      ogType: 'article'
+    });
+  }, [review.gameTitle, review.score, review.scoreLabel, review.shortVerdict, reviewSlug]);
+
   const getScoreColor = (score: number) => {
     if (score >= 9.0) return 'text-amber-400 border-amber-500/40 bg-amber-950/30';
     if (score >= 8.5) return 'text-purple-400 border-purple-500/40 bg-purple-950/30';
@@ -48,7 +60,7 @@ export const ReviewPageView: React.FC<ReviewPageViewProps> = ({
         </button>
 
         <div className="flex items-center gap-2 text-xs text-gray-500 font-mono">
-          <span className="hidden sm:inline">URL: /reviews/{review.id}</span>
+          <span className="hidden sm:inline">URL: /reviews/{reviewSlug}</span>
           <span className="px-2.5 py-0.5 text-xs font-['Rajdhani'] font-bold uppercase tracking-wider bg-purple-900/40 text-purple-300 rounded border border-purple-700/40">
             {review.genre}
           </span>

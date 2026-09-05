@@ -1,19 +1,20 @@
 import { useState, useEffect } from 'react';
+import { slugify } from './seo';
 
 export type Route =
   | { type: 'home' }
   | { type: 'videos' }
-  | { type: 'video'; id: string }
+  | { type: 'video'; id: string; slug?: string }
   | { type: 'games' }
-  | { type: 'game'; id: string }
+  | { type: 'game'; id: string; slug?: string }
   | { type: 'articles' }
-  | { type: 'article'; id: string }
+  | { type: 'article'; id: string; slug?: string }
   | { type: 'reviews' }
-  | { type: 'review'; id: string }
+  | { type: 'review'; id: string; slug?: string }
   | { type: 'guides' }
-  | { type: 'guide'; id: string }
+  | { type: 'guide'; id: string; slug?: string }
   | { type: 'forum' }
-  | { type: 'topic'; id: string }
+  | { type: 'topic'; id: string; slug?: string }
   | { type: 'new-topic' }
   | { type: 'about' }
   | { type: 'profile' }
@@ -36,40 +37,40 @@ export function parseRoute(rawPath: string): Route {
   const [seg1, seg2, seg3] = parts;
 
   if (seg1 === 'videos') {
-    if (seg2) return { type: 'video', id: seg2 };
+    if (seg2) return { type: 'video', id: seg2, slug: seg2 };
     return { type: 'videos' };
   }
 
   if (seg1 === 'games') {
-    if (seg2) return { type: 'game', id: seg2 };
+    if (seg2) return { type: 'game', id: seg2, slug: seg2 };
     return { type: 'games' };
   }
 
   if (seg1 === 'articles') {
-    if (seg2) return { type: 'article', id: seg2 };
+    if (seg2) return { type: 'article', id: seg2, slug: seg2 };
     return { type: 'articles' };
   }
 
   if (seg1 === 'reviews') {
-    if (seg2) return { type: 'review', id: seg2 };
+    if (seg2) return { type: 'review', id: seg2, slug: seg2 };
     return { type: 'reviews' };
   }
 
   if (seg1 === 'guides') {
-    if (seg2) return { type: 'guide', id: seg2 };
+    if (seg2) return { type: 'guide', id: seg2, slug: seg2 };
     return { type: 'guides' };
   }
 
   if (seg1 === 'forum') {
-    if (seg2 === 'new') return { type: 'new-topic' };
-    if (seg2 === 'topic' && seg3) return { type: 'topic', id: seg3 };
-    if (seg2) return { type: 'topic', id: seg2 };
+    if (seg2 === 'new' || seg2 === 'new-topic') return { type: 'new-topic' };
+    if (seg2 === 'topic' && seg3) return { type: 'topic', id: seg3, slug: seg3 };
+    if (seg2) return { type: 'topic', id: seg2, slug: seg2 };
     return { type: 'forum' };
   }
 
-  if (seg1 === 'about') return { type: 'about' };
+  if (seg1 === 'about' || seg1 === 'about-game-vault') return { type: 'about' };
   if (seg1 === 'profile') return { type: 'profile' };
-  if (seg1 === 'guidelines') return { type: 'guidelines' };
+  if (seg1 === 'guidelines' || seg1 === 'community-guidelines') return { type: 'guidelines' };
   if (seg1 === 'login' || seg1 === 'signin') return { type: 'login' };
   if (seg1 === 'register' || seg1 === 'signup') return { type: 'register' };
 
@@ -83,27 +84,27 @@ export function routeToUrl(route: Route): string {
     case 'videos':
       return '/videos';
     case 'video':
-      return `/videos/${route.id}`;
+      return `/videos/${route.slug || route.id}`;
     case 'games':
       return '/games';
     case 'game':
-      return `/games/${route.id}`;
+      return `/games/${route.slug || route.id}`;
     case 'articles':
       return '/articles';
     case 'article':
-      return `/articles/${route.id}`;
+      return `/articles/${route.slug || route.id}`;
     case 'reviews':
       return '/reviews';
     case 'review':
-      return `/reviews/${route.id}`;
+      return `/reviews/${route.slug || route.id}`;
     case 'guides':
       return '/guides';
     case 'guide':
-      return `/guides/${route.id}`;
+      return `/guides/${route.slug || route.id}`;
     case 'forum':
       return '/forum';
     case 'topic':
-      return `/forum/${route.id}`;
+      return `/forum/${route.slug || route.id}`;
     case 'new-topic':
       return '/forum/new';
     case 'about':
@@ -121,7 +122,7 @@ export function routeToUrl(route: Route): string {
 
 export function getCurrentPath(): string {
   if (typeof window === 'undefined') return '/';
-  // Check hash first if present (e.g. #/articles/art-wows)
+  // Check hash first if present (e.g. #/articles/why-world-of-warships...)
   if (window.location.hash && window.location.hash.length > 1) {
     return window.location.hash.replace(/^#/, '');
   }

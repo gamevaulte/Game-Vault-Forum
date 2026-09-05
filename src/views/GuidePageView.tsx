@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { getSeoSlug, updatePageSeo } from '../lib/seo';
 import { 
   ArrowLeft, 
   Clock, 
@@ -27,6 +28,17 @@ export const GuidePageView: React.FC<GuidePageViewProps> = ({
   onBack,
   onNavigateTab
 }) => {
+  const guideSlug = getSeoSlug(guide);
+
+  useEffect(() => {
+    updatePageSeo({
+      title: `${guide.title} - ${guide.game} Guide`,
+      description: guide.shortDescription,
+      canonicalPath: `/guides/${guideSlug}`,
+      ogType: 'article'
+    });
+  }, [guide.title, guide.game, guide.shortDescription, guideSlug]);
+
   const getDifficultyBadge = (diff: string) => {
     switch (diff) {
       case 'Beginner':
@@ -53,7 +65,7 @@ export const GuidePageView: React.FC<GuidePageViewProps> = ({
         </button>
 
         <div className="flex items-center gap-2 text-xs text-gray-500 font-mono">
-          <span className="hidden sm:inline">URL: /guides/{guide.id}</span>
+          <span className="hidden sm:inline">URL: /guides/{guideSlug}</span>
           <span className="px-2.5 py-0.5 text-xs font-['Rajdhani'] font-bold uppercase tracking-wider bg-purple-900/40 text-purple-300 rounded border border-purple-700/40">
             {guide.category}
           </span>

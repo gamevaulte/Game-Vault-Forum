@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { getSeoSlug, updatePageSeo } from '../lib/seo';
 import { 
   ArrowLeft, 
   Eye, 
@@ -68,6 +69,17 @@ export const VideoPageView: React.FC<VideoPageViewProps> = ({
     setCommentText('');
   };
 
+  const videoSlug = getSeoSlug(video);
+
+  useEffect(() => {
+    updatePageSeo({
+      title: video.title,
+      description: video.shortDescription,
+      canonicalPath: `/videos/${videoSlug}`,
+      ogType: 'video.other'
+    });
+  }, [video.title, video.shortDescription, videoSlug]);
+
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-8 animate-in fade-in duration-300">
       {/* Top Breadcrumb & Back */}
@@ -81,7 +93,7 @@ export const VideoPageView: React.FC<VideoPageViewProps> = ({
         </button>
 
         <div className="flex items-center gap-2 text-xs text-gray-500 font-mono">
-          <span className="hidden sm:inline">URL: /videos/{video.id}</span>
+          <span className="hidden sm:inline">URL: /videos/{videoSlug}</span>
           <span className="px-2.5 py-0.5 text-xs font-['Rajdhani'] font-bold uppercase tracking-wider bg-purple-900/40 text-purple-300 rounded border border-purple-700/40">
             {video.category}
           </span>

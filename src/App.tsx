@@ -12,6 +12,7 @@ import {
 
 // Router
 import { useRouter, routeToUrl, Route } from './lib/router';
+import { getSeoSlug, findItemBySlugOrId, updatePageSeo } from './lib/seo';
 
 // UI Components
 import { Header } from './components/Header';
@@ -428,12 +429,90 @@ export default function App() {
 
     setTopics((prev) => [fullTopic, ...prev]);
     addToast(`Discussion "${fullTopic.title}" opened in ${fullTopic.category}!`, 'success');
-    navigate(`/forum/${newId}`);
+    navigate(`/forum/${getSeoSlug(fullTopic)}`);
   };
 
   const handleSubscribeNewsletter = (email: string) => {
     addToast(`Access granted! ${email} has been registered to the Vault Dispatch.`, 'success');
   };
+
+  // Dynamic SEO optimization for top-level pages
+  useEffect(() => {
+    switch (route.type) {
+      case 'home':
+        updatePageSeo({
+          title: 'Game Vault Forum | Gaming Videos, Reviews, Guides & Community Discussions',
+          description: 'Explore the Game Vault: watch tactical video briefings, discover verified games, read in-depth reviews & guides, and participate in community discussions.',
+          canonicalPath: '/'
+        });
+        break;
+      case 'videos':
+        updatePageSeo({
+          title: 'Gameplay Videos, Briefings & Lore Breakdowns | Game Vault Forum',
+          description: 'Watch tactical analysis, mechanical breakdowns, and deep lore videos from the Game Vault official YouTube hub.',
+          canonicalPath: '/videos'
+        });
+        break;
+      case 'games':
+        updatePageSeo({
+          title: 'Tactical Game Vault Catalog & Specs Database | Game Vault Forum',
+          description: 'Browse the curated Game Vault library featuring tactical evaluations, hardware recommendations, and genre classifications.',
+          canonicalPath: '/games'
+        });
+        break;
+      case 'articles':
+        updatePageSeo({
+          title: 'Vault Editorial Magazine & Gaming Analyses | Game Vault Forum',
+          description: 'In-depth long-form journalism, game mechanics theory, and analytical retrospectives.',
+          canonicalPath: '/articles'
+        });
+        break;
+      case 'reviews':
+        updatePageSeo({
+          title: 'Tactical Game Reviews & Technical Verdicts | Game Vault Forum',
+          description: 'Uncompromising, data-driven game reviews analyzing gameplay loop, mechanical depth, optimization, and replay value.',
+          canonicalPath: '/reviews'
+        });
+        break;
+      case 'guides':
+        updatePageSeo({
+          title: 'Tactical Game Guides, Builds & Walkthroughs | Game Vault Forum',
+          description: 'Master your favorite tactical games with detailed routes, character builds, and strategic combat playbooks.',
+          canonicalPath: '/guides'
+        });
+        break;
+      case 'forum':
+        updatePageSeo({
+          title: 'Game Vault Community Discussions & Forum | Game Vault Forum',
+          description: 'Connect with tactical gamers, share strategies, get troubleshooting help, and debate mechanics.',
+          canonicalPath: '/forum'
+        });
+        break;
+      case 'new-topic':
+        updatePageSeo({
+          title: 'Create a New Discussion Topic | Game Vault Forum',
+          description: 'Start a new civil tactical discussion in the Game Vault community.',
+          canonicalPath: '/forum/new'
+        });
+        break;
+      case 'guidelines':
+        updatePageSeo({
+          title: 'Community Code of Conduct & Guidelines | Game Vault Forum',
+          description: 'Rules of engagement and standards for civil, high-quality discussion on Game Vault Forum.',
+          canonicalPath: '/guidelines'
+        });
+        break;
+      case 'about':
+        updatePageSeo({
+          title: 'About Game Vault Forum | Founded by Joel Ayuba',
+          description: 'Learn about the mission, history, and editorial standards behind Game Vault Forum.',
+          canonicalPath: '/about'
+        });
+        break;
+      default:
+        break;
+    }
+  }, [route.type]);
 
   // Determine which primary tab is active for Header styling
   const getActiveTab = (): PageTab => {
@@ -500,9 +579,9 @@ export default function App() {
   // Render content depending on route
   const renderCurrentPage = () => {
     switch (route.type) {
-      // 1. Dedicated Article Page View with Unique URL
+      // 1. Dedicated Article Page View with Unique SEO URL
       case 'article': {
-        const article = MOCK_ARTICLES.find((a) => a.id === route.id);
+        const article = findItemBySlugOrId(MOCK_ARTICLES, route.id);
         if (!article) {
           return (
             <div className="max-w-4xl mx-auto px-4 py-20 text-center space-y-4">
@@ -518,6 +597,7 @@ export default function App() {
           );
         }
 
+        const articleSlug = getSeoSlug(article);
         const isLiked = isItemLiked(article.id);
         const likeCount = getLikeCount(article.id, 0);
         const isBookmarked = user.bookmarks.articles.includes(article.id);
@@ -531,7 +611,7 @@ export default function App() {
             isBookmarked={isBookmarked}
             onToggleLike={() => handleToggleLike(article.id, article.title, 0)}
             onToggleBookmark={() => handleToggleBookmark('articles', article.id, article.title)}
-            onShare={() => handleShare(article.title, `/articles/${article.id}`)}
+            onShare={() => handleShare(article.title, `/articles/${articleSlug}`)}
             comments={articleComments}
             onAddComment={(text) => handleAddPostComment(article.id, text, article.title)}
             onToggleCommentLike={handleToggleCommentLike}
@@ -549,9 +629,9 @@ export default function App() {
         );
       }
 
-      // 2. Dedicated Video Page View with Unique URL
+      // 2. Dedicated Video Page View with Unique SEO URL
       case 'video': {
-        const video = MOCK_VIDEOS.find((v) => v.id === route.id);
+        const video = findItemBySlugOrId(MOCK_VIDEOS, route.id);
         if (!video) {
           return (
             <div className="max-w-4xl mx-auto px-4 py-20 text-center space-y-4">
@@ -567,6 +647,7 @@ export default function App() {
           );
         }
 
+        const videoSlug = getSeoSlug(video);
         const isLiked = isItemLiked(video.id);
         const likeCount = getLikeCount(video.id, 0);
         const isBookmarked = user.bookmarks.videos.includes(video.id);
@@ -580,7 +661,7 @@ export default function App() {
             isBookmarked={isBookmarked}
             onToggleLike={() => handleToggleLike(video.id, video.title, 0)}
             onToggleBookmark={() => handleToggleBookmark('videos', video.id, video.title)}
-            onShare={() => handleShare(video.title, `/videos/${video.id}`)}
+            onShare={() => handleShare(video.title, `/videos/${videoSlug}`)}
             comments={videoComments}
             onAddComment={(text) => handleAddPostComment(video.id, text, video.title)}
             onToggleCommentLike={handleToggleCommentLike}
@@ -598,9 +679,9 @@ export default function App() {
         );
       }
 
-      // 3. Dedicated Game Page View with Unique URL
+      // 3. Dedicated Game Page View with Unique SEO URL
       case 'game': {
-        const game = MOCK_GAMES.find((g) => g.id === route.id);
+        const game = findItemBySlugOrId(MOCK_GAMES, route.id);
         if (!game) {
           return (
             <div className="max-w-4xl mx-auto px-4 py-20 text-center space-y-4">
@@ -616,6 +697,7 @@ export default function App() {
           );
         }
 
+        const gameSlug = getSeoSlug(game);
         const isBookmarked = user.bookmarks.games.includes(game.id);
 
         return (
@@ -623,7 +705,7 @@ export default function App() {
             game={game}
             isBookmarked={isBookmarked}
             onToggleBookmark={() => handleToggleBookmark('games', game.id, game.title)}
-            onShare={() => handleShare(game.title, `/games/${game.id}`)}
+            onShare={() => handleShare(game.title, `/games/${gameSlug}`)}
             onFilterForumByGame={() => navigate('/forum')}
             onBack={() => navigate('/games')}
             onNavigateTab={(t) => navigate(t === 'home' ? '/' : `/${t}`)}
@@ -631,9 +713,12 @@ export default function App() {
         );
       }
 
-      // 4. Dedicated Review Page View with Unique URL
+      // 4. Dedicated Review Page View with Unique SEO URL
       case 'review': {
-        const review = MOCK_REVIEWS.find((r) => r.id === route.id);
+        const review = findItemBySlugOrId(
+          MOCK_REVIEWS.map((r) => ({ ...r, title: `${r.gameTitle} review` })),
+          route.id
+        );
         if (!review) {
           return (
             <div className="max-w-4xl mx-auto px-4 py-20 text-center space-y-4">
@@ -649,6 +734,7 @@ export default function App() {
           );
         }
 
+        const reviewSlug = getSeoSlug({ id: review.id, title: `${review.gameTitle} review` });
         const isBookmarked = user.bookmarks.reviews.includes(review.id);
 
         return (
@@ -656,16 +742,16 @@ export default function App() {
             review={review}
             isBookmarked={isBookmarked}
             onToggleBookmark={() => handleToggleBookmark('reviews', review.id, review.gameTitle)}
-            onShare={() => handleShare(review.gameTitle, `/reviews/${review.id}`)}
+            onShare={() => handleShare(review.gameTitle, `/reviews/${reviewSlug}`)}
             onBack={() => navigate('/reviews')}
             onNavigateTab={(t) => navigate(t === 'home' ? '/' : `/${t}`)}
           />
         );
       }
 
-      // 5. Dedicated Guide Page View with Unique URL
+      // 5. Dedicated Guide Page View with Unique SEO URL
       case 'guide': {
-        const guide = MOCK_GUIDES.find((g) => g.id === route.id);
+        const guide = findItemBySlugOrId(MOCK_GUIDES, route.id);
         if (!guide) {
           return (
             <div className="max-w-4xl mx-auto px-4 py-20 text-center space-y-4">
@@ -681,6 +767,7 @@ export default function App() {
           );
         }
 
+        const guideSlug = getSeoSlug(guide);
         const isBookmarked = user.bookmarks.guides.includes(guide.id);
 
         return (
@@ -688,16 +775,16 @@ export default function App() {
             guide={guide}
             isBookmarked={isBookmarked}
             onToggleBookmark={() => handleToggleBookmark('guides', guide.id, guide.title)}
-            onShare={() => handleShare(guide.title, `/guides/${guide.id}`)}
+            onShare={() => handleShare(guide.title, `/guides/${guideSlug}`)}
             onBack={() => navigate('/guides')}
             onNavigateTab={(t) => navigate(t === 'home' ? '/' : `/${t}`)}
           />
         );
       }
 
-      // 6. Dedicated Forum Topic Discussion Page View with Unique URL
+      // 6. Dedicated Forum Topic Discussion Page View with Unique SEO URL
       case 'topic': {
-        const topic = topics.find((t) => t.id === route.id);
+        const topic = findItemBySlugOrId(topics, route.id);
         if (!topic) {
           return (
             <div className="max-w-4xl mx-auto px-4 py-20 text-center space-y-4">
@@ -713,6 +800,7 @@ export default function App() {
           );
         }
 
+        const topicSlug = getSeoSlug(topic);
         const isTopicLiked = isItemLiked(topic.id);
         const topicLikeCount = getLikeCount(topic.id, 0);
 
@@ -732,7 +820,7 @@ export default function App() {
               setAuthPromptMessage('Sign in or register to like posts and participate in forum discussions.');
               setIsAuthModalOpen(true);
             }}
-            onShare={() => handleShare(topic.title, `/forum/${topic.id}`)}
+            onShare={() => handleShare(topic.title, `/forum/${topicSlug}`)}
             onBack={() => navigate('/forum')}
             onNavigateTab={(t) => navigate(t === 'home' ? '/' : `/${t}`)}
           />
@@ -766,12 +854,12 @@ export default function App() {
         );
       }
 
-      // 9. Standard Hub Views with Unique URLs
+      // 9. Standard Hub Views with Unique SEO URLs
       case 'videos':
         return (
           <VideosView
             videos={MOCK_VIDEOS}
-            onSelectVideo={(v) => navigate(`/videos/${v.id}`)}
+            onSelectVideo={(v) => navigate(`/videos/${getSeoSlug(v)}`)}
           />
         );
 
@@ -779,7 +867,7 @@ export default function App() {
         return (
           <GamesView
             games={MOCK_GAMES}
-            onSelectGame={(g) => navigate(`/games/${g.id}`)}
+            onSelectGame={(g) => navigate(`/games/${getSeoSlug(g)}`)}
           />
         );
 
@@ -787,7 +875,7 @@ export default function App() {
         return (
           <ArticlesView
             articles={MOCK_ARTICLES}
-            onSelectArticle={(a) => navigate(`/articles/${a.id}`)}
+            onSelectArticle={(a) => navigate(`/articles/${getSeoSlug(a)}`)}
           />
         );
 
@@ -795,7 +883,7 @@ export default function App() {
         return (
           <ReviewsView
             reviews={MOCK_REVIEWS}
-            onSelectReview={(r) => navigate(`/reviews/${r.id}`)}
+            onSelectReview={(r) => navigate(`/reviews/${getSeoSlug({ id: r.id, title: `${r.gameTitle} review` })}`)}
           />
         );
 
@@ -803,7 +891,7 @@ export default function App() {
         return (
           <GuidesView
             guides={MOCK_GUIDES}
-            onSelectGuide={(g) => navigate(`/guides/${g.id}`)}
+            onSelectGuide={(g) => navigate(`/guides/${getSeoSlug(g)}`)}
           />
         );
 
@@ -811,7 +899,7 @@ export default function App() {
         return (
           <ForumView
             topics={topics}
-            onSelectTopic={(t) => navigate(`/forum/${t.id}`)}
+            onSelectTopic={(t) => navigate(`/forum/${getSeoSlug(t)}`)}
             onOpenNewTopic={() => navigate('/forum/new')}
             onOpenGuidelines={() => navigate('/guidelines')}
           />
@@ -835,12 +923,12 @@ export default function App() {
             reviews={MOCK_REVIEWS}
             guides={MOCK_GUIDES}
             topics={topics}
-            onSelectVideo={(v) => navigate(`/videos/${v.id}`)}
-            onSelectGame={(g) => navigate(`/games/${g.id}`)}
-            onSelectArticle={(a) => navigate(`/articles/${a.id}`)}
-            onSelectReview={(r) => navigate(`/reviews/${r.id}`)}
-            onSelectGuide={(g) => navigate(`/guides/${g.id}`)}
-            onSelectTopic={(t) => navigate(`/forum/${t.id}`)}
+            onSelectVideo={(v) => navigate(`/videos/${getSeoSlug(v)}`)}
+            onSelectGame={(g) => navigate(`/games/${getSeoSlug(g)}`)}
+            onSelectArticle={(a) => navigate(`/articles/${getSeoSlug(a)}`)}
+            onSelectReview={(r) => navigate(`/reviews/${getSeoSlug({ id: r.id, title: `${r.gameTitle} review` })}`)}
+            onSelectGuide={(g) => navigate(`/guides/${getSeoSlug(g)}`)}
+            onSelectTopic={(t) => navigate(`/forum/${getSeoSlug(t)}`)}
             onNavigateTab={(tab) => navigate(tab === 'home' ? '/' : `/${tab}`)}
             onOpenNewTopic={() => navigate('/forum/new')}
           />
@@ -897,27 +985,27 @@ export default function App() {
         topics={topics}
         onSelectVideo={(v) => {
           setIsSearchOpen(false);
-          navigate(`/videos/${v.id}`);
+          navigate(`/videos/${getSeoSlug(v)}`);
         }}
         onSelectGame={(g) => {
           setIsSearchOpen(false);
-          navigate(`/games/${g.id}`);
+          navigate(`/games/${getSeoSlug(g)}`);
         }}
         onSelectArticle={(a) => {
           setIsSearchOpen(false);
-          navigate(`/articles/${a.id}`);
+          navigate(`/articles/${getSeoSlug(a)}`);
         }}
         onSelectReview={(r) => {
           setIsSearchOpen(false);
-          navigate(`/reviews/${r.id}`);
+          navigate(`/reviews/${getSeoSlug({ id: r.id, title: `${r.gameTitle} review` })}`);
         }}
         onSelectGuide={(g) => {
           setIsSearchOpen(false);
-          navigate(`/guides/${g.id}`);
+          navigate(`/guides/${getSeoSlug(g)}`);
         }}
         onSelectTopic={(t) => {
           setIsSearchOpen(false);
-          navigate(`/forum/${t.id}`);
+          navigate(`/forum/${getSeoSlug(t)}`);
         }}
       />
 
@@ -938,23 +1026,23 @@ export default function App() {
         guides={MOCK_GUIDES}
         onSelectVideo={(v) => {
           setIsProfileOpen(false);
-          navigate(`/videos/${v.id}`);
+          navigate(`/videos/${getSeoSlug(v)}`);
         }}
         onSelectGame={(g) => {
           setIsProfileOpen(false);
-          navigate(`/games/${g.id}`);
+          navigate(`/games/${getSeoSlug(g)}`);
         }}
         onSelectArticle={(a) => {
           setIsProfileOpen(false);
-          navigate(`/articles/${a.id}`);
+          navigate(`/articles/${getSeoSlug(a)}`);
         }}
         onSelectReview={(r) => {
           setIsProfileOpen(false);
-          navigate(`/reviews/${r.id}`);
+          navigate(`/reviews/${getSeoSlug({ id: r.id, title: `${r.gameTitle} review` })}`);
         }}
         onSelectGuide={(g) => {
           setIsProfileOpen(false);
-          navigate(`/guides/${g.id}`);
+          navigate(`/guides/${getSeoSlug(g)}`);
         }}
         onSignOut={handleSignOut}
         initialTab={profileInitialTab}

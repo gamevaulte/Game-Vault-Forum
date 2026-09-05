@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { getSeoSlug, updatePageSeo } from '../lib/seo';
 import { 
   ArrowLeft, 
   Calendar, 
@@ -68,6 +69,17 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
     setCommentText('');
   };
 
+  const articleSlug = getSeoSlug(article);
+
+  useEffect(() => {
+    updatePageSeo({
+      title: article.title,
+      description: article.excerpt,
+      canonicalPath: `/articles/${articleSlug}`,
+      ogType: 'article'
+    });
+  }, [article.title, article.excerpt, articleSlug]);
+
   return (
     <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-8 animate-in fade-in duration-300">
       {/* Top Breadcrumb & Back Bar */}
@@ -81,7 +93,7 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
         </button>
 
         <div className="flex items-center gap-2 text-xs text-gray-500 font-mono">
-          <span className="hidden sm:inline">URL: /articles/{article.id}</span>
+          <span className="hidden sm:inline">URL: /articles/{articleSlug}</span>
           <span className="px-2.5 py-0.5 text-xs font-['Rajdhani'] font-bold uppercase tracking-wider bg-purple-900/40 text-purple-300 rounded border border-purple-700/40">
             {article.category}
           </span>

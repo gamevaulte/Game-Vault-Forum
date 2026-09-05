@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { getSeoSlug, updatePageSeo } from '../lib/seo';
 import { 
   ArrowLeft, 
   Star, 
@@ -32,6 +33,17 @@ export const GamePageView: React.FC<GamePageViewProps> = ({
   onBack,
   onNavigateTab
 }) => {
+  const gameSlug = getSeoSlug(game);
+
+  useEffect(() => {
+    updatePageSeo({
+      title: `${game.title} - Overview & Tactical Specs`,
+      description: game.shortDescription,
+      canonicalPath: `/games/${gameSlug}`,
+      ogType: 'website'
+    });
+  }, [game.title, game.shortDescription, gameSlug]);
+
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-8 animate-in fade-in duration-300">
       {/* Top Breadcrumb */}
@@ -45,7 +57,7 @@ export const GamePageView: React.FC<GamePageViewProps> = ({
         </button>
 
         <div className="flex items-center gap-2 text-xs text-gray-500 font-mono">
-          <span className="hidden sm:inline">URL: /games/{game.id}</span>
+          <span className="hidden sm:inline">URL: /games/{gameSlug}</span>
           <span className="px-2.5 py-0.5 text-xs font-['Rajdhani'] font-bold uppercase tracking-wider bg-purple-900/40 text-purple-300 rounded border border-purple-700/40">
             {game.genre}
           </span>
