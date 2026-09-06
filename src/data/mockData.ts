@@ -115,6 +115,20 @@ export const MOCK_VIDEOS: Video[] = [
     category: 'Tech',
     thumbnail: 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=800&auto=format&fit=crop&q=80',
     likes: 0
+  },
+  {
+    id: 'vid-pubg-morning',
+    title: 'Enjoying PUBG Mobile on a Good Morning',
+    shortDescription: 'Morning battle royale drops, hot loot rotations, tactical positioning, and squad survival in PUBG Mobile.',
+    description: 'Starting the day with some intense battle royale action in PUBG Mobile! Dropping in hot, securing early high-tier loot, tactical circle positioning, and squad survival gunfights on the battlegrounds. Official gameplay presentation from the Game Vault channel.',
+    game: 'PUBG Mobile',
+    uploadDate: 'Just now',
+    views: '0',
+    duration: '11:45',
+    youtubeId: 'O4jKXRh0HEY',
+    category: 'Gameplay',
+    thumbnail: 'https://i.ytimg.com/vi/O4jKXRh0HEY/maxresdefault.jpg',
+    likes: 5
   }
 ];
 
@@ -238,6 +252,21 @@ export const MOCK_GAMES: Game[] = [
     artwork: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&auto=format&fit=crop&q=80',
     tags: ['Space', 'Exploration', 'RPG', 'Customization'],
     featured: false
+  },
+  {
+    id: 'game-pubg-mobile',
+    title: 'PUBG Mobile',
+    genre: 'Multiplayer',
+    platforms: ['Mobile'],
+    shortDescription: 'The battle royale phenomenon on mobile: 100 players parachute onto a remote island for a winner-takes-all showdown.',
+    fullDescription: 'PUBG MOBILE delivers intense free-to-play multiplayer action on mobile devices. Drop onto classic battlegrounds like Erangel and Miramar, scavenge realistic weapons, calculate bullet drop trajectories, and outmaneuver opposing squads in shrinking safe zones.',
+    releaseYear: '2018',
+    developer: 'LightSpeed & Quantum Studio',
+    publisher: 'Krafton / Level Infinite',
+    rating: 8.8,
+    artwork: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&auto=format&fit=crop&q=80',
+    tags: ['Battle Royale', 'Shooter', 'PvP', 'Tactical', 'Mobile'],
+    featured: true
   }
 ];
 
