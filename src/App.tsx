@@ -45,9 +45,18 @@ import { PrivacyPolicyView } from './views/PrivacyPolicyView';
 import { TermsOfServiceView } from './views/TermsOfServiceView';
 import { CookiePolicyView } from './views/CookiePolicyView';
 
-// Firebase Auth
+// Firebase Auth & Firestore Backend
 import { onAuthStateChanged, signOut, User as FirebaseUser } from 'firebase/auth';
-import { auth } from './lib/firebase';
+import { 
+  auth, 
+  getUserFromFirestore, 
+  addRegisteredUserToFirestore, 
+  updateUserInFirestore, 
+  saveTopicToFirestore, 
+  saveCommentToFirestore, 
+  syncLikeToFirestore, 
+  saveNewsletterSubscriber 
+} from './lib/firebase';
 
 export default function App() {
   const { route, path, navigate } = useRouter();
@@ -162,14 +171,47 @@ export default function App() {
       setAuthLoading(false);
 
       if (fbUser) {
+        // Optimistic fast local sync
         setUser((prev) => ({
           ...prev,
           id: fbUser.uid,
           name: fbUser.displayName || fbUser.email?.split('@')[0] || 'Vault Operative',
-          username: `@${(fbUser.displayName || fbUser.email?.split('@')[0] || 'operative').toLowerCase().replace(/\s+/g, '_')}`,
+          username: `@${(fbUser.displayName || fbUser.email?.split('@')[0] || 'operative').toLowerCase().replace(/[^a-z0-9]/g, '_')}`,
           email: fbUser.email || undefined,
           avatar: fbUser.photoURL || prev.avatar || DEFAULT_USER.avatar
         }));
+
+        // Fetch authoritative profile from Firestore collection 'Users'
+        getUserFromFirestore(fbUser.uid)
+          .then((firestoreRecord) => {
+            if (firestoreRecord) {
+              setUser((prev) => ({
+                ...prev,
+                id: firestoreRecord.uid,
+                name: firestoreRecord.displayName || prev.name,
+                username: firestoreRecord.username || prev.username,
+                email: firestoreRecord.email || prev.email,
+                avatar: firestoreRecord.photoURL || prev.avatar,
+                bio: firestoreRecord.bio || prev.bio,
+                badge: firestoreRecord.badge || prev.badge,
+                level: firestoreRecord.level || prev.level,
+                reputation: firestoreRecord.reputation || prev.reputation,
+                bookmarks: firestoreRecord.bookmarks || prev.bookmarks
+              }));
+            } else {
+              // Ensure doc exists in Firestore 'Users' if created externally
+              addRegisteredUserToFirestore({
+                uid: fbUser.uid,
+                email: fbUser.email || '',
+                displayName: fbUser.displayName,
+                photoURL: fbUser.photoURL,
+                emailVerified: fbUser.emailVerified
+              });
+            }
+          })
+          .catch((err) => {
+            console.warn('Firestore user profile sync warning:', err);
+          });
 
         // Load liked posts for this user
         const savedLikes = localStorage.getItem(`gv_user_liked_${fbUser.uid}`);
@@ -273,6 +315,9 @@ export default function App() {
       return next;
     });
 
+    // Synchronize like to Firebase Firestore backend
+    syncLikeToFirestore(itemId, newCount, firebaseUser.uid, !alreadyLiked);
+
     if (alreadyLiked) {
       addToast(itemTitle ? `Unliked "${itemTitle}".` : 'Unliked post.', 'info');
     } else {
@@ -307,6 +352,9 @@ export default function App() {
       return updated;
     });
 
+    // Synchronize comment to Firebase Firestore backend
+    saveCommentToFirestore(postId, newComment);
+
     addToast(postTitle ? `Published comment on "${postTitle}"!` : 'Comment published!', 'success');
   };
 
@@ -340,12 +388,21 @@ export default function App() {
         addToast(`Saved "${itemName}" to your Vault!`, 'success');
       }
 
+      const updatedBookmarks = {
+        ...prev.bookmarks,
+        [type]: updatedList
+      };
+
+      // Persist to user record in Firestore Users collection
+      if (firebaseUser) {
+        updateUserInFirestore(firebaseUser.uid, {
+          bookmarks: updatedBookmarks
+        });
+      }
+
       return {
         ...prev,
-        bookmarks: {
-          ...prev.bookmarks,
-          [type]: updatedList
-        }
+        bookmarks: updatedBookmarks
       };
     });
   };
@@ -387,12 +444,15 @@ export default function App() {
     setTopics((prev) =>
       prev.map((t) => {
         if (t.id === topicId) {
-          return {
+          const updatedTopic = {
             ...t,
             repliesCount: t.repliesCount + 1,
             lastActivity: 'Just now',
             replies: [...t.replies, newReply]
           };
+          // Persist updated topic thread to Firestore
+          saveTopicToFirestore(updatedTopic);
+          return updatedTopic;
         }
         return t;
       })
@@ -431,11 +491,15 @@ export default function App() {
     };
 
     setTopics((prev) => [fullTopic, ...prev]);
+    // Persist new topic to Firebase Firestore backend
+    saveTopicToFirestore(fullTopic);
+
     addToast(`Discussion "${fullTopic.title}" opened in ${fullTopic.category}!`, 'success');
     navigate(`/forum/${getSeoSlug(fullTopic)}`);
   };
 
   const handleSubscribeNewsletter = (email: string) => {
+    saveNewsletterSubscriber(email);
     addToast(`Access granted! ${email} has been registered to the Vault Dispatch.`, 'success');
   };
 

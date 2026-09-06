@@ -134,10 +134,28 @@ export function routeToUrl(route: Route): string {
 
 export function getCurrentPath(): string {
   if (typeof window === 'undefined') return '/';
-  // Check hash first if present (e.g. #/articles/why-world-of-warships...)
+
+  // 1. Check for query parameter redirect (from SPA 404 fallback or external links, e.g. /?p=/privacy or /?redirect=/articles)
+  if (window.location.search) {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const redirectPath = params.get('p') || params.get('redirect');
+      if (redirectPath) {
+        const cleanPath = redirectPath.startsWith('/') ? redirectPath : `/${redirectPath}`;
+        // Clean address bar using replaceState to restore pristine URL without reload
+        window.history.replaceState(null, '', cleanPath + window.location.hash);
+        return cleanPath;
+      }
+    } catch {
+      // ignore URLSearchParams errors in older environments
+    }
+  }
+
+  // 2. Check hash route if present (e.g. #/articles/why-world-of-warships...)
   if (window.location.hash && window.location.hash.length > 1) {
     return window.location.hash.replace(/^#/, '');
   }
+
   return window.location.pathname || '/';
 }
 

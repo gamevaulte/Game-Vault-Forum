@@ -1,0 +1,108 @@
+{
+  "entities": {
+    "Users": {
+      "title": "Users",
+      "description": "Registered operative user profiles and credentials stored upon registration",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "Unique Firebase Authentication UID"
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "User email address"
+        },
+        "displayName": {
+          "type": "string",
+          "description": "Operative display name or handle"
+        },
+        "username": {
+          "type": "string",
+          "description": "Unique handle formatted with @ symbol"
+        },
+        "photoURL": {
+          "type": "string",
+          "description": "URL or base64 data for profile avatar"
+        },
+        "role": {
+          "type": "string",
+          "enum": ["user", "admin", "moderator"],
+          "description": "Platform privilege tier"
+        },
+        "bio": {
+          "type": "string",
+          "description": "Operative biography and motto"
+        },
+        "badge": {
+          "type": "string",
+          "description": "Platform achievement badge"
+        },
+        "level": {
+          "type": "number",
+          "description": "Community level score"
+        },
+        "reputation": {
+          "type": "number",
+          "description": "Community upvote and reputation points"
+        },
+        "emailVerified": {
+          "type": "boolean",
+          "description": "Whether the email was verified"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Timestamp of initial registration"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Timestamp of latest profile modification"
+        }
+      },
+      "required": ["uid", "email"]
+    },
+    "topics": {
+      "title": "Forum Topics",
+      "description": "Community discussion threads and guides",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "category": { "type": "string" },
+        "tags": { "type": "array", "items": { "type": "string" } },
+        "author": { "type": "object" },
+        "initialPost": { "type": "string" },
+        "repliesCount": { "type": "number" },
+        "views": { "type": "number" },
+        "likes": { "type": "number" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "title"]
+    },
+    "comments": {
+      "title": "Post Comments",
+      "description": "Comments published on articles and videos",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "postId": { "type": "string" },
+        "author": { "type": "object" },
+        "content": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "likes": { "type": "number" }
+      },
+      "required": ["id", "postId", "content"]
+    }
+  },
+  "firestore": {
+    "Users": {
+      "rules": {
+        "read": "true",
+        "create": "request.auth != null && request.auth.uid == userId",
+        "update": "request.auth != null && request.auth.uid == userId",
+        "delete": "request.auth != null && (request.auth.uid == userId || request.auth.token.email == 'joelotis40@gmail.com')"
+      }
+    }
+  }
+}

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Vault Forum</title>
+    <script type="text/javascript">
+      // SPA Fallback redirect for static hosts (GitHub Pages, Cloudflare Pages, edge caches)
+      // Captures the full path and redirects to index.html preserving parameters
+      (function() {
+        var l = window.location;
+        var fullPath = l.pathname + (l.search ? l.search : '') + (l.hash ? l.hash : '');
+        var redirectUrl = l.protocol + '//' + l.host + '/?p=' + encodeURIComponent(fullPath);
+        l.replace(redirectUrl);
+      })();
+    </script>
+  </head>
+  <body style="background-color: #090a0f; color: #a1a1aa; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; padding: 20px; box-sizing: border-box;">
+    <div style="text-align: center; max-width: 400px;">
+      <div style="width: 48px; height: 48px; border: 3px solid #3b82f6; border-top-color: transparent; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px;"></div>
+      <h2 style="color: #c084fc; font-size: 20px; font-weight: 700; margin: 0 0 8px 0; letter-spacing: 0.05em; text-transform: uppercase;">Reconnecting to Game Vault...</h2>
+      <p style="font-size: 14px; color: #94a3b8; line-height: 1.5; margin: 0 0 16px 0;">Restoring your session and navigating to your dossier...</p>
+      <a href="/" style="display: inline-block; padding: 8px 18px; border-radius: 8px; background: #9333ea; color: #ffffff; text-decoration: none; font-size: 13px; font-weight: 600;">Return to Home</a>
+    </div>
+    <style>
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+    </style>
+  </body>
+</html>

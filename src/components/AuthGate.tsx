@@ -8,7 +8,7 @@ import {
   signOut,
   sendPasswordResetEmail
 } from 'firebase/auth';
-import { auth, googleProvider } from '../lib/firebase';
+import { auth, googleProvider, addRegisteredUserToFirestore } from '../lib/firebase';
 import { VaultLogo } from './VaultLogo';
 import {
   Lock,
@@ -224,6 +224,19 @@ export const AuthGate: React.FC<AuthGateProps> = ({
         }
       }
 
+      // Add newly registered user to the Firestore collection called 'Users'
+      try {
+        await addRegisteredUserToFirestore({
+          uid: userCredential.user.uid,
+          email: regEmail.trim(),
+          displayName: regName.trim() || 'Vault Operative',
+          photoURL: avatarPreview || null,
+          emailVerified: false
+        });
+      } catch (dbErr) {
+        console.warn('Firestore Users collection write error:', dbErr);
+      }
+
       // Verify their email using Firebase authentication
       await sendEmailVerification(userCredential.user);
 
@@ -259,7 +272,23 @@ export const AuthGate: React.FC<AuthGateProps> = ({
     setLoginError(null);
     setRegError(null);
     try {
-      await signInWithPopup(auth, googleProvider);
+      const result = await signInWithPopup(auth, googleProvider);
+      
+      // Add or synchronize Google user to Firestore collection 'Users'
+      if (result.user) {
+        try {
+          await addRegisteredUserToFirestore({
+            uid: result.user.uid,
+            email: result.user.email || '',
+            displayName: result.user.displayName || 'Vault Operative',
+            photoURL: result.user.photoURL || null,
+            emailVerified: result.user.emailVerified || false
+          });
+        } catch (dbErr) {
+          console.warn('Firestore Google Users collection write error:', dbErr);
+        }
+      }
+
       if (onSuccess) onSuccess();
     } catch (err: any) {
       console.warn('Google sign in error:', err?.code, err?.message);
