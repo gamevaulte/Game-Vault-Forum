@@ -27,6 +27,11 @@ export const db = firebaseConfig.firestoreDatabaseId
   : getFirestore(app);
 
 export const googleProvider = new GoogleAuthProvider();
+googleProvider.addScope('email');
+googleProvider.addScope('profile');
+googleProvider.setCustomParameters({
+  prompt: 'select_account'
+});
 
 export interface FirestoreUserRecord {
   uid: string;

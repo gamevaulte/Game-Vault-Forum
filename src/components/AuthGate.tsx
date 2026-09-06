@@ -70,6 +70,7 @@ export const AuthGate: React.FC<AuthGateProps> = ({
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [regError, setRegError] = useState<string | null>(null);
   const [regLoading, setRegLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -271,6 +272,7 @@ export const AuthGate: React.FC<AuthGateProps> = ({
   const handleGoogleAuth = async () => {
     setLoginError(null);
     setRegError(null);
+    setGoogleLoading(true);
     try {
       const result = await signInWithPopup(auth, googleProvider);
       
@@ -282,24 +284,46 @@ export const AuthGate: React.FC<AuthGateProps> = ({
             email: result.user.email || '',
             displayName: result.user.displayName || 'Vault Operative',
             photoURL: result.user.photoURL || null,
-            emailVerified: result.user.emailVerified || false
+            emailVerified: result.user.emailVerified || true
           });
         } catch (dbErr) {
           console.warn('Firestore Google Users collection write error:', dbErr);
         }
       }
 
-      if (onSuccess) onSuccess();
+      if (onSuccess) {
+        onSuccess();
+      }
     } catch (err: any) {
       console.warn('Google sign in error:', err?.code, err?.message);
-      if (err?.code !== 'auth/popup-closed-by-user') {
-        const errorMsg = 'Could not authenticate with Google. Please try again.';
-        if (activeMode === 'signin') {
-          setLoginError(errorMsg);
-        } else {
-          setRegError(errorMsg);
-        }
+      if (
+        err?.code === 'auth/popup-closed-by-user' ||
+        err?.code === 'auth/cancelled-popup-request'
+      ) {
+        // User closed or canceled the popup dialog; silently reset state
+        return;
       }
+
+      let errorMsg = 'Could not authenticate with Google. Please try again.';
+      if (err?.code === 'auth/popup-blocked') {
+        errorMsg = 'Pop-up window was blocked by your browser. Please allow popups for this site or open the app in a new tab to complete Google sign-in.';
+      } else if (err?.code === 'auth/account-exists-with-different-credential') {
+        errorMsg = 'An account already exists with this email address. Please sign in with your email and password.';
+      } else if (err?.code === 'auth/unauthorized-domain') {
+        errorMsg = 'Current preview domain is not authorized in Firebase Auth. Please authenticate using email/password or add domain to Firebase Console.';
+      } else if (err?.code === 'auth/network-request-failed') {
+        errorMsg = 'Network connection error contacting Google authentication services. Please check your connection and retry.';
+      } else if (err?.message) {
+        errorMsg = err.message;
+      }
+
+      if (activeMode === 'signin') {
+        setLoginError(errorMsg);
+      } else {
+        setRegError(errorMsg);
+      }
+    } finally {
+      setGoogleLoading(false);
     }
   };
 
@@ -584,28 +608,38 @@ export const AuthGate: React.FC<AuthGateProps> = ({
               <button
                 type="button"
                 id="google-signin-btn"
+                disabled={googleLoading || loginLoading}
                 onClick={handleGoogleAuth}
-                className="w-full py-3 px-4 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 text-white rounded-xl text-xs font-semibold backdrop-blur-md transition-all flex items-center justify-center gap-2.5 cursor-pointer"
+                className="w-full py-3 px-4 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 text-white rounded-xl text-xs font-semibold backdrop-blur-md transition-all flex items-center justify-center gap-2.5 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                <svg className="w-4 h-4" viewBox="0 0 24 24">
-                  <path
-                    fill="#4285F4"
-                    d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                  />
-                  <path
-                    fill="#34A853"
-                    d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                  />
-                  <path
-                    fill="#FBBC05"
-                    d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
-                  />
-                  <path
-                    fill="#EA4335"
-                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
-                  />
-                </svg>
-                <span>Continue with Google</span>
+                {googleLoading ? (
+                  <div className="flex items-center gap-2 text-purple-300">
+                    <div className="w-4 h-4 border-2 border-purple-400 border-t-transparent rounded-full animate-spin" />
+                    <span>Connecting to Google...</span>
+                  </div>
+                ) : (
+                  <>
+                    <svg className="w-4 h-4" viewBox="0 0 24 24">
+                      <path
+                        fill="#4285F4"
+                        d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                      />
+                      <path
+                        fill="#34A853"
+                        d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                      />
+                      <path
+                        fill="#FBBC05"
+                        d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
+                      />
+                      <path
+                        fill="#EA4335"
+                        d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
+                      />
+                    </svg>
+                    <span>Continue with Google</span>
+                  </>
+                )}
               </button>
 
               <p className="text-center text-xs text-gray-400 pt-2">
@@ -979,28 +1013,39 @@ export const AuthGate: React.FC<AuthGateProps> = ({
               {/* Google Sign In in Register */}
               <button
                 type="button"
+                id="google-signup-btn"
+                disabled={googleLoading || regLoading}
                 onClick={handleGoogleAuth}
-                className="w-full py-3 px-4 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 text-white rounded-xl text-xs font-semibold backdrop-blur-md transition-all flex items-center justify-center gap-2.5 cursor-pointer"
+                className="w-full py-3 px-4 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 text-white rounded-xl text-xs font-semibold backdrop-blur-md transition-all flex items-center justify-center gap-2.5 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                <svg className="w-4 h-4" viewBox="0 0 24 24">
-                  <path
-                    fill="#4285F4"
-                    d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                  />
-                  <path
-                    fill="#34A853"
-                    d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                  />
-                  <path
-                    fill="#FBBC05"
-                    d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
-                  />
-                  <path
-                    fill="#EA4335"
-                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
-                  />
-                </svg>
-                <span>Sign up with Google</span>
+                {googleLoading ? (
+                  <div className="flex items-center gap-2 text-purple-300">
+                    <div className="w-4 h-4 border-2 border-purple-400 border-t-transparent rounded-full animate-spin" />
+                    <span>Connecting to Google...</span>
+                  </div>
+                ) : (
+                  <>
+                    <svg className="w-4 h-4" viewBox="0 0 24 24">
+                      <path
+                        fill="#4285F4"
+                        d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                      />
+                      <path
+                        fill="#34A853"
+                        d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                      />
+                      <path
+                        fill="#FBBC05"
+                        d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
+                      />
+                      <path
+                        fill="#EA4335"
+                        d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
+                      />
+                    </svg>
+                    <span>Sign up with Google</span>
+                  </>
+                )}
               </button>
 
               <p className="text-center text-xs text-gray-400 pt-2">
