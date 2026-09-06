@@ -151,6 +151,13 @@ export interface ForumTopic {
   replies: ForumReply[];
 }
 
+export interface UserStats {
+  likesCount: number;
+  commentsCount: number;
+  savesCount: number;
+  topicsCount: number;
+}
+
 export interface UserAccount {
   id: string;
   name: string;
@@ -169,6 +176,7 @@ export interface UserAccount {
     topics: string[];
   };
   likedIds: string[];
+  stats: UserStats;
 }
 
 export interface ForumCategory {

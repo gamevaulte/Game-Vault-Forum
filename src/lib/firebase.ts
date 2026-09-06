@@ -49,12 +49,20 @@ export interface FirestoreUserRecord {
     articles: string[];
     reviews: string[];
     guides: string[];
+    topics?: string[];
+  };
+  stats?: {
+    likesCount: number;
+    commentsCount: number;
+    savesCount: number;
+    topicsCount: number;
   };
 }
 
 /**
  * Adds or synchronizes newly registered users into the Firestore collection called 'Users'.
  * Fulfills prompt requirement: "When new users register, add them to the Firestore called Users"
+ * Every user starts with 0 counts for likes, comments, saves, and reputation!
  */
 export async function addRegisteredUserToFirestore(userData: {
   uid: string;
@@ -79,8 +87,24 @@ export async function addRegisteredUserToFirestore(userData: {
     const existingSnap = await getDoc(userDocRef);
 
     if (existingSnap.exists()) {
-      // User already has a document; update lastLoginAt and any fresh fields
+      // User already has a document; update lastLoginAt and preserve real stats
       const existingData = existingSnap.data() as Partial<FirestoreUserRecord>;
+      const existingBookmarks = existingData.bookmarks || {
+        videos: [],
+        games: [],
+        articles: [],
+        reviews: [],
+        guides: [],
+        topics: []
+      };
+      const totalSaves = 
+        (existingBookmarks.videos?.length || 0) +
+        (existingBookmarks.games?.length || 0) +
+        (existingBookmarks.articles?.length || 0) +
+        (existingBookmarks.reviews?.length || 0) +
+        (existingBookmarks.guides?.length || 0) +
+        (existingBookmarks.topics?.length || 0);
+
       const mergedRecord: FirestoreUserRecord = {
         uid: userData.uid,
         email: cleanEmail || existingData.email || '',
@@ -91,17 +115,17 @@ export async function addRegisteredUserToFirestore(userData: {
         bio: existingData.bio || 'Gaming operative and tactical strategist.',
         badge: isAdmin ? 'Vault Overseer' : (existingData.badge || 'Vault Operative'),
         level: existingData.level || 1,
-        reputation: existingData.reputation || 100,
+        reputation: existingData.reputation ?? 0,
         emailVerified: userData.emailVerified ?? existingData.emailVerified ?? false,
         createdAt: existingData.createdAt || nowIso,
         updatedAt: nowIso,
         lastLoginAt: nowIso,
-        bookmarks: existingData.bookmarks || {
-          videos: [],
-          games: [],
-          articles: [],
-          reviews: [],
-          guides: []
+        bookmarks: existingBookmarks,
+        stats: {
+          likesCount: existingData.stats?.likesCount ?? 0,
+          commentsCount: existingData.stats?.commentsCount ?? 0,
+          savesCount: existingData.stats?.savesCount ?? totalSaves,
+          topicsCount: existingData.stats?.topicsCount ?? 0
         }
       };
 
@@ -114,7 +138,7 @@ export async function addRegisteredUserToFirestore(userData: {
 
       return mergedRecord;
     } else {
-      // Brand new registration: create the document in 'Users'
+      // Brand new registration: create the document in 'Users' with zero counts!
       const newRecord: FirestoreUserRecord = {
         uid: userData.uid,
         email: cleanEmail,
@@ -125,7 +149,7 @@ export async function addRegisteredUserToFirestore(userData: {
         bio: userData.bio || 'Gaming operative ready for tactical critique and vault analysis.',
         badge: isAdmin ? 'Vault Overseer' : 'Recruit Operative',
         level: 1,
-        reputation: 100,
+        reputation: 0,
         emailVerified: userData.emailVerified || false,
         createdAt: nowIso,
         updatedAt: nowIso,
@@ -135,7 +159,14 @@ export async function addRegisteredUserToFirestore(userData: {
           games: [],
           articles: [],
           reviews: [],
-          guides: []
+          guides: [],
+          topics: []
+        },
+        stats: {
+          likesCount: 0,
+          commentsCount: 0,
+          savesCount: 0,
+          topicsCount: 0
         }
       };
 
@@ -146,12 +177,11 @@ export async function addRegisteredUserToFirestore(userData: {
         await setDoc(doc(db, 'users', userData.uid), newRecord);
       } catch (_) {}
 
-      console.log(`Successfully registered user ${userData.uid} (${cleanEmail}) to Firestore collection 'Users'`);
+      console.log(`Successfully registered user ${userData.uid} (${cleanEmail}) to Firestore collection 'Users' with 0 initial statistics.`);
       return newRecord;
     }
   } catch (error) {
     console.warn('Firestore addRegisteredUserToFirestore warning:', error);
-    // Return constructed record even if offline or permission constrained
     return {
       uid: userData.uid,
       email: cleanEmail,
@@ -162,11 +192,25 @@ export async function addRegisteredUserToFirestore(userData: {
       bio: userData.bio || 'Gaming operative ready for tactical critique and vault analysis.',
       badge: isAdmin ? 'Vault Overseer' : 'Recruit Operative',
       level: 1,
-      reputation: 100,
+      reputation: 0,
       emailVerified: userData.emailVerified || false,
       createdAt: nowIso,
       updatedAt: nowIso,
-      lastLoginAt: nowIso
+      lastLoginAt: nowIso,
+      bookmarks: {
+        videos: [],
+        games: [],
+        articles: [],
+        reviews: [],
+        guides: [],
+        topics: []
+      },
+      stats: {
+        likesCount: 0,
+        commentsCount: 0,
+        savesCount: 0,
+        topicsCount: 0
+      }
     };
   }
 }

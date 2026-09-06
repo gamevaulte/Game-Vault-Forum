@@ -110,7 +110,7 @@ export default function App() {
   // Set of post IDs liked by the current user
   const [userLikedSet, setUserLikedSet] = useState<Set<string>>(new Set());
 
-  // Comments Map for Articles & Videos: itemId -> PostComment[]
+  // Comments Map for Articles & Videos: itemId -> PostComment[] (starts empty, only user action comments)
   const [commentsMap, setCommentsMap] = useState<Record<string, PostComment[]>>(() => {
     const saved = localStorage.getItem('gv_post_comments_v2');
     if (saved) {
@@ -120,34 +120,7 @@ export default function App() {
         console.error('Failed to parse comments map', e);
       }
     }
-    return {
-      'art-wows': [
-        {
-          id: 'c-init-1',
-          author: {
-            name: 'Cmdr_Vanguard',
-            avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=120&auto=format&fit=crop&q=80',
-            badge: 'Fleet Veteran'
-          },
-          content: 'This analysis captures the psychological pacing of high-tier engagements perfectly. The distinction between raw damage and map pressure is spot-on.',
-          timestamp: '2 days ago',
-          likes: 0
-        }
-      ],
-      'vid-1': [
-        {
-          id: 'c-init-2',
-          author: {
-            name: 'TarnishedScholar',
-            avatar: 'https://images.unsplash.com/photo-1566492031773-4f4e44671857?w=120&auto=format&fit=crop&q=80',
-            badge: 'Lore Archivist'
-          },
-          content: 'The architectural breakdowns of Belurat and Enir-Ilim give such clear insight into FromSoftware’s level design evolution.',
-          timestamp: '3 days ago',
-          likes: 0
-        }
-      ]
-    };
+    return {};
   });
 
   // Modals & UI States
@@ -195,8 +168,21 @@ export default function App() {
                 bio: firestoreRecord.bio || prev.bio,
                 badge: firestoreRecord.badge || prev.badge,
                 level: firestoreRecord.level || prev.level,
-                reputation: firestoreRecord.reputation || prev.reputation,
-                bookmarks: firestoreRecord.bookmarks || prev.bookmarks
+                reputation: firestoreRecord.reputation ?? 0,
+                bookmarks: firestoreRecord.bookmarks || {
+                  videos: [],
+                  games: [],
+                  articles: [],
+                  reviews: [],
+                  guides: [],
+                  topics: []
+                },
+                stats: firestoreRecord.stats || {
+                  likesCount: 0,
+                  commentsCount: 0,
+                  savesCount: 0,
+                  topicsCount: 0
+                }
               }));
             } else {
               // Ensure doc exists in Firestore 'Users' if created externally
@@ -315,6 +301,32 @@ export default function App() {
       return next;
     });
 
+    // Update user stats & reputation (zero-based, only increases as user acts)
+    setUser((prev) => {
+      const prevStats = prev.stats || { likesCount: 0, commentsCount: 0, savesCount: 0, topicsCount: 0 };
+      const updatedStats = {
+        ...prevStats,
+        likesCount: Math.max(0, prevStats.likesCount + (alreadyLiked ? -1 : 1))
+      };
+      const updatedReputation = Math.max(0, (prev.reputation || 0) + (alreadyLiked ? -2 : 2));
+      const updatedUser: UserAccount = {
+        ...prev,
+        stats: updatedStats,
+        reputation: updatedReputation,
+        likedIds: alreadyLiked 
+          ? (prev.likedIds || []).filter((id) => id !== itemId)
+          : [...(prev.likedIds || []), itemId]
+      };
+
+      if (firebaseUser) {
+        updateUserInFirestore(firebaseUser.uid, {
+          stats: updatedStats,
+          reputation: updatedReputation
+        });
+      }
+      return updatedUser;
+    });
+
     // Synchronize like to Firebase Firestore backend
     syncLikeToFirestore(itemId, newCount, firebaseUser.uid, !alreadyLiked);
 
@@ -350,6 +362,29 @@ export default function App() {
       const updated = { ...prev, [postId]: [newComment, ...existing] };
       localStorage.setItem('gv_post_comments_v2', JSON.stringify(updated));
       return updated;
+    });
+
+    // Increment user comments stats & reputation
+    setUser((prev) => {
+      const prevStats = prev.stats || { likesCount: 0, commentsCount: 0, savesCount: 0, topicsCount: 0 };
+      const updatedStats = {
+        ...prevStats,
+        commentsCount: prevStats.commentsCount + 1
+      };
+      const updatedReputation = (prev.reputation || 0) + 5;
+      const updatedUser: UserAccount = {
+        ...prev,
+        stats: updatedStats,
+        reputation: updatedReputation
+      };
+
+      if (firebaseUser) {
+        updateUserInFirestore(firebaseUser.uid, {
+          stats: updatedStats,
+          reputation: updatedReputation
+        });
+      }
+      return updatedUser;
     });
 
     // Synchronize comment to Firebase Firestore backend
@@ -393,16 +428,35 @@ export default function App() {
         [type]: updatedList
       };
 
+      const totalSaves =
+        (updatedBookmarks.videos?.length || 0) +
+        (updatedBookmarks.games?.length || 0) +
+        (updatedBookmarks.articles?.length || 0) +
+        (updatedBookmarks.reviews?.length || 0) +
+        (updatedBookmarks.guides?.length || 0) +
+        (updatedBookmarks.topics?.length || 0);
+
+      const prevStats = prev.stats || { likesCount: 0, commentsCount: 0, savesCount: 0, topicsCount: 0 };
+      const updatedStats = {
+        ...prevStats,
+        savesCount: totalSaves
+      };
+      const updatedReputation = Math.max(0, (prev.reputation || 0) + (isAlreadyBookmarked ? -1 : 1));
+
       // Persist to user record in Firestore Users collection
       if (firebaseUser) {
         updateUserInFirestore(firebaseUser.uid, {
-          bookmarks: updatedBookmarks
+          bookmarks: updatedBookmarks,
+          stats: updatedStats,
+          reputation: updatedReputation
         });
       }
 
       return {
         ...prev,
-        bookmarks: updatedBookmarks
+        bookmarks: updatedBookmarks,
+        stats: updatedStats,
+        reputation: updatedReputation
       };
     });
   };
@@ -458,6 +512,29 @@ export default function App() {
       })
     );
 
+    // Increment user comments/replies stats & reputation
+    setUser((prev) => {
+      const prevStats = prev.stats || { likesCount: 0, commentsCount: 0, savesCount: 0, topicsCount: 0 };
+      const updatedStats = {
+        ...prevStats,
+        commentsCount: prevStats.commentsCount + 1
+      };
+      const updatedReputation = (prev.reputation || 0) + 5;
+      const updatedUser: UserAccount = {
+        ...prev,
+        stats: updatedStats,
+        reputation: updatedReputation
+      };
+
+      if (firebaseUser) {
+        updateUserInFirestore(firebaseUser.uid, {
+          stats: updatedStats,
+          reputation: updatedReputation
+        });
+      }
+      return updatedUser;
+    });
+
     addToast('Your response has been published to the discussion!', 'success');
   };
 
@@ -493,6 +570,29 @@ export default function App() {
     setTopics((prev) => [fullTopic, ...prev]);
     // Persist new topic to Firebase Firestore backend
     saveTopicToFirestore(fullTopic);
+
+    // Increment user topics stats & reputation
+    setUser((prev) => {
+      const prevStats = prev.stats || { likesCount: 0, commentsCount: 0, savesCount: 0, topicsCount: 0 };
+      const updatedStats = {
+        ...prevStats,
+        topicsCount: prevStats.topicsCount + 1
+      };
+      const updatedReputation = (prev.reputation || 0) + 10;
+      const updatedUser: UserAccount = {
+        ...prev,
+        stats: updatedStats,
+        reputation: updatedReputation
+      };
+
+      if (firebaseUser) {
+        updateUserInFirestore(firebaseUser.uid, {
+          stats: updatedStats,
+          reputation: updatedReputation
+        });
+      }
+      return updatedUser;
+    });
 
     addToast(`Discussion "${fullTopic.title}" opened in ${fullTopic.category}!`, 'success');
     navigate(`/forum/${getSeoSlug(fullTopic)}`);

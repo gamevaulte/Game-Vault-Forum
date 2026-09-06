@@ -1,5 +1,22 @@
 import React, { useState } from 'react';
-import { X, User, Bookmark, Award, Shield, Film, Gamepad2, BookOpen, Star, Compass, ExternalLink, LogOut, Mail } from 'lucide-react';
+import { 
+  X, 
+  User, 
+  Bookmark, 
+  Award, 
+  Shield, 
+  Film, 
+  Gamepad2, 
+  BookOpen, 
+  Star, 
+  Compass, 
+  ExternalLink, 
+  LogOut, 
+  Mail,
+  Heart,
+  MessageSquare,
+  PenSquare
+} from 'lucide-react';
 import { UserAccount, Video, Game, Article, Review, Guide } from '../types';
 
 interface AuthProfileModalProps {
@@ -54,6 +71,12 @@ export const AuthProfileModal: React.FC<AuthProfileModalProps> = ({
     bookmarkedReviews.length +
     bookmarkedGuides.length;
 
+  const userLikes = user.stats?.likesCount ?? user.likedIds?.length ?? 0;
+  const userComments = user.stats?.commentsCount ?? 0;
+  const userSaves = user.stats?.savesCount ?? totalSaved;
+  const userTopics = user.stats?.topicsCount ?? 0;
+  const userRep = user.reputation ?? 0;
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
       {/* Backdrop */}
@@ -72,7 +95,7 @@ export const AuthProfileModal: React.FC<AuthProfileModalProps> = ({
                   : 'text-slate-400 hover:text-white'
               }`}
             >
-              Vault Identity & Bookmarks
+              Vault Identity & Activity
             </button>
             <button
               onClick={() => setActiveTab('guidelines')}
@@ -122,15 +145,12 @@ export const AuthProfileModal: React.FC<AuthProfileModalProps> = ({
                     </p>
                   )}
 
-                  <div className="flex items-center justify-center sm:justify-start gap-4 pt-2 text-xs text-slate-300 flex-wrap">
-                    <span className="flex items-center gap-1">
+                  <div className="flex items-center justify-center sm:justify-start gap-3 pt-2 text-xs text-slate-300 flex-wrap">
+                    <span className="flex items-center gap-1 bg-amber-500/10 px-2.5 py-1 rounded-lg border border-amber-500/20 text-amber-300">
                       <Award className="w-3.5 h-3.5 text-amber-400" />
-                      <strong>{user.reputation}</strong> Rep
+                      <strong>{userRep}</strong> Reputation
                     </span>
-                    <span className="flex items-center gap-1">
-                      <Bookmark className="w-3.5 h-3.5 text-cyan-400" />
-                      <strong>{totalSaved}</strong> Saved Items
-                    </span>
+
                     {onSignOut && (
                       <button
                         onClick={() => {
@@ -147,11 +167,60 @@ export const AuthProfileModal: React.FC<AuthProfileModalProps> = ({
                 </div>
               </div>
 
+              {/* Verified Activity Statistics (Zero Base, increases only on action) */}
+              <div className="space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-xs font-['Rajdhani'] font-bold uppercase tracking-wider text-purple-400 flex items-center gap-1.5">
+                    <Award className="w-3.5 h-3.5" />
+                    Operative Activity Statistics
+                  </h3>
+                  <span className="text-[11px] font-mono text-slate-500">Live User Counters</span>
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  <div className="p-3 bg-[#131625] border border-[#232942] rounded-xl text-center space-y-1">
+                    <div className="flex items-center justify-center text-rose-400 gap-1.5 text-xs font-semibold">
+                      <Heart className="w-3.5 h-3.5" />
+                      <span>Likes</span>
+                    </div>
+                    <p className="text-2xl font-bold font-mono text-white">{userLikes}</p>
+                    <p className="text-[10px] text-slate-400">Posts Liked</p>
+                  </div>
+
+                  <div className="p-3 bg-[#131625] border border-[#232942] rounded-xl text-center space-y-1">
+                    <div className="flex items-center justify-center text-blue-400 gap-1.5 text-xs font-semibold">
+                      <MessageSquare className="w-3.5 h-3.5" />
+                      <span>Comments</span>
+                    </div>
+                    <p className="text-2xl font-bold font-mono text-white">{userComments}</p>
+                    <p className="text-[10px] text-slate-400">Replies & Comments</p>
+                  </div>
+
+                  <div className="p-3 bg-[#131625] border border-[#232942] rounded-xl text-center space-y-1">
+                    <div className="flex items-center justify-center text-cyan-400 gap-1.5 text-xs font-semibold">
+                      <Bookmark className="w-3.5 h-3.5" />
+                      <span>Saves</span>
+                    </div>
+                    <p className="text-2xl font-bold font-mono text-white">{userSaves}</p>
+                    <p className="text-[10px] text-slate-400">Bookmarked Items</p>
+                  </div>
+
+                  <div className="p-3 bg-[#131625] border border-[#232942] rounded-xl text-center space-y-1">
+                    <div className="flex items-center justify-center text-purple-400 gap-1.5 text-xs font-semibold">
+                      <PenSquare className="w-3.5 h-3.5" />
+                      <span>Discussions</span>
+                    </div>
+                    <p className="text-2xl font-bold font-mono text-white">{userTopics}</p>
+                    <p className="text-[10px] text-slate-400">Topics Started</p>
+                  </div>
+                </div>
+              </div>
+
               {/* Bookmarked Items Section */}
               <div className="space-y-3">
                 <h3 className="text-sm font-['Rajdhani'] font-bold uppercase tracking-wider text-purple-400 flex items-center gap-2">
                   <Bookmark className="w-4 h-4" />
-                  Your Saved Vault Entries ({totalSaved})
+                  Your Saved Vault Entries ({userSaves})
                 </h3>
 
                 {totalSaved === 0 ? (

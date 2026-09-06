@@ -49,6 +49,17 @@ export const ForumView: React.FC<ForumViewProps> = ({
     return matchCategory && matchSearch;
   });
 
+  const getCategoryCount = (catId: string) => {
+    if (catId === 'all') return topics.length;
+    return topics.filter(t => 
+      t.category.toLowerCase().includes(
+        MOCK_FORUM_CATEGORIES.find(c => c.id === catId)?.name.toLowerCase() || ''
+      ) ||
+      (catId === 'help' && t.category.includes('Help')) ||
+      (catId === 'community' && t.category.includes('Community'))
+    ).length;
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10 pb-24">
       {/* Header */}
@@ -108,24 +119,27 @@ export const ForumView: React.FC<ForumViewProps> = ({
           </span>
 
           <div className="space-y-1">
-            {MOCK_FORUM_CATEGORIES.map((cat) => (
-              <button
-                key={cat.id}
-                onClick={() => setSelectedCategory(cat.id)}
-                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-left text-xs transition-all ${
-                  selectedCategory === cat.id
-                    ? 'bg-purple-600 text-white font-bold shadow-md shadow-purple-900/40'
-                    : 'text-gray-300 hover:bg-white/5 hover:text-white'
-                }`}
-              >
-                <span className="font-['Space_Grotesk']">{cat.name}</span>
-                <span className={`text-[11px] font-mono px-2 py-0.5 rounded-full ${
-                  selectedCategory === cat.id ? 'bg-purple-800 text-white' : 'bg-white/5 text-gray-400 border border-white/5'
-                }`}>
-                  {cat.topicCount}
-                </span>
-              </button>
-            ))}
+            {MOCK_FORUM_CATEGORIES.map((cat) => {
+              const count = getCategoryCount(cat.id);
+              return (
+                <button
+                  key={cat.id}
+                  onClick={() => setSelectedCategory(cat.id)}
+                  className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-left text-xs transition-all ${
+                    selectedCategory === cat.id
+                      ? 'bg-purple-600 text-white font-bold shadow-md shadow-purple-900/40'
+                      : 'text-gray-300 hover:bg-white/5 hover:text-white'
+                  }`}
+                >
+                  <span className="font-['Space_Grotesk']">{cat.name}</span>
+                  <span className={`text-[11px] font-mono px-2 py-0.5 rounded-full ${
+                    selectedCategory === cat.id ? 'bg-purple-800 text-white' : 'bg-white/5 text-gray-400 border border-white/5'
+                  }`}>
+                    {count}
+                  </span>
+                </button>
+              );
+            })}
           </div>
 
           {/* Quick Community Card */}
@@ -135,7 +149,7 @@ export const ForumView: React.FC<ForumViewProps> = ({
               Community Status
             </div>
             <p className="leading-relaxed">
-              <strong>14,820</strong> active vault operatives online across PC, PlayStation, Xbox, and Nintendo hubs.
+              <strong>{topics.length}</strong> active community {topics.length === 1 ? 'discussion' : 'discussions'} in the vault.
             </p>
           </div>
         </div>

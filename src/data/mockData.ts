@@ -9,17 +9,23 @@ export const INITIAL_USER: UserAccount = {
   username: '@VaultOperative',
   avatar: 'https://images.unsplash.com/photo-1566492031773-4f4e44671857?w=150&auto=format&fit=crop&q=80',
   badge: 'Vault Pioneer',
-  reputation: 1420,
+  reputation: 0,
   joinDate: 'Jan 2025',
   bookmarks: {
-    videos: ['vid-1'],
-    games: ['game-1', 'game-3'],
-    articles: ['art-1'],
-    reviews: ['rev-1'],
-    guides: ['guide-1'],
-    topics: ['topic-1']
+    videos: [],
+    games: [],
+    articles: [],
+    reviews: [],
+    guides: [],
+    topics: []
   },
-  likedIds: []
+  likedIds: [],
+  stats: {
+    likesCount: 0,
+    commentsCount: 0,
+    savesCount: 0,
+    topicsCount: 0
+  }
 };
 
 export const DEFAULT_USER = INITIAL_USER;
@@ -32,7 +38,7 @@ export const MOCK_VIDEOS: Video[] = [
     description: 'Welcome back to Game Vault Forum! In this comprehensive deep dive, we break down FromSoftware’s massive expansion: dissecting map verticality, scadutree blessing mechanics, boss balance, and lore secrets hidden in the Gravesite Plain.',
     game: 'Elden Ring',
     uploadDate: '3 days ago',
-    views: '48.2K',
+    views: '0',
     duration: '24:18',
     youtubeId: 'K_03fnT8j0A',
     category: 'Deep Dive',
@@ -47,7 +53,7 @@ export const MOCK_VIDEOS: Video[] = [
     description: 'We tested over 200 hours of high-tier naval battles to understand why World of Warships has sustained a fiercely loyal tactical player base for a decade.',
     game: 'World of Warships',
     uploadDate: '1 week ago',
-    views: '32.1K',
+    views: '0',
     duration: '18:45',
     youtubeId: 'q73K94x2P6M',
     category: 'Gameplay',
@@ -61,7 +67,7 @@ export const MOCK_VIDEOS: Video[] = [
     description: 'Looking back at the greatest turnarounds in modern gaming history. How CD Projekt RED re-engineered character perks, police AI, and dogtown vertical combat.',
     game: 'Cyberpunk 2077',
     uploadDate: '2 weeks ago',
-    views: '64.9K',
+    views: '0',
     duration: '21:04',
     youtubeId: 'UnA7tepsc7s',
     category: 'Review',
@@ -75,7 +81,7 @@ export const MOCK_VIDEOS: Video[] = [
     description: 'Galactic liberation requires precision teamwork. We examine stratagem cooldowns, staggered reload tactics, and optimal counter-measures for Automatons and Terminids.',
     game: 'Helldivers 2',
     uploadDate: '3 weeks ago',
-    views: '27.5K',
+    views: '0',
     duration: '16:30',
     youtubeId: 'lP_8hPq2VnQ',
     category: 'Guide',
@@ -89,7 +95,7 @@ export const MOCK_VIDEOS: Video[] = [
     description: 'A deep reflection on what makes BG3 so endlessly replayable. Exploring Act 3 permutations, companion reactivities, and the bar set for future roleplaying titles.',
     game: "Baldur's Gate 3",
     uploadDate: '1 month ago',
-    views: '51.0K',
+    views: '0',
     duration: '28:12',
     youtubeId: '1T22wN1jl4w',
     category: 'Deep Dive',
@@ -103,7 +109,7 @@ export const MOCK_VIDEOS: Video[] = [
     description: 'Step-by-step benchmark testing across 5 demanding AAA engines to unlock buttery smooth 144Hz+ gameplay without sacrificing visual fidelity.',
     game: 'PC Tech / Hardware',
     uploadDate: '1 month ago',
-    views: '44.8K',
+    views: '0',
     duration: '19:22',
     youtubeId: '0sOnhD3n3gM',
     category: 'Tech',
@@ -667,7 +673,7 @@ That, more than anything, is what makes World of Warships more interesting than 
     readingTime: '11 min read',
     featuredImage: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=800&auto=format&fit=crop&q=80',
     tags: ['World of Warships', 'Tactics', 'Analysis', 'PC Gaming', 'Strategy'],
-    views: '19.8K',
+    views: '0',
     likes: 0
   },
   {
@@ -1078,7 +1084,7 @@ The best games don't necessarily give us something completely new every time we 
     readingTime: '8 min read',
     featuredImage: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&auto=format&fit=crop&q=80',
     tags: ['Game Longevity', 'Game Design', 'Replayability', 'Mastery', 'Psychology'],
-    views: '18.4K',
+    views: '0',
     likes: 0
   },
   {
@@ -1380,7 +1386,7 @@ And that's when the fun really starts.`,
     readingTime: '7 min read',
     featuredImage: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=800&auto=format&fit=crop&q=80',
     tags: ['Beginner Guide', 'Gaming Advice', 'Mindset', 'Tips'],
-    views: '24.1K',
+    views: '0',
     likes: 0
   },
   {
@@ -1842,7 +1848,7 @@ They became part of the story of gaming itself.`,
     readingTime: '9 min read',
     featuredImage: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&auto=format&fit=crop&q=80',
     tags: ['History', 'Retrospective', 'Masterpieces'],
-    views: '31.2K',
+    views: '0',
     likes: 0
   }
 ];
@@ -2032,16 +2038,16 @@ export const MOCK_GUIDES: Guide[] = [
 ];
 
 export const MOCK_FORUM_CATEGORIES: ForumCategory[] = [
-  { id: 'all', name: 'All Discussions', description: 'Browse all active conversations across Game Vault Forum', topicCount: 248 },
-  { id: 'general', name: 'General Gaming', description: 'Gaming discussions, industry opinions, trends and casual conversations', topicCount: 84 },
-  { id: 'pc', name: 'PC Gaming', description: 'PC games, hardware builds, settings, modding and performance optimization', topicCount: 62 },
-  { id: 'playstation', name: 'PlayStation', description: 'PS5, PS VR2, PlayStation Studios releases and platform discussions', topicCount: 45 },
-  { id: 'xbox', name: 'Xbox', description: 'Xbox Series X|S, Game Pass, backward compatibility and first-party titles', topicCount: 38 },
-  { id: 'nintendo', name: 'Nintendo', description: 'Nintendo Switch, upcoming hardware, Zelda, Mario and handheld favorites', topicCount: 31 },
-  { id: 'mobile', name: 'Mobile Gaming', description: 'Android and iOS high-end gaming, emulation, and controller accessories', topicCount: 19 },
-  { id: 'multiplayer', name: 'Multiplayer', description: 'Online games, clans, squad recruitment and co-op tactical play', topicCount: 29 },
-  { id: 'help', name: 'Gaming Help', description: 'Troubleshooting errors, build advice, technical support and boss tips', topicCount: 52 },
-  { id: 'community', name: 'Game Vault Forum Community', description: 'YouTube channel updates, video suggestions, site feedback & announcements', topicCount: 18 }
+  { id: 'all', name: 'All Discussions', description: 'Browse all active conversations across Game Vault Forum', topicCount: 0 },
+  { id: 'general', name: 'General Gaming', description: 'Gaming discussions, industry opinions, trends and casual conversations', topicCount: 0 },
+  { id: 'pc', name: 'PC Gaming', description: 'PC games, hardware builds, settings, modding and performance optimization', topicCount: 0 },
+  { id: 'playstation', name: 'PlayStation', description: 'PS5, PS VR2, PlayStation Studios releases and platform discussions', topicCount: 0 },
+  { id: 'xbox', name: 'Xbox', description: 'Xbox Series X|S, Game Pass, backward compatibility and first-party titles', topicCount: 0 },
+  { id: 'nintendo', name: 'Nintendo', description: 'Nintendo Switch, upcoming hardware, Zelda, Mario and handheld favorites', topicCount: 0 },
+  { id: 'mobile', name: 'Mobile Gaming', description: 'Android and iOS high-end gaming, emulation, and controller accessories', topicCount: 0 },
+  { id: 'multiplayer', name: 'Multiplayer', description: 'Online games, clans, squad recruitment and co-op tactical play', topicCount: 0 },
+  { id: 'help', name: 'Gaming Help', description: 'Troubleshooting errors, build advice, technical support and boss tips', topicCount: 0 },
+  { id: 'community', name: 'Game Vault Forum Community', description: 'YouTube channel updates, video suggestions, site feedback & announcements', topicCount: 0 }
 ];
 
 export const MOCK_FORUM_TOPICS: ForumTopic[] = [
@@ -2056,9 +2062,9 @@ export const MOCK_FORUM_TOPICS: ForumTopic[] = [
       isStaff: true
     },
     category: 'Game Vault Forum Community',
-    repliesCount: 42,
-    views: 3820,
-    lastActivity: '12 min ago',
+    repliesCount: 0,
+    views: 0,
+    lastActivity: 'Just now',
     timestamp: 'Yesterday at 4:15 PM',
     isPinned: true,
     tags: ['Announcement', 'YouTube', 'Roadmap'],
@@ -2067,30 +2073,7 @@ export const MOCK_FORUM_TOPICS: ForumTopic[] = [
 Our YouTube channel is scaling up production with dedicated deep dive essays, tactical game analyses, and honest hardware comparisons. This forum is built to give our community a home away from the chaos of generic social platforms. 
 
 Share your video requests, talk gaming with civil peers, and let us know what features you want next in the Vault!`,
-    replies: [
-      {
-        id: 'rep-1',
-        author: {
-          name: 'CyberRonin',
-          avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&auto=format&fit=crop&q=80',
-          badge: 'Vault Operative'
-        },
-        content: 'Love the dark vault aesthetic and typography! Looking forward to more deep dives into RPG mechanics like your Baldur’s Gate analysis.',
-        timestamp: 'Yesterday at 6:40 PM',
-        likes: 0
-      },
-      {
-        id: 'rep-2',
-        author: {
-          name: 'TacticalDreadnought',
-          avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=120&auto=format&fit=crop&q=80',
-          badge: 'Fleet Captain'
-        },
-        content: 'That World of Warships breakdown video brought me here. Glad to finally see a creator tackle high tier positioning honestly instead of just clickbait.',
-        timestamp: '12 min ago',
-        likes: 0
-      }
-    ]
+    replies: []
   },
   {
     id: 'topic-2',
@@ -2102,26 +2085,14 @@ Share your video requests, talk gaming with civil peers, and let us know what fe
       badge: 'Veteran'
     },
     category: 'General Gaming',
-    repliesCount: 28,
-    views: 1940,
+    repliesCount: 0,
+    views: 0,
     lastActivity: '34 min ago',
     timestamp: '2 days ago',
     isPinned: false,
     tags: ['Open World', 'Game Design', 'Elden Ring'],
     initialPost: `I find it almost impossible to enjoy traditional map-clearing games anymore with 500 checklist icons. Elden Ring worked because landmark silhouettes drew the eye, and subterranean surprises rewarded genuine curiosity. Why are so few major studios copying this philosophy?`,
-    replies: [
-      {
-        id: 'rep-3',
-        author: {
-          name: 'VoxelWanderer',
-          avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=120&auto=format&fit=crop&q=80',
-          badge: 'Vault Pioneer'
-        },
-        content: 'Cost and accessibility. Publishers fear that if 60% of players miss a handcrafted dungeon because there was no GPS marker, that content budget was "wasted". But the mystery is exactly what creates emotional resonance.',
-        timestamp: 'Yesterday at 11:20 AM',
-        likes: 0
-      }
-    ]
+    replies: []
   },
   {
     id: 'topic-3',
@@ -2133,8 +2104,8 @@ Share your video requests, talk gaming with civil peers, and let us know what fe
       badge: 'Hardware Sage'
     },
     category: 'PC Gaming',
-    repliesCount: 35,
-    views: 2480,
+    repliesCount: 0,
+    views: 0,
     lastActivity: '1 hour ago',
     timestamp: '3 days ago',
     tags: ['Hardware', 'GPU', 'OLED', 'Tech'],
@@ -2151,8 +2122,8 @@ Share your video requests, talk gaming with civil peers, and let us know what fe
       badge: 'Super Citizen'
     },
     category: 'Multiplayer',
-    repliesCount: 19,
-    views: 1120,
+    repliesCount: 0,
+    views: 0,
     lastActivity: '2 hours ago',
     timestamp: '4 days ago',
     tags: ['Helldivers 2', 'Co-op', 'Loadouts'],
@@ -2169,8 +2140,8 @@ Share your video requests, talk gaming with civil peers, and let us know what fe
       badge: 'Member'
     },
     category: 'PlayStation',
-    repliesCount: 15,
-    views: 950,
+    repliesCount: 0,
+    views: 0,
     lastActivity: '5 hours ago',
     timestamp: '5 days ago',
     tags: ['PlayStation', 'State of Play', 'PS5 Pro'],
