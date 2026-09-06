@@ -74,16 +74,30 @@ export function findItemBySlugOrId<T extends { id: string; title?: string; gameT
   return undefined;
 }
 
-/**
- * Updates dynamic browser metadata for optimal SEO & social sharing
- */
-export function updatePageSeo(meta: {
+export interface BreadcrumbItem {
+  name: string;
+  path: string;
+}
+
+export interface PageSeoOptions {
   title: string;
   description?: string;
   canonicalPath?: string;
-  ogType?: 'website' | 'article' | 'video.other';
+  ogType?: 'website' | 'article' | 'video.other' | 'profile';
   imageUrl?: string;
-}) {
+  imageAlt?: string;
+  breadcrumbs?: BreadcrumbItem[];
+  schemaType?: 'Article' | 'TechArticle' | 'Review' | 'VideoObject' | 'DiscussionForumPosting' | 'WebPage';
+  schemaData?: Record<string, any>;
+  noIndex?: boolean;
+}
+
+export const CANONICAL_BASE_URL = 'https://www.gamevault.forum';
+
+/**
+ * Updates dynamic browser metadata and JSON-LD structured data for search engine crawlers and social cards
+ */
+export function updatePageSeo(meta: PageSeoOptions) {
   if (typeof document === 'undefined') return;
 
   // 1. Update Document Title
@@ -92,33 +106,67 @@ export function updatePageSeo(meta: {
   document.title = fullTitle;
 
   // 2. Update Meta Description
-  const descriptionTag = document.querySelector('meta[name="description"]');
-  if (descriptionTag && meta.description) {
+  let descriptionTag = document.querySelector('meta[name="description"]');
+  if (meta.description) {
+    if (!descriptionTag) {
+      descriptionTag = document.createElement('meta');
+      descriptionTag.setAttribute('name', 'description');
+      document.head.appendChild(descriptionTag);
+    }
     descriptionTag.setAttribute('content', meta.description);
   }
 
-  // 3. Update Open Graph Title
+  // 3. Robots / Directives
+  let robotsTag = document.querySelector('meta[name="robots"]');
+  if (!robotsTag) {
+    robotsTag = document.createElement('meta');
+    robotsTag.setAttribute('name', 'robots');
+    document.head.appendChild(robotsTag);
+  }
+  robotsTag.setAttribute(
+    'content',
+    meta.noIndex
+      ? 'noindex, nofollow'
+      : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'
+  );
+
+  // 4. Update Open Graph & Twitter Titles
   const ogTitleTag = document.querySelector('meta[property="og:title"]');
-  if (ogTitleTag) {
-    ogTitleTag.setAttribute('content', fullTitle);
+  if (ogTitleTag) ogTitleTag.setAttribute('content', fullTitle);
+
+  const twitterTitleTag = document.querySelector('meta[name="twitter:title"]');
+  if (twitterTitleTag) twitterTitleTag.setAttribute('content', fullTitle);
+
+  // 5. Update Open Graph & Twitter Descriptions
+  if (meta.description) {
+    const ogDescTag = document.querySelector('meta[property="og:description"]');
+    if (ogDescTag) ogDescTag.setAttribute('content', meta.description);
+
+    const twitterDescTag = document.querySelector('meta[name="twitter:description"]');
+    if (twitterDescTag) twitterDescTag.setAttribute('content', meta.description);
   }
 
-  // 4. Update Open Graph Description
-  const ogDescTag = document.querySelector('meta[property="og:description"]');
-  if (ogDescTag && meta.description) {
-    ogDescTag.setAttribute('content', meta.description);
-  }
-
-  // 5. Update Open Graph Type
+  // 6. Update Open Graph Type
   const ogTypeTag = document.querySelector('meta[property="og:type"]');
   if (ogTypeTag && meta.ogType) {
     ogTypeTag.setAttribute('content', meta.ogType);
   }
 
-  // 6. Update Canonical Link & Open Graph URL
-  if (meta.canonicalPath && typeof window !== 'undefined') {
-    const canonicalUrl = `${window.location.origin}${meta.canonicalPath}`;
-    
+  // 7. Update Images for Open Graph & Twitter
+  const defaultImage = 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1200&h=630&auto=format&fit=crop&q=80';
+  const resolvedImage = meta.imageUrl || defaultImage;
+
+  const ogImageTag = document.querySelector('meta[property="og:image"]');
+  if (ogImageTag) ogImageTag.setAttribute('content', resolvedImage);
+
+  const twitterImageTag = document.querySelector('meta[name="twitter:image"]');
+  if (twitterImageTag) twitterImageTag.setAttribute('content', resolvedImage);
+
+  // 8. Update Canonical Link & Open Graph URL
+  if (meta.canonicalPath) {
+    const cleanPath = meta.canonicalPath.startsWith('/') ? meta.canonicalPath : `/${meta.canonicalPath}`;
+    const canonicalUrl = `${CANONICAL_BASE_URL}${cleanPath}`;
+
     let canonicalLink = document.querySelector('link[rel="canonical"]');
     if (!canonicalLink) {
       canonicalLink = document.createElement('link');
@@ -131,5 +179,69 @@ export function updatePageSeo(meta: {
     if (ogUrlTag) {
       ogUrlTag.setAttribute('content', canonicalUrl);
     }
+  }
+
+  // 9. Structured Data (JSON-LD) injection for Google Search Console & Rich Snippets
+  let schemaScript = document.getElementById('gv-dynamic-seo-schema') as HTMLScriptElement | null;
+  if (!schemaScript) {
+    schemaScript = document.createElement('script');
+    schemaScript.id = 'gv-dynamic-seo-schema';
+    schemaScript.type = 'application/ld+json';
+    document.head.appendChild(schemaScript);
+  }
+
+  const schemas: any[] = [];
+  const canonicalUrl = meta.canonicalPath
+    ? `${CANONICAL_BASE_URL}${meta.canonicalPath.startsWith('/') ? meta.canonicalPath : `/${meta.canonicalPath}`}`
+    : `${CANONICAL_BASE_URL}/`;
+
+  // BreadcrumbList Schema
+  if (meta.breadcrumbs && meta.breadcrumbs.length > 0) {
+    schemas.push({
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: 'Home',
+          item: `${CANONICAL_BASE_URL}/`
+        },
+        ...meta.breadcrumbs.map((b, idx) => ({
+          '@type': 'ListItem',
+          position: idx + 2,
+          name: b.name,
+          item: b.path.startsWith('http') ? b.path : `${CANONICAL_BASE_URL}${b.path.startsWith('/') ? b.path : `/${b.path}`}`
+        }))
+      ]
+    });
+  }
+
+  // Content-specific schema
+  if (meta.schemaType && meta.schemaData) {
+    schemas.push({
+      '@context': 'https://schema.org',
+      '@type': meta.schemaType,
+      mainEntityOfPage: {
+        '@type': 'WebPage',
+        '@id': canonicalUrl
+      },
+      publisher: {
+        '@type': 'Organization',
+        name: 'Game Vault Forum',
+        url: CANONICAL_BASE_URL,
+        logo: {
+          '@type': 'ImageObject',
+          url: defaultImage
+        }
+      },
+      ...meta.schemaData
+    });
+  }
+
+  if (schemas.length > 0) {
+    schemaScript.textContent = JSON.stringify(schemas.length === 1 ? schemas[0] : schemas);
+  } else {
+    schemaScript.textContent = '';
   }
 }

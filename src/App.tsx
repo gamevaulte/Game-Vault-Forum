@@ -617,84 +617,106 @@ export default function App() {
         updatePageSeo({
           title: 'Gameplay Videos, Briefings & Lore Breakdowns | Game Vault Forum',
           description: 'Watch tactical analysis, mechanical breakdowns, and deep lore videos from the Game Vault official YouTube hub.',
-          canonicalPath: '/videos'
+          canonicalPath: '/videos',
+          breadcrumbs: [{ name: 'Videos', path: '/videos' }]
         });
         break;
       case 'games':
         updatePageSeo({
           title: 'Tactical Game Vault Catalog & Specs Database | Game Vault Forum',
           description: 'Browse the curated Game Vault library featuring tactical evaluations, hardware recommendations, and genre classifications.',
-          canonicalPath: '/games'
+          canonicalPath: '/games',
+          breadcrumbs: [{ name: 'Games', path: '/games' }]
         });
         break;
       case 'articles':
         updatePageSeo({
           title: 'Vault Editorial Magazine & Gaming Analyses | Game Vault Forum',
           description: 'In-depth long-form journalism, game mechanics theory, and analytical retrospectives.',
-          canonicalPath: '/articles'
+          canonicalPath: '/articles',
+          breadcrumbs: [{ name: 'Articles', path: '/articles' }]
         });
         break;
       case 'reviews':
         updatePageSeo({
           title: 'Tactical Game Reviews & Technical Verdicts | Game Vault Forum',
           description: 'Uncompromising, data-driven game reviews analyzing gameplay loop, mechanical depth, optimization, and replay value.',
-          canonicalPath: '/reviews'
+          canonicalPath: '/reviews',
+          breadcrumbs: [{ name: 'Reviews', path: '/reviews' }]
         });
         break;
       case 'guides':
         updatePageSeo({
           title: 'Tactical Game Guides, Builds & Walkthroughs | Game Vault Forum',
           description: 'Master your favorite tactical games with detailed routes, character builds, and strategic combat playbooks.',
-          canonicalPath: '/guides'
+          canonicalPath: '/guides',
+          breadcrumbs: [{ name: 'Guides', path: '/guides' }]
         });
         break;
       case 'forum':
         updatePageSeo({
           title: 'Game Vault Community Discussions & Forum | Game Vault Forum',
           description: 'Connect with tactical gamers, share strategies, get troubleshooting help, and debate mechanics.',
-          canonicalPath: '/forum'
+          canonicalPath: '/forum',
+          breadcrumbs: [{ name: 'Forum', path: '/forum' }]
         });
         break;
       case 'new-topic':
         updatePageSeo({
           title: 'Create a New Discussion Topic | Game Vault Forum',
           description: 'Start a new civil tactical discussion in the Game Vault community.',
-          canonicalPath: '/forum/new'
+          canonicalPath: '/forum/new',
+          noIndex: true
         });
         break;
       case 'guidelines':
         updatePageSeo({
           title: 'Community Code of Conduct & Guidelines | Game Vault Forum',
           description: 'Rules of engagement and standards for civil, high-quality discussion on Game Vault Forum.',
-          canonicalPath: '/guidelines'
+          canonicalPath: '/guidelines',
+          breadcrumbs: [{ name: 'Community Guidelines', path: '/guidelines' }]
         });
         break;
       case 'privacy':
         updatePageSeo({
           title: 'Privacy Policy | Game Vault Forum',
           description: 'Review the Game Vault Forum Privacy Policy: our data protection practices, encryption standards, and user privacy rights.',
-          canonicalPath: '/privacy'
+          canonicalPath: '/privacy',
+          breadcrumbs: [{ name: 'Privacy Policy', path: '/privacy' }]
         });
         break;
       case 'terms':
         updatePageSeo({
           title: 'Terms of Service | Game Vault Forum',
           description: 'Review the Game Vault Forum Terms of Service: community rules, content ownership, and platform terms of use.',
-          canonicalPath: '/terms'
+          canonicalPath: '/terms',
+          breadcrumbs: [{ name: 'Terms of Service', path: '/terms' }]
         });
         break;
       case 'cookies':
         updatePageSeo({
           title: 'Cookie Policy & Browser Storage | Game Vault Forum',
           description: 'Learn how Game Vault Forum utilizes browser local storage and essential session cookies without invasive third-party trackers.',
-          canonicalPath: '/cookies'
+          canonicalPath: '/cookies',
+          breadcrumbs: [{ name: 'Cookie Policy', path: '/cookies' }]
         });
         break;
       case 'about':
         updatePageSeo({
           title: 'About Game Vault Forum | Founded by Joel Ayuba',
           description: 'Learn about the mission, history, and editorial standards behind Game Vault Forum.',
-          canonicalPath: '/about'
+          canonicalPath: '/about',
+          breadcrumbs: [{ name: 'About', path: '/about' }]
+        });
+        break;
+      case 'login':
+      case 'register':
+      case 'profile':
+        updatePageSeo({
+          title: 'User Portal | Game Vault Forum',
+          description: 'Authenticate and manage your Game Vault profile.',
+          canonicalPath: '/profile',
+          noIndex: true
         });
         break;
       default:

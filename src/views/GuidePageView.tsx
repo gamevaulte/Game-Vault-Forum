@@ -35,9 +35,28 @@ export const GuidePageView: React.FC<GuidePageViewProps> = ({
       title: `${guide.title} - ${guide.game} Guide`,
       description: guide.shortDescription,
       canonicalPath: `/guides/${guideSlug}`,
-      ogType: 'article'
+      ogType: 'article',
+      breadcrumbs: [
+        { name: 'Guides', path: '/guides' },
+        { name: guide.title, path: `/guides/${guideSlug}` }
+      ],
+      schemaType: 'TechArticle',
+      schemaData: {
+        headline: guide.title,
+        description: guide.shortDescription,
+        proficiencyLevel: guide.difficulty,
+        about: {
+          '@type': 'VideoGame',
+          name: guide.game
+        },
+        author: {
+          '@type': 'Person',
+          name: guide.author.name
+        },
+        articleBody: guide.content
+      }
     });
-  }, [guide.title, guide.game, guide.shortDescription, guideSlug]);
+  }, [guide.title, guide.game, guide.shortDescription, guide.difficulty, guide.author.name, guide.content, guideSlug]);
 
   const getDifficultyBadge = (diff: string) => {
     switch (diff) {

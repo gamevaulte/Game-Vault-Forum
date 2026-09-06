@@ -76,9 +76,28 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
       title: article.title,
       description: article.excerpt,
       canonicalPath: `/articles/${articleSlug}`,
-      ogType: 'article'
+      ogType: 'article',
+      imageUrl: article.image,
+      breadcrumbs: [
+        { name: 'Articles', path: '/articles' },
+        { name: article.title, path: `/articles/${articleSlug}` }
+      ],
+      schemaType: 'Article',
+      schemaData: {
+        headline: article.title,
+        description: article.excerpt,
+        image: [article.image],
+        datePublished: '2025-01-15T08:00:00+00:00',
+        dateModified: '2026-09-01T12:00:00+00:00',
+        author: {
+          '@type': 'Person',
+          name: article.author.name
+        },
+        articleSection: article.category,
+        wordCount: article.content ? article.content.split(/\s+/).length : 500
+      }
     });
-  }, [article.title, article.excerpt, articleSlug]);
+  }, [article.title, article.excerpt, articleSlug, article.image, article.author.name, article.category, article.content]);
 
   return (
     <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-8 animate-in fade-in duration-300">

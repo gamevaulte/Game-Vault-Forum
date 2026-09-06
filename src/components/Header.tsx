@@ -48,19 +48,31 @@ export const Header: React.FC<HeaderProps> = ({
     <header className="sticky top-0 z-40 w-full bg-black/30 backdrop-blur-xl border-b border-white/5 transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between gap-4">
         {/* Brand Logo */}
-        <div onClick={() => handleNavClick('home')} className="cursor-pointer">
+        <a
+          href="/"
+          onClick={(e) => {
+            e.preventDefault();
+            handleNavClick('home');
+          }}
+          className="cursor-pointer"
+        >
           <VaultLogo size="md" showTagline={true} />
-        </div>
+        </a>
 
         {/* Desktop Navigation */}
         <nav className="hidden lg:flex items-center space-x-1 font-['Rajdhani'] font-semibold tracking-wider text-base uppercase">
           {navItems.map((item) => {
             const isActive = currentTab === item.id;
+            const href = item.id === 'home' ? '/' : `/${item.id}`;
             return (
-              <button
+              <a
                 key={item.id}
                 id={`nav-${item.id}`}
-                onClick={() => handleNavClick(item.id)}
+                href={href}
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleNavClick(item.id);
+                }}
                 className={`relative px-3.5 py-2 rounded-xl transition-all duration-200 ${
                   isActive
                     ? 'text-white bg-white/10 backdrop-blur-md border border-white/20 shadow-lg shadow-purple-900/10'
@@ -71,7 +83,7 @@ export const Header: React.FC<HeaderProps> = ({
                 {isActive && (
                   <span className="absolute bottom-1 left-3 right-3 h-0.5 bg-gradient-to-r from-purple-400 to-cyan-400 rounded-full" />
                 )}
-              </button>
+              </a>
             );
           })}
         </nav>
@@ -175,10 +187,15 @@ export const Header: React.FC<HeaderProps> = ({
           <div className="grid grid-cols-2 gap-2 mb-4">
             {navItems.map((item) => {
               const isActive = currentTab === item.id;
+              const href = item.id === 'home' ? '/' : `/${item.id}`;
               return (
-                <button
+                <a
                   key={item.id}
-                  onClick={() => handleNavClick(item.id)}
+                  href={href}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleNavClick(item.id);
+                  }}
                   className={`px-4 py-3 rounded-xl text-left font-['Rajdhani'] font-bold text-base tracking-wider uppercase transition-all ${
                     isActive
                       ? 'bg-white/15 text-white border border-white/25 shadow-lg'
@@ -186,7 +203,7 @@ export const Header: React.FC<HeaderProps> = ({
                   }`}
                 >
                   {item.label}
-                </button>
+                </a>
               );
             })}
           </div>

@@ -36,9 +36,33 @@ export const ReviewPageView: React.FC<ReviewPageViewProps> = ({
       title: `${review.gameTitle} Review - Score: ${review.score}/10 (${review.scoreLabel})`,
       description: review.shortVerdict,
       canonicalPath: `/reviews/${reviewSlug}`,
-      ogType: 'article'
+      ogType: 'article',
+      imageUrl: review.thumbnail,
+      breadcrumbs: [
+        { name: 'Reviews', path: '/reviews' },
+        { name: `${review.gameTitle} Review`, path: `/reviews/${reviewSlug}` }
+      ],
+      schemaType: 'Review',
+      schemaData: {
+        itemReviewed: {
+          '@type': 'VideoGame',
+          name: review.gameTitle,
+          image: review.thumbnail
+        },
+        reviewRating: {
+          '@type': 'Rating',
+          ratingValue: review.score,
+          bestRating: 10,
+          worstRating: 1
+        },
+        author: {
+          '@type': 'Person',
+          name: review.author.name
+        },
+        reviewBody: review.fullReview
+      }
     });
-  }, [review.gameTitle, review.score, review.scoreLabel, review.shortVerdict, reviewSlug]);
+  }, [review.gameTitle, review.score, review.scoreLabel, review.shortVerdict, reviewSlug, review.thumbnail, review.author.name, review.fullReview]);
 
   const getScoreColor = (score: number) => {
     if (score >= 9.0) return 'text-amber-400 border-amber-500/40 bg-amber-950/30';

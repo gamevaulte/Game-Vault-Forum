@@ -8,7 +8,7 @@ import {
   signOut,
   sendPasswordResetEmail
 } from 'firebase/auth';
-import { auth, googleProvider, addRegisteredUserToFirestore } from '../lib/firebase';
+import { auth, googleProvider, addRegisteredUserToFirestore, firebaseConfig } from '../lib/firebase';
 import { VaultLogo } from './VaultLogo';
 import {
   Lock,
@@ -25,7 +25,11 @@ import {
   Camera,
   X,
   RefreshCw,
-  KeyRound
+  KeyRound,
+  ExternalLink,
+  Copy,
+  Check,
+  Globe
 } from 'lucide-react';
 
 interface AuthGateProps {
@@ -71,6 +75,8 @@ export const AuthGate: React.FC<AuthGateProps> = ({
   const [regError, setRegError] = useState<string | null>(null);
   const [regLoading, setRegLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [showDomainHelp, setShowDomainHelp] = useState(false);
+  const [copiedType, setCopiedType] = useState<'wildcard' | 'exact' | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -310,7 +316,8 @@ export const AuthGate: React.FC<AuthGateProps> = ({
       } else if (err?.code === 'auth/account-exists-with-different-credential') {
         errorMsg = 'An account already exists with this email address. Please sign in with your email and password.';
       } else if (err?.code === 'auth/unauthorized-domain') {
-        errorMsg = 'Current preview domain is not authorized in Firebase Auth. Please authenticate using email/password or add domain to Firebase Console.';
+        setShowDomainHelp(true);
+        errorMsg = 'Current preview domain is not authorized in Firebase Auth. Please authenticate using email/password or follow the 30-second guide below to add the domain to Firebase Console.';
       } else if (err?.code === 'auth/network-request-failed') {
         errorMsg = 'Network connection error contacting Google authentication services. Please check your connection and retry.';
       } else if (err?.message) {
@@ -326,6 +333,150 @@ export const AuthGate: React.FC<AuthGateProps> = ({
       setGoogleLoading(false);
     }
   };
+
+  const currentHostname = typeof window !== 'undefined' ? window.location.hostname : '';
+  const firebaseSettingsUrl = `https://console.firebase.google.com/project/${firebaseConfig.projectId}/authentication/settings`;
+
+  const copyToClipboard = async (text: string, type: 'wildcard' | 'exact') => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedType(type);
+      setTimeout(() => setCopiedType(null), 2500);
+    } catch (err) {
+      console.warn('Clipboard write failed:', err);
+    }
+  };
+
+  const renderDomainAuthGuide = () => (
+    <div 
+      id="firebase-domain-auth-guide"
+      className="p-4 sm:p-5 bg-amber-500/10 border border-amber-500/30 rounded-2xl text-left space-y-3.5 backdrop-blur-md animate-in fade-in duration-200"
+    >
+      <div className="flex items-start justify-between gap-2">
+        <div className="flex items-center gap-2 text-amber-300 font-semibold text-xs sm:text-sm font-['Rajdhani'] uppercase tracking-wider">
+          <Globe className="w-4 h-4 text-amber-400 shrink-0" />
+          <span>Firebase Domain Authorization Required</span>
+        </div>
+        <button
+          type="button"
+          onClick={() => setShowDomainHelp(false)}
+          className="text-gray-400 hover:text-white p-0.5 rounded transition-colors cursor-pointer"
+          title="Dismiss guide"
+        >
+          <X className="w-4 h-4" />
+        </button>
+      </div>
+
+      <p className="text-xs text-amber-100/90 leading-relaxed">
+        Google OAuth security requires domains hosting your application to be authorized in your Firebase project (<code className="text-amber-200 font-mono font-semibold">{firebaseConfig.projectId}</code>). Adding <strong className="font-mono text-white bg-black/40 px-1.5 py-0.5 rounded border border-amber-500/30">run.app</strong> takes 30 seconds and authorizes all Cloud Run preview and production links.
+      </p>
+
+      {/* Copy domain boxes */}
+      <div className="space-y-2">
+        <div className="p-2.5 bg-black/50 border border-amber-500/25 rounded-xl flex items-center justify-between gap-2">
+          <div className="min-w-0 flex-1">
+            <span className="block text-[10px] uppercase font-mono tracking-wider text-amber-400 font-semibold">
+              Recommended (Authorizes All Previews):
+            </span>
+            <span className="font-mono text-xs text-white font-bold truncate block select-all">
+              run.app
+            </span>
+          </div>
+          <button
+            type="button"
+            id="copy-runapp-btn"
+            onClick={() => copyToClipboard('run.app', 'wildcard')}
+            className="px-2.5 py-1.5 bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-amber-200 rounded-lg text-[11px] font-semibold flex items-center gap-1.5 transition-colors cursor-pointer shrink-0"
+          >
+            {copiedType === 'wildcard' ? (
+              <>
+                <Check className="w-3.5 h-3.5 text-emerald-400" />
+                <span className="text-emerald-300">Copied!</span>
+              </>
+            ) : (
+              <>
+                <Copy className="w-3.5 h-3.5" />
+                <span>Copy "run.app"</span>
+              </>
+            )}
+          </button>
+        </div>
+
+        {currentHostname && currentHostname !== 'localhost' && (
+          <div className="p-2.5 bg-black/40 border border-white/10 rounded-xl flex items-center justify-between gap-2">
+            <div className="min-w-0 flex-1">
+              <span className="block text-[10px] uppercase font-mono tracking-wider text-gray-400">
+                Exact Hostname:
+              </span>
+              <span className="font-mono text-xs text-gray-200 truncate block select-all">
+                {currentHostname}
+              </span>
+            </div>
+            <button
+              type="button"
+              id="copy-exact-hostname-btn"
+              onClick={() => copyToClipboard(currentHostname, 'exact')}
+              className="px-2.5 py-1.5 bg-white/10 hover:bg-white/20 border border-white/15 text-gray-200 rounded-lg text-[11px] font-semibold flex items-center gap-1.5 transition-colors cursor-pointer shrink-0"
+            >
+              {copiedType === 'exact' ? (
+                <>
+                  <Check className="w-3.5 h-3.5 text-emerald-400" />
+                  <span className="text-emerald-300">Copied!</span>
+                </>
+              ) : (
+                <>
+                  <Copy className="w-3.5 h-3.5" />
+                  <span>Copy Exact</span>
+                </>
+              )}
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Direct Action Link */}
+      <a
+        href={firebaseSettingsUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        id="open-firebase-console-link"
+        className="w-full py-2.5 px-3 bg-amber-500 hover:bg-amber-400 text-black font-semibold rounded-xl text-xs font-['Rajdhani'] uppercase tracking-wider flex items-center justify-center gap-2 transition-all shadow-md shadow-amber-950/40 cursor-pointer"
+      >
+        <span>Open Firebase Console: Authorized Domains</span>
+        <ExternalLink className="w-3.5 h-3.5" />
+      </a>
+
+      {/* 4 Steps Checklist */}
+      <div className="text-[11px] text-gray-300 space-y-1 pt-1">
+        <p className="font-semibold text-white text-xs">Steps to Authorize:</p>
+        <p>1. Click <strong className="text-amber-300">Open Firebase Console</strong> above.</p>
+        <p>2. Under the <strong className="text-white">Authorized domains</strong> section, click <strong className="text-amber-300">Add domain</strong>.</p>
+        <p>3. Paste <code className="text-white bg-black/40 px-1 py-0.5 rounded font-mono">run.app</code> and click <strong className="text-amber-300">Add</strong>.</p>
+        <p>4. Return to this screen and click <strong className="text-white">Retry Google Sign-In</strong> below.</p>
+      </div>
+
+      {/* Retry Button */}
+      <button
+        type="button"
+        id="retry-google-auth-btn"
+        disabled={googleLoading}
+        onClick={handleGoogleAuth}
+        className="w-full py-2.5 px-3 bg-purple-600 hover:bg-purple-500 text-white rounded-xl text-xs font-['Rajdhani'] font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer disabled:opacity-60"
+      >
+        {googleLoading ? (
+          <span className="inline-flex items-center gap-2">
+            <span className="w-3.5 h-3.5 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+            <span>Connecting to Google...</span>
+          </span>
+        ) : (
+          <>
+            <RefreshCw className="w-3.5 h-3.5" />
+            <span>Retry Google Sign-In</span>
+          </>
+        )}
+      </button>
+    </div>
+  );
 
   return (
     <div className={`${isModal ? 'fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 overflow-y-auto' : 'min-h-screen w-full flex items-center justify-center p-4 sm:p-6 lg:p-8 relative overflow-hidden font-sans'}`}>
@@ -641,6 +792,22 @@ export const AuthGate: React.FC<AuthGateProps> = ({
                   </>
                 )}
               </button>
+
+              {/* Domain Authorization Guide / Toggle */}
+              {showDomainHelp ? (
+                renderDomainAuthGuide()
+              ) : (
+                <div className="text-center pt-0.5">
+                  <button
+                    type="button"
+                    onClick={() => setShowDomainHelp(true)}
+                    className="text-[11px] text-gray-400 hover:text-amber-300 transition-colors inline-flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <Globe className="w-3 h-3 text-amber-400/80" />
+                    <span>Domain authorization guide for Google Sign-In</span>
+                  </button>
+                </div>
+              )}
 
               <p className="text-center text-xs text-gray-400 pt-2">
                 Need a new operative account?{' '}
@@ -1047,6 +1214,22 @@ export const AuthGate: React.FC<AuthGateProps> = ({
                   </>
                 )}
               </button>
+
+              {/* Domain Authorization Guide / Toggle */}
+              {showDomainHelp ? (
+                renderDomainAuthGuide()
+              ) : (
+                <div className="text-center pt-0.5">
+                  <button
+                    type="button"
+                    onClick={() => setShowDomainHelp(true)}
+                    className="text-[11px] text-gray-400 hover:text-amber-300 transition-colors inline-flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <Globe className="w-3 h-3 text-amber-400/80" />
+                    <span>Domain authorization guide for Google Sign-In</span>
+                  </button>
+                </div>
+              )}
 
               <p className="text-center text-xs text-gray-400 pt-2">
                 Already registered?{' '}

@@ -1,0 +1,41 @@
+# Game Vault Forum robots.txt
+# https://www.gamevault.forum
+# Permits search engine bots to crawl and index all public gaming content and forum discussions
+
+User-agent: *
+Allow: /
+Disallow: /profile
+Disallow: /login
+Disallow: /register
+Disallow: /forum/new
+
+# Dedicated Crawlers
+User-agent: Googlebot
+Allow: /
+Disallow: /profile
+Disallow: /login
+Disallow: /register
+Disallow: /forum/new
+
+User-agent: Googlebot-Image
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+Disallow: /profile
+Disallow: /login
+Disallow: /register
+Disallow: /forum/new
+
+User-agent: Applebot
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: YandexBot
+Allow: /
+
+# Sitemap & Host declarations for Search Console validation
+Sitemap: https://www.gamevault.forum/sitemap.xml
+Host: https://www.gamevault.forum

@@ -40,9 +40,27 @@ export const GamePageView: React.FC<GamePageViewProps> = ({
       title: `${game.title} - Overview & Tactical Specs`,
       description: game.shortDescription,
       canonicalPath: `/games/${gameSlug}`,
-      ogType: 'website'
+      ogType: 'website',
+      imageUrl: game.coverImage,
+      breadcrumbs: [
+        { name: 'Games', path: '/games' },
+        { name: game.title, path: `/games/${gameSlug}` }
+      ],
+      schemaType: 'WebPage',
+      schemaData: {
+        name: `${game.title} - Game Dossier`,
+        description: game.shortDescription,
+        about: {
+          '@type': 'VideoGame',
+          name: game.title,
+          image: game.coverImage,
+          genre: game.genre,
+          operatingSystem: game.platforms?.join(', ') || 'PC, Console',
+          publisher: game.publisher
+        }
+      }
     });
-  }, [game.title, game.shortDescription, gameSlug]);
+  }, [game.title, game.shortDescription, game.coverImage, game.genre, game.platforms, game.publisher, gameSlug]);
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-8 animate-in fade-in duration-300">

@@ -104,20 +104,25 @@ export const Footer: React.FC<FooterProps> = ({
               Navigation
             </h3>
             <ul className="space-y-2 text-sm text-gray-400">
-              {navLinks.map((link) => (
-                <li key={link.id}>
-                  <button
-                    onClick={() => {
-                      onSelectTab(link.id);
-                      window.scrollTo({ top: 0, behavior: 'smooth' });
-                    }}
-                    className="hover:text-purple-300 transition-colors flex items-center gap-1.5 group text-left"
-                  >
-                    <ChevronRight className="w-3 h-3 text-gray-600 group-hover:text-purple-400 transition-colors" />
-                    <span>{link.label}</span>
-                  </button>
-                </li>
-              ))}
+              {navLinks.map((link) => {
+                const href = link.id === 'home' ? '/' : `/${link.id}`;
+                return (
+                  <li key={link.id}>
+                    <a
+                      href={href}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        onSelectTab(link.id);
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                      }}
+                      className="hover:text-purple-300 transition-colors flex items-center gap-1.5 group text-left"
+                    >
+                      <ChevronRight className="w-3 h-3 text-gray-600 group-hover:text-purple-400 transition-colors" />
+                      <span>{link.label}</span>
+                    </a>
+                  </li>
+                );
+              })}
             </ul>
           </div>
 
@@ -129,22 +134,30 @@ export const Footer: React.FC<FooterProps> = ({
             </h3>
             <ul className="space-y-2 text-sm text-gray-400">
               <li>
-                <button
-                  onClick={() => onSelectTab('forum')}
+                <a
+                  href="/forum"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onSelectTab('forum');
+                  }}
                   className="hover:text-cyan-300 transition-colors flex items-center gap-1.5 group text-left"
                 >
                   <ChevronRight className="w-3 h-3 text-gray-600 group-hover:text-cyan-400 transition-colors" />
                   <span>Join the Forum</span>
-                </button>
+                </a>
               </li>
               <li>
-                <button
-                  onClick={onOpenGuidelines}
+                <a
+                  href="/guidelines"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onOpenGuidelines();
+                  }}
                   className="hover:text-cyan-300 transition-colors flex items-center gap-1.5 group text-left"
                 >
                   <ChevronRight className="w-3 h-3 text-gray-600 group-hover:text-cyan-400 transition-colors" />
                   <span>Community Guidelines</span>
-                </button>
+                </a>
               </li>
               <li>
                 <a
@@ -155,6 +168,17 @@ export const Footer: React.FC<FooterProps> = ({
                 >
                   <ChevronRight className="w-3 h-3 text-gray-600 group-hover:text-cyan-400 transition-colors" />
                   <span>YouTube Channel ({YOUTUBE_CHANNEL.handle})</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/sitemap.xml"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-cyan-300 transition-colors flex items-center gap-1.5 group text-left"
+                >
+                  <ChevronRight className="w-3 h-3 text-gray-600 group-hover:text-cyan-400 transition-colors" />
+                  <span>XML Sitemap (Search Console)</span>
                 </a>
               </li>
               <li>
@@ -211,27 +235,57 @@ export const Footer: React.FC<FooterProps> = ({
         <div className="pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-500">
           <p>© 2026 Game Vault Forum. All rights reserved.</p>
           <div className="flex flex-wrap items-center gap-4 sm:gap-6">
-            <button onClick={onOpenGuidelines} className="hover:text-gray-300 transition-colors cursor-pointer">
+            <a 
+              href="/guidelines"
+              onClick={(e) => {
+                e.preventDefault();
+                onOpenGuidelines();
+              }}
+              className="hover:text-gray-300 transition-colors cursor-pointer"
+            >
               Community Guidelines
-            </button>
-            <button 
-              onClick={onOpenPrivacy || onOpenGuidelines} 
+            </a>
+            <a 
+              href="/privacy"
+              onClick={(e) => {
+                e.preventDefault();
+                if (onOpenPrivacy) onOpenPrivacy();
+                else onOpenGuidelines();
+              }}
               className="hover:text-gray-300 transition-colors cursor-pointer"
             >
               Privacy Policy
-            </button>
-            <button 
-              onClick={onOpenTerms || onOpenGuidelines} 
+            </a>
+            <a 
+              href="/terms"
+              onClick={(e) => {
+                e.preventDefault();
+                if (onOpenTerms) onOpenTerms();
+                else onOpenGuidelines();
+              }}
               className="hover:text-gray-300 transition-colors cursor-pointer"
             >
               Terms of Service
-            </button>
-            <button 
-              onClick={onOpenCookies || onOpenGuidelines} 
+            </a>
+            <a 
+              href="/cookies"
+              onClick={(e) => {
+                e.preventDefault();
+                if (onOpenCookies) onOpenCookies();
+                else onOpenGuidelines();
+              }}
               className="hover:text-gray-300 transition-colors cursor-pointer"
             >
               Cookie Policy
-            </button>
+            </a>
+            <a 
+              href="/robots.txt"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-gray-300 transition-colors cursor-pointer text-gray-600 hover:text-gray-400"
+            >
+              robots.txt
+            </a>
           </div>
         </div>
       </div>

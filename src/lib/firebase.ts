@@ -18,6 +18,7 @@ import firebaseConfig from "../../firebase-applet-config.json";
 import { ForumTopic, PostComment, UserAccount } from "../types";
 
 // Initialize Firebase App
+export { firebaseConfig };
 export const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 

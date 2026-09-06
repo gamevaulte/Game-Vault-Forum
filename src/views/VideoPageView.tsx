@@ -76,9 +76,29 @@ export const VideoPageView: React.FC<VideoPageViewProps> = ({
       title: video.title,
       description: video.shortDescription,
       canonicalPath: `/videos/${videoSlug}`,
-      ogType: 'video.other'
+      ogType: 'video.other',
+      imageUrl: video.thumbnail,
+      breadcrumbs: [
+        { name: 'Videos', path: '/videos' },
+        { name: video.title, path: `/videos/${videoSlug}` }
+      ],
+      schemaType: 'VideoObject',
+      schemaData: {
+        name: video.title,
+        description: video.description || video.shortDescription,
+        thumbnailUrl: [video.thumbnail],
+        uploadDate: '2025-01-10T12:00:00+00:00',
+        duration: video.duration ? `PT${video.duration.replace(':', 'M')}S` : 'PT10M',
+        embedUrl: `https://www.youtube.com/embed/${video.youtubeId}`,
+        contentUrl: `https://www.youtube.com/watch?v=${video.youtubeId}`,
+        interactionStatistic: {
+          '@type': 'InteractionCounter',
+          interactionType: { '@type': 'WatchAction' },
+          userInteractionCount: video.views ? parseInt(video.views.replace(/,/g, ''), 10) || 0 : 0
+        }
+      }
     });
-  }, [video.title, video.shortDescription, videoSlug]);
+  }, [video.title, video.shortDescription, video.description, video.thumbnail, video.youtubeId, video.duration, video.views, videoSlug]);
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-8 animate-in fade-in duration-300">

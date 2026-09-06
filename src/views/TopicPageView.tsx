@@ -69,9 +69,29 @@ export const TopicPageView: React.FC<TopicPageViewProps> = ({
       title: `${topic.title} - ${topic.category}`,
       description: topic.initialPost ? topic.initialPost.slice(0, 160) : 'Join the discussion on Game Vault Forum.',
       canonicalPath: `/forum/${topicSlug}`,
-      ogType: 'article'
+      ogType: 'article',
+      breadcrumbs: [
+        { name: 'Forum', path: '/forum' },
+        { name: topic.category, path: '/forum' },
+        { name: topic.title, path: `/forum/${topicSlug}` }
+      ],
+      schemaType: 'DiscussionForumPosting',
+      schemaData: {
+        headline: topic.title,
+        articleBody: topic.initialPost,
+        articleSection: topic.category,
+        author: {
+          '@type': 'Person',
+          name: topic.author.name
+        },
+        interactionStatistic: {
+          '@type': 'InteractionCounter',
+          interactionType: { '@type': 'CommentAction' },
+          userInteractionCount: topic.replies ? topic.replies.length : 0
+        }
+      }
     });
-  }, [topic.title, topic.category, topic.initialPost, topicSlug]);
+  }, [topic.title, topic.category, topic.initialPost, topic.author.name, topic.replies, topicSlug]);
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-8 animate-in fade-in duration-300">
