@@ -32,6 +32,21 @@ export const DEFAULT_USER = INITIAL_USER;
 
 export const MOCK_VIDEOS: Video[] = [
   {
+    id: 'vid-pubg-morning',
+    title: 'Enjoying PUBG Mobile on a Good Morning',
+    shortDescription: 'Morning battle royale drops, hot loot rotations, tactical positioning, and squad survival in PUBG Mobile.',
+    description: 'Starting the day with some intense battle royale action in PUBG Mobile! Dropping in hot, securing early high-tier loot, tactical circle positioning, and squad survival gunfights on the battlegrounds. Official gameplay presentation from the Game Vault channel.',
+    game: 'PUBG Mobile',
+    uploadDate: 'Just now',
+    views: '1',
+    duration: '11:45',
+    youtubeId: 'O4jKXRh0HEY',
+    category: 'Gameplay',
+    isFeatured: true,
+    thumbnail: 'https://i.ytimg.com/vi/O4jKXRh0HEY/maxresdefault.jpg',
+    likes: 18
+  },
+  {
     id: 'vid-1',
     title: 'Elden Ring: Shadow of the Erdtree — Ultimate Deep Dive & Lore Analysis',
     shortDescription: 'Unpacking the mysterious Realm of Shadow, Messmer the Impaler, and the mechanical evolution of FromSoftware boss design.',
@@ -42,7 +57,6 @@ export const MOCK_VIDEOS: Video[] = [
     duration: '24:18',
     youtubeId: 'K_03fnT8j0A',
     category: 'Deep Dive',
-    isFeatured: true,
     thumbnail: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&auto=format&fit=crop&q=80',
     likes: 0
   },
@@ -115,20 +129,6 @@ export const MOCK_VIDEOS: Video[] = [
     category: 'Tech',
     thumbnail: 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=800&auto=format&fit=crop&q=80',
     likes: 0
-  },
-  {
-    id: 'vid-pubg-morning',
-    title: 'Enjoying PUBG Mobile on a Good Morning',
-    shortDescription: 'Morning battle royale drops, hot loot rotations, tactical positioning, and squad survival in PUBG Mobile.',
-    description: 'Starting the day with some intense battle royale action in PUBG Mobile! Dropping in hot, securing early high-tier loot, tactical circle positioning, and squad survival gunfights on the battlegrounds. Official gameplay presentation from the Game Vault channel.',
-    game: 'PUBG Mobile',
-    uploadDate: 'Just now',
-    views: '0',
-    duration: '11:45',
-    youtubeId: 'O4jKXRh0HEY',
-    category: 'Gameplay',
-    thumbnail: 'https://i.ytimg.com/vi/O4jKXRh0HEY/maxresdefault.jpg',
-    likes: 5
   }
 ];
 

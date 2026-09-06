@@ -67,6 +67,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
   // Game filtering state on Homepage
   const [selectedGenre, setSelectedGenre] = useState<GameGenre>('All');
   const [selectedPlatform, setSelectedPlatform] = useState<Platform>('All');
+  const [isPlayingInline, setIsPlayingInline] = useState(false);
 
   const genres: GameGenre[] = ['All', 'RPG', 'Action', 'Simulation', 'Multiplayer', 'Racing', 'Adventure'];
   const platforms: Platform[] = ['All', 'PC', 'PS5', 'Xbox', 'Switch'];
@@ -147,35 +148,53 @@ export const HomeView: React.FC<HomeViewProps> = ({
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
-            {/* Thumbnail / Video trigger */}
-            <div
-              onClick={() => onSelectVideo(featuredVideo)}
-              className="lg:col-span-7 relative group rounded-xl overflow-hidden cursor-pointer border border-white/10 aspect-video"
-            >
-              <img
-                src={featuredVideo.thumbnail}
-                alt={featuredVideo.title}
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-              />
-              <div className="absolute inset-0 bg-black/40 group-hover:bg-black/25 transition-colors" />
+            {/* Thumbnail / Video trigger or Inline Embedded YouTube Player */}
+            <div className="lg:col-span-7 relative group rounded-xl overflow-hidden border border-white/10 aspect-video shadow-2xl bg-black">
+              {isPlayingInline ? (
+                <iframe
+                  src={`https://www.youtube.com/embed/${featuredVideo.youtubeId}?autoplay=1&rel=0`}
+                  title={featuredVideo.title}
+                  className="w-full h-full"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                />
+              ) : (
+                <div
+                  onClick={() => setIsPlayingInline(true)}
+                  className="w-full h-full relative cursor-pointer group"
+                >
+                  <img
+                    src={featuredVideo.thumbnail}
+                    alt={featuredVideo.title}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-black/40 group-hover:bg-black/25 transition-colors" />
 
-              {/* Glowing Play Button */}
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-purple-600/90 group-hover:bg-purple-600 text-white flex items-center justify-center shadow-2xl shadow-purple-900/60 transition-all duration-300 transform group-hover:scale-110 border border-white/20">
-                  <Play className="w-8 h-8 sm:w-9 sm:h-9 fill-current ml-1" />
+                  {/* Glowing Play Button */}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-red-600 hover:bg-red-500 text-white flex items-center justify-center shadow-2xl shadow-red-900/60 transition-all duration-300 transform group-hover:scale-110 border border-white/20">
+                      <Play className="w-8 h-8 sm:w-9 sm:h-9 fill-current ml-1" />
+                    </div>
+                  </div>
+
+                  <div className="absolute bottom-3 right-3 px-2 py-1 bg-black/80 backdrop-blur-md rounded text-xs font-mono text-white border border-white/10">
+                    {featuredVideo.duration}
+                  </div>
+
+                  <div className="absolute top-3 left-3 px-2.5 py-1 bg-red-600/90 backdrop-blur-md rounded-full text-[11px] font-['Rajdhani'] font-bold uppercase tracking-wider text-white border border-white/20 flex items-center gap-1.5 shadow-lg">
+                    <Youtube className="w-3.5 h-3.5 fill-current" />
+                    <span>Watch Now</span>
+                  </div>
                 </div>
-              </div>
-
-              <div className="absolute bottom-3 right-3 px-2 py-1 bg-black/80 backdrop-blur-md rounded text-xs font-mono text-white border border-white/10">
-                {featuredVideo.duration}
-              </div>
+              )}
             </div>
 
             {/* Content text */}
             <div className="lg:col-span-5 space-y-3.5">
               <div className="flex items-center gap-2">
-                <span className="px-2.5 py-0.5 text-[11px] font-['Rajdhani'] font-bold uppercase tracking-wider bg-purple-500/20 text-purple-300 rounded-full border border-purple-500/30">
-                  {featuredVideo.category}
+                <span className="px-2.5 py-0.5 text-[11px] font-['Rajdhani'] font-bold uppercase tracking-wider bg-red-500/20 text-red-300 rounded-full border border-red-500/30 flex items-center gap-1">
+                  <Youtube className="w-3 h-3 fill-current" />
+                  Latest Channel Upload
                 </span>
                 <span className="text-xs text-cyan-400 font-medium">{featuredVideo.game}</span>
               </div>
@@ -200,20 +219,37 @@ export const HomeView: React.FC<HomeViewProps> = ({
                 <span>{featuredVideo.uploadDate}</span>
               </div>
 
-              <div className="pt-2 flex items-center gap-3">
+              <div className="pt-2 flex flex-wrap items-center gap-2.5">
+                {isPlayingInline ? (
+                  <button
+                    onClick={() => setIsPlayingInline(false)}
+                    className="px-4 py-2.5 bg-white/10 hover:bg-white/20 text-white rounded-full text-xs font-['Rajdhani'] font-bold uppercase tracking-wider transition-all border border-white/20"
+                  >
+                    Close Player
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => setIsPlayingInline(true)}
+                    className="px-5 py-2.5 bg-red-600 hover:bg-red-500 text-white rounded-full text-xs font-['Rajdhani'] font-bold uppercase tracking-wider transition-all shadow-lg shadow-red-900/30 flex items-center gap-2"
+                  >
+                    <Play className="w-3.5 h-3.5 fill-current" />
+                    Play on Homepage
+                  </button>
+                )}
+
                 <button
                   onClick={() => onSelectVideo(featuredVideo)}
-                  className="px-5 py-2.5 bg-purple-600 hover:bg-purple-500 text-white rounded-full text-xs font-['Rajdhani'] font-bold uppercase tracking-wider transition-all shadow-lg shadow-purple-900/30 flex items-center gap-2"
+                  className="px-4 py-2.5 bg-purple-600/80 hover:bg-purple-600 text-white rounded-full text-xs font-['Rajdhani'] font-bold uppercase tracking-wider transition-all shadow-lg shadow-purple-900/30 flex items-center gap-1.5"
                 >
-                  <Play className="w-3.5 h-3.5 fill-current" />
-                  Play Video Now
+                  <span>Full Video Page</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
                 </button>
 
                 <a
                   href={`https://www.youtube.com/watch?v=${featuredVideo.youtubeId}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-4 py-2.5 bg-white/5 hover:bg-white/10 text-gray-200 hover:text-white rounded-full text-xs font-semibold border border-white/10 backdrop-blur-md transition-all flex items-center gap-1.5"
+                  className="px-3.5 py-2.5 bg-white/5 hover:bg-white/10 text-gray-200 hover:text-white rounded-full text-xs font-semibold border border-white/10 backdrop-blur-md transition-all flex items-center gap-1.5"
                 >
                   <Youtube className="w-4 h-4 text-red-500 fill-current" />
                   YouTube Link
@@ -246,7 +282,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
 
         {/* Video Cards Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {videos.slice(0, 6).map((vid) => (
+          {videos.map((vid) => (
             <div
               key={vid.id}
               onClick={() => onSelectVideo(vid)}
