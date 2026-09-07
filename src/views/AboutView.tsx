@@ -10,16 +10,18 @@ import {
   Users, 
   Sparkles, 
   CheckCircle2, 
-  ExternalLink 
+  ExternalLink,
+  Download
 } from 'lucide-react';
 import { VaultLogo } from '../components/VaultLogo';
 import { YOUTUBE_CHANNEL } from '../lib/constants';
 
 interface AboutViewProps {
   onNavigateTab: (tab: any) => void;
+  onOpenBrandKit?: () => void;
 }
 
-export const AboutView: React.FC<AboutViewProps> = ({ onNavigateTab }) => {
+export const AboutView: React.FC<AboutViewProps> = ({ onNavigateTab, onOpenBrandKit }) => {
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-16 pb-24">
       {/* Brand Hero Introduction */}
