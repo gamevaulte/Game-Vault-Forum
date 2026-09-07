@@ -65,6 +65,8 @@ export interface Article {
   views: string;
   likes: number;
   comments?: ArticleComment[];
+  relatedArticleId?: string;
+  relatedArticlePrompt?: string;
 }
 
 export interface PostComment {

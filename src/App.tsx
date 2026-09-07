@@ -816,6 +816,8 @@ export default function App() {
         return (
           <ArticlePageView
             article={article}
+            articles={MOCK_ARTICLES}
+            onSelectArticle={(a) => navigate(`/articles/${getSeoSlug(a)}`)}
             isLiked={isLiked}
             likeCount={likeCount}
             isBookmarked={isBookmarked}

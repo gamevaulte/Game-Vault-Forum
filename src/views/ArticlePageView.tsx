@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { getSeoSlug, updatePageSeo } from '../lib/seo';
 import { 
-  ArrowLeft, 
+  ArrowLeft,
+  ArrowRight,
+  BookOpen,
   Calendar, 
   Clock, 
   ThumbsUp, 
@@ -19,6 +21,8 @@ import { Article, PostComment, UserAccount, PageTab } from '../types';
 
 interface ArticlePageViewProps {
   article: Article;
+  articles?: Article[];
+  onSelectArticle?: (article: Article) => void;
   isLiked: boolean;
   likeCount: number;
   isBookmarked: boolean;
@@ -39,6 +43,8 @@ interface ArticlePageViewProps {
 
 export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
   article,
+  articles,
+  onSelectArticle,
   isLiked,
   likeCount,
   isBookmarked,
@@ -70,6 +76,94 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
   };
 
   const articleSlug = getSeoSlug(article);
+
+  // Resolve closely related article for internal linking structure
+  const relatedArticle = (articles && article.relatedArticleId
+    ? articles.find((a) => a.id === article.relatedArticleId)
+    : null) || articles?.find((a) => a.id !== article.id);
+  const relatedArticleSlug = relatedArticle ? getSeoSlug(relatedArticle) : '';
+
+  const renderBoldText = (text: string, keyPrefix: string) => {
+    const boldRegex = /\*\*([^*]+)\*\*/g;
+    const parts: React.ReactNode[] = [];
+    let lastIndex = 0;
+    let match: RegExpExecArray | null;
+
+    while ((match = boldRegex.exec(text)) !== null) {
+      const [fullMatch, boldText] = match;
+      const startIndex = match.index;
+
+      if (startIndex > lastIndex) {
+        parts.push(text.substring(lastIndex, startIndex));
+      }
+
+      parts.push(
+        <strong key={`${keyPrefix}-bold-${startIndex}`} className="font-bold text-white">
+          {boldText}
+        </strong>
+      );
+
+      lastIndex = startIndex + fullMatch.length;
+    }
+
+    if (lastIndex < text.length) {
+      parts.push(text.substring(lastIndex));
+    }
+
+    return parts;
+  };
+
+  const renderFormattedText = (text: string) => {
+    const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
+    const parts: React.ReactNode[] = [];
+    let lastIndex = 0;
+    let match: RegExpExecArray | null;
+
+    while ((match = linkRegex.exec(text)) !== null) {
+      const [fullMatch, linkText, url] = match;
+      const startIndex = match.index;
+
+      if (startIndex > lastIndex) {
+        parts.push(renderBoldText(text.substring(lastIndex, startIndex), `t-${startIndex}`));
+      }
+
+      const isInternalArticle = url.startsWith('/articles/') || url.includes('gamevault.forum/articles/');
+
+      parts.push(
+        <a
+          key={`link-${startIndex}`}
+          href={url}
+          onClick={(e) => {
+            if (isInternalArticle && onSelectArticle && articles) {
+              e.preventDefault();
+              const slug = url.replace(/^.*\/articles\//, '').replace(/\/$/, '');
+              const target = articles.find(
+                (a) => a.id.toLowerCase() === slug.toLowerCase() || getSeoSlug(a).toLowerCase() === slug.toLowerCase()
+              );
+              if (target) {
+                onSelectArticle(target);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              } else {
+                window.location.href = url;
+              }
+            }
+          }}
+          className="inline-flex items-baseline gap-1 font-semibold text-cyan-400 hover:text-cyan-300 underline decoration-cyan-500/60 underline-offset-4 transition-colors hover:decoration-cyan-300"
+        >
+          <span>{linkText}</span>
+          <ArrowRight className="w-3.5 h-3.5 inline-block self-center opacity-80 shrink-0" />
+        </a>
+      );
+
+      lastIndex = startIndex + fullMatch.length;
+    }
+
+    if (lastIndex < text.length) {
+      parts.push(renderBoldText(text.substring(lastIndex), `end-${lastIndex}`));
+    }
+
+    return parts;
+  };
 
   useEffect(() => {
     updatePageSeo({
@@ -180,13 +274,25 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
           const trimmed = block.trim();
           if (!trimmed) return null;
           if (trimmed.startsWith('## ')) {
+            const headingText = trimmed.replace(/^##\s*/, '');
+            const isRecommendation = headingText.toLowerCase().includes('recommended');
             return (
               <h2
                 key={idx}
-                className="text-2xl sm:text-3xl font-bold font-['Rajdhani'] uppercase tracking-wider text-white pt-8 pb-2 border-b border-white/10 flex items-center gap-3"
+                className={`text-2xl sm:text-3xl font-bold font-['Rajdhani'] uppercase tracking-wider pt-8 pb-2 border-b flex items-center gap-3 ${
+                  isRecommendation
+                    ? 'text-purple-300 border-purple-500/30'
+                    : 'text-white border-white/10'
+                }`}
               >
-                <span className="w-2.5 h-2.5 rounded-full bg-red-500 inline-block shrink-0 shadow-lg shadow-red-500/50" />
-                <span>{trimmed.replace(/^##\s*/, '')}</span>
+                <span
+                  className={`w-2.5 h-2.5 rounded-full inline-block shrink-0 shadow-lg ${
+                    isRecommendation
+                      ? 'bg-purple-400 shadow-purple-500/60'
+                      : 'bg-red-500 shadow-red-500/50'
+                  }`}
+                />
+                <span>{headingText}</span>
               </h2>
             );
           }
@@ -206,7 +312,7 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
                 {trimmed.split('\n').map((line, lIdx) => (
                   <li key={lIdx} className="flex items-start gap-3 text-gray-300">
                     <span className="w-1.5 h-1.5 rounded-full bg-purple-400 mt-2.5 shrink-0 shadow-sm shadow-purple-500/50" />
-                    <span>{line.trim().replace(/^[•\-]\s*/, '')}</span>
+                    <span>{renderFormattedText(line.trim().replace(/^[•\-]\s*/, ''))}</span>
                   </li>
                 ))}
               </ul>
@@ -214,11 +320,121 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
           }
           return (
             <p key={idx} className="leading-relaxed whitespace-pre-line text-gray-300">
-              {trimmed}
+              {renderFormattedText(trimmed)}
             </p>
           );
         })}
       </div>
+
+      {/* Internal Linking Structure: Suggested Next Read Card */}
+      {relatedArticle && (
+        <section
+          id={`suggested-article-${relatedArticle.id}`}
+          className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-purple-950/35 via-[#0d1020] to-[#07080f] border border-purple-500/30 p-6 sm:p-8 shadow-2xl space-y-6 my-10"
+        >
+          {/* Ambient Glow Effects */}
+          <div className="absolute -top-24 -right-24 w-64 h-64 bg-purple-600/15 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-cyan-600/15 rounded-full blur-3xl pointer-events-none" />
+
+          {/* Section Header */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 relative z-10 border-b border-white/10 pb-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-purple-600/20 border border-purple-500/40 flex items-center justify-center text-purple-300 shadow-md shadow-purple-600/20">
+                <BookOpen className="w-5 h-5" />
+              </div>
+              <div>
+                <span className="text-[11px] font-['Rajdhani'] font-bold uppercase tracking-widest text-purple-400 block">
+                  Game Vault Internal Linking • Editorial Suggestion
+                </span>
+                <h3 className="text-xl sm:text-2xl font-bold font-['Rajdhani'] uppercase tracking-wider text-white">
+                  Suggested Next Read
+                </h3>
+              </div>
+            </div>
+            <span className="px-3 py-1 text-xs font-semibold font-['Rajdhani'] uppercase tracking-wider bg-purple-500/15 text-purple-300 border border-purple-500/30 rounded-full self-start sm:self-auto flex items-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5 text-purple-400" />
+              Closely Related Topic
+            </span>
+          </div>
+
+          {/* Contextual Recommendation Prompt */}
+          <div className="relative z-10 p-4 rounded-xl bg-white/[0.03] border border-white/5 space-y-1">
+            <p className="text-xs font-['Rajdhani'] font-bold uppercase tracking-wider text-gray-400">
+              Why You Should Check This Out Next:
+            </p>
+            <p className="text-sm sm:text-base text-gray-200 font-['Inter'] leading-relaxed italic">
+              "{article.relatedArticlePrompt || 'Continue your exploration with this companion analysis exploring video game design, community longevity, and player mastery.'}"
+            </p>
+          </div>
+
+          {/* Interactive Recommended Article Card */}
+          <a
+            href={`/articles/${relatedArticleSlug}`}
+            onClick={(e) => {
+              if (onSelectArticle) {
+                e.preventDefault();
+                onSelectArticle(relatedArticle);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }
+            }}
+            className="group block relative z-10 rounded-2xl bg-white/[0.03] hover:bg-white/[0.06] border border-white/10 hover:border-purple-500/50 p-4 sm:p-5 transition-all duration-300 hover:shadow-2xl hover:shadow-purple-950/40 cursor-pointer"
+          >
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-5 items-center">
+              {/* Featured Image */}
+              <div className="md:col-span-4 relative aspect-[16/10] rounded-xl overflow-hidden bg-black border border-white/10">
+                <img
+                  src={relatedArticle.featuredImage}
+                  alt={relatedArticle.title}
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  loading="lazy"
+                />
+                <span className="absolute top-2 left-2 px-2.5 py-0.5 text-[10px] font-bold font-['Rajdhani'] uppercase tracking-wider bg-black/80 backdrop-blur-md text-cyan-300 rounded border border-white/15">
+                  {relatedArticle.category}
+                </span>
+              </div>
+
+              {/* Text Information */}
+              <div className="md:col-span-8 space-y-2.5">
+                <div className="flex flex-wrap items-center gap-3 text-xs text-gray-400 font-mono">
+                  <span className="flex items-center gap-1.5">
+                    <Calendar className="w-3.5 h-3.5 text-purple-400" />
+                    {relatedArticle.publicationDate}
+                  </span>
+                  <span>•</span>
+                  <span className="flex items-center gap-1.5">
+                    <Clock className="w-3.5 h-3.5 text-purple-400" />
+                    {relatedArticle.readingTime}
+                  </span>
+                </div>
+
+                <h4 className="text-lg sm:text-xl font-bold font-['Space_Grotesk'] text-white group-hover:text-purple-300 transition-colors leading-snug">
+                  {relatedArticle.title}
+                </h4>
+
+                <p className="text-xs sm:text-sm text-gray-300 line-clamp-2 leading-relaxed font-['Inter']">
+                  {relatedArticle.excerpt}
+                </p>
+
+                <div className="pt-2 flex flex-wrap items-center justify-between gap-3 border-t border-white/5">
+                  <div className="flex items-center gap-2">
+                    <img
+                      src={relatedArticle.author.avatar}
+                      alt={relatedArticle.author.name}
+                      className="w-5 h-5 rounded-full object-cover border border-purple-500/40"
+                    />
+                    <span className="text-xs text-gray-300 font-medium">By {relatedArticle.author.name}</span>
+                  </div>
+
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-purple-600/25 group-hover:bg-purple-600 text-purple-300 group-hover:text-white border border-purple-500/30 text-xs font-['Rajdhani'] font-bold uppercase tracking-wider transition-all duration-200">
+                    <span>Check Out Article</span>
+                    <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />
+                  </span>
+                </div>
+              </div>
+            </div>
+          </a>
+        </section>
+      )}
 
       {/* Article Tags */}
       <div className="flex flex-wrap items-center gap-2 pt-6 border-t border-white/10">
