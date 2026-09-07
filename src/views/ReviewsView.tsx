@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { Star, Check, AlertCircle, Calendar, ArrowRight, ShieldCheck } from 'lucide-react';
 import { Review } from '../types';
 
@@ -7,18 +7,16 @@ interface ReviewsViewProps {
   onSelectReview: (r: Review) => void;
 }
 
-const ReviewsViewComponent: React.FC<ReviewsViewProps> = ({ reviews, onSelectReview }) => {
+export const ReviewsView: React.FC<ReviewsViewProps> = ({ reviews, onSelectReview }) => {
   const [scoreFilter, setScoreFilter] = useState<string>('All');
 
-  const filteredReviews = useMemo(() => {
-    return reviews.filter((r) => {
-      if (scoreFilter === 'All') return true;
-      if (scoreFilter === 'Masterpiece') return r.score >= 9.5;
-      if (scoreFilter === 'Excellent') return r.score >= 9.0 && r.score < 9.5;
-      if (scoreFilter === 'Very Good') return r.score >= 8.0 && r.score < 9.0;
-      return true;
-    });
-  }, [reviews, scoreFilter]);
+  const filteredReviews = reviews.filter((r) => {
+    if (scoreFilter === 'All') return true;
+    if (scoreFilter === 'Masterpiece') return r.score >= 9.5;
+    if (scoreFilter === 'Excellent') return r.score >= 9.0 && r.score < 9.5;
+    if (scoreFilter === 'Very Good') return r.score >= 8.0 && r.score < 9.0;
+    return true;
+  });
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-12 pb-24">
@@ -72,8 +70,6 @@ const ReviewsViewComponent: React.FC<ReviewsViewProps> = ({ reviews, onSelectRev
                   <img
                     src={rev.artwork}
                     alt={rev.gameTitle}
-                    loading="lazy"
-                    decoding="async"
                     className="w-18 h-22 object-cover rounded-xl border border-[#262c45] shrink-0"
                   />
                   <div>
@@ -139,5 +135,3 @@ const ReviewsViewComponent: React.FC<ReviewsViewProps> = ({ reviews, onSelectRev
     </div>
   );
 };
-
-export const ReviewsView = React.memo(ReviewsViewComponent);

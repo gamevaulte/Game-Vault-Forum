@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { 
   Play, 
   Youtube, 
@@ -48,7 +48,7 @@ interface HomeViewProps {
   onOpenNewTopic: () => void;
 }
 
-const HomeViewComponent: React.FC<HomeViewProps> = ({
+export const HomeView: React.FC<HomeViewProps> = ({
   videos,
   games,
   articles,
@@ -72,17 +72,13 @@ const HomeViewComponent: React.FC<HomeViewProps> = ({
   const genres: GameGenre[] = ['All', 'RPG', 'Action', 'Simulation', 'Multiplayer', 'Racing', 'Adventure'];
   const platforms: Platform[] = ['All', 'PC', 'PS5', 'Xbox', 'Switch'];
 
-  const filteredGames = useMemo(() => {
-    return games.filter((g) => {
-      const genreMatch = selectedGenre === 'All' || g.genre === selectedGenre;
-      const platformMatch = selectedPlatform === 'All' || g.platforms.includes(selectedPlatform);
-      return genreMatch && platformMatch;
-    });
-  }, [games, selectedGenre, selectedPlatform]);
+  const filteredGames = games.filter((g) => {
+    const genreMatch = selectedGenre === 'All' || g.genre === selectedGenre;
+    const platformMatch = selectedPlatform === 'All' || g.platforms.includes(selectedPlatform);
+    return genreMatch && platformMatch;
+  });
 
-  const featuredVideo = useMemo(() => {
-    return videos.find((v) => v.isFeatured) || videos[0];
-  }, [videos]);
+  const featuredVideo = videos.find((v) => v.isFeatured) || videos[0];
 
   return (
     <div className="space-y-20 sm:space-y-28 pb-20">
@@ -170,8 +166,6 @@ const HomeViewComponent: React.FC<HomeViewProps> = ({
                   <img
                     src={featuredVideo.thumbnail}
                     alt={featuredVideo.title}
-                    fetchPriority="high"
-                    decoding="async"
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-black/40 group-hover:bg-black/25 transition-colors" />
@@ -299,8 +293,6 @@ const HomeViewComponent: React.FC<HomeViewProps> = ({
                 <img
                   src={vid.thumbnail}
                   alt={vid.title}
-                  loading="lazy"
-                  decoding="async"
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors duration-300" />
@@ -395,8 +387,6 @@ const HomeViewComponent: React.FC<HomeViewProps> = ({
                 <img
                   src={game.artwork}
                   alt={game.title}
-                  loading="lazy"
-                  decoding="async"
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
@@ -475,8 +465,6 @@ const HomeViewComponent: React.FC<HomeViewProps> = ({
                 <img
                   src={art.featuredImage}
                   alt={art.title}
-                  loading="lazy"
-                  decoding="async"
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
                 <span className="absolute top-2.5 left-2.5 px-2.5 py-0.5 text-[10px] font-['Rajdhani'] font-bold uppercase tracking-wider bg-black/75 backdrop-blur-md text-purple-300 rounded-full border border-purple-500/30">
@@ -537,8 +525,6 @@ const HomeViewComponent: React.FC<HomeViewProps> = ({
                   <img
                     src={rev.artwork}
                     alt={rev.gameTitle}
-                    loading="lazy"
-                    decoding="async"
                     className="w-14 h-16 object-cover rounded-xl border border-white/10"
                   />
                   <div className="flex flex-col items-end">
@@ -603,8 +589,6 @@ const HomeViewComponent: React.FC<HomeViewProps> = ({
                 <img
                   src={gd.image}
                   alt={gd.title}
-                  loading="lazy"
-                  decoding="async"
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
                 <span className="absolute top-2.5 left-2.5 px-2.5 py-0.5 text-[10px] font-['Rajdhani'] font-bold uppercase tracking-wider bg-black/80 backdrop-blur-md text-emerald-300 rounded-full border border-emerald-500/30">
@@ -680,8 +664,6 @@ const HomeViewComponent: React.FC<HomeViewProps> = ({
                   <img
                     src={topic.author.avatar}
                     alt={topic.author.name}
-                    loading="lazy"
-                    decoding="async"
                     className="w-9 h-9 rounded-full object-cover border border-purple-500/40 shrink-0 mt-0.5 sm:mt-0"
                   />
                   <div>
@@ -754,5 +736,3 @@ const HomeViewComponent: React.FC<HomeViewProps> = ({
     </div>
   );
 };
-
-export const HomeView = React.memo(HomeViewComponent);

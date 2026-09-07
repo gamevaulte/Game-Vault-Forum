@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { BookOpen, Clock, Calendar, User, ArrowRight, Tag } from 'lucide-react';
 import { Article } from '../types';
 
@@ -7,7 +7,7 @@ interface ArticlesViewProps {
   onSelectArticle: (a: Article) => void;
 }
 
-const ArticlesViewComponent: React.FC<ArticlesViewProps> = ({ articles, onSelectArticle }) => {
+export const ArticlesView: React.FC<ArticlesViewProps> = ({ articles, onSelectArticle }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
 
   const categories = [
@@ -22,14 +22,12 @@ const ArticlesViewComponent: React.FC<ArticlesViewProps> = ({ articles, onSelect
     'Gaming Stories'
   ];
 
-  const filteredArticles = useMemo(() => {
-    return articles.filter((a) => {
-      if (selectedCategory === 'All') return true;
-      return a.category === selectedCategory;
-    });
-  }, [articles, selectedCategory]);
+  const filteredArticles = articles.filter((a) => {
+    if (selectedCategory === 'All') return true;
+    return a.category === selectedCategory;
+  });
 
-  const leadArticle = useMemo(() => articles[0], [articles]);
+  const leadArticle = articles[0];
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-12 pb-24">
@@ -58,7 +56,6 @@ const ArticlesViewComponent: React.FC<ArticlesViewProps> = ({ articles, onSelect
               <img
                 src={leadArticle.featuredImage}
                 alt={leadArticle.title}
-                decoding="async"
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               />
               <span className="absolute top-3 left-3 px-2.5 py-0.5 text-xs font-['Rajdhani'] font-bold uppercase tracking-wider bg-black/80 backdrop-blur-md text-purple-300 rounded border border-purple-500/30">
@@ -88,8 +85,6 @@ const ArticlesViewComponent: React.FC<ArticlesViewProps> = ({ articles, onSelect
                 <img
                   src={leadArticle.author.avatar}
                   alt={leadArticle.author.name}
-                  loading="lazy"
-                  decoding="async"
                   className="w-8 h-8 rounded-full object-cover border border-purple-500/50"
                 />
                 <div>
@@ -138,8 +133,6 @@ const ArticlesViewComponent: React.FC<ArticlesViewProps> = ({ articles, onSelect
               <img
                 src={art.featuredImage}
                 alt={art.title}
-                loading="lazy"
-                decoding="async"
                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
               />
               <span className="absolute top-2.5 left-2.5 px-2 py-0.5 text-[10px] font-['Rajdhani'] font-bold uppercase tracking-wider bg-black/80 backdrop-blur-md text-purple-300 rounded border border-purple-500/30">
@@ -162,8 +155,6 @@ const ArticlesViewComponent: React.FC<ArticlesViewProps> = ({ articles, onSelect
                   <img
                     src={art.author.avatar}
                     alt={art.author.name}
-                    loading="lazy"
-                    decoding="async"
                     className="w-6 h-6 rounded-full object-cover border border-purple-500/40"
                   />
                   <span>{art.author.name}</span>
@@ -177,5 +168,3 @@ const ArticlesViewComponent: React.FC<ArticlesViewProps> = ({ articles, onSelect
     </div>
   );
 };
-
-export const ArticlesView = React.memo(ArticlesViewComponent);

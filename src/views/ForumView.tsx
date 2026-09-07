@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { 
   MessageSquare, 
   Pin, 
@@ -22,7 +22,7 @@ interface ForumViewProps {
   onOpenGuidelines: () => void;
 }
 
-const ForumViewComponent: React.FC<ForumViewProps> = ({
+export const ForumView: React.FC<ForumViewProps> = ({
   topics,
   onSelectTopic,
   onOpenNewTopic,
@@ -31,39 +31,34 @@ const ForumViewComponent: React.FC<ForumViewProps> = ({
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
 
-  const filteredTopics = useMemo(() => {
-    return topics.filter((t) => {
-      const matchCategory =
-        selectedCategory === 'all' ||
-        t.category.toLowerCase().includes(
-          MOCK_FORUM_CATEGORIES.find((c) => c.id === selectedCategory)?.name.toLowerCase() || ''
-        ) ||
-        (selectedCategory === 'help' && t.category.includes('Help')) ||
-        (selectedCategory === 'community' && t.category.includes('Community'));
+  const filteredTopics = topics.filter((t) => {
+    const matchCategory =
+      selectedCategory === 'all' ||
+      t.category.toLowerCase().includes(
+        MOCK_FORUM_CATEGORIES.find((c) => c.id === selectedCategory)?.name.toLowerCase() || ''
+      ) ||
+      (selectedCategory === 'help' && t.category.includes('Help')) ||
+      (selectedCategory === 'community' && t.category.includes('Community'));
 
-      const matchSearch =
-        !searchQuery ||
-        t.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        t.tags.some((tag) => tag.toLowerCase().includes(searchQuery.toLowerCase())) ||
-        t.author.name.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchSearch =
+      !searchQuery ||
+      t.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      t.tags.some((tag) => tag.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      t.author.name.toLowerCase().includes(searchQuery.toLowerCase());
 
-      return matchCategory && matchSearch;
-    });
-  }, [topics, selectedCategory, searchQuery]);
+    return matchCategory && matchSearch;
+  });
 
-  const categoryCounts = useMemo(() => {
-    const counts: Record<string, number> = { all: topics.length };
-    MOCK_FORUM_CATEGORIES.forEach((c) => {
-      counts[c.id] = topics.filter(t => 
-        t.category.toLowerCase().includes(c.name.toLowerCase()) ||
-        (c.id === 'help' && t.category.includes('Help')) ||
-        (c.id === 'community' && t.category.includes('Community'))
-      ).length;
-    });
-    return counts;
-  }, [topics]);
-
-  const getCategoryCount = (catId: string) => categoryCounts[catId] ?? 0;
+  const getCategoryCount = (catId: string) => {
+    if (catId === 'all') return topics.length;
+    return topics.filter(t => 
+      t.category.toLowerCase().includes(
+        MOCK_FORUM_CATEGORIES.find(c => c.id === catId)?.name.toLowerCase() || ''
+      ) ||
+      (catId === 'help' && t.category.includes('Help')) ||
+      (catId === 'community' && t.category.includes('Community'))
+    ).length;
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10 pb-24">
@@ -192,8 +187,6 @@ const ForumViewComponent: React.FC<ForumViewProps> = ({
                   <img
                     src={topic.author.avatar}
                     alt={topic.author.name}
-                    loading="lazy"
-                    decoding="async"
                     className="w-10 h-10 rounded-full object-cover border border-white/10 shrink-0 mt-0.5"
                   />
                   <div className="space-y-1 flex-1">
@@ -248,5 +241,3 @@ const ForumViewComponent: React.FC<ForumViewProps> = ({
     </div>
   );
 };
-
-export const ForumView = React.memo(ForumViewComponent);

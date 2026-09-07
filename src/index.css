@@ -22,21 +22,7 @@
     font-family: var(--font-sans);
     scroll-behavior: smooth;
     background-color: #050507;
-    text-rendering: optimizeLegibility;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
   }
-
-  /* Optimize media and image rendering off the critical path */
-  img {
-    content-visibility: auto;
-  }
-}
-
-/* Off-screen rendering containment helper */
-.content-auto {
-  content-visibility: auto;
-  contain-intrinsic-size: 1px 400px;
 }
 
 /* Custom sleek scrollbar */

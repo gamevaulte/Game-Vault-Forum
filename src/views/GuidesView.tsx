@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { Compass, Clock, Lightbulb, ChevronRight, Gamepad2, Filter } from 'lucide-react';
 import { Guide } from '../types';
 
@@ -7,7 +7,7 @@ interface GuidesViewProps {
   onSelectGuide: (g: Guide) => void;
 }
 
-const GuidesViewComponent: React.FC<GuidesViewProps> = ({ guides, onSelectGuide }) => {
+export const GuidesView: React.FC<GuidesViewProps> = ({ guides, onSelectGuide }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>('All');
 
@@ -24,13 +24,11 @@ const GuidesViewComponent: React.FC<GuidesViewProps> = ({ guides, onSelectGuide 
 
   const difficulties = ['All', 'Beginner', 'Intermediate', 'Advanced'];
 
-  const filteredGuides = useMemo(() => {
-    return guides.filter((gd) => {
-      const matchCat = selectedCategory === 'All' || gd.category === selectedCategory;
-      const matchDiff = selectedDifficulty === 'All' || gd.difficulty === selectedDifficulty;
-      return matchCat && matchDiff;
-    });
-  }, [guides, selectedCategory, selectedDifficulty]);
+  const filteredGuides = guides.filter((gd) => {
+    const matchCat = selectedCategory === 'All' || gd.category === selectedCategory;
+    const matchDiff = selectedDifficulty === 'All' || gd.difficulty === selectedDifficulty;
+    return matchCat && matchDiff;
+  });
 
   const getDifficultyBadge = (diff: string) => {
     switch (diff) {
@@ -121,8 +119,6 @@ const GuidesViewComponent: React.FC<GuidesViewProps> = ({ guides, onSelectGuide 
                 <img
                   src={guide.image}
                   alt={guide.title}
-                  loading="lazy"
-                  decoding="async"
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
                 <span className={`absolute top-2.5 left-2.5 px-2 py-0.5 text-[10px] font-['Rajdhani'] font-bold uppercase tracking-wider rounded border ${getDifficultyBadge(guide.difficulty)}`}>
@@ -166,5 +162,3 @@ const GuidesViewComponent: React.FC<GuidesViewProps> = ({ guides, onSelectGuide 
     </div>
   );
 };
-
-export const GuidesView = React.memo(GuidesViewComponent);

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { Gamepad2, Search, Filter, Star, Tag, Monitor, Layers } from 'lucide-react';
 import { Game, GameGenre, Platform } from '../types';
 
@@ -7,7 +7,7 @@ interface GamesViewProps {
   onSelectGame: (g: Game) => void;
 }
 
-const GamesViewComponent: React.FC<GamesViewProps> = ({ games, onSelectGame }) => {
+export const GamesView: React.FC<GamesViewProps> = ({ games, onSelectGame }) => {
   const [selectedGenre, setSelectedGenre] = useState<GameGenre>('All');
   const [selectedPlatform, setSelectedPlatform] = useState<Platform>('All');
   const [searchQuery, setSearchQuery] = useState('');
@@ -27,19 +27,17 @@ const GamesViewComponent: React.FC<GamesViewProps> = ({ games, onSelectGame }) =
 
   const platforms: Platform[] = ['All', 'PC', 'PS5', 'Xbox', 'Switch'];
 
-  const filteredGames = useMemo(() => {
-    return games.filter((game) => {
-      const matchesGenre = selectedGenre === 'All' || game.genre === selectedGenre;
-      const matchesPlatform = selectedPlatform === 'All' || game.platforms.includes(selectedPlatform);
-      const matchesSearch =
-        !searchQuery ||
-        game.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        game.developer.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        game.tags.some((t) => t.toLowerCase().includes(searchQuery.toLowerCase()));
+  const filteredGames = games.filter((game) => {
+    const matchesGenre = selectedGenre === 'All' || game.genre === selectedGenre;
+    const matchesPlatform = selectedPlatform === 'All' || game.platforms.includes(selectedPlatform);
+    const matchesSearch =
+      !searchQuery ||
+      game.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      game.developer.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      game.tags.some((t) => t.toLowerCase().includes(searchQuery.toLowerCase()));
 
-      return matchesGenre && matchesPlatform && matchesSearch;
-    });
-  }, [games, selectedGenre, selectedPlatform, searchQuery]);
+    return matchesGenre && matchesPlatform && matchesSearch;
+  });
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10 pb-24">
@@ -152,8 +150,6 @@ const GamesViewComponent: React.FC<GamesViewProps> = ({ games, onSelectGame }) =
                   <img
                     src={game.artwork}
                     alt={game.title}
-                    loading="lazy"
-                    decoding="async"
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#10121d] via-transparent to-transparent" />
@@ -206,5 +202,3 @@ const GamesViewComponent: React.FC<GamesViewProps> = ({ games, onSelectGame }) =
     </div>
   );
 };
-
-export const GamesView = React.memo(GamesViewComponent);

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { Youtube, Play, Eye, Clock, Calendar, Filter, Sparkles, ExternalLink, CheckCircle2 } from 'lucide-react';
 import { Video } from '../types';
 import { YOUTUBE_CHANNEL } from '../lib/constants';
@@ -9,21 +9,17 @@ interface VideosViewProps {
   onSelectVideo: (v: Video) => void;
 }
 
-const VideosViewComponent: React.FC<VideosViewProps> = ({ videos, onSelectVideo }) => {
+export const VideosView: React.FC<VideosViewProps> = ({ videos, onSelectVideo }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
 
   const categories = ['All', 'Deep Dive', 'Gameplay', 'Review', 'Guide', 'Tech'];
 
-  const filteredVideos = useMemo(() => {
-    return videos.filter((v) => {
-      if (selectedCategory === 'All') return true;
-      return v.category === selectedCategory;
-    });
-  }, [videos, selectedCategory]);
+  const filteredVideos = videos.filter((v) => {
+    if (selectedCategory === 'All') return true;
+    return v.category === selectedCategory;
+  });
 
-  const featured = useMemo(() => {
-    return videos.find((v) => v.isFeatured) || videos[0];
-  }, [videos]);
+  const featured = videos.find((v) => v.isFeatured) || videos[0];
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-12 pb-24">
@@ -107,7 +103,6 @@ const VideosViewComponent: React.FC<VideosViewProps> = ({ videos, onSelectVideo 
             <img
               src={featured.thumbnail}
               alt={featured.title}
-              decoding="async"
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
             />
             <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors" />
@@ -204,8 +199,6 @@ const VideosViewComponent: React.FC<VideosViewProps> = ({ videos, onSelectVideo 
               <img
                 src={vid.thumbnail}
                 alt={vid.title}
-                loading="lazy"
-                decoding="async"
                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
               />
               <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors duration-300" />
@@ -243,5 +236,3 @@ const VideosViewComponent: React.FC<VideosViewProps> = ({ videos, onSelectVideo 
     </div>
   );
 };
-
-export const VideosView = React.memo(VideosViewComponent);
