@@ -915,10 +915,17 @@ export default function App() {
         return (
           <GamePageView
             game={game}
+            allGames={MOCK_GAMES}
+            allGuides={MOCK_GUIDES}
+            allVideos={MOCK_VIDEOS}
+            allReviews={MOCK_REVIEWS}
             isBookmarked={isBookmarked}
             onToggleBookmark={() => handleToggleBookmark('games', game.id, game.title)}
             onShare={() => handleShare(game.title, `/games/${gameSlug}`)}
             onFilterForumByGame={() => navigate('/forum')}
+            onSelectGame={(g) => navigate(`/games/${getSeoSlug(g)}`)}
+            onSelectGuide={(gd) => navigate(`/guides/${getSeoSlug(gd)}`)}
+            onSelectVideo={(v) => navigate(`/videos/${getSeoSlug(v)}`)}
             onBack={() => navigate('/games')}
             onNavigateTab={(t) => navigate(t === 'home' ? '/' : `/${t}`)}
           />
@@ -985,9 +992,12 @@ export default function App() {
         return (
           <GuidePageView
             guide={guide}
+            allGuides={MOCK_GUIDES}
             isBookmarked={isBookmarked}
             onToggleBookmark={() => handleToggleBookmark('guides', guide.id, guide.title)}
             onShare={() => handleShare(guide.title, `/guides/${guideSlug}`)}
+            onSelectGuide={(g) => navigate(`/guides/${getSeoSlug(g)}`)}
+            onFilterForumByGame={() => navigate('/forum')}
             onBack={() => navigate('/guides')}
             onNavigateTab={(t) => navigate(t === 'home' ? '/' : `/${t}`)}
           />
