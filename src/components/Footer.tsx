@@ -11,6 +11,7 @@ interface FooterProps {
   onOpenPrivacy?: () => void;
   onOpenTerms?: () => void;
   onOpenCookies?: () => void;
+  onOpenContact?: () => void;
 }
 
 export const Footer: React.FC<FooterProps> = ({
@@ -19,7 +20,8 @@ export const Footer: React.FC<FooterProps> = ({
   onOpenGuidelines,
   onOpenPrivacy,
   onOpenTerms,
-  onOpenCookies
+  onOpenCookies,
+  onOpenContact
 }) => {
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
@@ -41,7 +43,8 @@ export const Footer: React.FC<FooterProps> = ({
     { id: 'reviews', label: 'Reviews' },
     { id: 'guides', label: 'Guides' },
     { id: 'forum', label: 'Forum' },
-    { id: 'about', label: 'About' }
+    { id: 'about', label: 'About' },
+    { id: 'contact', label: 'Contact Us' }
   ];
 
   return (
@@ -148,6 +151,21 @@ export const Footer: React.FC<FooterProps> = ({
               </li>
               <li>
                 <a
+                  href="/contact"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if (onOpenContact) onOpenContact();
+                    else onSelectTab('contact');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  className="hover:text-cyan-300 transition-colors flex items-center gap-1.5 group text-left"
+                >
+                  <ChevronRight className="w-3 h-3 text-gray-600 group-hover:text-cyan-400 transition-colors" />
+                  <span>Contact Editorial Desk</span>
+                </a>
+              </li>
+              <li>
+                <a
                   href="/guidelines"
                   onClick={(e) => {
                     e.preventDefault();
@@ -233,8 +251,20 @@ export const Footer: React.FC<FooterProps> = ({
 
         {/* Bottom Bar: Copyright & Policies */}
         <div className="pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-500">
-          <p>© 2026 Game Vault Forum. All rights reserved.</p>
+          <p>© 2026 Game Vault Forum • Founded by Joel Ayuba. All rights reserved.</p>
           <div className="flex flex-wrap items-center gap-4 sm:gap-6">
+            <a 
+              href="/contact"
+              onClick={(e) => {
+                e.preventDefault();
+                if (onOpenContact) onOpenContact();
+                else onSelectTab('contact');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              className="hover:text-gray-300 transition-colors cursor-pointer"
+            >
+              Contact Us
+            </a>
             <a 
               href="/guidelines"
               onClick={(e) => {
@@ -277,6 +307,14 @@ export const Footer: React.FC<FooterProps> = ({
               className="hover:text-gray-300 transition-colors cursor-pointer"
             >
               Cookie Policy
+            </a>
+            <a 
+              href="/ads.txt"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-gray-300 transition-colors cursor-pointer text-gray-500 hover:text-purple-400 font-mono"
+            >
+              ads.txt
             </a>
             <a 
               href="/robots.txt"

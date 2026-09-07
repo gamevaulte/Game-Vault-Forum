@@ -10,6 +10,9 @@ Disallow: /register
 Disallow: /forum/new
 
 # Dedicated Crawlers
+User-agent: Mediapartners-Google
+Allow: /
+
 User-agent: Googlebot
 Allow: /
 Disallow: /profile

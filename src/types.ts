@@ -1,4 +1,4 @@
-export type PageTab = 'home' | 'videos' | 'games' | 'articles' | 'reviews' | 'guides' | 'forum' | 'about';
+export type PageTab = 'home' | 'videos' | 'games' | 'articles' | 'reviews' | 'guides' | 'forum' | 'about' | 'contact';
 
 export type GameGenre = 
   | 'All'

@@ -5,7 +5,7 @@ import { PageTab } from '../types';
 interface GuidelinesPageViewProps {
   onBack: () => void;
   onNavigateTab: (tab: PageTab) => void;
-  onNavigateLegal?: (page: 'guidelines' | 'privacy' | 'terms' | 'cookies') => void;
+  onNavigateLegal?: (page: 'guidelines' | 'privacy' | 'terms' | 'cookies' | 'contact') => void;
 }
 
 export const GuidelinesPageView: React.FC<GuidelinesPageViewProps> = ({ onBack, onNavigateTab, onNavigateLegal }) => {
@@ -43,6 +43,12 @@ export const GuidelinesPageView: React.FC<GuidelinesPageViewProps> = ({ onBack, 
             className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
           >
             Cookie Policy
+          </button>
+          <button
+            onClick={() => onNavigateLegal?.('contact') || onNavigateTab('contact')}
+            className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
+          >
+            Contact Us
           </button>
         </div>
       </div>

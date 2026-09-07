@@ -1,11 +1,11 @@
 import React from 'react';
-import { ArrowLeft, Cookie, Info, ToggleLeft, Database, Sliders, ShieldCheck, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, Cookie, Info, ToggleLeft, Database, Sliders, ShieldCheck, CheckCircle2, Megaphone, ExternalLink } from 'lucide-react';
 import { PageTab } from '../types';
 
 interface CookiePolicyViewProps {
   onBack: () => void;
   onNavigateTab: (tab: PageTab) => void;
-  onNavigateLegal?: (page: 'guidelines' | 'privacy' | 'terms' | 'cookies') => void;
+  onNavigateLegal?: (page: 'guidelines' | 'privacy' | 'terms' | 'cookies' | 'contact') => void;
 }
 
 export const CookiePolicyView: React.FC<CookiePolicyViewProps> = ({
@@ -48,6 +48,12 @@ export const CookiePolicyView: React.FC<CookiePolicyViewProps> = ({
           <span className="px-3 py-1.5 rounded-lg bg-purple-600/20 text-purple-300 border border-purple-500/30">
             Cookie Policy
           </span>
+          <button
+            onClick={() => onNavigateLegal?.('contact') || onNavigateTab('contact')}
+            className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
+          >
+            Contact Us
+          </button>
         </div>
       </div>
 
@@ -57,20 +63,20 @@ export const CookiePolicyView: React.FC<CookiePolicyViewProps> = ({
         <div className="border-b border-white/10 pb-6 space-y-3">
           <div className="flex items-center gap-2 text-purple-400 text-xs font-['Rajdhani'] font-bold uppercase tracking-wider">
             <Cookie className="w-5 h-5 text-purple-400" />
-            <span>Browser Storage & Cookie Disclosure</span>
+            <span>Browser Storage, Advertising Cookies & User Consent</span>
           </div>
           <h1 className="text-3xl sm:text-4xl font-['Space_Grotesk'] font-bold text-white tracking-tight">
             Game Vault Cookie Policy
           </h1>
           <div className="flex flex-wrap items-center gap-4 text-xs text-gray-400 font-mono">
-            <span>Last Updated: September 5, 2026</span>
+            <span>Last Updated: September 7, 2026</span>
             <span>•</span>
-            <span>Policy Status: Active</span>
+            <span>Policy Status: Active & AdSense Compliant</span>
             <span>•</span>
             <span>Operator: Game Vault Forum</span>
           </div>
           <p className="text-sm text-gray-300 leading-relaxed font-['Inter'] pt-2">
-            This Cookie Policy clarifies how Game Vault Forum utilizes HTTP cookies, browser local storage (<code className="px-1.5 py-0.5 rounded bg-white/10 text-purple-300 text-xs font-mono">localStorage</code>), and session mechanisms. We adhere to transparent, privacy-first design principles: we do not utilize invasive advertising trackers.
+            This Cookie Policy clarifies how Game Vault Forum utilizes HTTP cookies, browser local storage (<code className="px-1.5 py-0.5 rounded bg-white/10 text-purple-300 text-xs font-mono">localStorage</code>), and third-party advertising cookies including Google AdSense. We believe in transparency and providing clear user controls over personal data and tracking technologies.
           </p>
         </div>
 
@@ -83,21 +89,20 @@ export const CookiePolicyView: React.FC<CookiePolicyViewProps> = ({
               <span>1. What Are Cookies and Local Storage?</span>
             </h2>
             <p className="text-gray-300">
-              Cookies are small data files placed on your device by websites you visit. Similar technologies include web storage (<code className="px-1.5 py-0.5 rounded bg-white/10 text-purple-300 text-xs font-mono">localStorage</code> and <code className="px-1.5 py-0.5 rounded bg-white/10 text-purple-300 text-xs font-mono">sessionStorage</code>), which allow client-side web applications to remember your state, authentication status, and interaction preferences across visits without server lag.
+              Cookies are small text files placed on your computer or mobile device when you visit a website. Local storage (<code className="px-1.5 py-0.5 rounded bg-white/10 text-purple-300 text-xs font-mono">localStorage</code>) and session storage are modern HTML5 web technologies that store data directly within your browser client. These technologies allow websites to maintain your signed-in session, remember your interface preferences, ensure fast loading, and support authorized digital advertising services.
             </p>
           </section>
 
-          {/* Section 2 */}
+          {/* Section 2: Essential and Functional Storage */}
           <section className="space-y-4 p-5 sm:p-6 rounded-2xl bg-white/[0.02] border border-white/5">
             <h2 className="text-lg sm:text-xl font-bold font-['Rajdhani'] uppercase tracking-wider text-white flex items-center gap-2">
               <Database className="w-5 h-5 text-purple-400" />
-              <span>2. Storage Keys & Categories We Utilize</span>
+              <span>2. Essential & Functional Storage Technologies</span>
             </h2>
             <p className="text-gray-300">
-              Below is the comprehensive list of client-side storage technologies utilized on Game Vault Forum:
+              We utilize essential first-party storage to provide core services and authentication:
             </p>
 
-            {/* Storage Table */}
             <div className="overflow-x-auto rounded-xl border border-white/10">
               <table className="w-full text-left text-xs sm:text-sm">
                 <thead className="bg-white/5 text-gray-300 uppercase font-['Rajdhani'] tracking-wider border-b border-white/10">
@@ -114,6 +119,12 @@ export const CookiePolicyView: React.FC<CookiePolicyViewProps> = ({
                     <td className="py-3 px-4 text-emerald-400 font-semibold">Essential</td>
                     <td className="py-3 px-4 font-sans text-gray-300">Stores secure Firebase authentication credentials so you remain safely signed in across browser reloads.</td>
                     <td className="py-3 px-4">Persistent (until sign-out)</td>
+                  </tr>
+                  <tr className="hover:bg-white/[0.02]">
+                    <td className="py-3 px-4 font-bold text-purple-300">gv_cookie_consent_choice</td>
+                    <td className="py-3 px-4 text-emerald-400 font-semibold">Essential</td>
+                    <td className="py-3 px-4 font-sans text-gray-300">Records your cookie preferences and consent choice to comply with GDPR & ePrivacy regulations.</td>
+                    <td className="py-3 px-4">Persistent (1 year)</td>
                   </tr>
                   <tr className="hover:bg-white/[0.02]">
                     <td className="py-3 px-4 font-bold text-purple-300">gv_user_liked_*</td>
@@ -133,76 +144,108 @@ export const CookiePolicyView: React.FC<CookiePolicyViewProps> = ({
                     <td className="py-3 px-4 font-sans text-gray-300">Caches recently authored tactical threads and active replies locally for instant zero-latency loading.</td>
                     <td className="py-3 px-4">Persistent</td>
                   </tr>
-                  <tr className="hover:bg-white/[0.02]">
-                    <td className="py-3 px-4 font-bold text-purple-300">gv_post_comments_v2</td>
-                    <td className="py-3 px-4 text-cyan-400 font-semibold">Functional</td>
-                    <td className="py-3 px-4 font-sans text-gray-300">Stores real-time operative commentary published on articles and video dossiers.</td>
-                    <td className="py-3 px-4">Persistent</td>
-                  </tr>
                 </tbody>
               </table>
             </div>
           </section>
 
-          {/* Section 3 */}
-          <section className="space-y-3 p-5 sm:p-6 rounded-2xl bg-white/[0.02] border border-white/5">
+          {/* Section 3: Google AdSense & Third-Party Advertising Cookies (OFFICIAL AD SENSE COMPLIANCE) */}
+          <section className="space-y-4 p-5 sm:p-6 rounded-2xl bg-purple-950/20 border border-purple-500/30">
             <h2 className="text-lg sm:text-xl font-bold font-['Rajdhani'] uppercase tracking-wider text-white flex items-center gap-2">
-              <ShieldCheck className="w-5 h-5 text-emerald-400" />
-              <span>3. Zero Third-Party Tracking Pixels</span>
+              <Megaphone className="w-5 h-5 text-purple-400" />
+              <span>3. Google AdSense & Third-Party Advertising Cookies</span>
             </h2>
             <p className="text-gray-300">
-              Unlike mainstream gaming portals cluttered with surveillance advertising networks, <strong className="text-white">Game Vault Forum operates without third-party behavioral advertising cookies, affiliate ad beacons, or cross-site tracking pixels</strong>.
+              Game Vault Forum partners with Google AdSense and third-party advertising networks to display relevant advertisements. When you browse our platform, Google and its advertising partners may place cookies on your device to serve ads, frequency cap identical advertisements, and detect automated click fraud.
             </p>
-            <p className="text-sm text-gray-400">
-              When video dossiers are embedded from YouTube, we utilize privacy-enhanced mode parameters (<code className="px-1 py-0.5 rounded bg-white/10 text-cyan-300 text-xs">youtube-nocookie.com</code>) to restrict external profiling.
+
+            <div className="overflow-x-auto rounded-xl border border-white/10">
+              <table className="w-full text-left text-xs sm:text-sm">
+                <thead className="bg-white/5 text-gray-300 uppercase font-['Rajdhani'] tracking-wider border-b border-white/10">
+                  <tr>
+                    <th className="py-3 px-4">Cookie Name</th>
+                    <th className="py-3 px-4">Provider</th>
+                    <th className="py-3 px-4">Purpose & Function</th>
+                    <th className="py-3 px-4">Duration</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-white/5 text-gray-300 font-mono text-xs">
+                  <tr className="hover:bg-white/[0.02]">
+                    <td className="py-3 px-4 font-bold text-purple-300">__gads</td>
+                    <td className="py-3 px-4 text-gray-400">Google AdSense</td>
+                    <td className="py-3 px-4 font-sans text-gray-300">Used by Google to serve advertisements, measure ad interactions, and prevent malicious click activity.</td>
+                    <td className="py-3 px-4">13 months</td>
+                  </tr>
+                  <tr className="hover:bg-white/[0.02]">
+                    <td className="py-3 px-4 font-bold text-purple-300">__gpi</td>
+                    <td className="py-3 px-4 text-gray-400">Google AdSense</td>
+                    <td className="py-3 px-4 font-sans text-gray-300">Google Publisher Tag identifier used to measure impressions and report delivery performance.</td>
+                    <td className="py-3 px-4">13 months</td>
+                  </tr>
+                  <tr className="hover:bg-white/[0.02]">
+                    <td className="py-3 px-4 font-bold text-purple-300">IDE</td>
+                    <td className="py-3 px-4 text-gray-400">DoubleClick (Google)</td>
+                    <td className="py-3 px-4 font-sans text-gray-300">Used to measure the efficacy of advertisements and present targeted ads to users across websites.</td>
+                    <td className="py-3 px-4">1 year</td>
+                  </tr>
+                  <tr className="hover:bg-white/[0.02]">
+                    <td className="py-3 px-4 font-bold text-purple-300">test_cookie</td>
+                    <td className="py-3 px-4 text-gray-400">DoubleClick</td>
+                    <td className="py-3 px-4 font-sans text-gray-300">Transient session check to determine whether the user's browser supports cookies.</td>
+                    <td className="py-3 px-4">15 minutes</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <p className="text-xs text-gray-400 leading-relaxed">
+              Third-party vendors, including Google, use cookies to serve ads based on a user's prior visits to this website or other websites. Google's use of advertising cookies enables it and its partners to serve ads to our visitors based on their visits to Game Vault Forum and other sites across the internet.
             </p>
           </section>
 
-          {/* Section 4 */}
+          {/* Section 4: Managing Cookie Preferences */}
           <section className="space-y-3 p-5 sm:p-6 rounded-2xl bg-white/[0.02] border border-white/5">
             <h2 className="text-lg sm:text-xl font-bold font-['Rajdhani'] uppercase tracking-wider text-white flex items-center gap-2">
               <Sliders className="w-5 h-5 text-amber-400" />
-              <span>4. How to Manage or Clear Browser Storage</span>
+              <span>4. Managing Your Cookie Choices & Opt-Out Options</span>
             </h2>
             <p className="text-gray-300">
-              You retain full authority over your device storage. You can manage or clear cookies and local storage through your browser settings:
+              You possess complete control over your browser storage and advertising cookies:
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm">
               <div className="p-3.5 rounded-xl bg-black/30 border border-white/5 space-y-1">
-                <h4 className="font-bold text-white font-['Rajdhani'] uppercase">Google Chrome & Brave</h4>
-                <p className="text-gray-400">Settings &gt; Privacy and Security &gt; Third-party cookies &gt; Clear site data.</p>
+                <h4 className="font-bold text-white font-['Rajdhani'] uppercase">Google Ads Settings</h4>
+                <p className="text-gray-400">Personalize or disable interest-based ads via <a href="https://adssettings.google.com/" target="_blank" rel="noopener noreferrer" className="text-purple-400 hover:underline">Google Ads Settings</a>.</p>
               </div>
               <div className="p-3.5 rounded-xl bg-black/30 border border-white/5 space-y-1">
-                <h4 className="font-bold text-white font-['Rajdhani'] uppercase">Mozilla Firefox</h4>
-                <p className="text-gray-400">Settings &gt; Privacy &amp; Security &gt; Cookies and Site Data &gt; Clear Data.</p>
+                <h4 className="font-bold text-white font-['Rajdhani'] uppercase">Digital Advertising Alliance</h4>
+                <p className="text-gray-400">Opt out of third-party behavioral advertising at <a href="https://www.aboutads.info/choices/" target="_blank" rel="noopener noreferrer" className="text-cyan-400 hover:underline">aboutads.info/choices</a>.</p>
               </div>
               <div className="p-3.5 rounded-xl bg-black/30 border border-white/5 space-y-1">
-                <h4 className="font-bold text-white font-['Rajdhani'] uppercase">Apple Safari</h4>
-                <p className="text-gray-400">Preferences &gt; Privacy &gt; Manage Website Data &gt; Remove.</p>
+                <h4 className="font-bold text-white font-['Rajdhani'] uppercase">European Interactive Ad Alliance</h4>
+                <p className="text-gray-400">For EEA/UK residents, manage ad consent via <a href="https://www.youronlinechoices.eu/" target="_blank" rel="noopener noreferrer" className="text-emerald-400 hover:underline">youronlinechoices.eu</a>.</p>
               </div>
               <div className="p-3.5 rounded-xl bg-black/30 border border-white/5 space-y-1">
-                <h4 className="font-bold text-white font-['Rajdhani'] uppercase">Microsoft Edge</h4>
-                <p className="text-gray-400">Settings &gt; Cookies and site permissions &gt; Manage and delete cookies.</p>
+                <h4 className="font-bold text-white font-['Rajdhani'] uppercase">Browser Settings</h4>
+                <p className="text-gray-400">Block or clear third-party cookies directly via your browser's Privacy & Security settings.</p>
               </div>
             </div>
-            <p className="text-xs text-amber-300/80 pt-1">
-              *Note: Clearing essential local storage will log you out of your operative profile and reset your local bookmark cache until you sign in again.
-            </p>
           </section>
 
-          {/* Section 5 */}
+          {/* Section 5: Inquiries & Contact */}
           <section className="space-y-3 p-5 sm:p-6 rounded-2xl bg-white/[0.02] border border-white/5">
             <h2 className="text-lg sm:text-xl font-bold font-['Rajdhani'] uppercase tracking-wider text-white flex items-center gap-2">
               <Info className="w-5 h-5 text-purple-400" />
               <span>5. Inquiries & Technical Contact</span>
             </h2>
             <p className="text-gray-300">
-              For any questions regarding our storage practices or data protocols:
+              For any questions regarding our storage practices, cookie policies, or advertising compliance:
             </p>
             <div className="p-4 rounded-xl bg-black/40 border border-white/10 text-sm space-y-1 font-mono text-gray-300">
-              <p className="text-white font-bold font-['Rajdhani'] uppercase tracking-wider">Game Vault Technical Architecture</p>
-              <p>Contact: Joel Ayuba • Lead Developer & Creator</p>
-              <p>Email: <span className="text-purple-400">joelotis40@gmail.com</span></p>
+              <p className="text-white font-bold font-['Rajdhani'] uppercase tracking-wider">Game Vault Technical & Editorial Desk</p>
+              <p>Publisher: Joel Ayuba</p>
+              <p>Direct Email: <a href="mailto:joelotis40@gmail.com" className="text-purple-400 hover:underline">joelotis40@gmail.com</a></p>
+              <p>Online Form: <button onClick={() => onNavigateLegal?.('contact') || onNavigateTab('contact')} className="text-cyan-400 hover:underline cursor-pointer">Official Contact Desk (/contact)</button></p>
             </div>
           </section>
         </div>

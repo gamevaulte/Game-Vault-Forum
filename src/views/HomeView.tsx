@@ -30,6 +30,7 @@ import {
   PageTab
 } from '../types';
 import { YOUTUBE_CHANNEL } from '../lib/constants';
+import { AdBanner } from '../components/AdBanner';
 
 interface HomeViewProps {
   videos: Video[];
@@ -569,6 +570,11 @@ const HomeViewComponent: React.FC<HomeViewProps> = ({
             </div>
           ))}
         </div>
+      </section>
+
+      {/* Google AdSense Responsive Banner */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <AdBanner slot="home-mid-banner" format="horizontal" />
       </section>
 
       {/* 7. GAMING GUIDES & TIPS */}

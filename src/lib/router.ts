@@ -17,6 +17,7 @@ export type Route =
   | { type: 'topic'; id: string; slug?: string }
   | { type: 'new-topic' }
   | { type: 'about' }
+  | { type: 'contact' }
   | { type: 'profile' }
   | { type: 'guidelines' }
   | { type: 'privacy' }
@@ -72,6 +73,7 @@ export function parseRoute(rawPath: string): Route {
   }
 
   if (seg1 === 'about' || seg1 === 'about-game-vault') return { type: 'about' };
+  if (seg1 === 'contact' || seg1 === 'contact-us') return { type: 'contact' };
   if (seg1 === 'profile') return { type: 'profile' };
   if (seg1 === 'guidelines' || seg1 === 'community-guidelines') return { type: 'guidelines' };
   if (seg1 === 'privacy' || seg1 === 'privacy-policy') return { type: 'privacy' };
@@ -115,6 +117,8 @@ export function routeToUrl(route: Route): string {
       return '/forum/new';
     case 'about':
       return '/about';
+    case 'contact':
+      return '/contact';
     case 'profile':
       return '/profile';
     case 'guidelines':

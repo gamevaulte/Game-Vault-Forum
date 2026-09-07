@@ -18,6 +18,7 @@ import {
   UserCheck
 } from 'lucide-react';
 import { Article, PostComment, UserAccount, PageTab } from '../types';
+import { AdBanner } from '../components/AdBanner';
 
 interface ArticlePageViewProps {
   article: Article;
@@ -324,6 +325,11 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
             </p>
           );
         })}
+      </div>
+
+      {/* Google AdSense In-Article Ad Placement */}
+      <div className="my-8">
+        <AdBanner slot="article-mid-banner" format="horizontal" />
       </div>
 
       {/* Internal Linking Structure: Suggested Next Read Card */}

@@ -68,9 +68,15 @@
   </url>
   <url>
     <loc>https://www.gamevault.forum/cookies</loc>
-    <lastmod>2026-09-06</lastmod>
+    <lastmod>2026-09-07</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://www.gamevault.forum/contact</loc>
+    <lastmod>2026-09-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.gamevault.forum/videos/elden-ring-shadow-of-the-erdtree-ultimate-deep-dive-and-lore-analysis</loc>

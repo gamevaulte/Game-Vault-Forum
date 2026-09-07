@@ -44,6 +44,9 @@ import { GuidelinesPageView } from './views/GuidelinesPageView';
 import { PrivacyPolicyView } from './views/PrivacyPolicyView';
 import { TermsOfServiceView } from './views/TermsOfServiceView';
 import { CookiePolicyView } from './views/CookiePolicyView';
+import { ContactPageView } from './views/ContactPageView';
+import { CookieConsentBanner } from './components/CookieConsentBanner';
+import { AdBanner } from './components/AdBanner';
 
 // Firebase Auth & Firestore Backend
 import { onAuthStateChanged, signOut, User as FirebaseUser } from 'firebase/auth';
@@ -679,26 +682,34 @@ export default function App() {
         break;
       case 'privacy':
         updatePageSeo({
-          title: 'Privacy Policy | Game Vault Forum',
-          description: 'Review the Game Vault Forum Privacy Policy: our data protection practices, encryption standards, and user privacy rights.',
+          title: 'Privacy Policy & Google AdSense Disclosures | Game Vault Forum',
+          description: 'Review the Game Vault Forum Privacy Policy: data protection practices, Google AdSense third-party cookie disclosures, CCPA, GDPR, and ad opt-out controls.',
           canonicalPath: '/privacy',
           breadcrumbs: [{ name: 'Privacy Policy', path: '/privacy' }]
         });
         break;
       case 'terms':
         updatePageSeo({
-          title: 'Terms of Service | Game Vault Forum',
-          description: 'Review the Game Vault Forum Terms of Service: community rules, content ownership, and platform terms of use.',
+          title: 'Terms of Service & Advertising Standards | Game Vault Forum',
+          description: 'Review the Game Vault Forum Terms of Service: community rules, content ownership, advertising standards, and platform terms of use.',
           canonicalPath: '/terms',
           breadcrumbs: [{ name: 'Terms of Service', path: '/terms' }]
         });
         break;
       case 'cookies':
         updatePageSeo({
-          title: 'Cookie Policy & Browser Storage | Game Vault Forum',
-          description: 'Learn how Game Vault Forum utilizes browser local storage and essential session cookies without invasive third-party trackers.',
+          title: 'Cookie Policy & Advertising Technology Disclosures | Game Vault Forum',
+          description: 'Learn how Game Vault Forum utilizes browser local storage, essential cookies, and Google AdSense advertising cookies with full user consent controls.',
           canonicalPath: '/cookies',
           breadcrumbs: [{ name: 'Cookie Policy', path: '/cookies' }]
+        });
+        break;
+      case 'contact':
+        updatePageSeo({
+          title: 'Contact Editorial Desk & Publisher | Game Vault Forum',
+          description: 'Contact Game Vault Forum: inquiries regarding editorial coverage, Google AdSense advertising, review copies, fact corrections, and DMCA notices.',
+          canonicalPath: '/contact',
+          breadcrumbs: [{ name: 'Contact Us', path: '/contact' }]
         });
         break;
       case 'about':
@@ -1110,6 +1121,18 @@ export default function App() {
         );
       }
 
+      // 12. Contact Us & Editorial Desk View with Unique URL
+      case 'contact': {
+        return (
+          <ContactPageView
+            onBack={() => navigate('/')}
+            onNavigateTab={(t) => navigate(t === 'home' ? '/' : `/${t}`)}
+            onNavigateLegal={(page) => navigate(page === 'guidelines' ? '/guidelines' : `/${page}`)}
+            onShowToast={(msg, type) => addToast(msg, type)}
+          />
+        );
+      }
+
       // 12. Standard Hub Views with Unique SEO URLs
       case 'videos':
         return (
@@ -1230,6 +1253,7 @@ export default function App() {
         onOpenPrivacy={() => navigate('/privacy')}
         onOpenTerms={() => navigate('/terms')}
         onOpenCookies={() => navigate('/cookies')}
+        onOpenContact={() => navigate('/contact')}
       />
 
       {/* Global Search Modal */}
@@ -1322,6 +1346,12 @@ export default function App() {
 
       {/* Toast Notification Layer */}
       <Toast toasts={toasts} onCloseToast={removeToast} />
+
+      {/* GDPR / CCPA / Google EU User Consent Cookie Banner */}
+      <CookieConsentBanner
+        onOpenCookiePolicy={() => navigate('/cookies')}
+        onOpenPrivacyPolicy={() => navigate('/privacy')}
+      />
     </div>
   );
 }

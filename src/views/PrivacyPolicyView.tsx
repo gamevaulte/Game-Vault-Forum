@@ -1,11 +1,11 @@
 import React from 'react';
-import { ArrowLeft, Shield, Lock, Eye, Database, UserCheck, Bell, FileText, ExternalLink } from 'lucide-react';
+import { ArrowLeft, Shield, Lock, Eye, Database, UserCheck, Bell, FileText, ExternalLink, Megaphone, CheckCircle2, HelpCircle } from 'lucide-react';
 import { PageTab } from '../types';
 
 interface PrivacyPolicyViewProps {
   onBack: () => void;
   onNavigateTab: (tab: PageTab) => void;
-  onNavigateLegal?: (page: 'guidelines' | 'privacy' | 'terms' | 'cookies') => void;
+  onNavigateLegal?: (page: 'guidelines' | 'privacy' | 'terms' | 'cookies' | 'contact') => void;
 }
 
 export const PrivacyPolicyView: React.FC<PrivacyPolicyViewProps> = ({
@@ -48,6 +48,12 @@ export const PrivacyPolicyView: React.FC<PrivacyPolicyViewProps> = ({
           >
             Cookie Policy
           </button>
+          <button
+            onClick={() => onNavigateLegal?.('contact') || onNavigateTab('contact')}
+            className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
+          >
+            Contact Us
+          </button>
         </div>
       </div>
 
@@ -57,158 +63,248 @@ export const PrivacyPolicyView: React.FC<PrivacyPolicyViewProps> = ({
         <div className="border-b border-white/10 pb-6 space-y-3">
           <div className="flex items-center gap-2 text-purple-400 text-xs font-['Rajdhani'] font-bold uppercase tracking-wider">
             <Shield className="w-5 h-5 text-purple-400" />
-            <span>Privacy & Data Protection Protocols</span>
+            <span>Privacy, Advertising & Data Protection Standards</span>
           </div>
           <h1 className="text-3xl sm:text-4xl font-['Space_Grotesk'] font-bold text-white tracking-tight">
             Game Vault Privacy Policy
           </h1>
           <div className="flex flex-wrap items-center gap-4 text-xs text-gray-400 font-mono">
-            <span>Effective Date: September 5, 2026</span>
+            <span>Last Updated: September 7, 2026</span>
             <span>•</span>
-            <span>Version 2.4</span>
+            <span>Policy Status: Active & AdSense Compliant</span>
             <span>•</span>
-            <span>Founder & Data Controller: Joel Ayuba</span>
+            <span>Publisher: Joel Ayuba (Game Vault Forum)</span>
           </div>
           <p className="text-sm text-gray-300 leading-relaxed font-['Inter'] pt-2">
-            At Game Vault Forum, accessible from our digital vault platforms, your privacy is paramount. We believe in strict data minimization: we collect only what is essential to provide high-quality tactical gaming analysis, maintain authenticated community discussions, and protect our platform from automated abuse.
+            At Game Vault Forum (accessible from <span className="text-purple-300 font-mono">https://www.gamevault.forum</span>), the privacy of our visitors is of paramount importance. This Privacy Policy document outlines the types of personal information that is received and collected by Game Vault Forum and how it is used, including disclosures concerning third-party advertising partners such as Google AdSense.
           </p>
         </div>
 
         {/* Policy Body */}
         <div className="space-y-8 text-sm sm:text-base text-gray-300 leading-relaxed font-['Inter']">
-          {/* Section 1 */}
+          {/* Section 1: Information We Collect */}
           <section className="space-y-3 p-5 sm:p-6 rounded-2xl bg-white/[0.02] border border-white/5">
             <h2 className="text-lg sm:text-xl font-bold font-['Rajdhani'] uppercase tracking-wider text-white flex items-center gap-2">
               <Eye className="w-5 h-5 text-cyan-400" />
               <span>1. Information We Collect</span>
             </h2>
             <p className="text-gray-300">
-              We collect information to ensure seamless authentication and meaningful interaction across the vault:
+              We collect information to provide and improve our gaming media services, authenticate community accounts, and maintain platform security:
             </p>
             <ul className="space-y-2.5 list-none pl-1 text-sm text-gray-300">
               <li className="flex items-start gap-2.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 mt-2 flex-shrink-0" />
                 <span>
-                  <strong className="text-white font-medium">Account Credentials:</strong> When you register an operative profile, we collect your display name, username, email address, and optional avatar image. If you authenticate via Google Sign-In, we receive verification tokens and your public profile handle as permitted by your Google account settings.
+                  <strong className="text-white font-medium">User-Provided Account Details:</strong> When you register an account, we collect your display name, username, email address, and voluntary profile bio or avatar. If authenticating via Google Sign-In, Firebase Auth securely transmits authentication tokens in accordance with your Google permission settings.
                 </span>
               </li>
               <li className="flex items-start gap-2.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 mt-2 flex-shrink-0" />
                 <span>
-                  <strong className="text-white font-medium">Community Contributions:</strong> When you author forum threads, tactical replies, article comments, game dossiers ratings, or guide insights, this content is published publicly under your username.
+                  <strong className="text-white font-medium">Public Community Contributions:</strong> Discussion threads created in the forum, tactical replies, guide comments, and user likes are published openly with your chosen username and timestamp.
                 </span>
               </li>
               <li className="flex items-start gap-2.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 mt-2 flex-shrink-0" />
                 <span>
-                  <strong className="text-white font-medium">Saved Preferences & Bookmarks:</strong> We store your reading list bookmarks (articles, guides, reviews, videos) and like interactions locally and in your encrypted user profile to provide persistent cross-session continuity.
-                </span>
-              </li>
-              <li className="flex items-start gap-2.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 mt-2 flex-shrink-0" />
-                <span>
-                  <strong className="text-white font-medium">Newsletter Subscriptions:</strong> If you voluntarily subscribe to the Vault Dispatch, we store your email address solely to deliver curated tactical recaps and breaking gaming essays.
+                  <strong className="text-white font-medium">Direct Inquiries:</strong> When submitting an editorial pitch, advertising question, or support request through our Contact page, we receive your name, email address, and message contents to respond to your inquiry.
                 </span>
               </li>
             </ul>
           </section>
 
-          {/* Section 2 */}
+          {/* Section 2: Log Files */}
           <section className="space-y-3 p-5 sm:p-6 rounded-2xl bg-white/[0.02] border border-white/5">
             <h2 className="text-lg sm:text-xl font-bold font-['Rajdhani'] uppercase tracking-wider text-white flex items-center gap-2">
               <Database className="w-5 h-5 text-purple-400" />
-              <span>2. How We Use Your Information</span>
+              <span>2. Log Files & Automated Data</span>
             </h2>
             <p className="text-gray-300">
-              Your data is utilized strictly for direct operational services and community integrity:
+              Like many standard web platforms, Game Vault Forum makes use of log files. The information inside the log files includes internet protocol (IP) addresses, browser type, Internet Service Provider (ISP), date/time stamp, referring/exit pages, and the number of clicks. This information is used to analyze trends, administer the site, prevent malicious automated spam or Denial of Service attacks, track user movement around the site, and gather broad demographic information. IP addresses and other such information are not linked to any personally identifiable information in these diagnostic logs.
             </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1 text-sm">
-              <div className="p-3.5 rounded-xl bg-black/30 border border-white/5 space-y-1">
-                <h3 className="font-bold font-['Rajdhani'] uppercase text-purple-300 tracking-wider">Account Operations</h3>
-                <p className="text-xs text-gray-400">Authenticating sessions, managing profile avatars, and enabling like and comment privileges for verified operatives.</p>
+          </section>
+
+          {/* Section 3: Google AdSense & Third-Party Advertising Partners (MANDATORY GOOGLE REQUIREMENT) */}
+          <section className="space-y-4 p-5 sm:p-6 rounded-2xl bg-purple-950/20 border border-purple-500/30">
+            <div className="flex items-center justify-between flex-wrap gap-2">
+              <h2 className="text-lg sm:text-xl font-bold font-['Rajdhani'] uppercase tracking-wider text-white flex items-center gap-2">
+                <Megaphone className="w-5 h-5 text-purple-400" />
+                <span>3. Google AdSense & Third-Party Advertising Partners</span>
+              </h2>
+              <span className="px-2.5 py-0.5 rounded-full text-xs font-mono bg-purple-500/20 text-purple-300 border border-purple-500/40">
+                Official Disclosure
+              </span>
+            </div>
+
+            <p className="text-gray-300">
+              We may display advertisements served by Google AdSense and third-party advertising vendors on Game Vault Forum to support our independent gaming coverage and community infrastructure.
+            </p>
+
+            <div className="space-y-3 text-sm text-gray-300">
+              <div className="p-4 rounded-xl bg-black/40 border border-white/5 space-y-2">
+                <h4 className="font-bold text-white font-['Rajdhani'] uppercase tracking-wide flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-purple-400" />
+                  Google AdSense Cookies & The DoubleClick DART Cookie
+                </h4>
+                <ul className="space-y-2 text-xs sm:text-sm text-gray-300 list-disc pl-5">
+                  <li>
+                    Third-party vendors, including Google, use cookies to serve ads based on a user's prior visits to your website or other websites.
+                  </li>
+                  <li>
+                    Google's use of advertising cookies enables it and its partners to serve ads to our users based on their visit to Game Vault Forum and/or other sites on the Internet.
+                  </li>
+                  <li>
+                    Google may use the DoubleClick DART cookie or newer privacy-preserving ad tokens to serve personalized ads according to user interests and general geographic region.
+                  </li>
+                </ul>
               </div>
-              <div className="p-3.5 rounded-xl bg-black/30 border border-white/5 space-y-1">
-                <h3 className="font-bold font-['Rajdhani'] uppercase text-cyan-300 tracking-wider">Toxicity & Spam Defense</h3>
-                <p className="text-xs text-gray-400">Preventing automated bot campaigns, brigading, unflagged spoilers, and malicious conduct across forum threads.</p>
-              </div>
-              <div className="p-3.5 rounded-xl bg-black/30 border border-white/5 space-y-1">
-                <h3 className="font-bold font-['Rajdhani'] uppercase text-emerald-300 tracking-wider">Tactical Communications</h3>
-                <p className="text-xs text-gray-400">Delivering essential account notifications, security alerts, and requested weekly gaming briefings.</p>
-              </div>
-              <div className="p-3.5 rounded-xl bg-black/30 border border-white/5 space-y-1">
-                <h3 className="font-bold font-['Rajdhani'] uppercase text-amber-300 tracking-wider">Platform Optimization</h3>
-                <p className="text-xs text-gray-400">Evaluating technical performance, responsive layout fidelity, and reading speeds without intrusive fingerprinting.</p>
+
+              <div className="p-4 rounded-xl bg-black/40 border border-white/5 space-y-2">
+                <h4 className="font-bold text-white font-['Rajdhani'] uppercase tracking-wide flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-cyan-400" />
+                  How You Can Opt Out of Personalized Advertising
+                </h4>
+                <p className="text-xs sm:text-sm text-gray-300 leading-relaxed">
+                  Users may opt out of personalized advertising at any time through the following official controls:
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                  <a
+                    href="https://adssettings.google.com/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-3 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-between text-xs text-purple-300 hover:text-white transition-colors group"
+                  >
+                    <span>Google Ad Settings (Ads Preference Manager)</span>
+                    <ExternalLink className="w-3.5 h-3.5 shrink-0 group-hover:translate-x-0.5 transition-transform" />
+                  </a>
+                  <a
+                    href="https://www.aboutads.info/choices/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-3 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-between text-xs text-cyan-300 hover:text-white transition-colors group"
+                  >
+                    <span>AboutAds.info Opt-Out Portal</span>
+                    <ExternalLink className="w-3.5 h-3.5 shrink-0 group-hover:translate-x-0.5 transition-transform" />
+                  </a>
+                  <a
+                    href="https://optout.networkadvertising.org/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-3 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-between text-xs text-emerald-300 hover:text-white transition-colors group"
+                  >
+                    <span>Network Advertising Initiative (NAI)</span>
+                    <ExternalLink className="w-3.5 h-3.5 shrink-0 group-hover:translate-x-0.5 transition-transform" />
+                  </a>
+                  <a
+                    href="https://www.youronlinechoices.eu/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-3 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-between text-xs text-amber-300 hover:text-white transition-colors group"
+                  >
+                    <span>Your Online Choices (EDAA for EU/EEA)</span>
+                    <ExternalLink className="w-3.5 h-3.5 shrink-0 group-hover:translate-x-0.5 transition-transform" />
+                  </a>
+                </div>
+                <p className="text-xs text-gray-400 pt-1">
+                  For more detailed information regarding Google's advertising practices and how Google uses data when you visit partner sites, visit <a href="https://policies.google.com/technologies/ads" target="_blank" rel="noopener noreferrer" className="text-purple-400 hover:underline">Google Advertising Technologies & Policies</a>.
+                </p>
               </div>
             </div>
           </section>
 
-          {/* Section 3 */}
+          {/* Section 4: CCPA & CPRA Privacy Rights */}
           <section className="space-y-3 p-5 sm:p-6 rounded-2xl bg-white/[0.02] border border-white/5">
             <h2 className="text-lg sm:text-xl font-bold font-['Rajdhani'] uppercase tracking-wider text-white flex items-center gap-2">
               <Lock className="w-5 h-5 text-emerald-400" />
-              <span>3. Zero Sale of Personal Data</span>
+              <span>4. California Privacy Rights (CCPA / CPRA)</span>
             </h2>
             <p className="text-gray-300">
-              We stand firmly against predatory data broker ecosystems. <strong className="text-white">Game Vault Forum has never sold, rented, leased, or traded user personal data</strong> to third-party advertisers, data aggregators, or behavioral marketing syndicates, and will never do so in the future.
+              Under the California Consumer Privacy Act (CCPA) and the California Privacy Rights Act (CPRA), California residents have specific rights regarding their personal information:
             </p>
-            <p className="text-sm text-gray-400">
-              Any telemetry or aggregated reading stats shared internally are strictly anonymized and used only to evaluate which editorial formats—such as longform analytical retrospectives or tactical weapon guides—most effectively serve our community.
-            </p>
-          </section>
-
-          {/* Section 4 */}
-          <section className="space-y-3 p-5 sm:p-6 rounded-2xl bg-white/[0.02] border border-white/5">
-            <h2 className="text-lg sm:text-xl font-bold font-['Rajdhani'] uppercase tracking-wider text-white flex items-center gap-2">
-              <UserCheck className="w-5 h-5 text-amber-400" />
-              <span>4. Your Data Rights & Control</span>
-            </h2>
-            <p className="text-gray-300">
-              Regardless of your geographic jurisdiction (including GDPR in the EU/UK and CCPA/CPRA in California), Game Vault extends comprehensive rights to all operatives:
-            </p>
-            <ul className="space-y-2 list-none pl-1 text-sm text-gray-300">
-              <li className="flex items-start gap-2.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-400 mt-2 flex-shrink-0" />
-                <span><strong className="text-white">Right of Access:</strong> You can inspect your operative dossier, bookmarks, liked content, and comment history at any time via your user profile modal.</span>
+            <ul className="space-y-2 list-disc pl-5 text-sm text-gray-300">
+              <li>
+                <strong className="text-white">Right to Know:</strong> You may request that a business disclose the categories and specific pieces of personal data collected about you.
               </li>
-              <li className="flex items-start gap-2.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-400 mt-2 flex-shrink-0" />
-                <span><strong className="text-white">Right to Rectification:</strong> You can edit your profile display name, avatar, and authored forum content directly through the interface.</span>
+              <li>
+                <strong className="text-white">Right to Delete:</strong> You may request that a business delete any personal data collected from you.
               </li>
-              <li className="flex items-start gap-2.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-400 mt-2 flex-shrink-0" />
-                <span><strong className="text-white">Right of Erasure ("Right to be Forgotten"):</strong> You may request complete deletion of your account and disassociation of all forum contributions by submitting a deletion inquiry.</span>
+              <li>
+                <strong className="text-white">Right to Opt-Out of Sale or Sharing:</strong> Game Vault Forum does not sell your personal information to third parties for monetary compensation. We honor Global Privacy Control (GPC) signals and provide cookie preference controls.
               </li>
-              <li className="flex items-start gap-2.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-400 mt-2 flex-shrink-0" />
-                <span><strong className="text-white">Unsubscribe Anytime:</strong> Every newsletter dispatch includes an instant, one-click opt-out link that immediately expunges your email from subsequent dispatches.</span>
+              <li>
+                <strong className="text-white">Right to Non-Discrimination:</strong> We will never deny services, charge different prices, or provide a lesser quality of service for exercising your privacy rights.
               </li>
             </ul>
           </section>
 
-          {/* Section 5 */}
+          {/* Section 5: GDPR Data Protection Rights */}
+          <section className="space-y-3 p-5 sm:p-6 rounded-2xl bg-white/[0.02] border border-white/5">
+            <h2 className="text-lg sm:text-xl font-bold font-['Rajdhani'] uppercase tracking-wider text-white flex items-center gap-2">
+              <UserCheck className="w-5 h-5 text-amber-400" />
+              <span>5. GDPR & UK Data Protection Rights</span>
+            </h2>
+            <p className="text-gray-300">
+              For users located in the European Union (EU) or United Kingdom (UK), our processing of personal data is governed by the General Data Protection Regulation (GDPR). You possess the following statutory rights:
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm pt-1">
+              <div className="p-3 rounded-xl bg-black/30 border border-white/5 space-y-1">
+                <span className="font-bold text-white font-['Rajdhani'] uppercase">Right of Access</span>
+                <p className="text-gray-400">Request copies of your personal data stored in our databases.</p>
+              </div>
+              <div className="p-3 rounded-xl bg-black/30 border border-white/5 space-y-1">
+                <span className="font-bold text-white font-['Rajdhani'] uppercase">Right to Rectification</span>
+                <p className="text-gray-400">Request correction of inaccurate or incomplete profile records.</p>
+              </div>
+              <div className="p-3 rounded-xl bg-black/30 border border-white/5 space-y-1">
+                <span className="font-bold text-white font-['Rajdhani'] uppercase">Right to Erasure</span>
+                <p className="text-gray-400">Request deletion of your account and associated comments.</p>
+              </div>
+              <div className="p-3 rounded-xl bg-black/30 border border-white/5 space-y-1">
+                <span className="font-bold text-white font-['Rajdhani'] uppercase">Right to Restrict Processing</span>
+                <p className="text-gray-400">Request restriction of data processing under certain statutory circumstances.</p>
+              </div>
+            </div>
+          </section>
+
+          {/* Section 6: COPPA (Children's Privacy) */}
+          <section className="space-y-3 p-5 sm:p-6 rounded-2xl bg-white/[0.02] border border-white/5">
+            <h2 className="text-lg sm:text-xl font-bold font-['Rajdhani'] uppercase tracking-wider text-white flex items-center gap-2">
+              <Shield className="w-5 h-5 text-cyan-400" />
+              <span>6. Children's Online Privacy Protection (COPPA)</span>
+            </h2>
+            <p className="text-gray-300">
+              Protecting the online privacy of young children is especially critical. Game Vault Forum does not knowingly collect any Personally Identifiable Information from children under the age of 13. Our content is curated for general gaming audiences and adult enthusiasts.
+            </p>
+            <p className="text-sm text-gray-400">
+              If a parent or guardian believes that Game Vault Forum has in its database the personal information of a child under 13, please contact us immediately at <span className="text-purple-300 font-mono">joelotis40@gmail.com</span>, and we will utilize our best efforts to promptly remove such information from our records.
+            </p>
+          </section>
+
+          {/* Section 7: Security & Infrastructure */}
           <section className="space-y-3 p-5 sm:p-6 rounded-2xl bg-white/[0.02] border border-white/5">
             <h2 className="text-lg sm:text-xl font-bold font-['Rajdhani'] uppercase tracking-wider text-white flex items-center gap-2">
               <FileText className="w-5 h-5 text-purple-400" />
-              <span>5. Security Infrastructure & Hosting</span>
+              <span>7. Security Infrastructure & Hosting</span>
             </h2>
             <p className="text-gray-300">
               Game Vault Forum utilizes Google Cloud Platform and Firebase enterprise-grade infrastructure. All data in transit is encrypted using modern TLS 1.3 cryptographic protocols, and databases are encrypted at rest with AES-256 standards. Access to administrative systems is restricted with multi-factor authentication.
             </p>
           </section>
 
-          {/* Section 6 */}
+          {/* Section 8: Contact Information */}
           <section className="space-y-3 p-5 sm:p-6 rounded-2xl bg-white/[0.02] border border-white/5">
             <h2 className="text-lg sm:text-xl font-bold font-['Rajdhani'] uppercase tracking-wider text-white flex items-center gap-2">
               <Bell className="w-5 h-5 text-cyan-400" />
-              <span>6. Contact Information & Privacy Queries</span>
+              <span>8. Contact Information & Privacy Inquiries</span>
             </h2>
             <p className="text-gray-300">
-              For any questions, data subject requests, or privacy clarifications, you may reach our team directly:
+              If you have additional questions, wish to exercise any statutory privacy rights, or require more information about our Privacy Policy or advertising partnerships, do not hesitate to contact us:
             </p>
             <div className="p-4 rounded-xl bg-black/40 border border-white/10 text-sm space-y-1.5 font-mono text-gray-300">
-              <p className="text-white font-bold font-['Rajdhani'] uppercase tracking-wider">Game Vault Privacy Office</p>
-              <p>Attn: Joel Ayuba, Lead Creator & Data Protection Officer</p>
-              <p>Email: <span className="text-purple-400">joelotis40@gmail.com</span></p>
+              <p className="text-white font-bold font-['Rajdhani'] uppercase tracking-wider">Game Vault Editorial & Privacy Office</p>
+              <p>Publisher & Lead Creator: Joel Ayuba</p>
+              <p>Official Email: <a href="mailto:joelotis40@gmail.com" className="text-purple-400 hover:underline">joelotis40@gmail.com</a></p>
+              <p>Online Desk: <button onClick={() => onNavigateLegal?.('contact') || onNavigateTab('contact')} className="text-cyan-400 hover:underline cursor-pointer">Official Contact Desk (/contact)</button></p>
               <p>Platform: Game Vault Forum (youtube.com/@GameVaultForum)</p>
             </div>
           </section>

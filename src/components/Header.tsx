@@ -35,7 +35,8 @@ export const Header: React.FC<HeaderProps> = ({
     { id: 'reviews', label: 'Reviews' },
     { id: 'guides', label: 'Guides' },
     { id: 'forum', label: 'Forum' },
-    { id: 'about', label: 'About' }
+    { id: 'about', label: 'About' },
+    { id: 'contact', label: 'Contact' }
   ];
 
   const handleNavClick = (tab: PageTab) => {
@@ -60,7 +61,7 @@ export const Header: React.FC<HeaderProps> = ({
         </a>
 
         {/* Desktop Navigation */}
-        <nav className="hidden lg:flex items-center space-x-1 font-['Rajdhani'] font-semibold tracking-wider text-base uppercase">
+        <nav className="hidden lg:flex items-center space-x-0.5 xl:space-x-1 font-['Rajdhani'] font-semibold tracking-wider text-sm xl:text-base uppercase">
           {navItems.map((item) => {
             const isActive = currentTab === item.id;
             const href = item.id === 'home' ? '/' : `/${item.id}`;
@@ -73,7 +74,7 @@ export const Header: React.FC<HeaderProps> = ({
                   e.preventDefault();
                   handleNavClick(item.id);
                 }}
-                className={`relative px-3.5 py-2 rounded-xl transition-all duration-200 ${
+                className={`relative px-2.5 xl:px-3.5 py-1.5 xl:py-2 rounded-xl transition-all duration-200 ${
                   isActive
                     ? 'text-white bg-white/10 backdrop-blur-md border border-white/20 shadow-lg shadow-purple-900/10'
                     : 'text-gray-400 hover:text-white hover:bg-white/5'

@@ -174,22 +174,50 @@ export const AboutView: React.FC<AboutViewProps> = ({ onNavigateTab }) => {
       {/* Community Values Banner */}
       <div className="p-8 rounded-3xl bg-[#0c0e18] border border-cyan-500/20 space-y-4">
         <h3 className="text-xl font-bold font-['Rajdhani'] uppercase tracking-wider text-cyan-400">
-          The Vault Protocol: Integrity in Gaming
+          The Vault Protocol: Integrity in Gaming & Editorial Standards
         </h3>
-        <ul className="space-y-2 text-xs sm:text-sm text-slate-300 font-['Inter']">
+        <ul className="space-y-2.5 text-xs sm:text-sm text-slate-300 font-['Inter']">
           <li className="flex items-start gap-2.5">
             <CheckCircle2 className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
-            <span><strong>No Paid Review Scores:</strong> We never accept payment, hardware embargo bribes, or publisher deals to inflate a review score.</span>
+            <span><strong>No Paid Review Scores:</strong> We never accept payment, hardware embargo bribes, or publisher deals to inflate a review score. All verdicts are 100% independent.</span>
           </li>
           <li className="flex items-start gap-2.5">
             <CheckCircle2 className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
-            <span><strong>Zero Clickbait:</strong> Our titles, thumbnails, and articles accurately reflect what you are about to watch or read.</span>
+            <span><strong>Zero Clickbait:</strong> Our titles, thumbnails, and articles accurately reflect what you are about to watch or read with genuine technical substance.</span>
           </li>
           <li className="flex items-start gap-2.5">
             <CheckCircle2 className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
-            <span><strong>Inclusive & Respectful:</strong> Whether you game on a high-end custom liquid PC, a PS5, an Xbox Series X, or a handheld Switch, you have a seat at this table.</span>
+            <span><strong>Transparent Advertising Disclosure:</strong> We utilize Google AdSense and authorized digital advertising to support our independent media operations. All advertisements are clearly marked as "Advertisement" or "Sponsored" and have zero influence on our editorial ratings or critique.</span>
+          </li>
+          <li className="flex items-start gap-2.5">
+            <CheckCircle2 className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
+            <span><strong>Fact-Checking & Corrections:</strong> If an error in frame rates, mechanical details, or game lore is identified, we log and publish public corrections within 24 hours.</span>
           </li>
         </ul>
+      </div>
+
+      {/* Editorial Leadership & Contact Box */}
+      <div className="p-8 rounded-3xl bg-[#101324] border border-white/10 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl">
+        <div className="space-y-2 text-center md:text-left">
+          <span className="text-xs font-['Rajdhani'] font-bold uppercase tracking-widest text-purple-400">
+            Editorial Team & Operations
+          </span>
+          <h3 className="text-2xl font-bold font-['Space_Grotesk'] text-white">
+            Lead Publisher: Joel Ayuba
+          </h3>
+          <p className="text-xs sm:text-sm text-gray-400 max-w-xl leading-relaxed">
+            Leading editorial direction, game testing, hardware benchmarks, and community moderation across Game Vault Forum and YouTube.
+          </p>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-3">
+          <button
+            onClick={() => onNavigateTab('contact')}
+            className="px-6 py-3 bg-purple-600 hover:bg-purple-500 text-white font-['Rajdhani'] font-bold text-xs uppercase tracking-wider rounded-xl shadow-lg shadow-purple-900/40 transition-all flex items-center gap-2 cursor-pointer"
+          >
+            <span>Contact Editorial Office</span>
+          </button>
+        </div>
       </div>
     </div>
   );

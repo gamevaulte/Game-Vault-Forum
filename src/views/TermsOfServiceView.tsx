@@ -1,11 +1,11 @@
 import React from 'react';
-import { ArrowLeft, Scale, ShieldAlert, Users, MessageSquare, AlertCircle, Award, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, Scale, ShieldAlert, Users, MessageSquare, AlertCircle, Award, CheckCircle2, Megaphone, ExternalLink } from 'lucide-react';
 import { PageTab } from '../types';
 
 interface TermsOfServiceViewProps {
   onBack: () => void;
   onNavigateTab: (tab: PageTab) => void;
-  onNavigateLegal?: (page: 'guidelines' | 'privacy' | 'terms' | 'cookies') => void;
+  onNavigateLegal?: (page: 'guidelines' | 'privacy' | 'terms' | 'cookies' | 'contact') => void;
 }
 
 export const TermsOfServiceView: React.FC<TermsOfServiceViewProps> = ({
@@ -48,6 +48,12 @@ export const TermsOfServiceView: React.FC<TermsOfServiceViewProps> = ({
           >
             Cookie Policy
           </button>
+          <button
+            onClick={() => onNavigateLegal?.('contact') || onNavigateTab('contact')}
+            className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
+          >
+            Contact Us
+          </button>
         </div>
       </div>
 
@@ -63,9 +69,9 @@ export const TermsOfServiceView: React.FC<TermsOfServiceViewProps> = ({
             Game Vault Terms of Service
           </h1>
           <div className="flex flex-wrap items-center gap-4 text-xs text-gray-400 font-mono">
-            <span>Last Modified: September 5, 2026</span>
+            <span>Last Modified: September 7, 2026</span>
             <span>•</span>
-            <span>Version 3.1</span>
+            <span>Version 3.2</span>
             <span>•</span>
             <span>Governing Platform: Game Vault Forum</span>
           </div>
@@ -104,59 +110,24 @@ export const TermsOfServiceView: React.FC<TermsOfServiceViewProps> = ({
           {/* Section 2 */}
           <section className="space-y-3 p-5 sm:p-6 rounded-2xl bg-white/[0.02] border border-white/5">
             <h2 className="text-lg sm:text-xl font-bold font-['Rajdhani'] uppercase tracking-wider text-white flex items-center gap-2">
-              <ShieldAlert className="w-5 h-5 text-amber-400" />
-              <span>2. Code of Conduct & Prohibited Activities</span>
+              <MessageSquare className="w-5 h-5 text-cyan-400" />
+              <span>2. User-Generated Content & Standards of Conduct</span>
             </h2>
             <p className="text-gray-300">
-              Game Vault Forum is built on high-level intellectual gaming critique. The following conduct is strictly prohibited and constitutes grounds for immediate suspension or permanent vault banning:
+              When publishing tactical guides, forum threads, responses, or game dossier impressions, you retain ownership of your original words while granting Game Vault Forum a worldwide, non-exclusive, royalty-free license to host, display, index, and distribute your content across our platform.
             </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1 text-sm">
-              <div className="p-3.5 rounded-xl bg-black/30 border border-amber-500/20 space-y-1">
-                <h3 className="font-bold font-['Rajdhani'] uppercase text-amber-300 tracking-wider">No Harassment or Toxicity</h3>
-                <p className="text-xs text-gray-400">Personal insults, hate speech, discrimination, threats, brigading, or doxxing other members or game creators.</p>
-              </div>
-              <div className="p-3.5 rounded-xl bg-black/30 border border-amber-500/20 space-y-1">
-                <h3 className="font-bold font-['Rajdhani'] uppercase text-amber-300 tracking-wider">Spoiler Discipline</h3>
-                <p className="text-xs text-gray-400">Posting unflagged story spoilers, campaign plot twists, or endings without clear [SPOILER] warnings.</p>
-              </div>
-              <div className="p-3.5 rounded-xl bg-black/30 border border-amber-500/20 space-y-1">
-                <h3 className="font-bold font-['Rajdhani'] uppercase text-amber-300 tracking-wider">No Piracy or Malicious Code</h3>
-                <p className="text-xs text-gray-400">Sharing warez, pirated game ROMs, unauthorized key generators, exploit injectors, or malicious download links.</p>
-              </div>
-              <div className="p-3.5 rounded-xl bg-black/30 border border-amber-500/20 space-y-1">
-                <h3 className="font-bold font-['Rajdhani'] uppercase text-amber-300 tracking-wider">Commercial Spam & Astroturfing</h3>
-                <p className="text-xs text-gray-400">Automated bot promotions, unauthorized affiliate links, paid review manipulation, or deceptive marketing schemes.</p>
-              </div>
-            </div>
+            <p className="text-sm text-gray-400">
+              All content must comply with our <button onClick={() => onNavigateLegal?.('guidelines') || onNavigateTab('forum')} className="text-cyan-400 hover:underline">Community Guidelines</button>. You may not publish unlawful harassment, hate speech, malware, pirated software keys, or automated spam.
+            </p>
           </section>
 
           {/* Section 3 */}
           <section className="space-y-3 p-5 sm:p-6 rounded-2xl bg-white/[0.02] border border-white/5">
             <h2 className="text-lg sm:text-xl font-bold font-['Rajdhani'] uppercase tracking-wider text-white flex items-center gap-2">
-              <MessageSquare className="w-5 h-5 text-cyan-400" />
-              <span>3. User Generated Content & License</span>
-            </h2>
-            <p className="text-gray-300">
-              You retain all ownership rights to the original text, tactical strategies, and commentary you submit to Game Vault Forum.
-            </p>
-            <p className="text-sm text-gray-300">
-              By submitting content to our public forum threads or article discussions, you grant Game Vault Forum a worldwide, non-exclusive, royalty-free, perpetual license to display, index, format, and distribute your content across our platforms in connection with the operation and promotion of the forum.
-            </p>
-            <p className="text-xs text-gray-400">
-              You represent and warrant that you possess all necessary rights and permissions to post your content and that it does not infringe upon any third-party intellectual property or privacy rights.
-            </p>
-          </section>
-
-          {/* Section 4 */}
-          <section className="space-y-3 p-5 sm:p-6 rounded-2xl bg-white/[0.02] border border-white/5">
-            <h2 className="text-lg sm:text-xl font-bold font-['Rajdhani'] uppercase tracking-wider text-white flex items-center gap-2">
               <Award className="w-5 h-5 text-emerald-400" />
-              <span>4. Intellectual Property & Fair Use</span>
+              <span>3. Intellectual Property & Transformative Fair Use</span>
             </h2>
             <p className="text-gray-300">
-              Game Vault Forum is a dedicated video game journalism, analysis, and community discussion platform.
-            </p>
-            <p className="text-sm text-gray-300">
               All video game trademarks, logos, screenshots, and artwork (including titles from Nintendo, Rockstar Games, Mojang, Activision, FromSoftware, Sony, Microsoft, Valve, and others) are the property of their respective publishers and developers. Their inclusion on Game Vault Forum constitutes transformative fair use for educational analysis, commentary, reviews, and news reporting under international copyright frameworks.
             </p>
             <p className="text-sm text-gray-300">
@@ -164,10 +135,32 @@ export const TermsOfServiceView: React.FC<TermsOfServiceViewProps> = ({
             </p>
           </section>
 
+          {/* Section 4: Third-Party Advertisements, Google AdSense & External Links */}
+          <section className="space-y-3 p-5 sm:p-6 rounded-2xl bg-purple-950/20 border border-purple-500/30">
+            <h2 className="text-lg sm:text-xl font-bold font-['Rajdhani'] uppercase tracking-wider text-white flex items-center gap-2">
+              <Megaphone className="w-5 h-5 text-purple-400" />
+              <span>4. Third-Party Advertisements & Google AdSense</span>
+            </h2>
+            <p className="text-gray-300">
+              Game Vault Forum displays third-party advertisements served by Google AdSense and authorized digital advertising vendors. 
+            </p>
+            <ul className="space-y-2 text-sm text-gray-300 list-disc pl-5">
+              <li>
+                Advertisements are labeled "Advertisement" or "Sponsored" to clearly distinguish them from original editorial journalism and forum content.
+              </li>
+              <li>
+                Clicking on an advertisement routes you to third-party web domains operated by independent advertisers. Game Vault Forum does not endorse, guarantee, or assume liability for the products, software, or services offered by third-party advertisers.
+              </li>
+              <li>
+                Any automated bot activity, artificial click inflation, or fraudulent engagement with advertisements is strictly prohibited and constitutes a violation of these Terms.
+              </li>
+            </ul>
+          </section>
+
           {/* Section 5 */}
           <section className="space-y-3 p-5 sm:p-6 rounded-2xl bg-white/[0.02] border border-white/5">
             <h2 className="text-lg sm:text-xl font-bold font-['Rajdhani'] uppercase tracking-wider text-white flex items-center gap-2">
-              <AlertCircle className="w-5 h-5 text-purple-400" />
+              <AlertCircle className="w-5 h-5 text-amber-400" />
               <span>5. Disclaimers & Limitation of Liability</span>
             </h2>
             <p className="text-gray-300">
@@ -190,7 +183,8 @@ export const TermsOfServiceView: React.FC<TermsOfServiceViewProps> = ({
             <div className="p-4 rounded-xl bg-black/40 border border-white/10 text-sm space-y-1 font-mono text-gray-300">
               <p className="text-white font-bold font-['Rajdhani'] uppercase tracking-wider">Legal Inquiries & Notice</p>
               <p>Game Vault Operations • Joel Ayuba</p>
-              <p>Contact: <span className="text-purple-400">joelotis40@gmail.com</span></p>
+              <p>Contact: <a href="mailto:joelotis40@gmail.com" className="text-purple-400 hover:underline">joelotis40@gmail.com</a></p>
+              <p>Direct Desk: <button onClick={() => onNavigateLegal?.('contact') || onNavigateTab('contact')} className="text-cyan-400 hover:underline cursor-pointer">Official Contact Desk (/contact)</button></p>
             </div>
           </section>
         </div>
