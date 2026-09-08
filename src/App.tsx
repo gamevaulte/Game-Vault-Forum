@@ -135,14 +135,6 @@ export default function App() {
   // Synchronize with Firebase Auth
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (fbUser) => {
-      const isPasswordUser = fbUser?.providerData.some((p) => p.providerId === 'password');
-      if (fbUser && isPasswordUser && !fbUser.emailVerified) {
-        setFirebaseUser(null);
-        setAuthLoading(false);
-        setUserLikedSet(new Set());
-        return;
-      }
-
       setFirebaseUser(fbUser);
       setAuthLoading(false);
 

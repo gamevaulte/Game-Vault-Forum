@@ -8,7 +8,7 @@ import {
   signOut,
   sendPasswordResetEmail
 } from 'firebase/auth';
-import { auth, googleProvider, addRegisteredUserToFirestore, firebaseConfig } from '../lib/firebase';
+import { auth, googleProvider, addRegisteredUserToFirestore, updateUserInFirestore, firebaseConfig } from '../lib/firebase';
 import { VaultLogo } from './VaultLogo';
 import {
   Lock,
@@ -147,34 +147,46 @@ export const AuthGate: React.FC<AuthGateProps> = ({
     e.preventDefault();
     setLoginError(null);
 
-    if (!loginEmail.trim() || !loginPassword) {
+    const email = loginEmail.trim();
+    if (!email || !loginPassword) {
       setLoginError('incorrect login details');
       return;
     }
 
     setLoginLoading(true);
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, loginEmail.trim(), loginPassword);
+      const userCredential = await signInWithEmailAndPassword(auth, email, loginPassword);
       
-      // If user registered with email/password and has not verified their email yet
-      if (!userCredential.user.emailVerified) {
-        const unverifiedEmail = userCredential.user.email || loginEmail.trim();
+      // Update lastLoginAt in Firestore collection 'Users'
+      if (userCredential.user) {
         try {
-          await sendEmailVerification(userCredential.user);
-        } catch (verErr) {
-          console.warn('Resend verification email warning:', verErr);
+          await updateUserInFirestore(userCredential.user.uid, {
+            lastLoginAt: new Date().toISOString()
+          });
+        } catch (syncErr) {
+          console.warn('Firestore last login sync warning:', syncErr);
         }
-        await signOut(auth);
-        setVerificationEmail(unverifiedEmail);
-        setActiveMode('verification');
-        return;
       }
 
-      if (onSuccess) onSuccess();
+      if (onSuccess) {
+        onSuccess();
+      }
     } catch (err: any) {
       console.warn('Firebase login error:', err?.code, err?.message);
-      // Explicit user instruction: if login credentials are incorrect display "incorrect login details" in the ui
-      setLoginError('incorrect login details');
+      // User requirement: If login credentials are incorrect display "incorrect login details" in the ui
+      if (
+        err?.code === 'auth/invalid-credential' ||
+        err?.code === 'auth/wrong-password' ||
+        err?.code === 'auth/user-not-found'
+      ) {
+        setLoginError('incorrect login details');
+      } else if (err?.code === 'auth/invalid-email') {
+        setLoginError('Please enter a valid email address.');
+      } else if (err?.code === 'auth/too-many-requests') {
+        setLoginError('Too many failed attempts. Please try again in a few moments or reset your password.');
+      } else {
+        setLoginError('incorrect login details');
+      }
     } finally {
       setLoginLoading(false);
     }
@@ -185,13 +197,16 @@ export const AuthGate: React.FC<AuthGateProps> = ({
     e.preventDefault();
     setRegError(null);
 
-    if (!regName.trim()) {
-      setRegError('Please provide your name');
+    const name = regName.trim();
+    const email = regEmail.trim();
+
+    if (!name) {
+      setRegError('Please provide your operative name');
       return;
     }
 
-    if (!regEmail.trim()) {
-      setRegError('Please provide an email address');
+    if (!email) {
+      setRegError('Please provide a valid email address');
       return;
     }
 
@@ -212,18 +227,18 @@ export const AuthGate: React.FC<AuthGateProps> = ({
 
     setRegLoading(true);
     try {
-      // Authenticate user with Firebase
+      // 1. Authenticate new operative user with Firebase
       const userCredential = await createUserWithEmailAndPassword(
         auth,
-        regEmail.trim(),
+        email,
         regPassword
       );
 
-      // Attach profile name and avatar to Firebase user profile if provided
-      if (regName.trim() || avatarPreview) {
+      // 2. Attach profile name and avatar to Firebase user profile
+      if (name || avatarPreview) {
         try {
           await updateProfile(userCredential.user, {
-            displayName: regName.trim() || undefined,
+            displayName: name || undefined,
             photoURL: avatarPreview || undefined
           });
         } catch (profileErr) {
@@ -231,34 +246,29 @@ export const AuthGate: React.FC<AuthGateProps> = ({
         }
       }
 
-      // Add newly registered user to the Firestore collection called 'Users'
+      // 3. Store necessary fields during registration into Firestore database 'Users'
+      await addRegisteredUserToFirestore({
+        uid: userCredential.user.uid,
+        email: email,
+        displayName: name || 'Vault Operative',
+        photoURL: avatarPreview || null,
+        emailVerified: userCredential.user.emailVerified
+      });
+
+      // 4. Optionally dispatch email verification notice in background
       try {
-        await addRegisteredUserToFirestore({
-          uid: userCredential.user.uid,
-          email: regEmail.trim(),
-          displayName: regName.trim() || 'Vault Operative',
-          photoURL: avatarPreview || null,
-          emailVerified: false
-        });
-      } catch (dbErr) {
-        console.warn('Firestore Users collection write error:', dbErr);
+        await sendEmailVerification(userCredential.user);
+      } catch (verErr) {
+        console.warn('Email verification dispatch notice:', verErr);
       }
 
-      // Verify their email using Firebase authentication
-      await sendEmailVerification(userCredential.user);
-
-      // Explicit instruction: do not sign them in automatically. Sign out immediately.
-      await signOut(auth);
-
-      // Display the verification screen
-      const registeredEmail = regEmail.trim();
-      setVerificationEmail(registeredEmail);
-      setRegPassword('');
-      setRegRepeatPassword('');
-      setActiveMode('verification');
+      // 5. Complete registration and activate session
+      if (onSuccess) {
+        onSuccess();
+      }
     } catch (err: any) {
       console.warn('Firebase registration error:', err?.code, err?.message);
-      // Explicit user instruction: If a user is with those credentials already exists display "user already exist. Sign in"
+      // User requirement: If a user is with those credentials already exists display "user already exist. Sign in"
       if (
         err?.code === 'auth/email-already-in-use' ||
         err?.code === 'auth/credential-already-in-use' ||
@@ -266,6 +276,10 @@ export const AuthGate: React.FC<AuthGateProps> = ({
         err?.message?.toLowerCase().includes('already exists')
       ) {
         setRegError('user already exist. Sign in');
+      } else if (err?.code === 'auth/invalid-email') {
+        setRegError('Please provide a valid email address.');
+      } else if (err?.code === 'auth/weak-password') {
+        setRegError('Password must be at least 6 characters.');
       } else {
         setRegError(err?.message || 'Failed to create account. Please try again.');
       }

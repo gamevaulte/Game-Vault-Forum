@@ -58,9 +58,20 @@
         "updatedAt": {
           "type": "string",
           "description": "Timestamp of latest profile modification"
+        },
+        "lastLoginAt": {
+          "type": "string",
+          "description": "Timestamp of most recent operative sign-in"
         }
       },
-      "required": ["uid", "email"]
+      "required": [
+        "uid",
+        "email",
+        "displayName",
+        "username",
+        "role",
+        "createdAt"
+      ]
     },
     "topics": {
       "title": "Forum Topics",
@@ -96,13 +107,29 @@
     }
   },
   "firestore": {
-    "Users": {
-      "rules": {
-        "read": "true",
-        "create": "request.auth != null && request.auth.uid == userId",
-        "update": "request.auth != null && request.auth.uid == userId",
-        "delete": "request.auth != null && (request.auth.uid == userId || request.auth.token.email == 'joelotis40@gmail.com')"
-      }
+    "/Users/{userId}": {
+      "schema": "Users",
+      "description": "Primary user profiles collection stored upon registration with required identity, credential, and baseline statistics"
+    },
+    "/users/{userId}": {
+      "schema": "Users",
+      "description": "Mirrored user profiles collection for backward compatibility"
+    },
+    "/topics/{topicId}": {
+      "schema": "topics",
+      "description": "Forum threads created and participated in by operative users"
+    },
+    "/comments/{commentId}": {
+      "schema": "comments",
+      "description": "Operative comments on news articles, video guides, and game reviews"
+    },
+    "/likes/{likeId}": {
+      "schema": "object",
+      "description": "Community upvotes and engagement counters"
+    },
+    "/subscribers/{subscriberId}": {
+      "schema": "object",
+      "description": "Game Vault newsletter email subscribers"
     }
   }
 }
