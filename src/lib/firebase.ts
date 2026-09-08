@@ -1,5 +1,6 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
+import { getAnalytics, isSupported } from "firebase/analytics";
 import { 
   getFirestore, 
   doc, 
@@ -23,8 +24,21 @@ export { firebaseConfig };
 export const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 
-// Initialize Firestore with configured databaseId per Firebase Integration Skill
-export const db = firebaseConfig.firestoreDatabaseId 
+// Initialize Firebase Analytics if supported in the environment (browser window context)
+export let analytics: ReturnType<typeof getAnalytics> | null = null;
+if (typeof window !== "undefined") {
+  isSupported().then((supported) => {
+    if (supported) {
+      analytics = getAnalytics(app);
+      console.log("Firebase Analytics initialized.");
+    }
+  }).catch((err) => {
+    console.debug("Firebase Analytics not supported in current environment:", err);
+  });
+}
+
+// Initialize Firestore
+export const db = firebaseConfig.firestoreDatabaseId && firebaseConfig.firestoreDatabaseId !== "(default)"
   ? getFirestore(app, firebaseConfig.firestoreDatabaseId)
   : getFirestore(app);
 
@@ -141,7 +155,8 @@ export async function addRegisteredUserToFirestore(userData: {
   emailVerified?: boolean;
 }): Promise<FirestoreUserRecord> {
   const cleanEmail = (userData.email || '').trim();
-  const isAdmin = cleanEmail.toLowerCase() === 'joelotis40@gmail.com';
+  const lowerEmail = cleanEmail.toLowerCase();
+  const isAdmin = lowerEmail === 'contact@gamevault.forum' || lowerEmail === 'joelotis40@gmail.com';
   const rawName = userData.displayName?.trim() || cleanEmail.split('@')[0] || 'Vault Operative';
   const cleanUsername = `@${rawName.toLowerCase().replace(/[^a-z0-9]/g, '_').replace(/_+/g, '_')}`;
 

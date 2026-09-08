@@ -1,3 +1,5 @@
+export const CONTACT_EMAIL = 'contact@gamevault.forum';
+
 export const YOUTUBE_CHANNEL = {
   name: 'Game Vault Forum',
   handle: '@gamevaultforum',

@@ -183,7 +183,7 @@ export const TermsOfServiceView: React.FC<TermsOfServiceViewProps> = ({
             <div className="p-4 rounded-xl bg-black/40 border border-white/10 text-sm space-y-1 font-mono text-gray-300">
               <p className="text-white font-bold font-['Rajdhani'] uppercase tracking-wider">Legal Inquiries & Notice</p>
               <p>Game Vault Operations • Joel Ayuba</p>
-              <p>Contact: <a href="mailto:joelotis40@gmail.com" className="text-purple-400 hover:underline">joelotis40@gmail.com</a></p>
+              <p>Contact: <a href="mailto:contact@gamevault.forum" className="text-purple-400 hover:underline">contact@gamevault.forum</a></p>
               <p>Direct Desk: <button onClick={() => onNavigateLegal?.('contact') || onNavigateTab('contact')} className="text-cyan-400 hover:underline cursor-pointer">Official Contact Desk (/contact)</button></p>
             </div>
           </section>

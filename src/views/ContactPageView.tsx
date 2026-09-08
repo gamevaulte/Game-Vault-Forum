@@ -115,7 +115,7 @@ export const ContactPageView: React.FC<ContactPageViewProps> = ({
             Contact Game Vault Forum
           </h1>
           <div className="flex flex-wrap items-center gap-4 text-xs text-gray-400 font-mono">
-            <span>Primary Contact: joelotis40@gmail.com</span>
+            <span>Primary Contact: contact@gamevault.forum</span>
             <span>•</span>
             <span>Publisher: Joel Ayuba</span>
             <span>•</span>
@@ -251,7 +251,7 @@ export const ContactPageView: React.FC<ContactPageViewProps> = ({
               </p>
               <div className="space-y-1.5 pt-1 text-xs font-mono text-gray-300 border-t border-white/5">
                 <p><span className="text-gray-500">Editor-in-Chief:</span> Joel Ayuba</p>
-                <p><span className="text-gray-500">Direct Email:</span> <a href="mailto:joelotis40@gmail.com" className="text-purple-400 hover:underline">joelotis40@gmail.com</a></p>
+                <p><span className="text-gray-500">Direct Email:</span> <a href="mailto:contact@gamevault.forum" className="text-purple-400 hover:underline">contact@gamevault.forum</a></p>
                 <p><span className="text-gray-500">YouTube Channel:</span> <span className="text-cyan-400">@GameVaultForum</span></p>
                 <p><span className="text-gray-500">Website:</span> <span className="text-slate-300">www.gamevault.forum</span></p>
               </div>

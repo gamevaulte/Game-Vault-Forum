@@ -1,12 +1,12 @@
 {
-  "projectId": "gifted-alchemy-flkcn",
-  "appId": "1:208059260807:web:676bdf9b6efb68b5867d22",
-  "apiKey": "AIzaSyAZYLkbZIvRHAGFPIwThU1I2zA9325Uxik",
-  "authDomain": "gifted-alchemy-flkcn.firebaseapp.com",
-  "firestoreDatabaseId": "ai-studio-gamevaultforum-0e21e277-51fa-4254-b5d8-5de3e4cdcd48",
-  "storageBucket": "gifted-alchemy-flkcn.firebasestorage.app",
-  "messagingSenderId": "208059260807",
-  "measurementId": "",
-  "oAuthClientId": "208059260807-510hppb4k1sm0lmcoj1hkd9o36vanfi5.apps.googleusercontent.com",
+  "projectId": "game-vault-forum",
+  "appId": "1:941979479410:web:8cf1ddb6bd50532ec381eb",
+  "apiKey": "AIzaSyDsejuhCdPxHosNFAJn6Bc-0d7lr2hLxNQ",
+  "authDomain": "game-vault-forum.firebaseapp.com",
+  "firestoreDatabaseId": "(default)",
+  "storageBucket": "game-vault-forum.firebasestorage.app",
+  "messagingSenderId": "941979479410",
+  "measurementId": "G-PGRZVHNV1N",
+  "oAuthClientId": "",
   "recaptchaSiteKey": ""
 }
