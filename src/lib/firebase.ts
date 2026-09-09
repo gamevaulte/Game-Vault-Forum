@@ -156,7 +156,7 @@ export async function addRegisteredUserToFirestore(userData: {
 }): Promise<FirestoreUserRecord> {
   const cleanEmail = (userData.email || '').trim();
   const lowerEmail = cleanEmail.toLowerCase();
-  const isAdmin = lowerEmail === 'contact@gamevault.forum' || lowerEmail === 'joelotis40@gmail.com';
+  const isAdmin = lowerEmail === 'contact@gamevault.forum';
   const rawName = userData.displayName?.trim() || cleanEmail.split('@')[0] || 'Vault Operative';
   const cleanUsername = `@${rawName.toLowerCase().replace(/[^a-z0-9]/g, '_').replace(/_+/g, '_')}`;
 
