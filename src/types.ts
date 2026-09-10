@@ -13,6 +13,7 @@ export type PageTab =
   | 'gaming-username-generator'
   | 'gaming-pc-builder'
   | 'vault-ai'
+  | 'sitemap'
   | 'finder'
   | 'compare'
   | 'quiz';

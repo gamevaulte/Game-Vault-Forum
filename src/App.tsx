@@ -50,6 +50,7 @@ import { UsernameGeneratorView } from './views/UsernameGeneratorView';
 import { PcBuilderView } from './views/PcBuilderView';
 import { ToolsHubView } from './views/ToolsHubView';
 import { VaultAiView } from './views/VaultAiView';
+import { SitemapView } from './views/SitemapView';
 import { VaultAiFloatingButton } from './components/ai/VaultAiFloatingButton';
 import { CookieConsentBanner } from './components/CookieConsentBanner';
 import { AdBanner } from './components/AdBanner';

@@ -29,7 +29,8 @@ export type Route =
   | { type: 'tools' }
   | { type: 'gaming-username-generator' }
   | { type: 'gaming-pc-builder'; buildId?: string }
-  | { type: 'vault-ai'; initialPrompt?: string };
+  | { type: 'vault-ai'; initialPrompt?: string }
+  | { type: 'sitemap' };
 
 export function parseRoute(rawPath: string): Route {
   // Support both /path and #/path formats
@@ -125,6 +126,7 @@ export function parseRoute(rawPath: string): Route {
   if (seg1 === 'privacy' || seg1 === 'privacy-policy') return { type: 'privacy' };
   if (seg1 === 'terms' || seg1 === 'terms-of-service' || seg1 === 'tos') return { type: 'terms' };
   if (seg1 === 'cookies' || seg1 === 'cookie-policy') return { type: 'cookies' };
+  if (seg1 === 'sitemap' || seg1 === 'site-map') return { type: 'sitemap' };
   if (seg1 === 'login' || seg1 === 'signin') return { type: 'login' };
   if (seg1 === 'register' || seg1 === 'signup') return { type: 'register' };
 
@@ -193,6 +195,8 @@ export function routeToUrl(route: Route): string {
         : '/tools/gaming-pc-builder';
     case 'vault-ai':
       return '/tools/vault-ai';
+    case 'sitemap':
+      return '/sitemap';
   }
 }
 
