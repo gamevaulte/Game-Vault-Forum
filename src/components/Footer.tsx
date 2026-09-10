@@ -6,7 +6,7 @@ import { YOUTUBE_CHANNEL } from '../lib/constants';
 
 interface FooterProps {
   onSelectTab: (tab: PageTab) => void;
-  onSubscribeNewsletter: (email: string) => void;
+  onSubscribeNewsletter: (email: string) => Promise<void> | void;
   onOpenGuidelines: () => void;
   onOpenPrivacy?: () => void;
   onOpenTerms?: () => void;
@@ -27,14 +27,22 @@ export const Footer: React.FC<FooterProps> = ({
 }) => {
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleSubscribe = (e: React.FormEvent) => {
+  const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !email.includes('@')) return;
-    onSubscribeNewsletter(email);
-    setSubscribed(true);
-    setEmail('');
-    setTimeout(() => setSubscribed(false), 5000);
+    setSubmitting(true);
+    try {
+      await onSubscribeNewsletter(email);
+      setSubscribed(true);
+      setEmail('');
+      setTimeout(() => setSubscribed(false), 5000);
+    } catch {
+      // handled upstream via toast
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const navLinks: { id: PageTab; label: string }[] = [
@@ -259,9 +267,12 @@ export const Footer: React.FC<FooterProps> = ({
               </div>
               <button
                 type="submit"
-                className="w-full py-2.5 px-4 bg-purple-600 hover:bg-purple-500 text-white text-xs font-['Rajdhani'] font-bold uppercase tracking-wider rounded-xl shadow-lg shadow-purple-900/30 transition-all flex items-center justify-center gap-1.5"
+                disabled={submitting}
+                className="w-full py-2.5 px-4 bg-purple-600 hover:bg-purple-500 disabled:opacity-50 text-white text-xs font-['Rajdhani'] font-bold uppercase tracking-wider rounded-xl shadow-lg shadow-purple-900/30 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
               >
-                {subscribed ? (
+                {submitting ? (
+                  <span>Registering...</span>
+                ) : subscribed ? (
                   <>
                     <Check className="w-4 h-4 text-emerald-300" />
                     <span>Subscribed!</span>

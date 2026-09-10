@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   X, 
   User, 
@@ -15,9 +15,20 @@ import {
   Mail,
   Heart,
   MessageSquare,
-  PenSquare
+  PenSquare,
+  Inbox,
+  Users,
+  RefreshCw,
+  CheckCircle,
+  Clock,
+  Send
 } from 'lucide-react';
-import { UserAccount, Video, Game, Article, Review, Guide } from '../types';
+import { UserAccount, Video, Game, Article, Review, Guide, ContactSubmission, NewsletterSubscriber, ContactSubmissionStatus } from '../types';
+import { 
+  getContactSubmissionsFromFirestore, 
+  getSubscribersFromFirestore, 
+  updateContactSubmissionStatus 
+} from '../lib/firebase';
 
 interface AuthProfileModalProps {
   isOpen: boolean;
@@ -34,7 +45,7 @@ interface AuthProfileModalProps {
   onSelectReview: (r: Review) => void;
   onSelectGuide: (g: Guide) => void;
   onSignOut?: () => void;
-  initialTab?: 'profile' | 'guidelines';
+  initialTab?: 'profile' | 'guidelines' | 'admin';
 }
 
 export const AuthProfileModal: React.FC<AuthProfileModalProps> = ({
@@ -54,7 +65,47 @@ export const AuthProfileModal: React.FC<AuthProfileModalProps> = ({
   onSignOut,
   initialTab = 'profile'
 }) => {
-  const [activeTab, setActiveTab] = useState<'profile' | 'guidelines'>(initialTab);
+  const [activeTab, setActiveTab] = useState<'profile' | 'guidelines' | 'admin'>(initialTab);
+  const isAdmin = user.email === 'contact@gamevault.forum';
+
+  // Admin Firestore state
+  const [adminView, setAdminView] = useState<'inquiries' | 'subscribers'>('inquiries');
+  const [contactSubmissions, setContactSubmissions] = useState<ContactSubmission[]>([]);
+  const [subscribers, setSubscribers] = useState<NewsletterSubscriber[]>([]);
+  const [loadingAdminData, setLoadingAdminData] = useState(false);
+
+  useEffect(() => {
+    if (isAdmin && activeTab === 'admin' && isOpen) {
+      loadAdminFirestoreData();
+    }
+  }, [isAdmin, activeTab, isOpen]);
+
+  const loadAdminFirestoreData = async () => {
+    setLoadingAdminData(true);
+    try {
+      const [submissions, subs] = await Promise.all([
+        getContactSubmissionsFromFirestore(),
+        getSubscribersFromFirestore()
+      ]);
+      setContactSubmissions(submissions);
+      setSubscribers(subs);
+    } catch (err) {
+      console.warn('Admin data load note:', err);
+    } finally {
+      setLoadingAdminData(false);
+    }
+  };
+
+  const handleStatusChange = async (id: string, newStatus: ContactSubmissionStatus) => {
+    try {
+      await updateContactSubmissionStatus(id, newStatus);
+      setContactSubmissions(prev => 
+        prev.map(sub => sub.id === id ? { ...sub, status: newStatus } : sub)
+      );
+    } catch (err) {
+      console.error('Error updating status:', err);
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -107,6 +158,19 @@ export const AuthProfileModal: React.FC<AuthProfileModalProps> = ({
             >
               Community Guidelines
             </button>
+            {isAdmin && (
+              <button
+                onClick={() => setActiveTab('admin')}
+                className={`px-3 py-1 text-xs font-['Rajdhani'] font-bold uppercase tracking-wider rounded-lg transition-colors flex items-center gap-1.5 ${
+                  activeTab === 'admin'
+                    ? 'bg-purple-600 text-white'
+                    : 'text-purple-400 hover:text-purple-300'
+                }`}
+              >
+                <Inbox className="w-3.5 h-3.5" />
+                <span>Admin Desk</span>
+              </button>
+            )}
           </div>
 
           <button
@@ -327,7 +391,7 @@ export const AuthProfileModal: React.FC<AuthProfileModalProps> = ({
                 )}
               </div>
             </>
-          ) : (
+          ) : activeTab === 'guidelines' ? (
             /* Community Guidelines View */
             <div className="space-y-4 text-sm text-slate-300 font-['Inter']">
               <div className="flex items-center gap-2 text-purple-400 font-['Rajdhani'] font-bold uppercase tracking-wider text-base">
@@ -357,6 +421,168 @@ export const AuthProfileModal: React.FC<AuthProfileModalProps> = ({
               <p className="text-xs text-slate-500">
                 Operated under Vault Protocol 2026. Violations result in reputation loss or temporary forum lock.
               </p>
+            </div>
+          ) : (
+            /* Admin Desk View (contact@gamevault.forum only) */
+            <div className="space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-[#131625] border border-[#232942] rounded-xl">
+                <div>
+                  <h3 className="text-sm font-['Space_Grotesk'] font-bold text-white flex items-center gap-2">
+                    <Inbox className="w-4 h-4 text-purple-400" />
+                    <span>Firestore Database Dispatch & CRM</span>
+                  </h3>
+                  <p className="text-xs text-slate-400">
+                    Live records stored securely in Firestore collections: <code className="text-purple-300 font-mono">contact_submissions</code> & <code className="text-purple-300 font-mono">subscribers</code>
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={loadAdminFirestoreData}
+                  disabled={loadingAdminData}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-xs text-slate-300 hover:text-white border border-white/10 transition-colors cursor-pointer self-start sm:self-auto"
+                >
+                  <RefreshCw className={`w-3.5 h-3.5 ${loadingAdminData ? 'animate-spin text-purple-400' : ''}`} />
+                  <span>Refresh Firestore</span>
+                </button>
+              </div>
+
+              {/* Sub tabs */}
+              <div className="flex items-center gap-2 border-b border-[#232942] pb-2">
+                <button
+                  type="button"
+                  onClick={() => setAdminView('inquiries')}
+                  className={`px-3 py-1 text-xs font-['Rajdhani'] font-bold uppercase tracking-wider rounded-lg transition-colors flex items-center gap-1.5 ${
+                    adminView === 'inquiries'
+                      ? 'bg-purple-600/30 text-purple-300 border border-purple-500/40'
+                      : 'text-slate-400 hover:text-white'
+                  }`}
+                >
+                  <Mail className="w-3.5 h-3.5" />
+                  <span>Contact Inquiries ({contactSubmissions.length})</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setAdminView('subscribers')}
+                  className={`px-3 py-1 text-xs font-['Rajdhani'] font-bold uppercase tracking-wider rounded-lg transition-colors flex items-center gap-1.5 ${
+                    adminView === 'subscribers'
+                      ? 'bg-purple-600/30 text-purple-300 border border-purple-500/40'
+                      : 'text-slate-400 hover:text-white'
+                  }`}
+                >
+                  <Users className="w-3.5 h-3.5" />
+                  <span>Subscribers ({subscribers.length})</span>
+                </button>
+              </div>
+
+              {/* View Content */}
+              {adminView === 'inquiries' ? (
+                <div className="space-y-3">
+                  {loadingAdminData && contactSubmissions.length === 0 ? (
+                    <div className="py-8 text-center text-xs text-slate-400 font-mono">
+                      Querying Firestore contact_submissions...
+                    </div>
+                  ) : contactSubmissions.length === 0 ? (
+                    <div className="py-8 text-center text-xs text-slate-400 bg-[#131625] rounded-xl border border-dashed border-[#232942] p-4">
+                      No contact inquiries submitted yet. Submissions from <span className="text-purple-300">/contact</span> will securely appear here.
+                    </div>
+                  ) : (
+                    contactSubmissions.map((item) => (
+                      <div key={item.id} className="p-4 rounded-xl bg-[#131625] border border-[#232942] space-y-3">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/5 pb-2">
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm font-bold text-white">{item.name}</span>
+                              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-purple-950 text-purple-300 border border-purple-800/40 uppercase">
+                                {item.category}
+                              </span>
+                              <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full uppercase ${
+                                item.status === 'new' 
+                                  ? 'bg-amber-950/60 text-amber-300 border border-amber-800/40' 
+                                  : item.status === 'replied'
+                                  ? 'bg-emerald-950/60 text-emerald-300 border border-emerald-800/40'
+                                  : 'bg-slate-800 text-slate-300 border border-slate-700'
+                              }`}>
+                                {item.status}
+                              </span>
+                            </div>
+                            <a href={`mailto:${item.email}`} className="text-xs text-purple-400 hover:underline">
+                              {item.email}
+                            </a>
+                          </div>
+                          <span className="text-[11px] text-slate-500 font-mono">
+                            {new Date(item.createdAt).toLocaleString()}
+                          </span>
+                        </div>
+
+                        {item.subject && (
+                          <div className="text-xs font-semibold text-slate-200">
+                            Subject: {item.subject}
+                          </div>
+                        )}
+
+                        <div className="p-3 rounded-lg bg-black/40 border border-white/5 text-xs text-slate-300 whitespace-pre-wrap leading-relaxed">
+                          {item.message}
+                        </div>
+
+                        {/* Status update controls */}
+                        <div className="flex items-center justify-between pt-1">
+                          <span className="text-[11px] text-slate-500 font-mono">Doc ID: {item.id}</span>
+                          <div className="flex items-center gap-1.5">
+                            {(['new', 'read', 'replied', 'archived'] as ContactSubmissionStatus[]).map((st) => (
+                              <button
+                                key={st}
+                                type="button"
+                                onClick={() => handleStatusChange(item.id, st)}
+                                className={`text-[10px] uppercase font-mono px-2 py-0.5 rounded transition-colors ${
+                                  item.status === st
+                                    ? 'bg-purple-600 text-white font-bold'
+                                    : 'bg-white/5 text-slate-400 hover:text-white'
+                                }`}
+                              >
+                                {st}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {loadingAdminData && subscribers.length === 0 ? (
+                    <div className="py-8 text-center text-xs text-slate-400 font-mono">
+                      Querying Firestore subscribers...
+                    </div>
+                  ) : subscribers.length === 0 ? (
+                    <div className="py-8 text-center text-xs text-slate-400 bg-[#131625] rounded-xl border border-dashed border-[#232942] p-4">
+                      No subscribers registered yet. Submissions from the footer newsletter form will appear here.
+                    </div>
+                  ) : (
+                    <div className="divide-y divide-white/5 bg-[#131625] rounded-xl border border-[#232942] overflow-hidden">
+                      {subscribers.map((sub) => (
+                        <div key={sub.id || sub.email} className="p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2 hover:bg-white/[0.02]">
+                          <div className="flex items-center gap-2.5">
+                            <div className="w-7 h-7 rounded-lg bg-purple-900/40 text-purple-300 flex items-center justify-center text-xs font-bold">
+                              @
+                            </div>
+                            <div>
+                              <div className="text-xs font-semibold text-white">{sub.email}</div>
+                              <div className="text-[10px] text-slate-500 font-mono">
+                                Source: {sub.source || 'footer'} • Status: {sub.status}
+                              </div>
+                            </div>
+                          </div>
+                          <span className="text-[11px] text-slate-500 font-mono">
+                            {new Date(sub.subscribedAt).toLocaleDateString()}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           )}
         </div>

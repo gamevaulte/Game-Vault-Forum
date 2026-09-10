@@ -59,7 +59,8 @@ import {
   saveTopicToFirestore, 
   saveCommentToFirestore, 
   syncLikeToFirestore, 
-  saveNewsletterSubscriber 
+  saveNewsletterSubscriber,
+  ensureInitialFirestoreDocuments 
 } from './lib/firebase';
 
 export default function App() {
@@ -227,6 +228,13 @@ export default function App() {
 
     return () => unsubscribe();
   }, []);
+
+  // Ensure initial Firestore documents when admin is active
+  useEffect(() => {
+    if (firebaseUser && firebaseUser.email === 'contact@gamevault.forum') {
+      ensureInitialFirestoreDocuments();
+    }
+  }, [firebaseUser]);
 
   // Persist topics, user, likes, comments
   useEffect(() => {
@@ -611,9 +619,15 @@ export default function App() {
     navigate(`/forum/${getSeoSlug(fullTopic)}`);
   };
 
-  const handleSubscribeNewsletter = (email: string) => {
-    saveNewsletterSubscriber(email);
-    addToast(`Access granted! ${email} has been registered to the Vault Dispatch.`, 'success');
+  const handleSubscribeNewsletter = async (email: string) => {
+    try {
+      await saveNewsletterSubscriber(email, 'footer');
+      addToast(`Access granted! ${email} has been registered to the Vault Dispatch in Firestore.`, 'success');
+    } catch (err: any) {
+      console.error('Newsletter subscription error:', err);
+      addToast(err?.message || 'Unable to register email at this time. Please check your connection.', 'info');
+      throw err;
+    }
   };
 
   // Dynamic SEO optimization for top-level pages

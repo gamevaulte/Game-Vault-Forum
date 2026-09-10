@@ -104,6 +104,37 @@
         "likes": { "type": "number" }
       },
       "required": ["id", "postId", "content"]
+    },
+    "ContactSubmissions": {
+      "title": "Contact Submissions",
+      "description": "Direct reader inquiries, feedback, and editorial submissions sent through the Contact Us form",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique identifier for the contact submission" },
+        "name": { "type": "string", "minLength": 1, "maxLength": 100, "description": "Sender full name or handle" },
+        "email": { "type": "string", "format": "email", "minLength": 3, "maxLength": 120, "description": "Sender email address for follow-up" },
+        "category": { "type": "string", "maxLength": 50, "description": "Inquiry department or category" },
+        "subject": { "type": "string", "maxLength": 200, "description": "Brief topic or subject of the inquiry" },
+        "message": { "type": "string", "minLength": 5, "maxLength": 3000, "description": "Detailed body of the inquiry" },
+        "createdAt": { "type": "string", "description": "ISO timestamp of when the message was dispatched" },
+        "status": { "type": "string", "enum": ["new", "read", "replied", "archived"], "description": "Editorial triage status" },
+        "userId": { "type": "string", "description": "Optional user UID if submitted by an authenticated user" },
+        "userAgent": { "type": "string", "maxLength": 150, "description": "Client browser metadata for security and debugging" }
+      },
+      "required": ["id", "name", "email", "category", "message", "createdAt", "status"]
+    },
+    "Subscribers": {
+      "title": "Newsletter Subscribers",
+      "description": "Game Vault newsletter email subscribers registered for Vault Dispatch updates",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Normalized identifier for the subscriber record" },
+        "email": { "type": "string", "format": "email", "minLength": 3, "maxLength": 120, "description": "Subscriber email address" },
+        "subscribedAt": { "type": "string", "description": "ISO timestamp of newsletter subscription" },
+        "status": { "type": "string", "enum": ["active", "unsubscribed"], "description": "Subscription state" },
+        "source": { "type": "string", "maxLength": 50, "description": "Source placement of the subscription" }
+      },
+      "required": ["email", "subscribedAt", "status"]
     }
   },
   "firestore": {
@@ -128,8 +159,12 @@
       "description": "Community upvotes and engagement counters"
     },
     "/subscribers/{subscriberId}": {
-      "schema": "object",
-      "description": "Game Vault newsletter email subscribers"
+      "schema": "Subscribers",
+      "description": "Game Vault newsletter email subscribers stored from subscription forms"
+    },
+    "/contact_submissions/{submissionId}": {
+      "schema": "ContactSubmissions",
+      "description": "Reader inquiries, press requests, and messages sent via the Contact Us form"
     }
   }
 }

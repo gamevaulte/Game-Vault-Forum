@@ -15,6 +15,7 @@ import {
   Briefcase
 } from 'lucide-react';
 import { PageTab } from '../types';
+import { saveContactSubmission } from '../lib/firebase';
 
 interface ContactPageViewProps {
   onBack: () => void;
@@ -36,19 +37,37 @@ export const ContactPageView: React.FC<ContactPageViewProps> = ({
   const [message, setMessage] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim() || !email.trim() || !message.trim()) return;
 
     setSubmitting(true);
-    setTimeout(() => {
+    setErrorMessage(null);
+
+    try {
+      await saveContactSubmission({
+        name,
+        email,
+        category,
+        subject: subject.trim() || undefined,
+        message
+      });
       setSubmitting(false);
       setSubmitted(true);
       if (onShowToast) {
-        onShowToast('Inquiry received. The Game Vault editorial team will reply within 24-48 hours.', 'success');
+        onShowToast('Inquiry recorded securely in Firestore. The Game Vault editorial team will reply within 24-48 hours.', 'success');
       }
-    }, 800);
+    } catch (err: any) {
+      console.error('Contact form submission error:', err);
+      setSubmitting(false);
+      const userMsg = err?.message || 'Unable to store your inquiry in the database. Please check your connection and retry.';
+      setErrorMessage(userMsg);
+      if (onShowToast) {
+        onShowToast(userMsg, 'info');
+      }
+    }
   };
 
   const handleReset = () => {
@@ -58,6 +77,7 @@ export const ContactPageView: React.FC<ContactPageViewProps> = ({
     setSubject('');
     setMessage('');
     setSubmitted(false);
+    setErrorMessage(null);
   };
 
   return (
@@ -151,6 +171,12 @@ export const ContactPageView: React.FC<ContactPageViewProps> = ({
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-4">
+                {errorMessage && (
+                  <div className="p-3.5 rounded-xl bg-red-950/40 border border-red-500/30 text-red-300 text-xs flex items-center gap-2.5">
+                    <AlertCircle className="w-4 h-4 shrink-0 text-red-400" />
+                    <span>{errorMessage}</span>
+                  </div>
+                )}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
                     <label className="block text-xs font-['Rajdhani'] font-bold uppercase tracking-wider text-gray-300">

@@ -187,3 +187,35 @@ export interface ForumCategory {
   description: string;
   topicCount: number;
 }
+
+export type ContactCategory = 
+  | 'editorial'
+  | 'advertising'
+  | 'reviews'
+  | 'corrections'
+  | 'dmca'
+  | 'technical'
+  | 'general';
+
+export type ContactSubmissionStatus = 'new' | 'read' | 'replied' | 'archived';
+
+export interface ContactSubmission {
+  id: string;
+  name: string;
+  email: string;
+  category: ContactCategory | string;
+  subject?: string;
+  message: string;
+  createdAt: string;
+  status: ContactSubmissionStatus;
+  userId?: string | null;
+  userAgent?: string;
+}
+
+export interface NewsletterSubscriber {
+  id: string;
+  email: string;
+  subscribedAt: string;
+  status: 'active' | 'unsubscribed';
+  source?: string;
+}

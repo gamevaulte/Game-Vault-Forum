@@ -14,10 +14,11 @@ import {
   orderBy, 
   limit, 
   addDoc,
+  getDocs,
   serverTimestamp
 } from "firebase/firestore";
 import firebaseConfig from "../../firebase-applet-config.json";
-import { ForumTopic, PostComment, UserAccount } from "../types";
+import { ForumTopic, PostComment, UserAccount, ContactSubmission, NewsletterSubscriber, ContactSubmissionStatus } from "../types";
 
 // Initialize Firebase App
 export { firebaseConfig };
@@ -391,17 +392,198 @@ export async function syncLikeToFirestore(itemId: string, count: number, userUid
 }
 
 /**
- * Save newsletter subscriber in Firestore
+ * Save newsletter subscriber into Firestore subscribers collection
  */
-export async function saveNewsletterSubscriber(email: string): Promise<void> {
+export async function saveNewsletterSubscriber(email: string, source: string = 'footer'): Promise<NewsletterSubscriber> {
+  const clean = (email || '').trim().toLowerCase().slice(0, 120);
+  if (!clean || !clean.includes('@') || clean.length < 3) {
+    throw new Error('Please enter a valid email address.');
+  }
+
+  // Safe valid Firestore document ID
+  const subId = clean.replace(/[^a-z0-9]/g, '_').slice(0, 120);
+  const nowIso = new Date().toISOString();
+
+  const subscriberRecord: NewsletterSubscriber = {
+    id: subId,
+    email: clean,
+    subscribedAt: nowIso,
+    status: 'active',
+    source: (source || 'footer').slice(0, 50)
+  };
+
   try {
-    const clean = email.trim().toLowerCase();
-    const subId = clean.replace(/[^a-z0-9]/g, '_');
     await setDoc(doc(db, 'subscribers', subId), {
-      email: clean,
-      subscribedAt: new Date().toISOString()
+      id: subscriberRecord.id,
+      email: subscriberRecord.email,
+      subscribedAt: subscriberRecord.subscribedAt,
+      status: subscriberRecord.status,
+      source: subscriberRecord.source
     }, { merge: true });
-  } catch (err) {
-    console.warn('Firestore subscriber warning:', err);
+    
+    return subscriberRecord;
+  } catch (error) {
+    console.error('Failed to save subscriber to Firestore:', error);
+    handleFirestoreError(error, OperationType.WRITE, `subscribers/${subId}`);
+    return subscriberRecord;
   }
 }
+
+/**
+ * Save user inquiry into Firestore contact_submissions collection
+ */
+export async function saveContactSubmission(input: {
+  name: string;
+  email: string;
+  category: string;
+  subject?: string;
+  message: string;
+  userId?: string | null;
+}): Promise<ContactSubmission> {
+  const cleanName = (input.name || '').trim().slice(0, 100);
+  const cleanEmail = (input.email || '').trim().toLowerCase().slice(0, 120);
+  const cleanCategory = (input.category || 'editorial').trim().slice(0, 50);
+  const cleanSubject = (input.subject || '').trim().slice(0, 200);
+  const cleanMessage = (input.message || '').trim().slice(0, 3000);
+  const userAgent = typeof navigator !== 'undefined' ? navigator.userAgent.slice(0, 150) : 'Web Client';
+
+  if (!cleanName || cleanName.length < 1) {
+    throw new Error('Please provide your name.');
+  }
+  if (!cleanEmail || !cleanEmail.includes('@') || cleanEmail.length < 3) {
+    throw new Error('Please provide a valid email address.');
+  }
+  if (!cleanMessage || cleanMessage.length < 5) {
+    throw new Error('Message details must be at least 5 characters.');
+  }
+
+  // Generate safe valid Firestore document ID
+  const timestamp = Date.now();
+  const randomSuffix = Math.random().toString(36).substring(2, 9);
+  const submissionId = `contact_${timestamp}_${randomSuffix}`;
+  const nowIso = new Date().toISOString();
+
+  const submissionDoc: ContactSubmission = {
+    id: submissionId,
+    name: cleanName,
+    email: cleanEmail,
+    category: cleanCategory,
+    subject: cleanSubject || undefined,
+    message: cleanMessage,
+    createdAt: nowIso,
+    status: 'new',
+    userId: input.userId || auth.currentUser?.uid || null,
+    userAgent
+  };
+
+  // Clean data structure matching Firestore rules
+  const firestoreData: Record<string, any> = {
+    id: submissionDoc.id,
+    name: submissionDoc.name,
+    email: submissionDoc.email,
+    category: submissionDoc.category,
+    message: submissionDoc.message,
+    createdAt: submissionDoc.createdAt,
+    status: submissionDoc.status
+  };
+
+  if (submissionDoc.subject) {
+    firestoreData.subject = submissionDoc.subject;
+  }
+  if (submissionDoc.userId) {
+    firestoreData.userId = submissionDoc.userId;
+  }
+  if (submissionDoc.userAgent) {
+    firestoreData.userAgent = submissionDoc.userAgent;
+  }
+
+  try {
+    await setDoc(doc(db, 'contact_submissions', submissionId), firestoreData);
+    return submissionDoc;
+  } catch (error) {
+    console.error('Failed to save contact submission to Firestore:', error);
+    handleFirestoreError(error, OperationType.CREATE, `contact_submissions/${submissionId}`);
+    return submissionDoc;
+  }
+}
+
+/**
+ * Fetch contact submissions for authorized administrative accounts
+ */
+export async function getContactSubmissionsFromFirestore(): Promise<ContactSubmission[]> {
+  try {
+    const q = query(collection(db, 'contact_submissions'), orderBy('createdAt', 'desc'), limit(50));
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map(doc => doc.data() as ContactSubmission);
+  } catch (error) {
+    console.warn('Could not load contact submissions:', error);
+    return [];
+  }
+}
+
+/**
+ * Fetch newsletter subscriber list for authorized administrative accounts
+ */
+export async function getSubscribersFromFirestore(): Promise<NewsletterSubscriber[]> {
+  try {
+    const q = query(collection(db, 'subscribers'), orderBy('subscribedAt', 'desc'), limit(100));
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map(doc => doc.data() as NewsletterSubscriber);
+  } catch (error) {
+    console.warn('Could not load newsletter subscribers:', error);
+    return [];
+  }
+}
+
+/**
+ * Update contact submission review status (admin only)
+ */
+export async function updateContactSubmissionStatus(
+  submissionId: string, 
+  status: ContactSubmissionStatus
+): Promise<void> {
+  try {
+    const docRef = doc(db, 'contact_submissions', submissionId);
+    await updateDoc(docRef, { status });
+  } catch (error) {
+    console.error('Failed to update contact submission status:', error);
+    handleFirestoreError(error, OperationType.UPDATE, `contact_submissions/${submissionId}`);
+  }
+}
+
+/**
+ * Initialize baseline official verified documents in Firestore
+ */
+export async function ensureInitialFirestoreDocuments(): Promise<void> {
+  try {
+    // Only verify baseline records if current user is authorized or on boot
+    const officialSubId = 'contact_gamevault_forum';
+    const subRef = doc(db, 'subscribers', officialSubId);
+    await setDoc(subRef, {
+      id: officialSubId,
+      email: 'contact@gamevault.forum',
+      subscribedAt: new Date().toISOString(),
+      status: 'active',
+      source: 'system_official'
+    }, { merge: true });
+
+    const officialContactId = 'submission_official_registry';
+    const contactRef = doc(db, 'contact_submissions', officialContactId);
+    await setDoc(contactRef, {
+      id: officialContactId,
+      name: 'Game Vault Editorial Desk',
+      email: 'contact@gamevault.forum',
+      category: 'editorial',
+      subject: 'Official Communications Registry Initialized',
+      message: 'Official communications registry initialized for Game Vault Forum editorial, reviews, corrections, and reader inquiries.',
+      createdAt: new Date().toISOString(),
+      status: 'read',
+      userId: 'system',
+      userAgent: 'Game Vault Core Protocol'
+    }, { merge: true });
+  } catch (err) {
+    // Suppress if non-admin or offline
+    console.debug('Initial Firestore documents verification note:', err);
+  }
+}
+
