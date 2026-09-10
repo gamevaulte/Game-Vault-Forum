@@ -140,6 +140,20 @@ export const Footer: React.FC<FooterProps> = ({
             <ul className="space-y-2 text-sm text-gray-400">
               <li>
                 <a
+                  href="/tools/pc-game-requirements-checker"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onSelectTab('pc-requirements');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  className="hover:text-cyan-300 text-purple-300 font-semibold transition-colors flex items-center gap-1.5 group text-left"
+                >
+                  <ChevronRight className="w-3 h-3 text-cyan-400 group-hover:text-cyan-300 transition-colors" />
+                  <span>🖥️ Can My PC Run This Game?</span>
+                </a>
+              </li>
+              <li>
+                <a
                   href="/forum"
                   onClick={(e) => {
                     e.preventDefault();

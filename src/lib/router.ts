@@ -24,7 +24,8 @@ export type Route =
   | { type: 'terms' }
   | { type: 'cookies' }
   | { type: 'login' }
-  | { type: 'register' };
+  | { type: 'register' }
+  | { type: 'pc-requirements'; gameSlug?: string };
 
 export function parseRoute(rawPath: string): Route {
   // Support both /path and #/path formats
@@ -39,6 +40,14 @@ export function parseRoute(rawPath: string): Route {
   }
 
   const [seg1, seg2, seg3] = parts;
+
+  // Dedicated Tool: PC Game Requirements Checker
+  if (seg1 === 'tools' && (seg2 === 'pc-game-requirements-checker' || seg2 === 'pc-requirements')) {
+    return { type: 'pc-requirements', gameSlug: seg3 };
+  }
+  if (seg1 === 'pc-game-requirements-checker' || seg1 === 'pc-requirements' || seg1 === 'can-my-pc-run-this-game') {
+    return { type: 'pc-requirements', gameSlug: seg2 };
+  }
 
   if (seg1 === 'videos') {
     if (seg2) return { type: 'video', id: seg2, slug: seg2 };
@@ -133,6 +142,10 @@ export function routeToUrl(route: Route): string {
       return '/login';
     case 'register':
       return '/register';
+    case 'pc-requirements':
+      return route.gameSlug
+        ? `/tools/pc-game-requirements-checker/${route.gameSlug}`
+        : '/tools/pc-game-requirements-checker';
   }
 }
 

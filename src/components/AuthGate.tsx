@@ -80,18 +80,44 @@ export const AuthGate: React.FC<AuthGateProps> = ({
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Handle Profile Photo Upload
+  // Handle Profile Photo Upload with automatic Canvas compression
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        setRegError('Image must be under 5MB');
+      if (file.size > 10 * 1024 * 1024) {
+        setRegError('Image must be under 10MB');
         return;
       }
       setAvatarFile(file);
       const reader = new FileReader();
-      reader.onload = () => {
-        setAvatarPreview(reader.result as string);
+      reader.onload = (readerEvt) => {
+        const rawResult = readerEvt.target?.result as string;
+        const img = new Image();
+        img.onload = () => {
+          try {
+            const canvas = document.createElement('canvas');
+            const size = 128;
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext('2d');
+            if (ctx) {
+              const minDim = Math.min(img.width, img.height);
+              const sx = (img.width - minDim) / 2;
+              const sy = (img.height - minDim) / 2;
+              ctx.drawImage(img, sx, sy, minDim, minDim, 0, 0, size, size);
+              const compressedUrl = canvas.toDataURL('image/jpeg', 0.85);
+              setAvatarPreview(compressedUrl);
+            } else {
+              setAvatarPreview(rawResult);
+            }
+          } catch {
+            setAvatarPreview(rawResult);
+          }
+        };
+        img.onerror = () => {
+          setAvatarPreview(rawResult);
+        };
+        img.src = rawResult;
       };
       reader.readAsDataURL(file);
     }
@@ -147,7 +173,7 @@ export const AuthGate: React.FC<AuthGateProps> = ({
     e.preventDefault();
     setLoginError(null);
 
-    const email = loginEmail.trim();
+    const email = loginEmail.trim().toLowerCase();
     if (!email || !loginPassword) {
       setLoginError('incorrect login details');
       return;
@@ -155,16 +181,42 @@ export const AuthGate: React.FC<AuthGateProps> = ({
 
     setLoginLoading(true);
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, loginPassword);
+      let userCredential;
+      try {
+        userCredential = await signInWithEmailAndPassword(auth, email, loginPassword);
+      } catch (signInErr: any) {
+        // If designated administrator credentials are used, auto-create in Firebase Auth if not already existing
+        if (
+          email === 'contact@gamevault.forum' &&
+          loginPassword === 'Freaky777@' &&
+          (signInErr?.code === 'auth/user-not-found' ||
+           signInErr?.code === 'auth/invalid-credential' ||
+           signInErr?.code === 'auth/invalid-login-credentials')
+        ) {
+          userCredential = await createUserWithEmailAndPassword(auth, email, loginPassword);
+          try {
+            await updateProfile(userCredential.user, {
+              displayName: 'Vault Administrator',
+              photoURL: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80'
+            });
+          } catch (_) {}
+        } else {
+          throw signInErr;
+        }
+      }
       
-      // Update lastLoginAt in Firestore collection 'Users'
-      if (userCredential.user) {
+      // Ensure user document exists in Firestore 'Users' and refresh lastLoginAt
+      if (userCredential && userCredential.user) {
         try {
-          await updateUserInFirestore(userCredential.user.uid, {
-            lastLoginAt: new Date().toISOString()
+          await addRegisteredUserToFirestore({
+            uid: userCredential.user.uid,
+            email: userCredential.user.email || email,
+            displayName: userCredential.user.displayName || 'Vault Administrator',
+            photoURL: userCredential.user.photoURL,
+            emailVerified: userCredential.user.emailVerified
           });
         } catch (syncErr) {
-          console.warn('Firestore last login sync warning:', syncErr);
+          console.warn('Firestore user synchronization on sign in warning:', syncErr);
         }
       }
 
@@ -177,13 +229,20 @@ export const AuthGate: React.FC<AuthGateProps> = ({
       if (
         err?.code === 'auth/invalid-credential' ||
         err?.code === 'auth/wrong-password' ||
-        err?.code === 'auth/user-not-found'
+        err?.code === 'auth/user-not-found' ||
+        err?.code === 'auth/invalid-login-credentials'
       ) {
         setLoginError('incorrect login details');
       } else if (err?.code === 'auth/invalid-email') {
         setLoginError('Please enter a valid email address.');
+      } else if (err?.code === 'auth/user-disabled') {
+        setLoginError('This user account has been disabled. Please contact support.');
       } else if (err?.code === 'auth/too-many-requests') {
-        setLoginError('Too many failed attempts. Please try again in a few moments or reset your password.');
+        setLoginError('Too many failed attempts. Access temporarily restricted. Try again later or reset password.');
+      } else if (err?.code === 'auth/operation-not-allowed') {
+        setLoginError('Email/Password provider is not enabled in Firebase Console. Please enable Email/Password in Authentication settings.');
+      } else if (err?.code === 'auth/network-request-failed') {
+        setLoginError('Network connection error. Please check your internet connection.');
       } else {
         setLoginError('incorrect login details');
       }
@@ -198,7 +257,7 @@ export const AuthGate: React.FC<AuthGateProps> = ({
     setRegError(null);
 
     const name = regName.trim();
-    const email = regEmail.trim();
+    const email = regEmail.trim().toLowerCase();
 
     if (!name) {
       setRegError('Please provide your operative name');
@@ -235,15 +294,13 @@ export const AuthGate: React.FC<AuthGateProps> = ({
       );
 
       // 2. Attach profile name and avatar to Firebase user profile
-      if (name || avatarPreview) {
-        try {
-          await updateProfile(userCredential.user, {
-            displayName: name || undefined,
-            photoURL: avatarPreview || undefined
-          });
-        } catch (profileErr) {
-          console.warn('Profile update warning:', profileErr);
-        }
+      try {
+        await updateProfile(userCredential.user, {
+          displayName: name || undefined,
+          photoURL: avatarPreview && avatarPreview.length < 2048 ? avatarPreview : undefined
+        });
+      } catch (profileErr) {
+        console.warn('Profile update warning:', profileErr);
       }
 
       // 3. Store necessary fields during registration into Firestore database 'Users'
@@ -280,6 +337,10 @@ export const AuthGate: React.FC<AuthGateProps> = ({
         setRegError('Please provide a valid email address.');
       } else if (err?.code === 'auth/weak-password') {
         setRegError('Password must be at least 6 characters.');
+      } else if (err?.code === 'auth/operation-not-allowed') {
+        setRegError('Email/Password provider is not enabled in Firebase Console. Please enable Email/Password in Authentication settings.');
+      } else if (err?.code === 'auth/network-request-failed') {
+        setRegError('Network connection error. Please check your internet connection.');
       } else {
         setRegError(err?.message || 'Failed to create account. Please try again.');
       }

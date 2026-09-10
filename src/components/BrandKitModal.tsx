@@ -132,7 +132,15 @@ export const BrandKitModal: React.FC<BrandKitModalProps> = ({
                     className="px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-['Rajdhani'] font-bold text-xs uppercase tracking-wider rounded-xl shadow-lg shadow-cyan-950/50 flex items-center gap-2 transition-all transform hover:-translate-y-0.5 cursor-pointer"
                   >
                     <Download className="w-4 h-4" />
-                    <span>Download Logo .GIF (256x256)</span>
+                    <span>Download Logo .GIF</span>
+                  </button>
+
+                  <button
+                    onClick={() => handleDownload('/game-vault-logo.svg', 'game-vault-logo.svg')}
+                    className="px-5 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-['Rajdhani'] font-bold text-xs uppercase tracking-wider rounded-xl shadow-lg shadow-purple-950/50 flex items-center gap-2 transition-all transform hover:-translate-y-0.5 cursor-pointer"
+                  >
+                    <Download className="w-4 h-4" />
+                    <span>Download Full Logo .SVG</span>
                   </button>
 
                   <button
@@ -157,12 +165,12 @@ export const BrandKitModal: React.FC<BrandKitModalProps> = ({
                   </button>
 
                   <a
-                    href="/game-vault-logo.gif"
+                    href="/game-vault-logo.svg"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="px-3.5 py-2.5 bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white rounded-xl text-xs font-['Rajdhani'] font-bold uppercase tracking-wider flex items-center gap-1.5 transition-colors"
                   >
-                    <span>Open in New Tab</span>
+                    <span>View SVG</span>
                     <ExternalLink className="w-3.5 h-3.5" />
                   </a>
                 </div>

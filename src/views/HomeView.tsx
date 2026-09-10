@@ -16,7 +16,8 @@ import {
   Flame,
   Pin,
   Check,
-  Filter
+  Filter,
+  Monitor
 } from 'lucide-react';
 import { 
   Video, 
@@ -441,6 +442,42 @@ const HomeViewComponent: React.FC<HomeViewProps> = ({
               </div>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* PC GAME REQUIREMENTS CHECKER FEATURE BANNER */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="relative rounded-3xl overflow-hidden border border-purple-500/30 bg-gradient-to-r from-[#141226] via-[#101328] to-[#0c142c] p-6 sm:p-10 shadow-2xl">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-cyan-500/10 blur-[90px] pointer-events-none" />
+          <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="max-w-2xl space-y-3">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/20 border border-purple-500/40 text-purple-300 text-xs font-['Rajdhani'] font-bold uppercase tracking-widest">
+                <Monitor className="w-3.5 h-3.5 text-cyan-400" />
+                <span>New Official Gaming Utility</span>
+              </div>
+              <h3 className="text-2xl sm:text-3xl font-extrabold uppercase font-['Rajdhani'] tracking-wide text-white">
+                Can My PC Run This Game?
+              </h3>
+              <p className="text-gray-300 text-sm sm:text-base leading-relaxed font-['Inter']">
+                Check whether your PC meets the minimum and recommended hardware requirements for your favorite games. Accurate component comparison based strictly on official developer specifications.
+              </p>
+            </div>
+
+            <div className="shrink-0">
+              <a
+                href="/tools/pc-game-requirements-checker"
+                onClick={(e) => {
+                  e.preventDefault();
+                  onNavigateTab('pc-requirements');
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+                className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-2xl bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-600 hover:from-purple-500 hover:to-cyan-500 text-white font-['Rajdhani'] font-bold text-sm sm:text-base uppercase tracking-wider shadow-xl shadow-purple-950/60 transition-all cursor-pointer hover:scale-[1.02]"
+              >
+                <span>Launch Requirements Checker</span>
+                <ArrowRight className="w-4 h-4" />
+              </a>
+            </div>
+          </div>
         </div>
       </section>
 

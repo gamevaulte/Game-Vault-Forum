@@ -45,6 +45,7 @@ import { PrivacyPolicyView } from './views/PrivacyPolicyView';
 import { TermsOfServiceView } from './views/TermsOfServiceView';
 import { CookiePolicyView } from './views/CookiePolicyView';
 import { ContactPageView } from './views/ContactPageView';
+import { PcRequirementsView } from './views/PcRequirementsView';
 import { CookieConsentBanner } from './components/CookieConsentBanner';
 import { AdBanner } from './components/AdBanner';
 
@@ -187,6 +188,21 @@ export default function App() {
                 displayName: fbUser.displayName,
                 photoURL: fbUser.photoURL,
                 emailVerified: fbUser.emailVerified
+              }).then((createdRecord) => {
+                if (createdRecord) {
+                  setUser((prev) => ({
+                    ...prev,
+                    id: createdRecord.uid,
+                    name: createdRecord.displayName || prev.name,
+                    username: createdRecord.username || prev.username,
+                    email: createdRecord.email || prev.email,
+                    avatar: createdRecord.photoURL || prev.avatar,
+                    bio: createdRecord.bio || prev.bio,
+                    badge: createdRecord.badge || prev.badge,
+                    level: createdRecord.level || prev.level,
+                    reputation: createdRecord.reputation ?? 0
+                  }));
+                }
               });
             }
           })
@@ -204,6 +220,7 @@ export default function App() {
           }
         }
       } else {
+        setUser(DEFAULT_USER);
         setUserLikedSet(new Set());
       }
     });
@@ -243,6 +260,7 @@ export default function App() {
     try {
       await signOut(auth);
       setFirebaseUser(null);
+      setUser(DEFAULT_USER);
       setUserLikedSet(new Set());
       addToast('Signed out of Game Vault.', 'info');
     } catch (err) {
@@ -712,6 +730,17 @@ export default function App() {
           breadcrumbs: [{ name: 'About', path: '/about' }]
         });
         break;
+      case 'pc-requirements':
+        updatePageSeo({
+          title: 'Can My PC Run This Game? | PC Game Requirements Checker | Game Vault Forum',
+          description: 'Check whether your PC meets the minimum and recommended requirements for your favorite games. Accurate component comparison without synthetic claims.',
+          canonicalPath: '/tools/pc-game-requirements-checker',
+          breadcrumbs: [
+            { name: 'Tools', path: '/tools/pc-game-requirements-checker' },
+            { name: 'PC Game Requirements Checker', path: '/tools/pc-game-requirements-checker' }
+          ]
+        });
+        break;
       case 'login':
       case 'register':
       case 'profile':
@@ -749,6 +778,8 @@ export default function App() {
       case 'topic':
       case 'new-topic':
         return 'forum';
+      case 'pc-requirements':
+        return 'pc-requirements';
       case 'about':
         return 'about';
       default:
@@ -1179,7 +1210,30 @@ export default function App() {
       case 'about':
         return (
           <AboutView
-            onNavigateTab={(tab) => navigate(tab === 'home' ? '/' : `/${tab}`)}
+            onNavigateTab={(tab) => navigate(tab === 'home' ? '/' : tab === 'pc-requirements' ? '/tools/pc-game-requirements-checker' : `/${tab}`)}
+          />
+        );
+
+      case 'pc-requirements':
+        return (
+          <PcRequirementsView
+            initialGameSlug={route.gameSlug}
+            currentUser={user}
+            onNavigateTab={(tab) => navigate(tab === 'home' ? '/' : tab === 'pc-requirements' ? '/tools/pc-game-requirements-checker' : `/${tab}`)}
+            onOpenVideo={(gameTitle) => {
+              const matched = MOCK_VIDEOS.find((v) => v.game.toLowerCase() === gameTitle.toLowerCase()) || MOCK_VIDEOS[0];
+              navigate(`/videos/${getSeoSlug(matched)}`);
+            }}
+            onOpenArticle={(gameTitle) => {
+              const matched = MOCK_ARTICLES.find(
+                (a) => a.title.toLowerCase().includes(gameTitle.toLowerCase()) ||
+                       a.tags.some((t) => t.toLowerCase().includes(gameTitle.toLowerCase()))
+              ) || MOCK_ARTICLES[0];
+              navigate(`/articles/${getSeoSlug(matched)}`);
+            }}
+            onOpenForum={() => {
+              navigate('/forum');
+            }}
           />
         );
 
@@ -1200,7 +1254,7 @@ export default function App() {
             onSelectReview={(r) => navigate(`/reviews/${getSeoSlug({ id: r.id, title: `${r.gameTitle} review` })}`)}
             onSelectGuide={(g) => navigate(`/guides/${getSeoSlug(g)}`)}
             onSelectTopic={(t) => navigate(`/forum/${getSeoSlug(t)}`)}
-            onNavigateTab={(tab) => navigate(tab === 'home' ? '/' : `/${tab}`)}
+            onNavigateTab={(tab) => navigate(tab === 'home' ? '/' : tab === 'pc-requirements' ? '/tools/pc-game-requirements-checker' : `/${tab}`)}
             onOpenNewTopic={() => navigate('/forum/new')}
           />
         );
@@ -1217,7 +1271,7 @@ export default function App() {
       {/* Sticky Vault Header */}
       <Header
         currentTab={getActiveTab()}
-        onSelectTab={(tab) => navigate(tab === 'home' ? '/' : `/${tab}`)}
+        onSelectTab={(tab) => navigate(tab === 'home' ? '/' : tab === 'pc-requirements' ? '/tools/pc-game-requirements-checker' : `/${tab}`)}
         onOpenSearch={() => setIsSearchOpen(true)}
         onOpenProfile={() => {
           setProfileInitialTab('profile');
@@ -1239,7 +1293,7 @@ export default function App() {
 
       {/* Footer */}
       <Footer
-        onSelectTab={(tab) => navigate(tab === 'home' ? '/' : `/${tab}`)}
+        onSelectTab={(tab) => navigate(tab === 'home' ? '/' : tab === 'pc-requirements' ? '/tools/pc-game-requirements-checker' : `/${tab}`)}
         onSubscribeNewsletter={handleSubscribeNewsletter}
         onOpenGuidelines={() => navigate('/guidelines')}
         onOpenPrivacy={() => navigate('/privacy')}

@@ -368,6 +368,23 @@ export const GamePageView: React.FC<GamePageViewProps> = ({
                 <span>{isBookmarked ? 'Saved in Vault' : 'Save to Vault'}</span>
               </button>
 
+              <a
+                href={`/tools/pc-game-requirements-checker/${gameSlug}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (onNavigateTab) {
+                    onNavigateTab('pc-requirements');
+                    // navigate with game slug
+                    window.history.pushState(null, '', `/tools/pc-game-requirements-checker/${gameSlug}`);
+                    window.dispatchEvent(new PopStateEvent('popstate'));
+                  }
+                }}
+                className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white rounded-xl text-xs font-['Rajdhani'] font-bold uppercase tracking-wider border border-purple-400/40 shadow-lg shadow-purple-900/30 transition-all cursor-pointer"
+              >
+                <Monitor className="w-4 h-4 text-cyan-300" />
+                <span>Check PC Requirements</span>
+              </a>
+
               <button
                 onClick={onShare}
                 className="flex items-center gap-2 px-4 py-2.5 bg-white/5 hover:bg-white/10 text-gray-200 rounded-xl text-xs font-['Rajdhani'] font-bold uppercase tracking-wider border border-white/10 hover:border-white/20 transition-all cursor-pointer"

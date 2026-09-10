@@ -35,6 +35,7 @@ export const Header: React.FC<HeaderProps> = ({
     { id: 'reviews', label: 'Reviews' },
     { id: 'guides', label: 'Guides' },
     { id: 'forum', label: 'Forum' },
+    { id: 'pc-requirements', label: 'PC Checker' },
     { id: 'about', label: 'About' },
     { id: 'contact', label: 'Contact' }
   ];
@@ -64,7 +65,7 @@ export const Header: React.FC<HeaderProps> = ({
         <nav className="hidden lg:flex items-center space-x-0.5 xl:space-x-1 font-['Rajdhani'] font-semibold tracking-wider text-sm xl:text-base uppercase">
           {navItems.map((item) => {
             const isActive = currentTab === item.id;
-            const href = item.id === 'home' ? '/' : `/${item.id}`;
+            const href = item.id === 'home' ? '/' : item.id === 'pc-requirements' ? '/tools/pc-game-requirements-checker' : `/${item.id}`;
             return (
               <a
                 key={item.id}
@@ -188,7 +189,7 @@ export const Header: React.FC<HeaderProps> = ({
           <div className="grid grid-cols-2 gap-2 mb-4">
             {navItems.map((item) => {
               const isActive = currentTab === item.id;
-              const href = item.id === 'home' ? '/' : `/${item.id}`;
+              const href = item.id === 'home' ? '/' : item.id === 'pc-requirements' ? '/tools/pc-game-requirements-checker' : `/${item.id}`;
               return (
                 <a
                   key={item.id}
