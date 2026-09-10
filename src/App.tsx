@@ -49,6 +49,8 @@ import { PcRequirementsView } from './views/PcRequirementsView';
 import { UsernameGeneratorView } from './views/UsernameGeneratorView';
 import { PcBuilderView } from './views/PcBuilderView';
 import { ToolsHubView } from './views/ToolsHubView';
+import { VaultAiView } from './views/VaultAiView';
+import { VaultAiFloatingButton } from './components/ai/VaultAiFloatingButton';
 import { CookieConsentBanner } from './components/CookieConsentBanner';
 import { AdBanner } from './components/AdBanner';
 
@@ -790,6 +792,17 @@ export default function App() {
           ]
         });
         break;
+      case 'vault-ai':
+        updatePageSeo({
+          title: 'Meet Vault AI | Flagship AI Gaming Assistant | Game Vault Forum',
+          description: 'Your intelligent gaming companion for recommendations, game information, PC advice, troubleshooting, and gaming questions.',
+          canonicalPath: '/tools/vault-ai',
+          breadcrumbs: [
+            { name: 'Tools', path: '/tools' },
+            { name: 'Vault AI', path: '/tools/vault-ai' }
+          ]
+        });
+        break;
       case 'login':
       case 'register':
       case 'profile':
@@ -833,6 +846,8 @@ export default function App() {
         return 'gaming-username-generator';
       case 'gaming-pc-builder':
         return 'gaming-pc-builder';
+      case 'vault-ai':
+        return 'vault-ai';
       case 'tools':
         return 'tools';
       case 'about':
@@ -878,6 +893,7 @@ export default function App() {
   // Unified tab navigation helper
   const handleNavigateTab = (tab: PageTab) => {
     if (tab === 'home') navigate('/');
+    else if (tab === 'vault-ai') navigate('/tools/vault-ai');
     else if (tab === 'pc-requirements') navigate('/tools/pc-game-requirements-checker');
     else if (tab === 'gaming-username-generator') navigate('/tools/gaming-username-generator');
     else if (tab === 'gaming-pc-builder') navigate('/tools/gaming-pc-builder');
@@ -1324,6 +1340,20 @@ export default function App() {
           />
         );
 
+      case 'vault-ai':
+        return (
+          <VaultAiView
+            onNavigateTab={handleNavigateTab}
+            user={user}
+            isSignedIn={Boolean(firebaseUser)}
+            onOpenSignIn={() => {
+              setAuthPromptMessage('Sign in or register to save conversations and get unlimited queries.');
+              setIsAuthModalOpen(true);
+            }}
+            initialPrompt={route.type === 'vault-ai' ? route.initialPrompt : undefined}
+          />
+        );
+
       case 'profile':
       case 'home':
       default:
@@ -1484,6 +1514,18 @@ export default function App() {
       <CookieConsentBanner
         onOpenCookiePolicy={() => navigate('/cookies')}
         onOpenPrivacyPolicy={() => navigate('/privacy')}
+      />
+
+      {/* Persistent Floating Vault AI Button */}
+      <VaultAiFloatingButton
+        currentTab={getActiveTab()}
+        user={user}
+        activeGameTitle={
+          route.type === 'game' 
+            ? findItemBySlugOrId(MOCK_GAMES, route.id || route.slug)?.title 
+            : undefined
+        }
+        onNavigateToVaultAi={() => navigate('/tools/vault-ai')}
       />
     </div>
   );

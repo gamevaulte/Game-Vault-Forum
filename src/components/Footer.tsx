@@ -148,6 +148,23 @@ export const Footer: React.FC<FooterProps> = ({
             <ul className="space-y-2 text-sm text-gray-400">
               <li>
                 <a
+                  href="/tools/vault-ai"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onSelectTab('vault-ai');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  className="hover:text-purple-300 text-purple-300 font-semibold transition-colors flex items-center gap-1.5 group text-left"
+                >
+                  <ChevronRight className="w-3 h-3 text-purple-400 group-hover:text-purple-300 transition-colors" />
+                  <span>Vault AI Assistant</span>
+                  <span className="px-1.5 py-0.2 text-[9px] bg-purple-500/20 text-purple-300 border border-purple-500/30 rounded font-bold">
+                    AI
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a
                   href="/tools/gaming-username-generator"
                   onClick={(e) => {
                     e.preventDefault();

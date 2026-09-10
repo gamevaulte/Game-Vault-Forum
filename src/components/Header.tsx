@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Search, Youtube, User, Menu, X, Bookmark, Sparkles, LogOut, LogIn, ChevronDown, Wrench, Monitor } from 'lucide-react';
+import { Search, Youtube, User, Menu, X, Bookmark, Sparkles, LogOut, LogIn, ChevronDown, Wrench, Monitor, Bot } from 'lucide-react';
 import { PageTab, UserAccount } from '../types';
 import { VaultLogo } from './VaultLogo';
 import { YOUTUBE_CHANNEL } from '../lib/constants';
@@ -53,6 +53,14 @@ export const Header: React.FC<HeaderProps> = ({
 
   const toolsItems = [
     {
+      id: 'vault-ai' as PageTab,
+      label: 'Vault AI Assistant',
+      desc: 'Ask, discover, compare & troubleshoot',
+      href: '/tools/vault-ai',
+      icon: Bot,
+      badge: 'Flagship AI'
+    },
+    {
       id: 'gaming-username-generator' as PageTab,
       label: 'Username Generator',
       desc: 'Create unique gaming names',
@@ -77,6 +85,7 @@ export const Header: React.FC<HeaderProps> = ({
 
   const isToolsActive =
     currentTab === 'tools' ||
+    currentTab === 'vault-ai' ||
     currentTab === 'gaming-username-generator' ||
     currentTab === 'gaming-pc-builder' ||
     currentTab === 'pc-requirements';

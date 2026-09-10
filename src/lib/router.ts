@@ -28,7 +28,8 @@ export type Route =
   | { type: 'pc-requirements'; gameSlug?: string }
   | { type: 'tools' }
   | { type: 'gaming-username-generator' }
-  | { type: 'gaming-pc-builder'; buildId?: string };
+  | { type: 'gaming-pc-builder'; buildId?: string }
+  | { type: 'vault-ai'; initialPrompt?: string };
 
 export function parseRoute(rawPath: string): Route {
   // Support both /path and #/path formats
@@ -47,6 +48,9 @@ export function parseRoute(rawPath: string): Route {
   // Gaming Tools Hub & Sub-tools
   if (seg1 === 'tools') {
     if (!seg2) return { type: 'tools' };
+    if (seg2 === 'vault-ai' || seg2 === 'ai') {
+      return { type: 'vault-ai' };
+    }
     if (seg2 === 'gaming-username-generator' || seg2 === 'username-generator') {
       return { type: 'gaming-username-generator' };
     }
@@ -66,6 +70,9 @@ export function parseRoute(rawPath: string): Route {
   }
 
   // Direct root tool paths
+  if (seg1 === 'vault-ai' || seg1 === 'ai') {
+    return { type: 'vault-ai' };
+  }
   if (seg1 === 'gaming-username-generator' || seg1 === 'username-generator') {
     return { type: 'gaming-username-generator' };
   }
@@ -184,6 +191,8 @@ export function routeToUrl(route: Route): string {
       return route.buildId
         ? `/tools/gaming-pc-builder/build/${route.buildId}`
         : '/tools/gaming-pc-builder';
+    case 'vault-ai':
+      return '/tools/vault-ai';
   }
 }
 

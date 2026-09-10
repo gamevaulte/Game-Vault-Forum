@@ -12,9 +12,40 @@ export type PageTab =
   | 'tools'
   | 'gaming-username-generator'
   | 'gaming-pc-builder'
+  | 'vault-ai'
   | 'finder'
   | 'compare'
   | 'quiz';
+
+export interface VaultAiMessage {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  timestamp: string;
+  sources?: Array<{ title: string; url: string; category?: string }>;
+  cardIds?: {
+    games?: string[];
+    articles?: string[];
+    videos?: string[];
+    hardware?: string[];
+  };
+  isError?: boolean;
+}
+
+export interface VaultAiConversation {
+  id: string;
+  title: string;
+  createdAt: string;
+  updatedAt: string;
+  messages: VaultAiMessage[];
+}
+
+export interface VaultAiContext {
+  currentPage?: string;
+  selectedGame?: string;
+  userPcSpec?: any;
+  builderBudget?: string;
+}
 
 export type GameGenre = 
   | 'All'

@@ -1,6 +1,6 @@
 {
   "name": "Game Vault Forum",
-  "description": "A premium gaming website, YouTube channel hub, and community forum for Game Vault Forum. Watch gameplay, discover games, read reviews & guides, and discuss in the forum.",
+  "description": "A premium gaming website, YouTube channel hub, community forum, and Vault AI gaming assistant with custom PC building, hardware benchmarking, and gamer tools.",
   "requestFramePermissions": [],
   "majorCapabilities": [
     "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"

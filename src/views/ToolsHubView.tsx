@@ -6,7 +6,8 @@ import {
   Compass, 
   GitCompare, 
   HelpCircle, 
-  ShieldCheck 
+  ShieldCheck,
+  Bot
 } from 'lucide-react';
 import { ToolHeader } from '../components/tools/ToolHeader';
 import { ToolCard } from '../components/tools/ToolCard';
@@ -30,13 +31,24 @@ export const ToolsHubView: React.FC<ToolsHubViewProps> = ({ onNavigateTab }) => 
       {/* Featured Primary Tools Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
         <ToolCard
+          title="Vault AI Gaming Assistant"
+          subtitle="Your intelligent gaming companion"
+          description="Ask questions, discover games, compare titles, troubleshoot low FPS, configure custom PC builds, and get deep gameplay advice."
+          badge="Flagship AI"
+          icon={<Bot className="w-6 h-6 text-purple-400" />}
+          actionText="Ask Vault AI"
+          onClick={() => onNavigateTab('vault-ai')}
+          featured={true}
+        />
+
+        <ToolCard
           title="Gaming Username Generator"
           subtitle="Create your next gaming identity"
           description="Synthesize creative, memorable gamer tags tailored by theme, style, numbers, and platform constraints for Steam, Twitch, YouTube, and Discord."
           badge="New Tool"
           icon={<Sparkles className="w-6 h-6" />}
           actionText="Generate Username"
-          onClick={() => onNavigateTab('gaming-username-generator' as any)}
+          onClick={() => onNavigateTab('gaming-username-generator')}
           featured={true}
         />
 
@@ -47,7 +59,7 @@ export const ToolsHubView: React.FC<ToolsHubViewProps> = ({ onNavigateTab }) => 
           badge="New Tool"
           icon={<Wrench className="w-6 h-6" />}
           actionText="Build My PC"
-          onClick={() => onNavigateTab('gaming-pc-builder' as any)}
+          onClick={() => onNavigateTab('gaming-pc-builder')}
           featured={true}
         />
 
@@ -58,7 +70,7 @@ export const ToolsHubView: React.FC<ToolsHubViewProps> = ({ onNavigateTab }) => 
           badge="Popular"
           icon={<Monitor className="w-6 h-6" />}
           actionText="Check PC Requirements"
-          onClick={() => onNavigateTab('pc-requirements' as any)}
+          onClick={() => onNavigateTab('pc-requirements')}
           featured={false}
         />
 
