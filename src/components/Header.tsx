@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Search, Youtube, User, Menu, X, Bookmark, Sparkles, LogOut, LogIn } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { Search, Youtube, User, Menu, X, Bookmark, Sparkles, LogOut, LogIn, ChevronDown, Wrench, Monitor } from 'lucide-react';
 import { PageTab, UserAccount } from '../types';
 import { VaultLogo } from './VaultLogo';
 import { YOUTUBE_CHANNEL } from '../lib/constants';
@@ -26,6 +26,18 @@ export const Header: React.FC<HeaderProps> = ({
   onSignOut
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [toolsDropdownOpen, setToolsDropdownOpen] = useState(false);
+  const toolsMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (toolsMenuRef.current && !toolsMenuRef.current.contains(e.target as Node)) {
+        setToolsDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const navItems: { id: PageTab; label: string }[] = [
     { id: 'home', label: 'Home' },
@@ -35,14 +47,44 @@ export const Header: React.FC<HeaderProps> = ({
     { id: 'reviews', label: 'Reviews' },
     { id: 'guides', label: 'Guides' },
     { id: 'forum', label: 'Forum' },
-    { id: 'pc-requirements', label: 'PC Checker' },
     { id: 'about', label: 'About' },
     { id: 'contact', label: 'Contact' }
   ];
 
+  const toolsItems = [
+    {
+      id: 'gaming-username-generator' as PageTab,
+      label: 'Username Generator',
+      desc: 'Create unique gaming names',
+      href: '/tools/gaming-username-generator',
+      icon: Sparkles
+    },
+    {
+      id: 'gaming-pc-builder' as PageTab,
+      label: 'Gaming PC Builder',
+      desc: 'Build around your budget & games',
+      href: '/tools/gaming-pc-builder',
+      icon: Wrench
+    },
+    {
+      id: 'pc-requirements' as PageTab,
+      label: 'PC Requirements Checker',
+      desc: 'Can My PC Run This Game?',
+      href: '/tools/pc-game-requirements-checker',
+      icon: Monitor
+    }
+  ];
+
+  const isToolsActive =
+    currentTab === 'tools' ||
+    currentTab === 'gaming-username-generator' ||
+    currentTab === 'gaming-pc-builder' ||
+    currentTab === 'pc-requirements';
+
   const handleNavClick = (tab: PageTab) => {
     onSelectTab(tab);
     setMobileMenuOpen(false);
+    setToolsDropdownOpen(false);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -63,9 +105,9 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Desktop Navigation */}
         <nav className="hidden lg:flex items-center space-x-0.5 xl:space-x-1 font-['Rajdhani'] font-semibold tracking-wider text-sm xl:text-base uppercase">
-          {navItems.map((item) => {
+          {navItems.slice(0, 7).map((item) => {
             const isActive = currentTab === item.id;
-            const href = item.id === 'home' ? '/' : item.id === 'pc-requirements' ? '/tools/pc-game-requirements-checker' : `/${item.id}`;
+            const href = item.id === 'home' ? '/' : `/${item.id}`;
             return (
               <a
                 key={item.id}
@@ -75,7 +117,102 @@ export const Header: React.FC<HeaderProps> = ({
                   e.preventDefault();
                   handleNavClick(item.id);
                 }}
-                className={`relative px-2.5 xl:px-3.5 py-1.5 xl:py-2 rounded-xl transition-all duration-200 ${
+                className={`relative px-2.5 xl:px-3 py-1.5 xl:py-2 rounded-xl transition-all duration-200 ${
+                  isActive
+                    ? 'text-white bg-white/10 backdrop-blur-md border border-white/20 shadow-lg shadow-purple-900/10'
+                    : 'text-gray-400 hover:text-white hover:bg-white/5'
+                }`}
+              >
+                {item.label}
+                {isActive && (
+                  <span className="absolute bottom-1 left-3 right-3 h-0.5 bg-gradient-to-r from-purple-400 to-cyan-400 rounded-full" />
+                )}
+              </a>
+            );
+          })}
+
+          {/* Tools Dropdown Menu */}
+          <div className="relative" ref={toolsMenuRef}>
+            <button
+              type="button"
+              id="nav-tools-dropdown"
+              onClick={() => setToolsDropdownOpen(!toolsDropdownOpen)}
+              className={`relative px-2.5 xl:px-3 py-1.5 xl:py-2 rounded-xl transition-all duration-200 flex items-center gap-1 cursor-pointer ${
+                isToolsActive
+                  ? 'text-white bg-white/10 backdrop-blur-md border border-white/20 shadow-lg shadow-purple-900/10'
+                  : 'text-gray-400 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <span>Tools</span>
+              <ChevronDown className={`w-3.5 h-3.5 transition-transform ${toolsDropdownOpen ? 'rotate-180' : ''}`} />
+              {isToolsActive && (
+                <span className="absolute bottom-1 left-3 right-3 h-0.5 bg-gradient-to-r from-purple-400 to-cyan-400 rounded-full" />
+              )}
+            </button>
+
+            {toolsDropdownOpen && (
+              <div className="absolute left-0 mt-2 w-72 rounded-2xl bg-[#0e101d]/95 backdrop-blur-2xl border border-purple-500/30 shadow-2xl p-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+                <div className="px-3 py-1.5 text-[10px] font-mono text-purple-400 font-bold uppercase tracking-wider border-b border-white/5 mb-1">
+                  Gaming Utilities
+                </div>
+                <div className="space-y-1">
+                  {toolsItems.map((tool) => {
+                    const Icon = tool.icon;
+                    return (
+                      <a
+                        key={tool.id}
+                        href={tool.href}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleNavClick(tool.id);
+                        }}
+                        className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-purple-950/40 text-slate-300 hover:text-white transition-colors group cursor-pointer"
+                      >
+                        <div className="p-2 rounded-lg bg-purple-950/70 border border-purple-500/30 text-purple-400 group-hover:text-cyan-400 shrink-0 mt-0.5">
+                          <Icon className="w-4 h-4" />
+                        </div>
+                        <div className="min-w-0">
+                          <div className="text-xs font-bold font-['Space_Grotesk'] text-white">
+                            {tool.label}
+                          </div>
+                          <div className="text-[11px] text-slate-400 font-['Inter'] truncate">
+                            {tool.desc}
+                          </div>
+                        </div>
+                      </a>
+                    );
+                  })}
+                </div>
+
+                <div className="mt-2 pt-2 border-t border-white/5">
+                  <a
+                    href="/tools"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleNavClick('tools' as any);
+                    }}
+                    className="block text-center py-1.5 px-3 rounded-lg bg-purple-600/20 hover:bg-purple-600/40 text-purple-300 text-xs font-['Rajdhani'] font-bold uppercase tracking-wider transition-colors cursor-pointer"
+                  >
+                    View All Tools Hub
+                  </a>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {navItems.slice(7).map((item) => {
+            const isActive = currentTab === item.id;
+            const href = `/${item.id}`;
+            return (
+              <a
+                key={item.id}
+                id={`nav-${item.id}`}
+                href={href}
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleNavClick(item.id);
+                }}
+                className={`relative px-2.5 xl:px-3 py-1.5 xl:py-2 rounded-xl transition-all duration-200 ${
                   isActive
                     ? 'text-white bg-white/10 backdrop-blur-md border border-white/20 shadow-lg shadow-purple-900/10'
                     : 'text-gray-400 hover:text-white hover:bg-white/5'
@@ -185,11 +322,11 @@ export const Header: React.FC<HeaderProps> = ({
 
       {/* Mobile Menu Dropdown Drawer */}
       {mobileMenuOpen && (
-        <div className="lg:hidden border-b border-white/10 bg-[#07080d]/95 backdrop-blur-2xl px-4 py-5 animate-in slide-in-from-top-2 duration-200">
+        <div className="lg:hidden border-b border-white/10 bg-[#07080d]/95 backdrop-blur-2xl px-4 py-5 animate-in slide-in-from-top-2 duration-200 max-h-[85vh] overflow-y-auto">
           <div className="grid grid-cols-2 gap-2 mb-4">
             {navItems.map((item) => {
               const isActive = currentTab === item.id;
-              const href = item.id === 'home' ? '/' : item.id === 'pc-requirements' ? '/tools/pc-game-requirements-checker' : `/${item.id}`;
+              const href = item.id === 'home' ? '/' : `/${item.id}`;
               return (
                 <a
                   key={item.id}
@@ -198,7 +335,7 @@ export const Header: React.FC<HeaderProps> = ({
                     e.preventDefault();
                     handleNavClick(item.id);
                   }}
-                  className={`px-4 py-3 rounded-xl text-left font-['Rajdhani'] font-bold text-base tracking-wider uppercase transition-all ${
+                  className={`px-4 py-2.5 rounded-xl text-left font-['Rajdhani'] font-bold text-sm tracking-wider uppercase transition-all ${
                     isActive
                       ? 'bg-white/15 text-white border border-white/25 shadow-lg'
                       : 'text-gray-400 hover:bg-white/5 hover:text-white'
@@ -208,6 +345,44 @@ export const Header: React.FC<HeaderProps> = ({
                 </a>
               );
             })}
+          </div>
+
+          {/* Mobile Tools Section */}
+          <div className="pt-3 border-t border-white/10 mb-4">
+            <div className="text-[11px] font-mono text-purple-400 font-bold uppercase tracking-wider mb-2">
+              Gaming Tools & Utilities
+            </div>
+            <div className="space-y-1.5">
+              {toolsItems.map((tool) => {
+                const Icon = tool.icon;
+                const isSelected = currentTab === tool.id;
+                return (
+                  <a
+                    key={tool.id}
+                    href={tool.href}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleNavClick(tool.id);
+                    }}
+                    className={`flex items-center gap-3 p-2.5 rounded-xl border transition-colors ${
+                      isSelected
+                        ? 'bg-purple-950/60 border-purple-500 text-white'
+                        : 'bg-white/5 border-white/5 text-slate-300 hover:text-white'
+                    }`}
+                  >
+                    <Icon className="w-4 h-4 text-purple-400 shrink-0" />
+                    <div className="min-w-0 flex-1">
+                      <div className="text-xs font-bold font-['Space_Grotesk'] text-white">
+                        {tool.label}
+                      </div>
+                      <div className="text-[10px] text-slate-400 truncate">
+                        {tool.desc}
+                      </div>
+                    </div>
+                  </a>
+                );
+              })}
+            </div>
           </div>
 
           <div className="pt-3 border-t border-white/10 flex flex-col gap-2.5">

@@ -46,6 +46,9 @@ import { TermsOfServiceView } from './views/TermsOfServiceView';
 import { CookiePolicyView } from './views/CookiePolicyView';
 import { ContactPageView } from './views/ContactPageView';
 import { PcRequirementsView } from './views/PcRequirementsView';
+import { UsernameGeneratorView } from './views/UsernameGeneratorView';
+import { PcBuilderView } from './views/PcBuilderView';
+import { ToolsHubView } from './views/ToolsHubView';
 import { CookieConsentBanner } from './components/CookieConsentBanner';
 import { AdBanner } from './components/AdBanner';
 
@@ -750,8 +753,40 @@ export default function App() {
           description: 'Check whether your PC meets the minimum and recommended requirements for your favorite games. Accurate component comparison without synthetic claims.',
           canonicalPath: '/tools/pc-game-requirements-checker',
           breadcrumbs: [
-            { name: 'Tools', path: '/tools/pc-game-requirements-checker' },
+            { name: 'Tools', path: '/tools' },
             { name: 'PC Game Requirements Checker', path: '/tools/pc-game-requirements-checker' }
+          ]
+        });
+        break;
+      case 'gaming-username-generator':
+        updatePageSeo({
+          title: 'Gaming Username Generator | Create Unique Gamer Names | Game Vault Forum',
+          description: 'Create a gaming name that actually feels like you. Generate unique, aesthetic, competitive, and lore-inspired usernames with safety filters.',
+          canonicalPath: '/tools/gaming-username-generator',
+          breadcrumbs: [
+            { name: 'Tools', path: '/tools' },
+            { name: 'Gaming Username Generator', path: '/tools/gaming-username-generator' }
+          ]
+        });
+        break;
+      case 'gaming-pc-builder':
+        updatePageSeo({
+          title: 'Gaming PC Builder | Custom Balanced Hardware Optimizer | Game Vault Forum',
+          description: 'Build a gaming PC around your budget and the games you actually play. Verified hardware compatibility, balance scoring, and real-world gameplay targets.',
+          canonicalPath: '/tools/gaming-pc-builder',
+          breadcrumbs: [
+            { name: 'Tools', path: '/tools' },
+            { name: 'Gaming PC Builder', path: '/tools/gaming-pc-builder' }
+          ]
+        });
+        break;
+      case 'tools':
+        updatePageSeo({
+          title: 'Gaming Tools & Hardware Utilities | Game Vault Forum',
+          description: 'Free community-tested tools built for gamers: Gaming Username Generator, Custom PC Builder, and System Requirements Checker.',
+          canonicalPath: '/tools',
+          breadcrumbs: [
+            { name: 'Tools', path: '/tools' }
           ]
         });
         break;
@@ -794,6 +829,12 @@ export default function App() {
         return 'forum';
       case 'pc-requirements':
         return 'pc-requirements';
+      case 'gaming-username-generator':
+        return 'gaming-username-generator';
+      case 'gaming-pc-builder':
+        return 'gaming-pc-builder';
+      case 'tools':
+        return 'tools';
       case 'about':
         return 'about';
       default:
@@ -833,6 +874,16 @@ export default function App() {
       </div>
     );
   }
+
+  // Unified tab navigation helper
+  const handleNavigateTab = (tab: PageTab) => {
+    if (tab === 'home') navigate('/');
+    else if (tab === 'pc-requirements') navigate('/tools/pc-game-requirements-checker');
+    else if (tab === 'gaming-username-generator') navigate('/tools/gaming-username-generator');
+    else if (tab === 'gaming-pc-builder') navigate('/tools/gaming-pc-builder');
+    else if (tab === 'tools') navigate('/tools');
+    else navigate(`/${tab}`);
+  };
 
   // Render content depending on route
   const renderCurrentPage = () => {
@@ -1251,6 +1302,28 @@ export default function App() {
           />
         );
 
+      case 'tools':
+        return <ToolsHubView onNavigateTab={handleNavigateTab} />;
+
+      case 'gaming-username-generator':
+        return (
+          <UsernameGeneratorView
+            currentUser={user}
+            onNavigateTab={handleNavigateTab}
+            onShowToast={(msg, type) => addToast(msg, type)}
+          />
+        );
+
+      case 'gaming-pc-builder':
+        return (
+          <PcBuilderView
+            currentUser={user}
+            initialBuildId={route.buildId}
+            onNavigateTab={handleNavigateTab}
+            onShowToast={(msg, type) => addToast(msg, type)}
+          />
+        );
+
       case 'profile':
       case 'home':
       default:
@@ -1268,7 +1341,7 @@ export default function App() {
             onSelectReview={(r) => navigate(`/reviews/${getSeoSlug({ id: r.id, title: `${r.gameTitle} review` })}`)}
             onSelectGuide={(g) => navigate(`/guides/${getSeoSlug(g)}`)}
             onSelectTopic={(t) => navigate(`/forum/${getSeoSlug(t)}`)}
-            onNavigateTab={(tab) => navigate(tab === 'home' ? '/' : tab === 'pc-requirements' ? '/tools/pc-game-requirements-checker' : `/${tab}`)}
+            onNavigateTab={handleNavigateTab}
             onOpenNewTopic={() => navigate('/forum/new')}
           />
         );
@@ -1285,7 +1358,7 @@ export default function App() {
       {/* Sticky Vault Header */}
       <Header
         currentTab={getActiveTab()}
-        onSelectTab={(tab) => navigate(tab === 'home' ? '/' : tab === 'pc-requirements' ? '/tools/pc-game-requirements-checker' : `/${tab}`)}
+        onSelectTab={handleNavigateTab}
         onOpenSearch={() => setIsSearchOpen(true)}
         onOpenProfile={() => {
           setProfileInitialTab('profile');
@@ -1307,7 +1380,7 @@ export default function App() {
 
       {/* Footer */}
       <Footer
-        onSelectTab={(tab) => navigate(tab === 'home' ? '/' : tab === 'pc-requirements' ? '/tools/pc-game-requirements-checker' : `/${tab}`)}
+        onSelectTab={handleNavigateTab}
         onSubscribeNewsletter={handleSubscribeNewsletter}
         onOpenGuidelines={() => navigate('/guidelines')}
         onOpenPrivacy={() => navigate('/privacy')}

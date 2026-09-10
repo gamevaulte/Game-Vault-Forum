@@ -1,4 +1,20 @@
-export type PageTab = 'home' | 'videos' | 'games' | 'articles' | 'reviews' | 'guides' | 'forum' | 'about' | 'contact' | 'pc-requirements';
+export type PageTab = 
+  | 'home' 
+  | 'videos' 
+  | 'games' 
+  | 'articles' 
+  | 'reviews' 
+  | 'guides' 
+  | 'forum' 
+  | 'about' 
+  | 'contact' 
+  | 'pc-requirements'
+  | 'tools'
+  | 'gaming-username-generator'
+  | 'gaming-pc-builder'
+  | 'finder'
+  | 'compare'
+  | 'quiz';
 
 export type GameGenre = 
   | 'All'

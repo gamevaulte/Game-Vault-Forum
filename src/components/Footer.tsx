@@ -139,13 +139,41 @@ export const Footer: React.FC<FooterProps> = ({
             </ul>
           </div>
 
-          {/* Col 3: Community & Policies */}
+          {/* Col 3: Gaming Tools & Resources */}
           <div>
             <h3 className="font-['Rajdhani'] font-bold text-base uppercase tracking-wider text-white mb-4 flex items-center gap-2">
               <span className="w-1.5 h-1.5 bg-cyan-400 rounded-full" />
-              Community
+              Gaming Tools
             </h3>
             <ul className="space-y-2 text-sm text-gray-400">
+              <li>
+                <a
+                  href="/tools/gaming-username-generator"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onSelectTab('gaming-username-generator');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  className="hover:text-purple-300 text-purple-300 font-semibold transition-colors flex items-center gap-1.5 group text-left"
+                >
+                  <ChevronRight className="w-3 h-3 text-purple-400 group-hover:text-purple-300 transition-colors" />
+                  <span>Username Generator</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/tools/gaming-pc-builder"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onSelectTab('gaming-pc-builder');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  className="hover:text-purple-300 text-purple-300 font-semibold transition-colors flex items-center gap-1.5 group text-left"
+                >
+                  <ChevronRight className="w-3 h-3 text-purple-400 group-hover:text-purple-300 transition-colors" />
+                  <span>Gaming PC Builder</span>
+                </a>
+              </li>
               <li>
                 <a
                   href="/tools/pc-game-requirements-checker"
@@ -154,10 +182,24 @@ export const Footer: React.FC<FooterProps> = ({
                     onSelectTab('pc-requirements');
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                   }}
-                  className="hover:text-cyan-300 text-purple-300 font-semibold transition-colors flex items-center gap-1.5 group text-left"
+                  className="hover:text-cyan-300 text-slate-300 transition-colors flex items-center gap-1.5 group text-left"
                 >
                   <ChevronRight className="w-3 h-3 text-cyan-400 group-hover:text-cyan-300 transition-colors" />
-                  <span>🖥️ Can My PC Run This Game?</span>
+                  <span>PC Requirements Checker</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/tools"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onSelectTab('tools');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  className="hover:text-cyan-300 transition-colors flex items-center gap-1.5 group text-left"
+                >
+                  <ChevronRight className="w-3 h-3 text-gray-600 group-hover:text-cyan-400 transition-colors" />
+                  <span>All Gaming Tools</span>
                 </a>
               </li>
               <li>

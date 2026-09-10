@@ -25,7 +25,10 @@ export type Route =
   | { type: 'cookies' }
   | { type: 'login' }
   | { type: 'register' }
-  | { type: 'pc-requirements'; gameSlug?: string };
+  | { type: 'pc-requirements'; gameSlug?: string }
+  | { type: 'tools' }
+  | { type: 'gaming-username-generator' }
+  | { type: 'gaming-pc-builder'; buildId?: string };
 
 export function parseRoute(rawPath: string): Route {
   // Support both /path and #/path formats
@@ -39,14 +42,41 @@ export function parseRoute(rawPath: string): Route {
     return { type: 'home' };
   }
 
-  const [seg1, seg2, seg3] = parts;
+  const [seg1, seg2, seg3, seg4] = parts;
 
-  // Dedicated Tool: PC Game Requirements Checker
-  if (seg1 === 'tools' && (seg2 === 'pc-game-requirements-checker' || seg2 === 'pc-requirements')) {
-    return { type: 'pc-requirements', gameSlug: seg3 };
+  // Gaming Tools Hub & Sub-tools
+  if (seg1 === 'tools') {
+    if (!seg2) return { type: 'tools' };
+    if (seg2 === 'gaming-username-generator' || seg2 === 'username-generator') {
+      return { type: 'gaming-username-generator' };
+    }
+    if (seg2 === 'gaming-pc-builder' || seg2 === 'pc-builder') {
+      if (seg3 === 'build' && seg4) {
+        return { type: 'gaming-pc-builder', buildId: seg4 };
+      }
+      if (seg3) {
+        return { type: 'gaming-pc-builder', buildId: seg3 };
+      }
+      return { type: 'gaming-pc-builder' };
+    }
+    if (seg2 === 'pc-game-requirements-checker' || seg2 === 'pc-requirements') {
+      return { type: 'pc-requirements', gameSlug: seg3 };
+    }
+    return { type: 'tools' };
   }
-  if (seg1 === 'pc-game-requirements-checker' || seg1 === 'pc-requirements' || seg1 === 'can-my-pc-run-this-game') {
-    return { type: 'pc-requirements', gameSlug: seg2 };
+
+  // Direct root tool paths
+  if (seg1 === 'gaming-username-generator' || seg1 === 'username-generator') {
+    return { type: 'gaming-username-generator' };
+  }
+  if (seg1 === 'gaming-pc-builder' || seg1 === 'pc-builder') {
+    if (seg2 === 'build' && seg3) {
+      return { type: 'gaming-pc-builder', buildId: seg3 };
+    }
+    if (seg2) {
+      return { type: 'gaming-pc-builder', buildId: seg2 };
+    }
+    return { type: 'gaming-pc-builder' };
   }
 
   if (seg1 === 'videos') {
@@ -146,6 +176,14 @@ export function routeToUrl(route: Route): string {
       return route.gameSlug
         ? `/tools/pc-game-requirements-checker/${route.gameSlug}`
         : '/tools/pc-game-requirements-checker';
+    case 'tools':
+      return '/tools';
+    case 'gaming-username-generator':
+      return '/tools/gaming-username-generator';
+    case 'gaming-pc-builder':
+      return route.buildId
+        ? `/tools/gaming-pc-builder/build/${route.buildId}`
+        : '/tools/gaming-pc-builder';
   }
 }
 
