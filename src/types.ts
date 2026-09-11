@@ -16,7 +16,23 @@ export type PageTab =
   | 'sitemap'
   | 'finder'
   | 'compare'
-  | 'quiz';
+  | 'quiz'
+  | 'new-topic'
+  | 'profile'
+  | 'guidelines'
+  | 'privacy'
+  | 'terms'
+  | 'cookies'
+  | 'login'
+  | 'register';
+
+export interface VaultAiAction {
+  id: string;
+  type: 'navigate' | 'requirements' | 'pc_build' | 'search' | 'video' | 'review' | 'guide' | 'topic' | 'generate_tag' | 'quick_task';
+  label: string;
+  target: string;
+  payload?: any;
+}
 
 export interface VaultAiMessage {
   id: string;
@@ -30,6 +46,7 @@ export interface VaultAiMessage {
     videos?: string[];
     hardware?: string[];
   };
+  actions?: VaultAiAction[];
   isError?: boolean;
 }
 
@@ -46,6 +63,7 @@ export interface VaultAiContext {
   selectedGame?: string;
   userPcSpec?: any;
   builderBudget?: string;
+  assistiveTask?: string;
 }
 
 export type GameGenre = 
@@ -109,6 +127,7 @@ export interface Article {
   publicationDate: string;
   readingTime: string;
   featuredImage: string;
+  image?: string; // alias for featuredImage
   tags: string[];
   views: string;
   likes: number;
@@ -137,15 +156,21 @@ export type ScoreLabel = 'Masterpiece' | 'Excellent' | 'Very Good' | 'Good' | 'A
 export interface Review {
   id: string;
   gameTitle: string;
+  name?: string; // alias for gameTitle
   artwork: string;
+  thumbnail?: string; // alias for artwork
   score: number; // 0 - 10, e.g. 8.5
   scoreLabel: ScoreLabel;
   genre: string;
   platform: string;
   shortVerdict: string;
+  verdict?: string; // alias for shortVerdict
   fullReview: string;
+  content?: string; // alias for fullReview
   author: string;
+  reviewer?: string; // alias for author
   publishDate: string;
+  date?: string; // alias for publishDate
   pros: string[];
   cons: string[];
 }
@@ -184,12 +209,14 @@ export interface ForumTopic {
   title: string;
   author: {
     name: string;
+    username?: string;
     avatar: string;
     badge: string;
     isStaff?: boolean;
   };
   category: string;
   repliesCount: number;
+  replyCount?: number;
   views: number;
   lastActivity: string;
   timestamp: string;
@@ -214,7 +241,10 @@ export interface UserAccount {
   username: string;
   email?: string;
   avatar: string;
+  bio?: string;
   badge: string;
+  level?: number | string;
+  role?: string;
   reputation: number;
   joinDate: string;
   bookmarks: {
@@ -223,7 +253,7 @@ export interface UserAccount {
     articles: string[];
     reviews: string[];
     guides: string[];
-    topics: string[];
+    topics?: string[];
   };
   likedIds: string[];
   stats: UserStats;

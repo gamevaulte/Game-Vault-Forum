@@ -1,4 +1,4 @@
-import { VaultAiConversation, VaultAiMessage, VaultAiContext } from '../types';
+import { VaultAiConversation, VaultAiMessage, VaultAiContext, VaultAiAction } from '../types';
 
 const STORAGE_KEY_CONVERSATIONS = 'gv_vault_ai_conversations_v1';
 const STORAGE_KEY_ACTIVE_ID = 'gv_vault_ai_active_id_v1';
@@ -129,6 +129,7 @@ export async function sendVaultAiMessage(params: {
     videos?: string[];
     hardware?: string[];
   };
+  actions?: VaultAiAction[];
   modelUsed?: string;
 }> {
   try {
@@ -153,11 +154,12 @@ export async function sendVaultAiMessage(params: {
       reply: data.reply || 'Vault AI did not return a response.',
       sources: data.sources || [],
       cardIds: data.cardIds || { games: [], articles: [], videos: [], hardware: [] },
+      actions: data.actions || [],
       modelUsed: data.modelUsed,
     };
   } catch (err) {
     console.warn('Vault AI API request failed, using local fallback:', err);
-    // Return friendly resilient response
+    // Return friendly resilient response with assistive actions
     return {
       reply: `### Vault AI Notification
 
@@ -172,18 +174,23 @@ Vault AI is currently operating in offline resilience mode.
         { title: 'Game Vault Forum — Tools Hub', url: '/tools' },
       ],
       cardIds: { games: ['elden-ring', 'world-of-warships'], articles: ['art-1'], videos: ['vid-1'], hardware: [] },
+      actions: [
+        { id: 'act-fall-1', type: 'requirements', label: 'Check PC Game Requirements', target: 'elden-ring' },
+        { id: 'act-fall-2', type: 'navigate', label: 'Open Gaming PC Builder', target: '/tools/gaming-pc-builder' },
+        { id: 'act-fall-3', type: 'navigate', label: 'Generate Gamer Tag', target: '/tools/gaming-username-generator' }
+      ],
       modelUsed: 'client-offline-fallback',
     };
   }
 }
 
 export const SMART_SUGGESTION_PROMPTS = [
-  { label: 'Find Me a Game', icon: '🎮', prompt: 'Recommend 3 awesome games from the Game Vault catalog based on rich story and high player ratings.' },
-  { label: 'Check My PC', icon: '🖥️', prompt: 'Can my PC run modern 1440p games smoothly? What hardware specs should I prioritize?' },
-  { label: 'Fix My FPS', icon: '🔧', prompt: 'My game is running at 30 FPS and stuttering. Guide me through the low FPS troubleshooting checklist.' },
-  { label: 'Gaming Tips', icon: '⚔️', prompt: 'Give me beginner tactical tips for World of Warships armor angling and positioning.' },
-  { label: 'Compare Games', icon: '🆚', prompt: 'Compare Elden Ring and Cyberpunk 2077 in terms of gameplay, difficulty, and replayability in a table.' },
-  { label: 'Build My PC', icon: '💻', prompt: 'Configure a balanced gaming PC for $1,200 (₦1,800,000) focusing on 1440p esports and AAA titles.' },
-  { label: 'Recommend a Game', icon: '🎯', prompt: 'Give me five great multiplayer games to play with friends.' },
-  { label: 'Explain a Game', icon: '📚', prompt: 'Explain the core gameplay loop and Scadutree fragment mechanics in Elden Ring: Shadow of the Erdtree.' },
+  { label: 'Check Can I Run It', icon: '🖥️', prompt: 'Can my PC run Elden Ring and Cyberpunk 2077? What GPU/CPU specs do I need for solid 60 FPS?' },
+  { label: 'Build PC Rig ($1,200)', icon: '💻', prompt: 'Configure a balanced 1440p gaming PC for $1,200 / ₦1,800,000. Recommend exact parts and power supply.' },
+  { label: 'Fix Low FPS & Stutter', icon: '🔧', prompt: 'My game is running at low FPS with micro-stuttering. Guide me through the 12-point troubleshooting checklist.' },
+  { label: 'Find Best Game For Me', icon: '🎮', prompt: 'Recommend 3 awesome games from the Game Vault catalog based on rich story, tactical depth, and high reviews.' },
+  { label: 'Generate Gamertags', icon: '🏷️', prompt: 'Generate 6 badass cyberpunk and tactical gaming usernames for my new profile.' },
+  { label: 'World of Warships Tactics', icon: '⚔️', prompt: 'Give me the top armor angling and artillery penetration tips for battleships in World of Warships.' },
+  { label: 'Draft a Forum Topic', icon: '📝', prompt: 'Help me draft an engaging discussion topic for the Game Vault Forum asking about GPU upgrade paths for 2026.' },
+  { label: 'Explore Site Map & Tools', icon: '🗺️', prompt: 'What tools and directories are available on Game Vault Forum? Give me an assistive overview with links.' },
 ];

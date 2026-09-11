@@ -13,6 +13,7 @@ interface FooterProps {
   onOpenCookies?: () => void;
   onOpenContact?: () => void;
   onOpenBrandKit?: () => void;
+  onOpenSitemap?: () => void;
 }
 
 export const Footer: React.FC<FooterProps> = ({
@@ -23,7 +24,8 @@ export const Footer: React.FC<FooterProps> = ({
   onOpenTerms,
   onOpenCookies,
   onOpenContact,
-  onOpenBrandKit
+  onOpenBrandKit,
+  onOpenSitemap
 }) => {
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
@@ -405,6 +407,26 @@ export const Footer: React.FC<FooterProps> = ({
               className="hover:text-gray-300 transition-colors cursor-pointer"
             >
               Cookie Policy
+            </a>
+            <a 
+              href="/sitemap"
+              onClick={(e) => {
+                e.preventDefault();
+                if (onOpenSitemap) onOpenSitemap();
+                else onSelectTab('sitemap');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              className="hover:text-purple-300 text-purple-400/90 font-medium transition-colors cursor-pointer"
+            >
+              Sitemap
+            </a>
+            <a 
+              href="/sitemap.xml"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-purple-300 transition-colors cursor-pointer text-gray-500 hover:text-purple-400 font-mono text-xs"
+            >
+              sitemap.xml
             </a>
             <a 
               href="/ads.txt"

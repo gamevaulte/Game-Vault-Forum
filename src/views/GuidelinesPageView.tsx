@@ -27,25 +27,25 @@ export const GuidelinesPageView: React.FC<GuidelinesPageViewProps> = ({ onBack, 
             Guidelines
           </span>
           <button
-            onClick={() => onNavigateLegal?.('privacy') || onNavigateTab('forum')}
+            onClick={() => { if (onNavigateLegal) onNavigateLegal('privacy'); else onNavigateTab('forum'); }}
             className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
           >
             Privacy Policy
           </button>
           <button
-            onClick={() => onNavigateLegal?.('terms') || onNavigateTab('forum')}
+            onClick={() => { if (onNavigateLegal) onNavigateLegal('terms'); else onNavigateTab('forum'); }}
             className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
           >
             Terms of Service
           </button>
           <button
-            onClick={() => onNavigateLegal?.('cookies') || onNavigateTab('forum')}
+            onClick={() => { if (onNavigateLegal) onNavigateLegal('cookies'); else onNavigateTab('forum'); }}
             className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
           >
             Cookie Policy
           </button>
           <button
-            onClick={() => onNavigateLegal?.('contact') || onNavigateTab('contact')}
+            onClick={() => { if (onNavigateLegal) onNavigateLegal('contact'); else onNavigateTab('contact'); }}
             className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
           >
             Contact Us

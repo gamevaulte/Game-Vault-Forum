@@ -32,12 +32,17 @@ export const ReviewPageView: React.FC<ReviewPageViewProps> = ({
   const reviewSlug = getSeoSlug({ id: review.id, title: `${review.gameTitle} review` });
 
   useEffect(() => {
+    const reviewImage = review.artwork || review.thumbnail || '';
+    const authorName = typeof review.author === 'string' ? review.author : review.reviewer || 'Game Vault Staff';
+    const verdictText = review.shortVerdict || review.verdict || '';
+    const fullContent = review.fullReview || review.content || '';
+
     updatePageSeo({
-      title: `${review.gameTitle} Review - Score: ${review.score}/10 (${review.scoreLabel})`,
-      description: review.shortVerdict,
+      title: `${review.gameTitle} Review - Score: ${review.score}/10 (${review.scoreLabel || 'Recommended'})`,
+      description: verdictText,
       canonicalPath: `/reviews/${reviewSlug}`,
       ogType: 'article',
-      imageUrl: review.thumbnail,
+      imageUrl: reviewImage,
       breadcrumbs: [
         { name: 'Reviews', path: '/reviews' },
         { name: `${review.gameTitle} Review`, path: `/reviews/${reviewSlug}` }
@@ -47,7 +52,7 @@ export const ReviewPageView: React.FC<ReviewPageViewProps> = ({
         itemReviewed: {
           '@type': 'VideoGame',
           name: review.gameTitle,
-          image: review.thumbnail
+          image: reviewImage
         },
         reviewRating: {
           '@type': 'Rating',
@@ -57,12 +62,12 @@ export const ReviewPageView: React.FC<ReviewPageViewProps> = ({
         },
         author: {
           '@type': 'Person',
-          name: review.author.name
+          name: authorName
         },
-        reviewBody: review.fullReview
+        reviewBody: fullContent
       }
     });
-  }, [review.gameTitle, review.score, review.scoreLabel, review.shortVerdict, reviewSlug, review.thumbnail, review.author.name, review.fullReview]);
+  }, [review.gameTitle, review.score, review.scoreLabel, review.shortVerdict, review.verdict, reviewSlug, review.artwork, review.thumbnail, review.author, review.reviewer, review.fullReview, review.content]);
 
   const getScoreColor = (score: number) => {
     if (score >= 9.0) return 'text-amber-400 border-amber-500/40 bg-amber-950/30';
@@ -102,14 +107,14 @@ export const ReviewPageView: React.FC<ReviewPageViewProps> = ({
               </span>
               <span className="flex items-center gap-1.5 text-xs text-gray-400 font-mono">
                 <Calendar className="w-3.5 h-3.5 text-purple-400" />
-                {review.date}
+                {review.publishDate || review.date || 'Recent'}
               </span>
             </div>
             <h1 className="text-3xl sm:text-4xl font-['Space_Grotesk'] font-bold text-white tracking-tight">
               {review.gameTitle}
             </h1>
             <p className="text-sm font-medium text-purple-300 font-['Space_Grotesk']">
-              "{review.verdict}"
+              "{review.shortVerdict || review.verdict}"
             </p>
           </div>
 
@@ -134,7 +139,7 @@ export const ReviewPageView: React.FC<ReviewPageViewProps> = ({
               <UserCheck className="w-5 h-5 text-purple-400" />
             </div>
             <div>
-              <p className="text-sm font-bold text-white font-['Space_Grotesk']">{review.reviewer}</p>
+              <p className="text-sm font-bold text-white font-['Space_Grotesk']">{typeof review.author === 'string' ? review.author : review.reviewer || 'Game Vault Staff'}</p>
               <p className="text-xs text-gray-400">Senior Vault Tactical Critic</p>
             </div>
           </div>
@@ -167,7 +172,7 @@ export const ReviewPageView: React.FC<ReviewPageViewProps> = ({
           <h3 className="text-xs font-bold font-['Rajdhani'] uppercase tracking-wider text-purple-300">
             In-Depth Tactical Critique
           </h3>
-          <p className="whitespace-pre-line">{review.content}</p>
+          <p className="whitespace-pre-line">{review.fullReview || review.content}</p>
         </div>
 
         {/* Pros & Cons Grid */}

@@ -28,13 +28,13 @@ export const TermsOfServiceView: React.FC<TermsOfServiceViewProps> = ({
         {/* Legal Hub Navigation Pill Tabs */}
         <div className="flex flex-wrap items-center gap-2 text-xs font-['Rajdhani'] uppercase tracking-wider font-semibold">
           <button
-            onClick={() => onNavigateLegal?.('guidelines') || onNavigateTab('forum')}
+            onClick={() => { if (onNavigateLegal) onNavigateLegal('guidelines'); else onNavigateTab('forum'); }}
             className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
           >
             Guidelines
           </button>
           <button
-            onClick={() => onNavigateLegal?.('privacy') || onNavigateTab('forum')}
+            onClick={() => { if (onNavigateLegal) onNavigateLegal('privacy'); else onNavigateTab('forum'); }}
             className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
           >
             Privacy Policy
@@ -43,13 +43,13 @@ export const TermsOfServiceView: React.FC<TermsOfServiceViewProps> = ({
             Terms of Service
           </span>
           <button
-            onClick={() => onNavigateLegal?.('cookies') || onNavigateTab('forum')}
+            onClick={() => { if (onNavigateLegal) onNavigateLegal('cookies'); else onNavigateTab('forum'); }}
             className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
           >
             Cookie Policy
           </button>
           <button
-            onClick={() => onNavigateLegal?.('contact') || onNavigateTab('contact')}
+            onClick={() => { if (onNavigateLegal) onNavigateLegal('contact'); else onNavigateTab('contact'); }}
             className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
           >
             Contact Us
@@ -117,7 +117,7 @@ export const TermsOfServiceView: React.FC<TermsOfServiceViewProps> = ({
               When publishing tactical guides, forum threads, responses, or game dossier impressions, you retain ownership of your original words while granting Game Vault Forum a worldwide, non-exclusive, royalty-free license to host, display, index, and distribute your content across our platform.
             </p>
             <p className="text-sm text-gray-400">
-              All content must comply with our <button onClick={() => onNavigateLegal?.('guidelines') || onNavigateTab('forum')} className="text-cyan-400 hover:underline">Community Guidelines</button>. You may not publish unlawful harassment, hate speech, malware, pirated software keys, or automated spam.
+              All content must comply with our <button onClick={() => { if (onNavigateLegal) onNavigateLegal('guidelines'); else onNavigateTab('forum'); }} className="text-cyan-400 hover:underline">Community Guidelines</button>. You may not publish unlawful harassment, hate speech, malware, pirated software keys, or automated spam.
             </p>
           </section>
 
@@ -184,7 +184,7 @@ export const TermsOfServiceView: React.FC<TermsOfServiceViewProps> = ({
               <p className="text-white font-bold font-['Rajdhani'] uppercase tracking-wider">Legal Inquiries & Notice</p>
               <p>Game Vault Operations • Joel Ayuba</p>
               <p>Contact: <a href="mailto:contact@gamevault.forum" className="text-purple-400 hover:underline">contact@gamevault.forum</a></p>
-              <p>Direct Desk: <button onClick={() => onNavigateLegal?.('contact') || onNavigateTab('contact')} className="text-cyan-400 hover:underline cursor-pointer">Official Contact Desk (/contact)</button></p>
+              <p>Direct Desk: <button onClick={() => { if (onNavigateLegal) onNavigateLegal('contact'); else onNavigateTab('contact'); }} className="text-cyan-400 hover:underline cursor-pointer">Official Contact Desk (/contact)</button></p>
             </div>
           </section>
         </div>

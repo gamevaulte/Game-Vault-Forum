@@ -289,14 +289,16 @@ export const SitemapView: React.FC<SitemapViewProps> = ({ onNavigate }) => {
       // 9. Community Forum Discussions
       ...MOCK_FORUM_TOPICS.map((topic) => {
         const slug = getSeoSlug(topic);
+        const count = topic.repliesCount ?? topic.replyCount ?? 0;
+        const authorHandle = topic.author.username || topic.author.name.toLowerCase().replace(/\s+/g, '');
         return {
           id: `forum-${topic.id}`,
           title: topic.title,
           url: `/forum/${slug}`,
           category: 'forum' as const,
-          badge: `${topic.replyCount} Replies`,
+          badge: `${count} Replies`,
           badgeColor: 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20',
-          description: `Community discussion thread started by @${topic.author.username} with active gamer opinions and commentary.`,
+          description: `Community discussion thread started by @${authorHandle} with active gamer opinions and commentary.`,
           priority: '0.8',
           changefreq: 'Daily'
         };

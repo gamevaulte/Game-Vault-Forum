@@ -9,9 +9,17 @@ import {
   ExternalLink, 
   ShieldCheck, 
   Sparkles,
-  Layers
+  Layers,
+  Zap,
+  ArrowUpRight,
+  Monitor,
+  Cpu,
+  Gamepad2,
+  Search,
+  PenTool,
+  Play
 } from 'lucide-react';
-import { VaultAiMessage } from '../../types';
+import { VaultAiMessage, VaultAiAction } from '../../types';
 import { 
   VaultAiGameCard, 
   VaultAiHardwareCard, 
@@ -29,13 +37,15 @@ interface VaultAiMessageBubbleProps {
   isLastAssistant?: boolean;
   onRegenerate?: () => void;
   userAvatar?: string;
+  onExecuteAction?: (action: VaultAiAction) => void;
 }
 
 export const VaultAiMessageBubble: React.FC<VaultAiMessageBubbleProps> = ({
   message,
   isLastAssistant,
   onRegenerate,
-  userAvatar
+  userAvatar,
+  onExecuteAction
 }) => {
   const [copied, setCopied] = useState(false);
   const isUser = message.role === 'user';
@@ -47,6 +57,49 @@ export const VaultAiMessageBubble: React.FC<VaultAiMessageBubbleProps> = ({
       setTimeout(() => setCopied(false), 2000);
     } catch (e) {
       console.warn('Failed to copy', e);
+    }
+  };
+
+  const handleActionClick = (action: VaultAiAction) => {
+    if (onExecuteAction) {
+      onExecuteAction(action);
+      return;
+    }
+
+    // Default built-in action dispatcher
+    if (action.type === 'navigate') {
+      navigateTo(action.target);
+    } else if (action.type === 'requirements') {
+      navigateTo(`/tools/pc-game-requirements-checker/${action.target}`);
+    } else if (action.type === 'pc_build') {
+      navigateTo('/tools/gaming-pc-builder');
+    } else if (action.type === 'topic') {
+      navigateTo('/forum/new');
+    } else if (action.type === 'generate_tag') {
+      navigateTo('/tools/gaming-username-generator');
+    } else if (action.type === 'search') {
+      navigateTo('/forum');
+    } else if (action.target.startsWith('/')) {
+      navigateTo(action.target);
+    }
+  };
+
+  const renderActionIcon = (type: string) => {
+    switch (type) {
+      case 'requirements':
+        return <Monitor className="w-3.5 h-3.5 text-cyan-400" />;
+      case 'pc_build':
+        return <Cpu className="w-3.5 h-3.5 text-purple-400" />;
+      case 'generate_tag':
+        return <Sparkles className="w-3.5 h-3.5 text-pink-400" />;
+      case 'topic':
+        return <PenTool className="w-3.5 h-3.5 text-amber-400" />;
+      case 'search':
+        return <Search className="w-3.5 h-3.5 text-blue-400" />;
+      case 'video':
+        return <Play className="w-3.5 h-3.5 text-rose-400" />;
+      default:
+        return <Zap className="w-3.5 h-3.5 text-amber-400" />;
     }
   };
 
@@ -148,6 +201,29 @@ export const VaultAiMessageBubble: React.FC<VaultAiMessageBubbleProps> = ({
               {videos.map((vid, idx) => (
                 <VaultAiVideoCard key={vid!.id || idx} video={vid!} />
               ))}
+            </div>
+          )}
+
+          {/* Assistive Task Actions */}
+          {message.actions && message.actions.length > 0 && (
+            <div className="mt-4 pt-3.5 border-t border-purple-500/20 space-y-2">
+              <div className="flex items-center gap-1.5 text-[11px] font-semibold text-purple-300 uppercase tracking-wider">
+                <Zap className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
+                <span>Assistive Tasks & Quick Actions</span>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {message.actions.map((act) => (
+                  <button
+                    key={act.id}
+                    onClick={() => handleActionClick(act)}
+                    className="group inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gradient-to-r from-purple-950/60 to-zinc-900/80 hover:from-purple-900/80 hover:to-indigo-950/80 text-purple-200 hover:text-white border border-purple-500/30 hover:border-purple-400 text-xs font-medium transition-all shadow-sm cursor-pointer active:scale-95"
+                  >
+                    {renderActionIcon(act.type)}
+                    <span>{act.label}</span>
+                    <ArrowUpRight className="w-3 h-3 text-purple-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                  </button>
+                ))}
+              </div>
             </div>
           )}
 

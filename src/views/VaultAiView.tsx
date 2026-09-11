@@ -24,7 +24,7 @@ import {
   Lock,
   Cpu
 } from 'lucide-react';
-import { PageTab, UserAccount, VaultAiConversation, VaultAiMessage } from '../types';
+import { PageTab, UserAccount, VaultAiConversation, VaultAiMessage, VaultAiAction } from '../types';
 import { 
   getStoredConversations, 
   saveAllConversations, 
@@ -247,6 +247,7 @@ export const VaultAiView: React.FC<VaultAiViewProps> = ({
         content: res.reply,
         sources: res.sources,
         cardIds: res.cardIds,
+        actions: res.actions,
         timestamp: new Date().toISOString(),
       };
 
@@ -277,6 +278,37 @@ export const VaultAiView: React.FC<VaultAiViewProps> = ({
       saveAllConversations(withError);
     } finally {
       setIsGenerating(false);
+    }
+  };
+
+  const handleExecuteAction = (action: VaultAiAction) => {
+    if (action.type === 'quick_task') {
+      handleSendMessage(action.target);
+      return;
+    }
+
+    if (action.type === 'navigate') {
+      if (action.target.startsWith('/')) {
+        navigateTo(action.target);
+      } else {
+        onNavigateTab(action.target as any);
+      }
+    } else if (action.type === 'requirements') {
+      if (action.target) {
+        navigateTo(`/tools/pc-game-requirements-checker/${action.target}`);
+      } else {
+        onNavigateTab('pc-requirements');
+      }
+    } else if (action.type === 'pc_build') {
+      navigateTo('/tools/gaming-pc-builder');
+    } else if (action.type === 'generate_tag') {
+      navigateTo('/tools/gaming-username-generator');
+    } else if (action.type === 'topic') {
+      navigateTo('/forum/new');
+    } else if (action.type === 'search') {
+      onNavigateTab('forum');
+    } else if (action.target.startsWith('/')) {
+      navigateTo(action.target);
     }
   };
 
@@ -317,16 +349,48 @@ export const VaultAiView: React.FC<VaultAiViewProps> = ({
     }
   };
 
-  // Example starter queries
-  const STARTER_PROMPTS = [
-    'What game should I play tonight?',
-    'Can my PC run World of Warships?',
-    'What GPU should I get for 1440p gaming?',
-    'Explain this game mechanic to me.',
-    'Why am I getting low FPS?',
-    'Compare PUBG Mobile and Call of Duty.',
-    'Recommend some games like Elden Ring.',
-    'Help me choose between these two GPUs.',
+  // Example assistive task starter queries
+  const ASSISTIVE_STARTER_PROMPTS = [
+    {
+      title: 'Can My PC Run It?',
+      desc: 'Check CPU & GPU hardware compatibility for Cyberpunk 2077 or Elden Ring',
+      prompt: 'Check if my PC can run Cyberpunk 2077. What are the minimum and recommended specs, and what hardware do I need for smooth 60 FPS?'
+    },
+    {
+      title: 'Build Gaming PC ($1,200)',
+      desc: 'Formulate an optimized 1440p gaming setup with parts and wattage check',
+      prompt: 'Help me plan a balanced 1440p gaming PC build under $1,200 / ₦1,800,000. Recommend exact CPU, GPU, RAM, and PSU pairings.'
+    },
+    {
+      title: 'Diagnose Low FPS & Stutter',
+      desc: 'Run through the 12-point PC performance and frame pacing checklist',
+      prompt: 'My game is experiencing frame drops and micro-stuttering. Help me diagnose the bottleneck using the 12-point checklist.'
+    },
+    {
+      title: 'Recommend Top Games',
+      desc: 'Curate titles matching your genre, gameplay style, and playtime budget',
+      prompt: 'Recommend 3 top games from the Game Vault catalog based on rich storytelling, tactical gameplay, and verified ratings.'
+    },
+    {
+      title: 'World of Warships Tactics',
+      desc: 'Get tactical armor angling, artillery penetration, and positioning tips',
+      prompt: 'Give me the top armor angling and penetration tactics for battleships in World of Warships.'
+    },
+    {
+      title: 'Generate Gamer Tags',
+      desc: 'Create unique, badass gaming usernames and squad aliases',
+      prompt: 'Generate 6 badass cyberpunk and tactical gamer usernames for my profile.'
+    },
+    {
+      title: 'Draft Forum Topic',
+      desc: 'Create an engaging discussion thread for Game Vault Forum',
+      prompt: 'Draft an engaging forum discussion post comparing mid-range GPUs (RTX 4070 vs RX 7800 XT) for 1440p gaming.'
+    },
+    {
+      title: 'Explore Site & Tools',
+      desc: 'Navigate Game Vault guides, calculators, and reviews',
+      prompt: 'What tools, guides, and directories are available on Game Vault Forum? Give me an assistive overview with quick action links.'
+    },
   ];
 
   // 9 Transparent FAQs
@@ -554,6 +618,17 @@ export const VaultAiView: React.FC<VaultAiViewProps> = ({
               </div>
               <ArrowRight className="w-3 h-3 text-zinc-500" />
             </button>
+
+            <button
+              onClick={() => onNavigateTab('sitemap')}
+              className="w-full text-left p-2 rounded-xl bg-white/5 hover:bg-purple-500/10 border border-white/5 hover:border-purple-500/30 text-xs text-zinc-300 flex items-center justify-between transition-all"
+            >
+              <div className="flex items-center gap-2">
+                <Layers className="w-4 h-4 text-cyan-400" />
+                <span>Site Directory & Map</span>
+              </div>
+              <ArrowRight className="w-3 h-3 text-zinc-500" />
+            </button>
           </div>
 
           {/* Guest Limit Prompt if not signed in */}
@@ -642,16 +717,23 @@ export const VaultAiView: React.FC<VaultAiViewProps> = ({
                   </p>
                 </div>
 
-                {/* Example query pills */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-left pt-2">
-                  {STARTER_PROMPTS.map((prompt, idx) => (
+                {/* Assistive Task Query Cards */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left pt-2">
+                  {ASSISTIVE_STARTER_PROMPTS.map((item, idx) => (
                     <button
                       key={idx}
-                      onClick={() => handleSendMessage(prompt)}
-                      className="p-3 rounded-xl bg-white/5 hover:bg-purple-900/30 border border-white/5 hover:border-purple-500/40 text-xs text-zinc-300 hover:text-white transition-all text-left group flex items-center justify-between"
+                      onClick={() => handleSendMessage(item.prompt)}
+                      className="p-3.5 rounded-xl bg-gradient-to-br from-white/5 to-white/[0.02] hover:from-purple-950/40 hover:to-indigo-950/30 border border-white/5 hover:border-purple-500/40 text-left group transition-all cursor-pointer shadow-sm flex flex-col justify-between"
                     >
-                      <span className="truncate pr-2">"{prompt}"</span>
-                      <ArrowRight className="w-3.5 h-3.5 text-zinc-500 group-hover:text-purple-400 flex-shrink-0" />
+                      <div className="space-y-1">
+                        <div className="text-xs font-bold text-white group-hover:text-purple-300 flex items-center justify-between">
+                          <span>{item.title}</span>
+                          <ArrowRight className="w-3.5 h-3.5 text-zinc-500 group-hover:text-purple-400 group-hover:translate-x-0.5 transition-all" />
+                        </div>
+                        <p className="text-[11px] text-zinc-400 group-hover:text-zinc-300 line-clamp-2 leading-relaxed">
+                          {item.desc}
+                        </p>
+                      </div>
                     </button>
                   ))}
                 </div>
@@ -666,6 +748,7 @@ export const VaultAiView: React.FC<VaultAiViewProps> = ({
                 isLastAssistant={!isGenerating && idx === activeConversation.messages.length - 1 && msg.role === 'assistant'}
                 onRegenerate={handleRegenerate}
                 userAvatar={user.avatar}
+                onExecuteAction={handleExecuteAction}
               />
             ))}
 

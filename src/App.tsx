@@ -804,6 +804,16 @@ export default function App() {
           ]
         });
         break;
+      case 'sitemap':
+        updatePageSeo({
+          title: 'Website Sitemap & Navigation Index | Game Vault Forum',
+          description: 'Complete directory and sitemap indexing all games, tactical guides, hardware benchmarks, AI tools, and forum topics on Game Vault Forum.',
+          canonicalPath: '/sitemap',
+          breadcrumbs: [
+            { name: 'Sitemap', path: '/sitemap' }
+          ]
+        });
+        break;
       case 'login':
       case 'register':
       case 'profile':
@@ -851,6 +861,8 @@ export default function App() {
         return 'vault-ai';
       case 'tools':
         return 'tools';
+      case 'sitemap':
+        return 'sitemap';
       case 'about':
         return 'about';
       default:
@@ -899,6 +911,7 @@ export default function App() {
     else if (tab === 'gaming-username-generator') navigate('/tools/gaming-username-generator');
     else if (tab === 'gaming-pc-builder') navigate('/tools/gaming-pc-builder');
     else if (tab === 'tools') navigate('/tools');
+    else if (tab === 'sitemap') navigate('/sitemap');
     else navigate(`/${tab}`);
   };
 
@@ -1355,6 +1368,9 @@ export default function App() {
           />
         );
 
+      case 'sitemap':
+        return <SitemapView onNavigate={navigate} />;
+
       case 'profile':
       case 'home':
       default:
@@ -1418,6 +1434,7 @@ export default function App() {
         onOpenTerms={() => navigate('/terms')}
         onOpenCookies={() => navigate('/cookies')}
         onOpenContact={() => navigate('/contact')}
+        onOpenSitemap={() => navigate('/sitemap')}
       />
 
       {/* Global Search Modal */}

@@ -28,19 +28,19 @@ export const CookiePolicyView: React.FC<CookiePolicyViewProps> = ({
         {/* Legal Hub Navigation Pill Tabs */}
         <div className="flex flex-wrap items-center gap-2 text-xs font-['Rajdhani'] uppercase tracking-wider font-semibold">
           <button
-            onClick={() => onNavigateLegal?.('guidelines') || onNavigateTab('forum')}
+            onClick={() => { if (onNavigateLegal) onNavigateLegal('guidelines'); else onNavigateTab('forum'); }}
             className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
           >
             Guidelines
           </button>
           <button
-            onClick={() => onNavigateLegal?.('privacy') || onNavigateTab('forum')}
+            onClick={() => { if (onNavigateLegal) onNavigateLegal('privacy'); else onNavigateTab('forum'); }}
             className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
           >
             Privacy Policy
           </button>
           <button
-            onClick={() => onNavigateLegal?.('terms') || onNavigateTab('forum')}
+            onClick={() => { if (onNavigateLegal) onNavigateLegal('terms'); else onNavigateTab('forum'); }}
             className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
           >
             Terms of Service
@@ -49,7 +49,7 @@ export const CookiePolicyView: React.FC<CookiePolicyViewProps> = ({
             Cookie Policy
           </span>
           <button
-            onClick={() => onNavigateLegal?.('contact') || onNavigateTab('contact')}
+            onClick={() => { if (onNavigateLegal) onNavigateLegal('contact'); else onNavigateTab('contact'); }}
             className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
           >
             Contact Us
@@ -245,7 +245,7 @@ export const CookiePolicyView: React.FC<CookiePolicyViewProps> = ({
               <p className="text-white font-bold font-['Rajdhani'] uppercase tracking-wider">Game Vault Technical & Editorial Desk</p>
               <p>Publisher: Joel Ayuba</p>
               <p>Direct Email: <a href="mailto:contact@gamevault.forum" className="text-purple-400 hover:underline">contact@gamevault.forum</a></p>
-              <p>Online Form: <button onClick={() => onNavigateLegal?.('contact') || onNavigateTab('contact')} className="text-cyan-400 hover:underline cursor-pointer">Official Contact Desk (/contact)</button></p>
+              <p>Online Form: <button onClick={() => { if (onNavigateLegal) onNavigateLegal('contact'); else onNavigateTab('contact'); }} className="text-cyan-400 hover:underline cursor-pointer">Official Contact Desk (/contact)</button></p>
             </div>
           </section>
         </div>

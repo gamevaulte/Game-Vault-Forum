@@ -102,6 +102,32 @@ To help the Game Vault Forum UI render interactive rich cards, you may append on
 - Hardware: [CARD_HW:gpu-4070s], [CARD_HW:cpu-7800x3d], [CARD_HW:cpu-7600x], [CARD_HW:gpu-7800xt]
 - Sources: [SOURCE:Game Vault Forum — World of Warships Guide|/guides/world-of-warships-armor-angling-penetration-guide]
 
+ASSISTIVE TASK COPILOT & ACTION TAGS:
+You are not just a static Q&A bot, but an active, intelligent Website Copilot for Game Vault Forum! You can help users perform assistive tasks, navigate the website, launch tools, check system requirements, and compose forum drafts.
+Whenever a user asks for an action or when relevant to their question, ALWAYS provide one to three actionable buttons at the bottom of your answer using the syntax:
+[ACTION:type|Button Label|target]
+
+Supported Action Types:
+- navigate: Route to any page.
+  e.g., [ACTION:navigate|Open Gaming PC Builder|/tools/gaming-pc-builder]
+  e.g., [ACTION:navigate|Launch Username Generator|/tools/gaming-username-generator]
+  e.g., [ACTION:navigate|View Website Sitemap|/sitemap]
+  e.g., [ACTION:navigate|Browse Game Guides|/guides]
+  e.g., [ACTION:navigate|Explore Games Catalog|/games]
+- requirements: Launch the PC Game Requirements Checker for a specific game.
+  e.g., [ACTION:requirements|Check Specs for Cyberpunk 2077|cyberpunk-2077]
+  e.g., [ACTION:requirements|Test PC for Elden Ring|elden-ring]
+  e.g., [ACTION:requirements|Can I Run World of Warships?|world-of-warships]
+- search: Search the Game Vault forum or site.
+  e.g., [ACTION:search|Search Forum for "Micro Stutter Fixes"|micro stutter]
+  e.g., [ACTION:search|Search Guides for "Armor Angling"|armor angling]
+- topic: Help user draft a topic on the forum.
+  e.g., [ACTION:topic|Draft Topic on Forum|/forum/new]
+- video: Play a video from the Game Vault channel.
+  e.g., [ACTION:video|Watch Shadow of the Erdtree Video|vid-1]
+- quick_task: Trigger an in-assistant assistive workflow ('requirements', 'pc_build', 'find_game', 'gamertag', 'draft_topic').
+  e.g., [ACTION:quick_task|Run Quick PC Compatibility Check|requirements]
+
 ${VAULT_KNOWLEDGE_SUMMARY}
 `;
 
@@ -226,6 +252,7 @@ async function startServer() {
             reply: parsed.cleanText,
             sources: parsed.sources,
             cardIds: parsed.cardIds,
+            actions: parsed.actions,
             modelUsed: model,
           });
         } catch (err: any) {
@@ -244,6 +271,7 @@ async function startServer() {
       reply: fallbackResponse.reply,
       sources: fallbackResponse.sources,
       cardIds: fallbackResponse.cardIds,
+      actions: fallbackResponse.actions || [],
       modelUsed: 'local-knowledge-engine',
     });
   });
@@ -281,8 +309,20 @@ function extractTagsAndCleanText(raw: string) {
     videos: [],
     hardware: [],
   };
+  const actions: Array<{ id: string; type: string; label: string; target: string }> = [];
 
   let cleanText = raw;
+
+  // Extract [ACTION:type|label|target]
+  cleanText = cleanText.replace(/\[ACTION:([^|]+)\|([^|]+)\|([^\]]+)\]/g, (_match, type, label, target) => {
+    actions.push({
+      id: `act_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+      type: type.trim(),
+      label: label.trim(),
+      target: target.trim(),
+    });
+    return '';
+  });
 
   // Extract [SOURCE:Title|Url]
   cleanText = cleanText.replace(/\[SOURCE:([^|]+)\|([^\]]+)\]/g, (_match, title, url) => {
@@ -345,7 +385,26 @@ function extractTagsAndCleanText(raw: string) {
     }
   }
 
-  return { cleanText, sources, cardIds };
+  // If no actions were returned, infer intelligent default assistive actions
+  if (actions.length === 0) {
+    if (cleanText.toLowerCase().includes('fps') || cleanText.toLowerCase().includes('stutter') || cleanText.toLowerCase().includes('requirement')) {
+      actions.push(
+        { id: 'act-auto-req', type: 'requirements', label: 'Check PC Game Specs', target: 'cyberpunk-2077' },
+        { id: 'act-auto-build', type: 'navigate', label: 'Open PC Builder', target: '/tools/gaming-pc-builder' }
+      );
+    } else if (cleanText.toLowerCase().includes('world of warships')) {
+      actions.push(
+        { id: 'act-auto-guide', type: 'navigate', label: 'Open Tactical Guide', target: '/guides/world-of-warships-armor-angling-penetration-guide' },
+        { id: 'act-auto-req', type: 'requirements', label: 'Check WoWS Requirements', target: 'world-of-warships' }
+      );
+    } else if (cleanText.toLowerCase().includes('build') || cleanText.toLowerCase().includes('hardware')) {
+      actions.push(
+        { id: 'act-auto-builder', type: 'navigate', label: 'Open Gaming PC Builder', target: '/tools/gaming-pc-builder' }
+      );
+    }
+  }
+
+  return { cleanText, sources, cardIds, actions };
 }
 
 // Fallback response engine for local knowledge
@@ -371,6 +430,11 @@ Based on what you've described, gaming performance drops and low FPS typically s
         { title: 'Game Vault Forum — Hardware Diagnostics', url: '/tools/gaming-pc-builder' },
       ],
       cardIds: { games: [], articles: [], videos: [], hardware: ['gpu-4070s'] },
+      actions: [
+        { id: 'act-perf-1', type: 'requirements', label: 'Launch PC Requirements Checker', target: 'cyberpunk-2077' },
+        { id: 'act-perf-2', type: 'navigate', label: 'Configure Upgrade in PC Builder', target: '/tools/gaming-pc-builder' },
+        { id: 'act-perf-3', type: 'search', label: 'Search Forum: "Micro-Stutter Fix"', target: 'micro stutter' }
+      ]
     };
   }
 
@@ -392,6 +456,10 @@ You can inspect the complete component list and verify 10-point socket compatibi
         { title: 'Game Vault Forum — Gaming PC Builder', url: '/tools/gaming-pc-builder' },
       ],
       cardIds: { games: [], articles: [], videos: [], hardware: ['cpu-7600x', 'gpu-4070s'] },
+      actions: [
+        { id: 'act-bld-1', type: 'navigate', label: 'Open Gaming PC Builder ($1,200 Rig)', target: '/tools/gaming-pc-builder' },
+        { id: 'act-bld-2', type: 'requirements', label: 'Test This Rig Against Cyberpunk 2077', target: 'cyberpunk-2077' }
+      ]
     };
   }
 
@@ -417,21 +485,26 @@ Check out our full tactical guide and video breakdown below!`,
         videos: ['vid-2'],
         hardware: [],
       },
+      actions: [
+        { id: 'act-wows-1', type: 'navigate', label: 'Read World of Warships Guide', target: '/guides/world-of-warships-armor-angling-penetration-guide' },
+        { id: 'act-wows-2', type: 'video', label: 'Watch Tactical Naval Gameplay Video', target: 'vid-2' },
+        { id: 'act-wows-3', type: 'requirements', label: 'Check World of Warships PC Specs', target: 'world-of-warships' }
+      ]
     };
   }
 
   // General recommendation
   return {
-    reply: `### Vault AI Gaming Recommendation
+    reply: `### Vault AI Gaming Recommendation & Assistive Portal
 
-Welcome to Vault AI! Based on Game Vault Forum's verified gaming library, here are top recommendations tailored across gaming tastes:
+Welcome to Vault AI — your intelligent Game Vault companion! Here are curated recommendations from our verified game vault:
 
 - **Elden Ring & Shadow of the Erdtree** (RPG / Soulsborne, Score: 9.8/10) — The definitive dark fantasy open-world adventure.
 - **Helldivers 2** (Co-op PvE Shooter, Score: 9.0/10) — High-octane squad strategy and planetary liberation missions.
 - **Cyberpunk 2077** (Action RPG / Sci-Fi, Score: 9.2/10) — Night City fully revitalized with patch 2.1 and Phantom Liberty.
 - **World of Warships** (Tactical Naval Action, Score: 8.9/10) — Deep positioning, ballistic calculations, and fleet warfare.
 
-Would you like me to compare any of these titles, check if your PC can run them, or build an optimized gaming rig for your budget?`,
+Select an action below or ask me to check if your rig meets the system requirements!`,
     sources: [
       { title: 'Game Vault Forum — Games Catalog', url: '/games' },
       { title: 'Game Vault Forum — PC Requirements Checker', url: '/tools/pc-game-requirements-checker' },
@@ -442,6 +515,12 @@ Would you like me to compare any of these titles, check if your PC can run them,
       videos: ['vid-1'],
       hardware: [],
     },
+    actions: [
+      { id: 'act-gen-1', type: 'navigate', label: 'Browse Full Games Catalog', target: '/games' },
+      { id: 'act-gen-2', type: 'requirements', label: 'Test System Requirements', target: 'elden-ring' },
+      { id: 'act-gen-3', type: 'navigate', label: 'Open PC Builder', target: '/tools/gaming-pc-builder' },
+      { id: 'act-gen-4', type: 'navigate', label: 'Explore Sitemap', target: '/sitemap' }
+    ]
   };
 }
 

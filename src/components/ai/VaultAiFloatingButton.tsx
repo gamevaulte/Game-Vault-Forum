@@ -9,7 +9,7 @@ import {
   ChevronDown
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { PageTab, UserAccount, VaultAiMessage } from '../../types';
+import { PageTab, UserAccount, VaultAiMessage, VaultAiAction } from '../../types';
 import { 
   sendVaultAiMessage, 
   getStoredConversations, 
@@ -44,6 +44,31 @@ export const VaultAiFloatingButton: React.FC<VaultAiFloatingButtonProps> = ({
   const [inputValue, setInputValue] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Handle action click from bubble inside drawer
+  const handleExecuteAction = (action: VaultAiAction) => {
+    if (action.type === 'quick_task') {
+      handleSend(action.target);
+      return;
+    }
+
+    setIsOpen(false);
+    if (action.type === 'navigate') {
+      navigateTo(action.target);
+    } else if (action.type === 'requirements') {
+      navigateTo(`/tools/pc-game-requirements-checker/${action.target}`);
+    } else if (action.type === 'pc_build') {
+      navigateTo('/tools/gaming-pc-builder');
+    } else if (action.type === 'topic') {
+      navigateTo('/forum/new');
+    } else if (action.type === 'generate_tag') {
+      navigateTo('/tools/gaming-username-generator');
+    } else if (action.type === 'search') {
+      navigateTo('/forum');
+    } else if (action.target.startsWith('/')) {
+      navigateTo(action.target);
+    }
+  };
 
   // Derive context label based on current route
   let contextLabel = 'Ask Vault AI';
@@ -144,6 +169,7 @@ export const VaultAiFloatingButton: React.FC<VaultAiFloatingButtonProps> = ({
         content: response.reply,
         sources: response.sources,
         cardIds: response.cardIds,
+        actions: response.actions,
         timestamp: new Date().toISOString(),
       };
 
@@ -206,7 +232,7 @@ export const VaultAiFloatingButton: React.FC<VaultAiFloatingButtonProps> = ({
                   <div className="flex items-center gap-1.5">
                     <h3 className="text-sm font-bold text-white">Vault AI</h3>
                     <span className="px-1.5 py-0.2 rounded text-[9px] font-semibold bg-purple-500/20 text-purple-300 border border-purple-500/30">
-                      Assistant
+                      Copilot
                     </span>
                   </div>
                   <p className="text-[11px] text-zinc-400 truncate max-w-[200px]">
@@ -241,6 +267,7 @@ export const VaultAiFloatingButton: React.FC<VaultAiFloatingButtonProps> = ({
                   message={msg}
                   isLastAssistant={!isGenerating && i === messages.length - 1 && msg.role === 'assistant'}
                   userAvatar={user?.avatar}
+                  onExecuteAction={handleExecuteAction}
                 />
               ))}
 
@@ -249,33 +276,39 @@ export const VaultAiFloatingButton: React.FC<VaultAiFloatingButtonProps> = ({
                   <div className="w-6 h-6 rounded-lg bg-purple-900/40 border border-purple-500/30 flex items-center justify-center">
                     <Sparkles className="w-3.5 h-3.5 animate-spin text-purple-400" />
                   </div>
-                  <span>Vault AI is thinking...</span>
+                  <span>Vault AI is analyzing and assisting...</span>
                 </div>
               )}
 
               <div ref={messagesEndRef} />
             </div>
 
-            {/* Quick Context Prompt Suggestions */}
+            {/* Quick Assistive Prompt Suggestions */}
             {messages.length < 3 && (
               <div className="px-3 py-2 border-t border-white/5 bg-black/20 flex gap-1.5 overflow-x-auto scrollbar-none text-xs">
                 <button
-                  onClick={() => handleSend('What game should I play tonight?')}
-                  className="px-2.5 py-1 rounded-lg bg-purple-900/30 hover:bg-purple-900/60 text-purple-200 border border-purple-500/30 whitespace-nowrap text-[11px] transition-colors"
-                >
-                  🎮 Recommend a game
-                </button>
-                <button
-                  onClick={() => handleSend('Can my PC run World of Warships?')}
+                  onClick={() => handleSend('Can my PC run Elden Ring and Cyberpunk 2077?')}
                   className="px-2.5 py-1 rounded-lg bg-blue-900/30 hover:bg-blue-900/60 text-blue-200 border border-blue-500/30 whitespace-nowrap text-[11px] transition-colors"
                 >
-                  🖥️ Check PC specs
+                  🖥️ Test PC Specs
                 </button>
                 <button
-                  onClick={() => handleSend('Why am I getting low FPS in games?')}
+                  onClick={() => handleSend('Configure a balanced $1,200 gaming PC rig with specs.')}
+                  className="px-2.5 py-1 rounded-lg bg-purple-900/30 hover:bg-purple-900/60 text-purple-200 border border-purple-500/30 whitespace-nowrap text-[11px] transition-colors"
+                >
+                  💻 Build $1,200 PC
+                </button>
+                <button
+                  onClick={() => handleSend('How do I fix micro-stutters and low FPS in games?')}
+                  className="px-2.5 py-1 rounded-lg bg-amber-900/30 hover:bg-amber-900/60 text-amber-200 border border-amber-500/30 whitespace-nowrap text-[11px] transition-colors"
+                >
+                  🔧 Fix Low FPS
+                </button>
+                <button
+                  onClick={() => handleSend('Generate 5 creative gamer usernames.')}
                   className="px-2.5 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 border border-white/10 whitespace-nowrap text-[11px] transition-colors"
                 >
-                  🔧 Fix low FPS
+                  🏷️ Gamertags
                 </button>
               </div>
             )}
