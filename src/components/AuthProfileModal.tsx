@@ -66,7 +66,7 @@ export const AuthProfileModal: React.FC<AuthProfileModalProps> = ({
   initialTab = 'profile'
 }) => {
   const [activeTab, setActiveTab] = useState<'profile' | 'guidelines' | 'admin'>(initialTab);
-  const isAdmin = user.email === 'contact@gamevault.forum';
+  const isAdmin = user.email === 'contact@gamevault.forum' || user.email === 'joelotis40@gmail.com' || user.role === 'admin';
 
   // Admin Firestore state
   const [adminView, setAdminView] = useState<'inquiries' | 'subscribers'>('inquiries');
@@ -432,7 +432,7 @@ export const AuthProfileModal: React.FC<AuthProfileModalProps> = ({
                     <span>Firestore Database Dispatch & CRM</span>
                   </h3>
                   <p className="text-xs text-slate-400">
-                    Live records stored securely in Firestore collections: <code className="text-purple-300 font-mono">contact_submissions</code> & <code className="text-purple-300 font-mono">subscribers</code>
+                    Live records stored securely in Firestore collections: <code className="text-purple-300 font-mono">Subscriber</code> & <code className="text-purple-300 font-mono">contact_us</code> (<code className="text-purple-300 font-mono">contact_submissions</code>)
                   </p>
                 </div>
 

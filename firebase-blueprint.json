@@ -119,9 +119,43 @@
         "createdAt": { "type": "string", "description": "ISO timestamp of when the message was dispatched" },
         "status": { "type": "string", "enum": ["new", "read", "replied", "archived"], "description": "Editorial triage status" },
         "userId": { "type": "string", "description": "Optional user UID if submitted by an authenticated user" },
-        "userAgent": { "type": "string", "maxLength": 150, "description": "Client browser metadata for security and debugging" }
+        "userAgent": { "type": "string", "maxLength": 150, "description": "Client browser metadata for security and debugging" },
+        "source": { "type": "string", "maxLength": 50, "description": "Source origin of the contact form submission" }
       },
       "required": ["id", "name", "email", "category", "message", "createdAt", "status"]
+    },
+    "ContactUs": {
+      "title": "Contact Us Information",
+      "description": "Contact Us collection in Firestore where contact us page information documents are stored with all fields entered into the contact form",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique document identifier for contact submission" },
+        "name": { "type": "string", "minLength": 1, "maxLength": 100, "description": "Sender full name entered in contact form" },
+        "email": { "type": "string", "format": "email", "minLength": 3, "maxLength": 120, "description": "Sender email address entered in contact form" },
+        "category": { "type": "string", "maxLength": 50, "description": "Department or category selected in contact form" },
+        "subject": { "type": "string", "maxLength": 200, "description": "Subject entered in contact form" },
+        "message": { "type": "string", "minLength": 5, "maxLength": 3000, "description": "All details and message content entered in contact form" },
+        "createdAt": { "type": "string", "description": "ISO timestamp of submission" },
+        "status": { "type": "string", "enum": ["new", "read", "replied", "archived"], "description": "Processing status" },
+        "userId": { "type": "string", "description": "Optional user UID if signed in" },
+        "userAgent": { "type": "string", "maxLength": 150, "description": "Client browser agent metadata" },
+        "source": { "type": "string", "maxLength": 50, "description": "Origin of form submission" }
+      },
+      "required": ["id", "name", "email", "category", "message", "createdAt", "status"]
+    },
+    "Subscriber": {
+      "title": "Subscriber",
+      "description": "Subscriber collection in Firestore storing email subscribers obtained through the website",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Normalized identifier for subscriber document" },
+        "email": { "type": "string", "format": "email", "minLength": 3, "maxLength": 120, "description": "Subscriber email address" },
+        "subscribedAt": { "type": "string", "description": "ISO timestamp of subscription" },
+        "status": { "type": "string", "enum": ["active", "unsubscribed"], "description": "Subscription state" },
+        "source": { "type": "string", "maxLength": 50, "description": "Source placement on the website" },
+        "createdAt": { "type": "string", "description": "Record creation timestamp" }
+      },
+      "required": ["email", "subscribedAt", "status"]
     },
     "Subscribers": {
       "title": "Newsletter Subscribers",
@@ -132,7 +166,8 @@
         "email": { "type": "string", "format": "email", "minLength": 3, "maxLength": 120, "description": "Subscriber email address" },
         "subscribedAt": { "type": "string", "description": "ISO timestamp of newsletter subscription" },
         "status": { "type": "string", "enum": ["active", "unsubscribed"], "description": "Subscription state" },
-        "source": { "type": "string", "maxLength": 50, "description": "Source placement of the subscription" }
+        "source": { "type": "string", "maxLength": 50, "description": "Source placement of the subscription" },
+        "createdAt": { "type": "string", "description": "Record creation timestamp" }
       },
       "required": ["email", "subscribedAt", "status"]
     }
@@ -158,9 +193,21 @@
       "schema": "object",
       "description": "Community upvotes and engagement counters"
     },
+    "/Subscriber/{subscriberId}": {
+      "schema": "Subscriber",
+      "description": "Subscriber collection in Firestore storing email subscribers obtained through the website"
+    },
     "/subscribers/{subscriberId}": {
       "schema": "Subscribers",
       "description": "Game Vault newsletter email subscribers stored from subscription forms"
+    },
+    "/contact_us/{submissionId}": {
+      "schema": "ContactUs",
+      "description": "Contact Us collection in Firestore where contact us page information documents are stored with all fields"
+    },
+    "/ContactUs/{submissionId}": {
+      "schema": "ContactUs",
+      "description": "Contact Us collection alias where contact us page information documents are stored"
     },
     "/contact_submissions/{submissionId}": {
       "schema": "ContactSubmissions",

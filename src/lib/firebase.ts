@@ -399,9 +399,9 @@ export async function syncLikeToFirestore(itemId: string, count: number, userUid
 }
 
 /**
- * Save newsletter subscriber into Firestore subscribers collection
+ * Save newsletter subscriber into Firestore Subscriber and subscribers collections
  */
-export async function saveNewsletterSubscriber(email: string, source: string = 'footer'): Promise<NewsletterSubscriber> {
+export async function saveNewsletterSubscriber(email: string, source: string = 'website'): Promise<NewsletterSubscriber> {
   const clean = (email || '').trim().toLowerCase().slice(0, 120);
   if (!clean || !clean.includes('@') || clean.length < 3) {
     throw new Error('Please enter a valid email address.');
@@ -416,28 +416,36 @@ export async function saveNewsletterSubscriber(email: string, source: string = '
     email: clean,
     subscribedAt: nowIso,
     status: 'active',
-    source: (source || 'footer').slice(0, 50)
+    source: (source || 'website').slice(0, 50)
+  };
+
+  const payload = {
+    id: subscriberRecord.id,
+    email: subscriberRecord.email,
+    subscribedAt: subscriberRecord.subscribedAt,
+    status: subscriberRecord.status,
+    source: subscriberRecord.source,
+    createdAt: subscriberRecord.subscribedAt
   };
 
   try {
-    await setDoc(doc(db, 'subscribers', subId), {
-      id: subscriberRecord.id,
-      email: subscriberRecord.email,
-      subscribedAt: subscriberRecord.subscribedAt,
-      status: subscriberRecord.status,
-      source: subscriberRecord.source
-    }, { merge: true });
+    // Persist into both Subscriber collection and subscribers collection
+    await Promise.all([
+      setDoc(doc(db, 'Subscriber', subId), payload, { merge: true }),
+      setDoc(doc(db, 'subscribers', subId), payload, { merge: true })
+    ]);
     
     return subscriberRecord;
   } catch (error) {
     console.error('Failed to save subscriber to Firestore:', error);
-    handleFirestoreError(error, OperationType.WRITE, `subscribers/${subId}`);
+    handleFirestoreError(error, OperationType.WRITE, `Subscriber/${subId}`);
     return subscriberRecord;
   }
 }
 
 /**
- * Save user inquiry into Firestore contact_submissions collection
+ * Save user inquiry into Firestore Contact Us collections (contact_us, ContactUs, contact_submissions)
+ * All fields entered in the contact form are stored in the document.
  */
 export async function saveContactSubmission(input: {
   name: string;
@@ -483,7 +491,7 @@ export async function saveContactSubmission(input: {
     userAgent
   };
 
-  // Clean data structure matching Firestore rules
+  // Clean data structure matching Firestore rules and storing all entered fields
   const firestoreData: Record<string, any> = {
     id: submissionDoc.id,
     name: submissionDoc.name,
@@ -491,7 +499,8 @@ export async function saveContactSubmission(input: {
     category: submissionDoc.category,
     message: submissionDoc.message,
     createdAt: submissionDoc.createdAt,
-    status: submissionDoc.status
+    status: submissionDoc.status,
+    source: 'contact_page'
   };
 
   if (submissionDoc.subject) {
@@ -505,11 +514,16 @@ export async function saveContactSubmission(input: {
   }
 
   try {
-    await setDoc(doc(db, 'contact_submissions', submissionId), firestoreData);
+    // Persist into contact_us, ContactUs, and contact_submissions collections
+    await Promise.all([
+      setDoc(doc(db, 'contact_us', submissionId), firestoreData),
+      setDoc(doc(db, 'ContactUs', submissionId), firestoreData),
+      setDoc(doc(db, 'contact_submissions', submissionId), firestoreData)
+    ]);
     return submissionDoc;
   } catch (error) {
     console.error('Failed to save contact submission to Firestore:', error);
-    handleFirestoreError(error, OperationType.CREATE, `contact_submissions/${submissionId}`);
+    handleFirestoreError(error, OperationType.CREATE, `contact_us/${submissionId}`);
     return submissionDoc;
   }
 }
@@ -519,9 +533,14 @@ export async function saveContactSubmission(input: {
  */
 export async function getContactSubmissionsFromFirestore(): Promise<ContactSubmission[]> {
   try {
-    const q = query(collection(db, 'contact_submissions'), orderBy('createdAt', 'desc'), limit(50));
-    const snapshot = await getDocs(q);
-    return snapshot.docs.map(doc => doc.data() as ContactSubmission);
+    const q1 = query(collection(db, 'contact_us'), orderBy('createdAt', 'desc'), limit(50));
+    const snapshot1 = await getDocs(q1);
+    if (!snapshot1.empty) {
+      return snapshot1.docs.map(doc => doc.data() as ContactSubmission);
+    }
+    const q2 = query(collection(db, 'contact_submissions'), orderBy('createdAt', 'desc'), limit(50));
+    const snapshot2 = await getDocs(q2);
+    return snapshot2.docs.map(doc => doc.data() as ContactSubmission);
   } catch (error) {
     console.warn('Could not load contact submissions:', error);
     return [];
@@ -533,9 +552,14 @@ export async function getContactSubmissionsFromFirestore(): Promise<ContactSubmi
  */
 export async function getSubscribersFromFirestore(): Promise<NewsletterSubscriber[]> {
   try {
-    const q = query(collection(db, 'subscribers'), orderBy('subscribedAt', 'desc'), limit(100));
-    const snapshot = await getDocs(q);
-    return snapshot.docs.map(doc => doc.data() as NewsletterSubscriber);
+    const q1 = query(collection(db, 'Subscriber'), orderBy('subscribedAt', 'desc'), limit(100));
+    const snapshot1 = await getDocs(q1);
+    if (!snapshot1.empty) {
+      return snapshot1.docs.map(doc => doc.data() as NewsletterSubscriber);
+    }
+    const q2 = query(collection(db, 'subscribers'), orderBy('subscribedAt', 'desc'), limit(100));
+    const snapshot2 = await getDocs(q2);
+    return snapshot2.docs.map(doc => doc.data() as NewsletterSubscriber);
   } catch (error) {
     console.warn('Could not load newsletter subscribers:', error);
     return [];
@@ -550,11 +574,14 @@ export async function updateContactSubmissionStatus(
   status: ContactSubmissionStatus
 ): Promise<void> {
   try {
-    const docRef = doc(db, 'contact_submissions', submissionId);
-    await updateDoc(docRef, { status });
+    await Promise.allSettled([
+      updateDoc(doc(db, 'contact_us', submissionId), { status }),
+      updateDoc(doc(db, 'ContactUs', submissionId), { status }),
+      updateDoc(doc(db, 'contact_submissions', submissionId), { status })
+    ]);
   } catch (error) {
     console.error('Failed to update contact submission status:', error);
-    handleFirestoreError(error, OperationType.UPDATE, `contact_submissions/${submissionId}`);
+    handleFirestoreError(error, OperationType.UPDATE, `contact_us/${submissionId}`);
   }
 }
 
@@ -565,18 +592,21 @@ export async function ensureInitialFirestoreDocuments(): Promise<void> {
   try {
     // Only verify baseline records if current user is authorized or on boot
     const officialSubId = 'contact_gamevault_forum';
-    const subRef = doc(db, 'subscribers', officialSubId);
-    await setDoc(subRef, {
+    const subPayload = {
       id: officialSubId,
       email: 'contact@gamevault.forum',
       subscribedAt: new Date().toISOString(),
-      status: 'active',
-      source: 'system_official'
-    }, { merge: true });
+      status: 'active' as const,
+      source: 'system_official',
+      createdAt: new Date().toISOString()
+    };
+    await Promise.allSettled([
+      setDoc(doc(db, 'Subscriber', officialSubId), subPayload, { merge: true }),
+      setDoc(doc(db, 'subscribers', officialSubId), subPayload, { merge: true })
+    ]);
 
     const officialContactId = 'submission_official_registry';
-    const contactRef = doc(db, 'contact_submissions', officialContactId);
-    await setDoc(contactRef, {
+    const contactPayload = {
       id: officialContactId,
       name: 'Game Vault Editorial Desk',
       email: 'contact@gamevault.forum',
@@ -584,10 +614,16 @@ export async function ensureInitialFirestoreDocuments(): Promise<void> {
       subject: 'Official Communications Registry Initialized',
       message: 'Official communications registry initialized for Game Vault Forum editorial, reviews, corrections, and reader inquiries.',
       createdAt: new Date().toISOString(),
-      status: 'read',
+      status: 'read' as const,
       userId: 'system',
-      userAgent: 'Game Vault Core Protocol'
-    }, { merge: true });
+      userAgent: 'Game Vault Core Protocol',
+      source: 'contact_page'
+    };
+    await Promise.allSettled([
+      setDoc(doc(db, 'contact_us', officialContactId), contactPayload, { merge: true }),
+      setDoc(doc(db, 'ContactUs', officialContactId), contactPayload, { merge: true }),
+      setDoc(doc(db, 'contact_submissions', officialContactId), contactPayload, { merge: true })
+    ]);
   } catch (err) {
     // Suppress if non-admin or offline
     console.debug('Initial Firestore documents verification note:', err);

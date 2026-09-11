@@ -14,6 +14,7 @@ service cloud.firestore {
     function isAdmin() {
       return isAuthenticated() && 
         (request.auth.token.email == 'contact@gamevault.forum' || 
+         request.auth.token.email == 'joelotis40@gmail.com' ||
          request.auth.token.admin == true);
     }
 
@@ -37,11 +38,13 @@ service cloud.firestore {
              data.message is string && data.message.size() >= 5 && data.message.size() <= 3000 &&
              data.status is string && data.status in ['new', 'read', 'replied', 'archived'] &&
              data.createdAt is string && data.createdAt.size() <= 50 &&
+             (!('id' in data) || (data.id is string && data.id.size() <= 150)) &&
              (!('subject' in data) || (data.subject is string && data.subject.size() <= 200)) &&
              (!('userId' in data) || data.userId == null || (data.userId is string && data.userId.size() <= 128)) &&
              (!('userAgent' in data) || (data.userAgent is string && data.userAgent.size() <= 150)) &&
+             (!('source' in data) || (data.source is string && data.source.size() <= 50)) &&
              data.keys().hasAll(['id', 'name', 'email', 'category', 'message', 'createdAt', 'status']) &&
-             data.keys().size() <= 10;
+             data.keys().size() <= 12;
     }
 
     function isValidSubscriber(data) {
@@ -50,8 +53,9 @@ service cloud.firestore {
              data.status is string && data.status in ['active', 'unsubscribed'] &&
              (!('id' in data) || (data.id is string && data.id.size() <= 150)) &&
              (!('source' in data) || (data.source is string && data.source.size() <= 50)) &&
+             (!('createdAt' in data) || (data.createdAt is string && data.createdAt.size() <= 50)) &&
              data.keys().hasAll(['email', 'subscribedAt', 'status']) &&
-             data.keys().size() <= 6;
+             data.keys().size() <= 7;
     }
 
     // Default-deny safety net
@@ -64,7 +68,7 @@ service cloud.firestore {
       allow read: if true;
     }
 
-    // Contact Us Submissions
+    // Contact Us Submissions & Information Collections
     match /contact_submissions/{submissionId} {
       // PII Isolation: Only administrators or the authenticated submitter can read
       allow read: if isAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid);
@@ -75,13 +79,35 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
-    // Newsletter Subscribers
+    match /contact_us/{submissionId} {
+      allow read: if isAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid);
+      allow create: if isValidId(submissionId) && isValidContactSubmission(incoming());
+      allow update: if isAdmin() && isValidContactSubmission(incoming());
+      allow delete: if isAdmin();
+    }
+
+    match /ContactUs/{submissionId} {
+      allow read: if isAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid);
+      allow create: if isValidId(submissionId) && isValidContactSubmission(incoming());
+      allow update: if isAdmin() && isValidContactSubmission(incoming());
+      allow delete: if isAdmin();
+    }
+
+    // Newsletter Subscribers Collections
     match /subscribers/{subscriberId} {
       // PII Isolation: Newsletter mailing list is only readable by administrators
       allow read: if isAdmin();
       // Visitors and members can subscribe
       allow create: if isValidId(subscriberId) && isValidSubscriber(incoming());
       // Re-subscription or status update allowed safely
+      allow update: if (isAdmin() && isValidSubscriber(incoming())) || 
+                       (isValidSubscriber(incoming()) && incoming().diff(existing()).affectedKeys().hasOnly(['subscribedAt', 'status', 'source']));
+      allow delete: if isAdmin();
+    }
+
+    match /Subscriber/{subscriberId} {
+      allow read: if isAdmin();
+      allow create: if isValidId(subscriberId) && isValidSubscriber(incoming());
       allow update: if (isAdmin() && isValidSubscriber(incoming())) || 
                        (isValidSubscriber(incoming()) && incoming().diff(existing()).affectedKeys().hasOnly(['subscribedAt', 'status', 'source']));
       allow delete: if isAdmin();

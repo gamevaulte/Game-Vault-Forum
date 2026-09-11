@@ -188,8 +188,8 @@ async function startServer() {
     });
   });
 
-  // Vault AI chat endpoint
-  app.post('/api/vault-ai/chat', async (req, res) => {
+  // Vault AI chat handler
+  const handleVaultAiChat = async (req: express.Request, res: express.Response) => {
     const { message, history = [], context = {} } = req.body;
 
     if (!message || typeof message !== 'string') {
@@ -228,14 +228,18 @@ async function startServer() {
     }
     contents.push({ role: 'user', parts: [{ text: userPrompt }] });
 
-    // Call Gemini with primary model, fall back if busy
+    // Call Gemini with primary model, fall back if busy or timed out
     if (ai) {
       const modelsToTry = ['gemini-3.8-flash', 'gemini-3.1-flash-lite'];
       let lastError: any = null;
 
       for (const model of modelsToTry) {
         try {
-          const response = await ai.models.generateContent({
+          const timeoutPromise = new Promise<never>((_, reject) =>
+            setTimeout(() => reject(new Error(`Timeout waiting for ${model}`)), 6000)
+          );
+
+          const generatePromise = ai.models.generateContent({
             model,
             contents,
             config: {
@@ -244,6 +248,8 @@ async function startServer() {
               topP: 0.9,
             },
           });
+
+          const response = await Promise.race([generatePromise, timeoutPromise]);
 
           const rawText = response.text || '';
           const parsed = extractTagsAndCleanText(rawText);
@@ -274,7 +280,10 @@ async function startServer() {
       actions: fallbackResponse.actions || [],
       modelUsed: 'local-knowledge-engine',
     });
-  });
+  };
+
+  app.post('/api/vault-ai/chat', handleVaultAiChat);
+  app.post('/api/vault-ai', handleVaultAiChat);
 
   // Vite middleware for development
   if (process.env.NODE_ENV !== 'production') {

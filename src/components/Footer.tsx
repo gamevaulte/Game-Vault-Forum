@@ -65,9 +65,9 @@ export const Footer: React.FC<FooterProps> = ({
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-28 bg-purple-900/15 blur-3xl pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 lg:gap-8 mb-14">
-          {/* Col 1: Brand & Mission (Spans 2 cols on lg) */}
-          <div className="lg:col-span-2 space-y-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-12 gap-8 mb-14">
+          {/* Col 1: Brand & Mission */}
+          <div className="sm:col-span-2 md:col-span-3 lg:col-span-3 space-y-4">
             <VaultLogo size="lg" />
             <p className="text-purple-300/90 font-['Space_Grotesk'] text-sm italic font-medium">
               "Your Vault for Everything Gaming."
@@ -113,7 +113,7 @@ export const Footer: React.FC<FooterProps> = ({
           </div>
 
           {/* Col 2: Navigation */}
-          <div>
+          <div className="lg:col-span-2">
             <h3 className="font-['Rajdhani'] font-bold text-base uppercase tracking-wider text-white mb-4 flex items-center gap-2">
               <span className="w-1.5 h-1.5 bg-purple-500 rounded-full" />
               Navigation
@@ -141,8 +141,8 @@ export const Footer: React.FC<FooterProps> = ({
             </ul>
           </div>
 
-          {/* Col 3: Gaming Tools & Resources */}
-          <div>
+          {/* Col 3: Gaming Tools */}
+          <div className="lg:col-span-2">
             <h3 className="font-['Rajdhani'] font-bold text-base uppercase tracking-wider text-white mb-4 flex items-center gap-2">
               <span className="w-1.5 h-1.5 bg-cyan-400 rounded-full" />
               Gaming Tools
@@ -173,9 +173,9 @@ export const Footer: React.FC<FooterProps> = ({
                     onSelectTab('gaming-username-generator');
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                   }}
-                  className="hover:text-purple-300 text-purple-300 font-semibold transition-colors flex items-center gap-1.5 group text-left"
+                  className="hover:text-cyan-300 transition-colors flex items-center gap-1.5 group text-left"
                 >
-                  <ChevronRight className="w-3 h-3 text-purple-400 group-hover:text-purple-300 transition-colors" />
+                  <ChevronRight className="w-3 h-3 text-gray-600 group-hover:text-cyan-400 transition-colors" />
                   <span>Username Generator</span>
                 </a>
               </li>
@@ -187,9 +187,9 @@ export const Footer: React.FC<FooterProps> = ({
                     onSelectTab('gaming-pc-builder');
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                   }}
-                  className="hover:text-purple-300 text-purple-300 font-semibold transition-colors flex items-center gap-1.5 group text-left"
+                  className="hover:text-cyan-300 transition-colors flex items-center gap-1.5 group text-left"
                 >
-                  <ChevronRight className="w-3 h-3 text-purple-400 group-hover:text-purple-300 transition-colors" />
+                  <ChevronRight className="w-3 h-3 text-gray-600 group-hover:text-cyan-400 transition-colors" />
                   <span>Gaming PC Builder</span>
                 </a>
               </li>
@@ -201,9 +201,9 @@ export const Footer: React.FC<FooterProps> = ({
                     onSelectTab('pc-requirements');
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                   }}
-                  className="hover:text-cyan-300 text-slate-300 transition-colors flex items-center gap-1.5 group text-left"
+                  className="hover:text-cyan-300 transition-colors flex items-center gap-1.5 group text-left"
                 >
-                  <ChevronRight className="w-3 h-3 text-cyan-400 group-hover:text-cyan-300 transition-colors" />
+                  <ChevronRight className="w-3 h-3 text-gray-600 group-hover:text-cyan-400 transition-colors" />
                   <span>PC Requirements Checker</span>
                 </a>
               </li>
@@ -221,16 +221,27 @@ export const Footer: React.FC<FooterProps> = ({
                   <span>All Gaming Tools</span>
                 </a>
               </li>
+            </ul>
+          </div>
+
+          {/* Col 4: Community */}
+          <div className="lg:col-span-2">
+            <h3 className="font-['Rajdhani'] font-bold text-base uppercase tracking-wider text-white mb-4 flex items-center gap-2">
+              <span className="w-1.5 h-1.5 bg-purple-400 rounded-full" />
+              Community
+            </h3>
+            <ul className="space-y-2 text-sm text-gray-400">
               <li>
                 <a
                   href="/forum"
                   onClick={(e) => {
                     e.preventDefault();
                     onSelectTab('forum');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
                   }}
-                  className="hover:text-cyan-300 transition-colors flex items-center gap-1.5 group text-left"
+                  className="hover:text-purple-300 transition-colors flex items-center gap-1.5 group text-left"
                 >
-                  <ChevronRight className="w-3 h-3 text-gray-600 group-hover:text-cyan-400 transition-colors" />
+                  <ChevronRight className="w-3 h-3 text-gray-600 group-hover:text-purple-400 transition-colors" />
                   <span>Join the Forum</span>
                 </a>
               </li>
@@ -243,9 +254,9 @@ export const Footer: React.FC<FooterProps> = ({
                     else onSelectTab('contact');
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                   }}
-                  className="hover:text-cyan-300 transition-colors flex items-center gap-1.5 group text-left"
+                  className="hover:text-purple-300 transition-colors flex items-center gap-1.5 group text-left"
                 >
-                  <ChevronRight className="w-3 h-3 text-gray-600 group-hover:text-cyan-400 transition-colors" />
+                  <ChevronRight className="w-3 h-3 text-gray-600 group-hover:text-purple-400 transition-colors" />
                   <span>Contact Editorial Desk</span>
                 </a>
               </li>
@@ -256,9 +267,9 @@ export const Footer: React.FC<FooterProps> = ({
                     e.preventDefault();
                     onOpenGuidelines();
                   }}
-                  className="hover:text-cyan-300 transition-colors flex items-center gap-1.5 group text-left"
+                  className="hover:text-purple-300 transition-colors flex items-center gap-1.5 group text-left"
                 >
-                  <ChevronRight className="w-3 h-3 text-gray-600 group-hover:text-cyan-400 transition-colors" />
+                  <ChevronRight className="w-3 h-3 text-gray-600 group-hover:text-purple-400 transition-colors" />
                   <span>Community Guidelines</span>
                 </a>
               </li>
@@ -267,9 +278,9 @@ export const Footer: React.FC<FooterProps> = ({
                   href={YOUTUBE_CHANNEL.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-cyan-300 transition-colors flex items-center gap-1.5 group text-left"
+                  className="hover:text-purple-300 transition-colors flex items-center gap-1.5 group text-left"
                 >
-                  <ChevronRight className="w-3 h-3 text-gray-600 group-hover:text-cyan-400 transition-colors" />
+                  <ChevronRight className="w-3 h-3 text-gray-600 group-hover:text-purple-400 transition-colors" />
                   <span>YouTube Channel ({YOUTUBE_CHANNEL.handle})</span>
                 </a>
               </li>
@@ -278,9 +289,9 @@ export const Footer: React.FC<FooterProps> = ({
                   href="/sitemap.xml"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-cyan-300 transition-colors flex items-center gap-1.5 group text-left"
+                  className="hover:text-purple-300 transition-colors flex items-center gap-1.5 group text-left"
                 >
-                  <ChevronRight className="w-3 h-3 text-gray-600 group-hover:text-cyan-400 transition-colors" />
+                  <ChevronRight className="w-3 h-3 text-gray-600 group-hover:text-purple-400 transition-colors" />
                   <span>XML Sitemap (Search Console)</span>
                 </a>
               </li>
@@ -305,8 +316,8 @@ export const Footer: React.FC<FooterProps> = ({
             </ul>
           </div>
 
-          {/* Col 4: Newsletter "Stay in the Vault" */}
-          <div>
+          {/* Col 5: Newsletter "Stay in the Vault" */}
+          <div className="sm:col-span-2 md:col-span-3 lg:col-span-3">
             <h3 className="font-['Rajdhani'] font-bold text-base uppercase tracking-wider text-white mb-2 flex items-center gap-2">
               <span className="w-1.5 h-1.5 bg-purple-400 rounded-full" />
               Stay in the Vault

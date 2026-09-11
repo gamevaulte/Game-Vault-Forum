@@ -160,5 +160,36 @@ export const DIRTY_DOZEN_TEST_CASES: TestPayload[] = [
     data: {},
     auth: { uid: "random_user", email: "random@user.com" },
     expectedResult: "DENY"
+  },
+  {
+    name: "13. Valid Subscriber collection registration",
+    collection: "Subscriber",
+    docId: "joel_gamer_com",
+    data: {
+      email: "joel@gamer.com",
+      subscribedAt: new Date().toISOString(),
+      status: "active",
+      source: "website"
+    },
+    auth: null,
+    expectedResult: "ALLOW"
+  },
+  {
+    name: "14. Valid contact_us collection submission with all fields",
+    collection: "contact_us",
+    docId: "contact_1720000000_abc123",
+    data: {
+      id: "contact_1720000000_abc123",
+      name: "Joel Drake",
+      email: "joel@example.com",
+      category: "editorial",
+      subject: "New Game Review Submission",
+      message: "Here are all details regarding the review build.",
+      createdAt: new Date().toISOString(),
+      status: "new",
+      source: "contact_page"
+    },
+    auth: null,
+    expectedResult: "ALLOW"
   }
 ];

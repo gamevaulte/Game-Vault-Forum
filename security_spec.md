@@ -5,16 +5,17 @@
    - A user profile must have a valid `uid`, `email`, `displayName`, `username`, and `createdAt`.
    - Modifying high-privilege roles (`admin`, `moderator`) cannot be performed by standard users.
    - User reputation and stats can only be updated within valid ranges.
-2. **Contact Us Submissions (`/contact_submissions/{submissionId}`) Invariants**:
-   - Must contain valid non-empty `name` (1-100 chars), valid `email` (3-120 chars), valid `category` (1-50 chars), `message` (5-3000 chars), and `status` in `['new', 'read', 'replied', 'archived']`.
+2. **Contact Us Submissions & Information (`/contact_us/{submissionId}`, `/ContactUs/{submissionId}`, `/contact_submissions/{submissionId}`) Invariants**:
+   - Must contain valid non-empty `name` (1-100 chars), valid `email` (3-120 chars), valid `category` (1-50 chars), `message` (5-3000 chars), `createdAt`, and `status` in `['new', 'read', 'replied', 'archived']`.
+   - All fields entered in the contact form (`name`, `email`, `category`, `subject`, `message`) are stored in the document.
    - Single-document target operations (`get`, `create`, `update`, `delete`) must enforce `isValidId(submissionId)`.
    - **PII Isolation**: Submissions contain sensitive contact information (names, emails, inquiries). Read access must be strictly restricted to authenticated administrators (`isAdmin()`) or the authenticated author (`request.auth.uid == resource.data.userId`). Public or unauthorized listing is strictly blocked.
    - Updates and deletions must be restricted strictly to `isAdmin()`.
-3. **Email Newsletter Subscribers (`/subscribers/{subscriberId}`) Invariants**:
+3. **Email Newsletter Subscribers (`/Subscriber/{subscriberId}`, `/subscribers/{subscriberId}`) Invariants**:
    - Must contain valid `email` (3-120 chars), `subscribedAt` timestamp, and `status` in `['active', 'unsubscribed']`.
    - Single-document ID must satisfy `isValidId(subscriberId)`.
    - **PII Isolation**: Email lists are high-value targets for spammers. Read access is strictly restricted to `isAdmin()`. Public listing or reading of email addresses is strictly forbidden.
-   - Creation is permitted for any user or visitor submitting an email.
+   - Creation is permitted for any user or visitor submitting an email through the website.
    - Updates are restricted to admin or updating status/timestamp for existing subscribers (`affectedKeys().hasOnly(['subscribedAt', 'status', 'source'])`).
 
 ## 2. The "Dirty Dozen" Malicious Payloads
