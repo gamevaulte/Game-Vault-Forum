@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Youtube, Twitter, Disc as Discord, Shield, Check, Send, ChevronRight, Lock, Download, Sparkles } from 'lucide-react';
+import { Youtube, Twitter, Disc as Discord, Shield, Check, Send, ChevronRight, Lock, Sparkles } from 'lucide-react';
 import { PageTab } from '../types';
 import { VaultLogo } from './VaultLogo';
 import { YOUTUBE_CHANNEL } from '../lib/constants';
@@ -296,18 +296,6 @@ export const Footer: React.FC<FooterProps> = ({
                 </a>
               </li>
               <li>
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (onOpenBrandKit) onOpenBrandKit();
-                  }}
-                  className="hover:text-purple-300 text-purple-400 font-semibold transition-colors flex items-center gap-1.5 group text-left cursor-pointer pt-1"
-                >
-                  <Download className="w-3.5 h-3.5 text-purple-400" />
-                  <span>Download Favicon & Logo (.GIF)</span>
-                </button>
-              </li>
-              <li>
                 <span className="inline-flex items-center gap-1 px-2.5 py-0.5 mt-2 text-[11px] font-mono bg-white/5 text-purple-300 border border-white/10 rounded-full backdrop-blur-md">
                   <Lock className="w-3 h-3" />
                   Vault Protocol v2.6
@@ -455,16 +443,6 @@ export const Footer: React.FC<FooterProps> = ({
             >
               robots.txt
             </a>
-            <button
-              type="button"
-              onClick={() => {
-                if (onOpenBrandKit) onOpenBrandKit();
-              }}
-              className="hover:text-cyan-300 text-cyan-400 font-semibold transition-colors cursor-pointer flex items-center gap-1"
-            >
-              <Sparkles className="w-3 h-3 text-purple-400" />
-              <span>Favicon & Logo (.GIF)</span>
-            </button>
           </div>
         </div>
       </div>

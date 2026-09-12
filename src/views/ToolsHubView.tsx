@@ -3,9 +3,6 @@ import {
   Sparkles, 
   Wrench, 
   Monitor, 
-  Compass, 
-  GitCompare, 
-  HelpCircle, 
   ShieldCheck,
   Bot
 } from 'lucide-react';
@@ -29,7 +26,7 @@ export const ToolsHubView: React.FC<ToolsHubViewProps> = ({ onNavigateTab }) => 
       />
 
       {/* Featured Primary Tools Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mb-12">
         <ToolCard
           title="Vault AI Gaming Assistant"
           subtitle="Your intelligent gaming companion"
@@ -72,33 +69,6 @@ export const ToolsHubView: React.FC<ToolsHubViewProps> = ({ onNavigateTab }) => 
           actionText="Check PC Requirements"
           onClick={() => onNavigateTab('pc-requirements')}
           featured={false}
-        />
-
-        <ToolCard
-          title="Game Finder & Discovery"
-          subtitle="Find your next obsession"
-          description="Filter through our expansive game catalog by genre, platform, playtime, difficulty, and community ratings to find your next adventure."
-          icon={<Compass className="w-6 h-6" />}
-          actionText="Find Games"
-          onClick={() => onNavigateTab('finder' as any)}
-        />
-
-        <ToolCard
-          title="Game Comparison Tool"
-          subtitle="Head-to-head title analysis"
-          description="Compare graphics requirements, multiplayer features, campaign lengths, and community ratings side-by-side."
-          icon={<GitCompare className="w-6 h-6" />}
-          actionText="Compare Games"
-          onClick={() => onNavigateTab('compare' as any)}
-        />
-
-        <ToolCard
-          title="Gaming Trivia & Quiz"
-          subtitle="Test your gaming mastery"
-          description="Challenge yourself across questions spanning gaming lore, hardware milestones, esports history, and speedrunning records."
-          icon={<HelpCircle className="w-6 h-6" />}
-          actionText="Take Quiz"
-          onClick={() => onNavigateTab('quiz' as any)}
         />
       </div>
 

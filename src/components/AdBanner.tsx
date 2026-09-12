@@ -22,15 +22,29 @@ export const AdBanner: React.FC<AdBannerProps> = ({
   const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
     try {
       if (typeof window !== 'undefined') {
-        (window.adsbygoogle = window.adsbygoogle || []).push({});
-        setAdLoaded(true);
+        timeoutId = setTimeout(() => {
+          try {
+            if (adRef.current && adRef.current.clientWidth > 0) {
+              (window.adsbygoogle = window.adsbygoogle || []).push({});
+              setAdLoaded(true);
+            } else {
+              setHasError(true);
+            }
+          } catch (err) {
+            setHasError(true);
+          }
+        }, 150);
       }
     } catch (e) {
       // Ad blocker active or script unfulfilled
       setHasError(true);
     }
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    };
   }, []);
 
   const getContainerDimensions = () => {

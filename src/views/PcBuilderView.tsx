@@ -61,6 +61,7 @@ interface PcBuilderViewProps {
   initialBuildId?: string;
   onNavigateTab: (tab: PageTab) => void;
   onShowToast?: (msg: string, type?: 'success' | 'info') => void;
+  onShare?: (title: string, customPath?: string, description?: string) => void;
 }
 
 const FAQ_ITEMS: FaqItem[] = [
@@ -97,7 +98,8 @@ export const PcBuilderView: React.FC<PcBuilderViewProps> = ({
   currentUser,
   initialBuildId,
   onNavigateTab,
-  onShowToast
+  onShowToast,
+  onShare
 }) => {
   // Step navigation (1 to 5, or 'results')
   const [activeStep, setActiveStep] = useState<number | 'results'>(1);
@@ -194,10 +196,19 @@ export const PcBuilderView: React.FC<PcBuilderViewProps> = ({
     toast('Build saved to your personal vault collection!', 'success');
   };
 
-  // Share link copy
+  // Share link copy or open standard social share modal
   const handleShareLink = () => {
     if (!currentBuild) return;
-    const shareUrl = `${window.location.origin}/tools/gaming-pc-builder/build/${currentBuild.id}`;
+    const sharePath = `/tools/gaming-pc-builder/build/${currentBuild.id}`;
+    if (onShare) {
+      onShare(
+        currentBuild.title, 
+        sharePath, 
+        `Custom PC build with ${currentBuild.components.cpu.model} and ${currentBuild.components.gpu.model} — Total: ${formatPrice(currentBuild.totalEstimatedPriceUsd, currency)}`
+      );
+      return;
+    }
+    const shareUrl = `${window.location.origin}${sharePath}`;
     navigator.clipboard.writeText(shareUrl);
     setShareCopied(true);
     toast('Direct build URL copied to clipboard!');

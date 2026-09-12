@@ -12,28 +12,64 @@ const PORT = 3000;
 const VAULT_KNOWLEDGE_SUMMARY = `
 === GAME VAULT FORUM OFFICIAL KNOWLEDGE BASE ===
 Website: Game Vault Forum (www.gamevault.forum)
-Tagline: Your Vault for Everything Gaming.
-Channel: Game Vault official YouTube channel (@GameVaultForum)
+Tagline: "Your Vault for Everything Gaming. Watch. Play. Discuss. Discover."
+Founder: Joel Ayuba
+Official YouTube Channel: @GameVaultForum
+
+SITE STRUCTURE & NAVIGATION DIRECTORY:
+1. Home (/) — Featured showcase, trending gameplay videos, editor's choice reviews, tactical guides, community spotlight, and quick tool access.
+2. Videos (/videos) — Official Game Vault YouTube video catalog with embedded player, high-res thumbnails, duration, category badges, and comments.
+3. Articles (/articles) — Editorial essays, gaming culture analysis, industry trends, modding ecosystems, and game design deep-dives.
+4. Reviews (/reviews) — Scored reviews (e.g. 10/10, 9.2/10) with pros & cons, performance verdicts, graphics analysis, and platform breakdowns.
+5. Guides (/guides) — Tactical masterclasses (e.g. World of Warships armor angling, Elden Ring Scadutree routes, Helldivers 2 Super Helldive loadouts).
+6. Games Catalog (/games) — Verified database of games with specs, trailers, community ratings, developer/publisher info, release dates, and hardware requirements.
+7. Forum (/forum) — Community discussion hub with categories:
+   - General Gaming: Broad gaming news, discussions, game announcements, industry talk.
+   - PC Building & Tech: Hardware recommendations, rig builds, bottleneck fixes, overclocking, troubleshooting.
+   - Game Guides & Strategies: Walkthroughs, boss battle tactics, optimal character builds, fleet maneuvers.
+   - Competitive Gaming & Esports: Tournaments, meta strategies, ranked climbs, weapon tier lists.
+   - Off-Topic Vault: Chill gamer chatter, setups, gaming gear, anime, general discussion.
+   - New Topic Creation: (/forum/new) — Create rich discussion topics with formatting, tags, and category selection.
+8. Tools Hub (/tools) — 3 Core Interactive Gaming Tools:
+   - PC Game Requirements Checker (/tools/pc-game-requirements-checker): Test user CPU, GPU, RAM, and VRAM against verified minimum & recommended requirements for any game with pass/warn/fail indicators.
+   - Gaming PC Builder (/tools/gaming-pc-builder): Interactive custom rig builder with 10-point socket compatibility verification (AM4, AM5, LGA1700, LGA1851), PSU wattage calculator, balance score gauge, and dual currency (USD $ and Nigerian Naira ₦).
+   - Gaming Username Generator (/tools/gaming-username-generator): Instant distinctive gamertag generator across styles (Cyberpunk, Tactical, Mythic, Anime, Stealth, Pro Esports) with prefix/suffix customizers and copy-to-clipboard.
+   - Vault AI Assistant (/tools/vault-ai): Intelligent AI Copilot for gaming Q&A, hardware advice, performance troubleshooting, and site navigation.
+9. Community & Policy Pages:
+   - About (/about): Information on founder Joel Ayuba, mission, YouTube channel links, and platform vision.
+   - Contact (/contact): Direct contact form for inquiries, feedback, partnerships, and bug reports.
+   - Community Guidelines (/guidelines): Rules for respectful engagement, anti-toxicity, anti-cheating, and constructive discussions.
+   - Terms of Service (/terms), Privacy Policy (/privacy), Cookie Policy (/cookies), Sitemap (/sitemap).
+
+VISITOR (GUEST) VS. REGISTERED MEMBER (USER) ARCHITECTURE:
+- Visitors (Guests):
+  * Can freely browse all games, watch videos, read guides, read reviews, inspect forum threads, and use all 3 interactive tools without registering.
+  * Can ask Vault AI up to 20 queries per day.
+  * CANNOT: Post new forum topics, post comments on articles/videos, like or bookmark content, or save custom profiles.
+  * How to join: Click "Join Forum" or "Sign In" at the top header or use [ACTION:auth|Create Free Account / Sign In|open]. Registration is 100% free with email or Google sign-in.
+- Registered Members (Users):
+  * Unlocked features: Create forum topics (/forum/new), reply and comment on discussions, like articles/videos/topics, bookmark items to their private profile, earn reputation badges, and get unlimited Vault AI queries with synchronized conversation history.
+  * Vault AI assists members with personalized greetings, topic drafting, custom hardware matching, and saved build recommendations.
 
 GAMES CATALOG (Verified in Game Vault Database):
-1. Elden Ring (ID: 'elden-ring', Genre: RPG/Action, Platforms: PC, PS5, Xbox Series X/S, Developer: FromSoftware, Rating: 9.8/10, Link: /games/elden-ring)
+1. Elden Ring (ID: 'elden-ring', Genre: RPG/Action/Soulsborne, Platforms: PC, PS5, Xbox Series X/S, Developer: FromSoftware, Rating: 9.8/10, Link: /games/elden-ring)
    - Expansions: Shadow of the Erdtree. Open-world Soulsborne masterpiece, challenging boss design, Scadutree blessings.
 2. World of Warships (ID: 'world-of-warships', Genre: Strategy/Simulation/Tactical Naval, Platforms: PC, Developer: Wargaming, Rating: 8.9/10, Link: /games/world-of-warships)
-   - Key mechanics: Armor angling, concealment mechanics, citadel penetrations, tactical fleet positioning, destroyer smokescreens.
+   - Key mechanics: Armor angling (15-30 deg bow bounce), concealment mechanics, citadel penetrations, tactical fleet positioning, destroyer smokescreens.
 3. Cyberpunk 2077 (ID: 'cyberpunk-2077', Genre: RPG/Action/Open World, Platforms: PC, PS5, Xbox Series X/S, Developer: CD Projekt RED, Rating: 9.2/10, Link: /games/cyberpunk-2077)
-   - Patch 2.1 overhaul, Phantom Liberty DLC, Ray Tracing Overdrive, Dogtown vertical combat.
+   - Patch 2.1 overhaul, Phantom Liberty DLC, Ray Tracing Overdrive, Dogtown vertical combat, Cyberware capacity system.
 4. Helldivers 2 (ID: 'helldivers-2', Genre: Action/Multiplayer/Co-op PvE, Platforms: PC, PS5, Developer: Arrowhead, Rating: 9.0/10, Link: /games/helldivers-2)
    - 4-player squad co-op, Galactic War liberation map, stratagem management, friendly fire, Automaton and Terminid fronts.
 5. PUBG Mobile (ID: 'pubg-mobile', Genre: Battle Royale/Multiplayer/Action, Platforms: Mobile/PC Emulator, Developer: Krafton/Tencent, Rating: 8.5/10, Link: /games/pubg-mobile)
-   - 100-player drops, Erangel/Miramar rotations, circle positioning, squad tactical comms.
+   - 100-player drops, Erangel/Miramar rotations, circle positioning, squad tactical comms, gyro aiming.
 6. Black Myth: Wukong (ID: 'black-myth-wukong', Genre: Action/RPG, Platforms: PC, PS5, Developer: Game Science, Rating: 9.1/10, Link: /games/black-myth-wukong)
-   - Journey to the West lore, staff combat stances, spell transformations, rich mythic boss encounters.
+   - Journey to the West lore, staff combat stances (Smash, Pillar, Thrust), spell transformations, mythic boss encounters.
 7. Baldur's Gate 3 (ID: 'baldurs-gate-3', Genre: RPG/Strategy, Platforms: PC, PS5, Xbox, Developer: Larian Studios, Rating: 9.9/10, Link: /games/baldurs-gate-3)
-   - Turn-based D&D 5e mechanics, massive branching narrative, co-op multiplayer, companion quests.
+   - Turn-based D&D 5e mechanics, massive branching narrative, co-op multiplayer, companion quests, Honor Mode.
 8. Hades II (ID: 'hades-2', Genre: Action/Roguelike, Platforms: PC, Developer: Supergiant Games, Rating: 9.4/10, Link: /games/hades-2)
-   - Melinoë, underworld magic, Olympian boons, high replayability.
+   - Melinoë, underworld witchcraft, Olympian boons, high replayability.
 
-PUBLISHED ARTICLES & REVIEWS & GUIDES (Verified on Game Vault):
+PUBLISHED ARTICLES, REVIEWS & GUIDES:
 - Article: "Why World of Warships Is More Interesting Than I Expected" (Link: /articles/why-world-of-warships-is-more-interesting-than-i-expected, ID: 'art-1')
 - Article: "Cyberpunk 2077 in 2026: The Complete Overhaul Journey & Mod Ecosystem" (Link: /articles/cyberpunk-2077-in-2026-complete-overhaul-journey, ID: 'art-2')
 - Review: "Elden Ring: Shadow of the Erdtree Review — The Pinnacle of Expansion Craft" (Score: 10/10, Link: /reviews/elden-ring-shadow-of-the-erdtree-review, ID: 'rev-1')
@@ -49,20 +85,13 @@ CONNECTED YOUTUBE VIDEOS (Game Vault Channel):
 - "Cyberpunk 2077 in 2026: The Complete Overhaul Journey" (21:04, ID: 'vid-3', YouTube ID: 'UnA7tepsc7s')
 - "Helldivers 2 — Galactic War Strategy & Team Mechanics Masterclass" (16:30, ID: 'vid-4', YouTube ID: 'lP_8hPq2VnQ')
 
-PC HARDWARE & REQUIREMENTS DATABASE:
-- Tools Available:
-  * PC Game Requirements Checker (/tools/pc-game-requirements-checker)
-  * Gaming PC Builder (/tools/gaming-pc-builder) - Supports USD ($) and NGN (₦) budgets!
-  * Gaming Username Generator (/tools/gaming-username-generator)
-  * Game Finder (/tools)
-  * Game Comparison Tool (/tools)
-- Recommended PC Component Standards:
-  * Entry 1080p ($600 - $800 / ₦900k - ₦1.2M): Ryzen 5 5600 / Core i5-12400F + RX 6600 / RTX 3060 + 16GB DDR4 + 1TB NVMe + 650W Bronze
-  * Sweet Spot 1440p ($1,000 - $1,400 / ₦1.5M - ₦2.1M): Ryzen 5 7600X / Core i5-13600KF + RTX 4070 Super / RX 7800 XT + 32GB DDR5-6000 + 2TB Gen4 + 750W Gold
-  * High-End 4K / Enthusiast ($1,800+ / ₦2.8M+): Ryzen 7 7800X3D + RTX 4080 Super / RX 7900 XTX + 32GB/64GB DDR5 + 850W+ Gold
+RECOMMENDED PC COMPONENT TIERS:
+- Entry 1080p ($600 - $800 / ₦900k - ₦1.2M): Ryzen 5 5600 / Core i5-12400F + RX 6600 / RTX 3060 + 16GB DDR4 + 1TB NVMe + 650W Bronze
+- Sweet Spot 1440p ($1,000 - $1,400 / ₦1.5M - ₦2.1M): Ryzen 5 7600X / Core i5-13600KF + RTX 4070 Super / RX 7800 XT + 32GB DDR5-6000 + 2TB Gen4 + 750W Gold
+- High-End 4K / Enthusiast ($1,800+ / ₦2.8M+): Ryzen 7 7800X3D + RTX 4080 Super / RX 7900 XTX + 32GB/64GB DDR5 + 850W+ Gold
 
 12-POINT LOW FPS TROUBLESHOOTING CHECKLIST:
-1. Render Resolution vs Display Native (e.g. check for unintended 4K rendering or DSR/VSR)
+1. Render Resolution vs Display Native (check for unintended 4K rendering or DSR/VSR)
 2. Heavy Graphics Settings (Volumetric fog, ray tracing, shadow resolution, screen space reflections)
 3. GPU Utilization (Is GPU pinned at 99-100% or underutilized due to CPU bottleneck?)
 4. CPU Utilization & Per-Core Bottlenecks (Modern games can choke on a single maxed thread)
@@ -74,59 +103,50 @@ PC HARDWARE & REQUIREMENTS DATABASE:
 10. Windows Power Management Plan (Ensure High Performance or Balanced rather than Power Saver)
 11. Storage Drive Performance (Ensure game is installed on an NVMe/SSD, check drive fill percentage >90%)
 12. Thermal Throttling / Dust Build-up (Inspect heatsinks, fan curves, and airflow direction)
-Always explain: "Based on what you've told me, these are the most likely causes." Never claim certainty without full hardware metrics.
 `;
 
 const SYSTEM_INSTRUCTION = `
-You are Vault AI — the official AI Gaming Assistant of Game Vault Forum (www.gamevault.forum).
+You are Vault AI — the official AI Gaming Assistant & Website Copilot of Game Vault Forum (www.gamevault.forum).
 Tagline: "Your AI Gaming Assistant. Ask. Discover. Compare. Troubleshoot. Play smarter."
 
-PERSONALITY & TONE:
-- Helpful, knowledgeable, friendly, gaming-focused, straightforward, and objective.
+PERSONALITY & IDENTITY:
+- You are helpful, knowledgeable, friendly, gaming-focused, objective, and deeply familiar with every section of Game Vault Forum.
 - Identify yourself as: "Vault AI — the Game Vault Forum gaming assistant."
-- Avoid excessive slang, hype, or emojis; avoid pretending to be a biological human.
-- Provide crisp, highly readable markdown answers with headings, bullet points, and comparison tables when appropriate.
+- Speak with professional composure; avoid excessive slang, hype, or artificial emojis.
+- Deliver structured, readable markdown with bold text, bullet points, and code/table formatting where helpful.
 
-STRICT ACCURACY RULES (NO HALLUCINATIONS):
-- Reference the verified Game Vault Forum knowledge base whenever applicable.
-- Never invent games, reviews, benchmarks, hardware prices, or partnerships that do not exist.
-- If reliable information is unavailable, clearly state: "I don't have reliable information for that yet."
-- For PC hardware prices, note: "Prices fluctuate based on region and retailer; check current verified listings before purchasing."
-- Refuse any request involving cheating, hacking, aimbots, account theft, or illegal piracy.
+USER VS. VISITOR ADAPTATION:
+- VISITOR MODE (Guest / Unregistered):
+  * Be warm, welcoming, and hospitable.
+  * Help visitors navigate the website, discover games, watch videos, read guides, and explore our 3 interactive tools (PC Requirements, PC Builder, Username Generator).
+  * If a visitor asks how to participate in discussions, save builds, or get unlimited AI queries, explain the benefits of joining Game Vault Forum (free account, 10-second setup, unlocks forum posting, comments, bookmarks, reputation, and unlimited Vault AI access) and provide the [ACTION:auth|Join Game Vault Forum (Free)|open] action button.
+- REGISTERED MEMBER MODE (Logged In / User):
+  * Greet them by name when provided (e.g., "Welcome back, Joel!").
+  * Assist them with drafting high-quality forum topics, sharing PC builds, comparing game specs, and finding strategic guides.
+  * Provide direct forum drafting actions like [ACTION:topic|Draft Topic on Forum|/forum/new].
+
+STRICT ACCURACY RULES:
+- Ground your answers in the Game Vault Forum knowledge base.
+- Never hallucinate nonexistent tools, fake hardware prices, or nonexistent staff.
+- Mention hardware price volatility: "Prices fluctuate based on region and retailer; check current verified listings before purchasing."
+- Refuse any request involving cheating, hacking, aimbots, or piracy.
 
 STRUCTURED METADATA TAGS:
-To help the Game Vault Forum UI render interactive rich cards, you may append one or more structured tags at the bottom of your answer:
+You can append interactive cards to your response:
 - Games: [CARD_GAME:elden-ring], [CARD_GAME:world-of-warships], [CARD_GAME:cyberpunk-2077], [CARD_GAME:helldivers-2], [CARD_GAME:pubg-mobile], [CARD_GAME:black-myth-wukong], [CARD_GAME:baldurs-gate-3], [CARD_GAME:hades-2]
 - Articles/Guides: [CARD_ARTICLE:art-1], [CARD_ARTICLE:art-2], [CARD_GUIDE:gui-1], [CARD_GUIDE:gui-2], [CARD_GUIDE:gui-3], [CARD_REVIEW:rev-1], [CARD_REVIEW:rev-2]
 - Videos: [CARD_VIDEO:vid-pubg-morning], [CARD_VIDEO:vid-1], [CARD_VIDEO:vid-2], [CARD_VIDEO:vid-3], [CARD_VIDEO:vid-4]
 - Hardware: [CARD_HW:gpu-4070s], [CARD_HW:cpu-7800x3d], [CARD_HW:cpu-7600x], [CARD_HW:gpu-7800xt]
 - Sources: [SOURCE:Game Vault Forum — World of Warships Guide|/guides/world-of-warships-armor-angling-penetration-guide]
 
-ASSISTIVE TASK COPILOT & ACTION TAGS:
-You are not just a static Q&A bot, but an active, intelligent Website Copilot for Game Vault Forum! You can help users perform assistive tasks, navigate the website, launch tools, check system requirements, and compose forum drafts.
-Whenever a user asks for an action or when relevant to their question, ALWAYS provide one to three actionable buttons at the bottom of your answer using the syntax:
-[ACTION:type|Button Label|target]
-
-Supported Action Types:
-- navigate: Route to any page.
-  e.g., [ACTION:navigate|Open Gaming PC Builder|/tools/gaming-pc-builder]
-  e.g., [ACTION:navigate|Launch Username Generator|/tools/gaming-username-generator]
-  e.g., [ACTION:navigate|View Website Sitemap|/sitemap]
-  e.g., [ACTION:navigate|Browse Game Guides|/guides]
-  e.g., [ACTION:navigate|Explore Games Catalog|/games]
-- requirements: Launch the PC Game Requirements Checker for a specific game.
-  e.g., [ACTION:requirements|Check Specs for Cyberpunk 2077|cyberpunk-2077]
-  e.g., [ACTION:requirements|Test PC for Elden Ring|elden-ring]
-  e.g., [ACTION:requirements|Can I Run World of Warships?|world-of-warships]
-- search: Search the Game Vault forum or site.
-  e.g., [ACTION:search|Search Forum for "Micro Stutter Fixes"|micro stutter]
-  e.g., [ACTION:search|Search Guides for "Armor Angling"|armor angling]
-- topic: Help user draft a topic on the forum.
-  e.g., [ACTION:topic|Draft Topic on Forum|/forum/new]
-- video: Play a video from the Game Vault channel.
-  e.g., [ACTION:video|Watch Shadow of the Erdtree Video|vid-1]
-- quick_task: Trigger an in-assistant assistive workflow ('requirements', 'pc_build', 'find_game', 'gamertag', 'draft_topic').
-  e.g., [ACTION:quick_task|Run Quick PC Compatibility Check|requirements]
+ASSISTIVE ACTIONS:
+Always include 1-3 actionable buttons at the bottom:
+- [ACTION:navigate|Label|/url_path]
+- [ACTION:requirements|Check Specs for Game|game_id]
+- [ACTION:topic|Draft Topic on Forum|/forum/new]
+- [ACTION:auth|Create Free Account / Sign In|open]
+- [ACTION:video|Watch Video|video_id]
+- [ACTION:search|Search Forum|query]
 
 ${VAULT_KNOWLEDGE_SUMMARY}
 `;
@@ -200,6 +220,11 @@ async function startServer() {
 
     // Prepare contextual prompt
     let contextualPrefix = '';
+    if (context.isGuest || !context.isSignedIn) {
+      contextualPrefix += `[User Session: Unregistered Guest / Visitor]\n`;
+    } else if (context.userName) {
+      contextualPrefix += `[User Session: Registered Member: ${context.userName}]\n`;
+    }
     if (context.currentPage) {
       contextualPrefix += `[User is currently viewing Game Vault page: ${context.currentPage}]\n`;
     }
@@ -417,119 +442,467 @@ function extractTagsAndCleanText(raw: string) {
 }
 
 // Fallback response engine for local knowledge
-function generateLocalKnowledgeResponse(query: string, context: any) {
-  const q = query.toLowerCase();
+function generateLocalKnowledgeResponse(query: string, context: any = {}) {
+  const q = query.toLowerCase().trim();
+  const isVisitor = context.isGuest || !context.isSignedIn;
+  const memberGreeting = context.userName ? `Hello, **${context.userName}**! ` : '';
 
-  if (q.includes('fps') || q.includes('stutter') || q.includes('lag') || q.includes('performance')) {
+  // 1. Website identity, Mission, Founder, Visitor vs Member Guide
+  if (
+    q.includes('what is') ||
+    q.includes('about') ||
+    q.includes('who created') ||
+    q.includes('who founded') ||
+    q.includes('joel') ||
+    q.includes('website') ||
+    q.includes('sitemap') ||
+    q.includes('overview') ||
+    q.includes('help')
+  ) {
+    if (q.includes('who created') || q.includes('who founded') || q.includes('joel')) {
+      return {
+        reply: `### About Game Vault Forum & Founder
+
+**Game Vault Forum** was founded by **Joel Ayuba** as a dedicated gaming media hub and community platform for gamers around the world.
+
+- **Tagline**: *"Your Vault for Everything Gaming. Watch. Play. Discuss. Discover."*
+- **Official Channel**: YouTube [@GameVaultForum](https://www.youtube.com/@GameVaultForum)
+- **Core Mission**: Delivering deep gameplay breakdowns, rigorous hardware guides, interactive PC tools, and a welcoming forum free of toxicity.
+
+You can read our full mission and background on the [About Game Vault Forum](/about) page.`,
+        sources: [
+          { title: 'Game Vault Forum — About Joel Ayuba & Mission', url: '/about' },
+          { title: 'Game Vault Forum — Community Guidelines', url: '/guidelines' },
+        ],
+        cardIds: { games: [], articles: [], videos: ['vid-1', 'vid-pubg-morning'], hardware: [] },
+        actions: [
+          { id: 'act-ab-1', type: 'navigate', label: 'Visit About Page', target: '/about' },
+          { id: 'act-ab-2', type: 'navigate', label: 'Browse Forum', target: '/forum' },
+          { id: 'act-ab-3', type: 'navigate', label: 'Explore Interactive Tools', target: '/tools' },
+        ],
+      };
+    }
+
     return {
-      reply: `### Vault AI Performance Diagnostics
+      reply: `### Welcome to Game Vault Forum (www.gamevault.forum)
 
-Based on what you've described, gaming performance drops and low FPS typically stem from a few primary hardware and software bottlenecks. Here is the systematic 12-point checklist to investigate:
+Game Vault Forum is your complete vault for video gaming media, tactical guides, hardware benchmarks, and community discussions.
 
-1. **Render Resolution vs Native Display**: Ensure your game is not rendering above native (e.g. 4K DSR on a 1440p monitor).
-2. **Heavy Graphics Presets**: Drop Volumetric Fog, Screen Space Reflections, and Ray Tracing one notch.
-3. **GPU Utilization**: Check if GPU is pinned at 99%. If it is hovering around 50-70%, your CPU is bottlenecking the frame pacing.
-4. **VRAM Overflow**: When game textures exceed your graphics card VRAM, heavy paging to system RAM causes sudden 1-second freezes.
-5. **Operating Temperatures**: Use HWMonitor or MSI Afterburner to check if CPU exceeds 90°C or GPU exceeds 84°C (Thermal Throttling).
-6. **Background App Interference**: Close Discord hardware acceleration, browser video tabs, or active antivirus scans.
+#### What You Can Explore:
+- **[Games Catalog](/games)**: Verified specs, ratings, trailers, and minimum/recommended requirements.
+- **[Gameplay Videos](/videos)**: Official Game Vault YouTube channel videos with embedded 4K player.
+- **[Tactical Guides](/guides)**: Masterclasses for World of Warships, Elden Ring, and Helldivers 2.
+- **[Editorial Reviews & Articles](/reviews)**: Scored reviews with pros/cons, plus gaming essays.
+- **[Community Forum](/forum)**: 5 active discussion boards for PC Tech, Guides, Esports, and General Gaming.
+- **[Interactive Tools Hub](/tools)**:
+  1. *PC Game Requirements Checker* — Test your CPU/GPU against verified game specs.
+  2. *Gaming PC Builder* — Interactive component picker with 10-point socket compatibility & dual-currency ($/₦).
+  3. *Gaming Username Generator* — Generate unique gamertags across 6 aesthetic styles.
 
-*Tip: You can benchmark your exact hardware against game requirements in our PC Requirements Checker.*`,
+${
+  isVisitor
+    ? `> **Visitor Information**: As a visitor/guest, you can freely browse all games, watch videos, read guides, and use all tools. To create forum topics, comment, like, and unlock unlimited Vault AI access, join for free!`
+    : `> **Member Status**: You are recognized as an active Game Vault member! You have unlimited Vault AI queries and full forum posting privileges.`
+}`,
+      sources: [
+        { title: 'Game Vault Forum — Tools Hub', url: '/tools' },
+        { title: 'Game Vault Forum — Games Directory', url: '/games' },
+        { title: 'Game Vault Forum — Community Guidelines', url: '/guidelines' },
+      ],
+      cardIds: { games: ['elden-ring', 'cyberpunk-2077', 'world-of-warships'], articles: ['art-1'], videos: ['vid-1'], hardware: [] },
+      actions: isVisitor
+        ? [
+            { id: 'act-ov-auth', type: 'auth', label: 'Join Free / Sign In', target: 'open' },
+            { id: 'act-ov-tools', type: 'navigate', label: 'Open Tools Hub', target: '/tools' },
+            { id: 'act-ov-forum', type: 'navigate', label: 'Browse Community Forum', target: '/forum' },
+          ]
+        : [
+            { id: 'act-ov-forum', type: 'navigate', label: 'Go to Forum', target: '/forum' },
+            { id: 'act-ov-topic', type: 'topic', label: 'Draft New Discussion', target: '/forum/new' },
+            { id: 'act-ov-tools', type: 'navigate', label: 'Open Tools Hub', target: '/tools' },
+          ],
+    };
+  }
+
+  // 2. Visitor / Account / Register / Sign Up Questions
+  if (
+    q.includes('register') ||
+    q.includes('sign up') ||
+    q.includes('sign in') ||
+    q.includes('account') ||
+    q.includes('login') ||
+    q.includes('join') ||
+    q.includes('guest') ||
+    q.includes('visitor') ||
+    q.includes('benefit')
+  ) {
+    return {
+      reply: `### ${memberGreeting}Game Vault Forum: Visitor vs. Member Guide
+
+#### For Visitors (Guests):
+- **What You Can Do**: Freely browse all game pages, read every review, watch official YouTube videos, study tactical guides, and use all 3 interactive tools (PC Requirements, PC Builder, Username Generator).
+- **Vault AI Usage**: Guests receive **20 free queries per day**.
+
+#### Why Create a Free Member Account?
+1. **Forum Participation**: Post new discussion topics (\`/forum/new\`) and reply to community threads.
+2. **Post Comments & Likes**: Comment on articles, guides, and videos, and like community posts.
+3. **Private Bookmarking**: Save your favorite games, videos, and guides directly to your gamer profile.
+4. **Custom Gamer Profile**: Customize your handle, avatar, bio, and earn reputation badges.
+5. **Unlimited Vault AI Access**: No daily limits and continuous saved conversation history across devices.
+
+Registration takes 10 seconds with email/password or instant Google Sign-In. It is 100% free!`,
+      sources: [
+        { title: 'Game Vault Forum — Community Guidelines', url: '/guidelines' },
+        { title: 'Game Vault Forum — Terms of Service', url: '/terms' },
+      ],
+      cardIds: { games: [], articles: [], videos: [], hardware: [] },
+      actions: [
+        { id: 'act-auth-1', type: 'auth', label: 'Join Game Vault Forum (Free)', target: 'open' },
+        { id: 'act-auth-2', type: 'navigate', label: 'Read Community Guidelines', target: '/guidelines' },
+        { id: 'act-auth-3', type: 'navigate', label: 'Browse Active Discussions', target: '/forum' },
+      ],
+    };
+  }
+
+  // 3. Forum Topics, Posting, and Community Discussions
+  if (
+    q.includes('forum') ||
+    q.includes('topic') ||
+    q.includes('draft') ||
+    q.includes('post') ||
+    q.includes('thread') ||
+    q.includes('community')
+  ) {
+    return {
+      reply: `### ${memberGreeting}Game Vault Community Forum
+
+The Game Vault Forum is organized into 5 dedicated boards:
+
+1. **General Gaming**: Game announcements, industry discussions, cross-platform gaming, and news.
+2. **PC Building & Tech**: Rig builds, component compatibility, thermal issues, and GPU/CPU upgrade paths.
+3. **Game Guides & Strategies**: In-depth boss walkthroughs, loadouts, and tactical advice.
+4. **Competitive Gaming & Esports**: Ranked tier lists, tournament updates, and meta analysis.
+5. **Off-Topic Vault**: Gamer gear setups, anime, gaming peripherals, and casual chat.
+
+#### Tips for Drafting an Engaging Topic:
+- Use a clear, descriptive title (e.g. *"Is the RTX 4070 Super worth upgrading to from an RTX 2060 in 2026?"*).
+- Tag your post with 2–4 relevant tags (e.g. \`#Hardware\`, \`#UpgradeAdvice\`, \`#PCGaming\`).
+- Provide system specs or context so other operatives can give actionable answers.
+
+${isVisitor ? `*Note: Guests can read all topics. To create a new topic or reply, please sign in or register below.*` : `*You have full permissions to start topics anytime!*`}`,
+      sources: [
+        { title: 'Game Vault Forum — Discussion Boards', url: '/forum' },
+        { title: 'Game Vault Forum — Community Guidelines', url: '/guidelines' },
+      ],
+      cardIds: { games: [], articles: [], videos: [], hardware: [] },
+      actions: isVisitor
+        ? [
+            { id: 'act-f-auth', type: 'auth', label: 'Sign In to Post Topics', target: 'open' },
+            { id: 'act-f-browse', type: 'navigate', label: 'Browse Forum Topics', target: '/forum' },
+          ]
+        : [
+            { id: 'act-f-new', type: 'topic', label: 'Draft New Forum Topic', target: '/forum/new' },
+            { id: 'act-f-browse', type: 'navigate', label: 'Browse Forum Boards', target: '/forum' },
+          ],
+    };
+  }
+
+  // 4. Tools Hub & Interactive Tools
+  if (
+    q.includes('tool') ||
+    q.includes('generator') ||
+    q.includes('username') ||
+    q.includes('tag') ||
+    q.includes('gamertag')
+  ) {
+    if (q.includes('username') || q.includes('generator') || q.includes('gamertag') || q.includes('tag')) {
+      return {
+        reply: `### ${memberGreeting}Gaming Username Generator
+
+Our [Gaming Username Generator](/tools/gaming-username-generator) crafts distinctive, high-impact gamertags across 6 tailored aesthetics:
+
+- **Cyberpunk / Sci-Fi**: NeonViper, GlitchSpecter, CyberPulse, NeuroPhantom
+- **Tactical / Military**: ApexVanguard, GhostRecon, BravoStrike, IronTrigger
+- **Mythic / Dark Fantasy**: ShadowRune, VoidWalker, EldenKnight, EclipseReaper
+- **Anime / Japanese**: ShinobiShadow, RoninZero, KageStorm, KitsuneStrike
+- **Stealth / Rogue**: SilentDagger, WraithShade, PhantomEcho, VelvetBlade
+- **Pro Esports**: Veloce, Zenyt, Axiom, Prodigy, Reflex
+
+#### Features:
+- Custom prefix/suffix modifiers
+- Number styling (Year, Tactical 007, Leet Speak)
+- One-click copy to clipboard`,
+        sources: [{ title: 'Game Vault Forum — Gaming Username Generator', url: '/tools/gaming-username-generator' }],
+        cardIds: { games: [], articles: [], videos: [], hardware: [] },
+        actions: [
+          { id: 'act-tag-1', type: 'navigate', label: 'Launch Username Generator', target: '/tools/gaming-username-generator' },
+          { id: 'act-tag-2', type: 'navigate', label: 'Browse All Tools', target: '/tools' },
+        ],
+      };
+    }
+
+    return {
+      reply: `### ${memberGreeting}Game Vault Forum Interactive Tools Hub
+
+We offer 3 core interactive utilities designed specifically for PC and console gamers:
+
+1. **[PC Game Requirements Checker](/tools/pc-game-requirements-checker)**:
+   - Select any game from our verified database (Cyberpunk 2077, Elden Ring, Helldivers 2, World of Warships, etc.).
+   - Input your CPU, GPU, RAM, and VRAM.
+   - Get an instant Pass / Warn / Fail verdict with upgrade recommendations.
+
+2. **[Gaming PC Builder](/tools/gaming-pc-builder)**:
+   - Configure a custom rig with 10-point socket compatibility (AM4, AM5, LGA1700, LGA1851).
+   - Real-time PSU wattage calculation with safe overhead.
+   - Balance score gauge (detects CPU/GPU bottlenecks).
+   - Dual-currency pricing in US Dollars ($) and Nigerian Naira (₦).
+
+3. **[Gaming Username Generator](/tools/gaming-username-generator)**:
+   - Generate creative gamertags across Cyberpunk, Tactical, Mythic, Anime, Stealth, and Pro Esports styles with clipboard copy.`,
+      sources: [{ title: 'Game Vault Forum — Tools Hub', url: '/tools' }],
+      cardIds: { games: ['cyberpunk-2077', 'elden-ring'], articles: [], videos: [], hardware: ['gpu-4070s'] },
+      actions: [
+        { id: 'act-tl-req', type: 'requirements', label: 'PC Requirements Checker', target: 'cyberpunk-2077' },
+        { id: 'act-tl-bld', type: 'navigate', label: 'Launch Gaming PC Builder', target: '/tools/gaming-pc-builder' },
+        { id: 'act-tl-tag', type: 'navigate', label: 'Username Generator', target: '/tools/gaming-username-generator' },
+      ],
+    };
+  }
+
+  // 5. FPS / Stutter / Lag / Troubleshooting
+  if (q.includes('fps') || q.includes('stutter') || q.includes('lag') || q.includes('performance') || q.includes('troubleshoot')) {
+    return {
+      reply: `### ${memberGreeting}Vault AI 12-Point Performance Diagnostics
+
+Gaming frame drops and micro-stutters generally result from hardware bottlenecks, memory overflow, or driver conflicts. Here is our systematic 12-point diagnostic checklist:
+
+1. **Render Resolution vs Native Display**: Verify your game isn't rendering at 4K DSR/VSR on a 1080p/1440p monitor.
+2. **Heavy Graphics Presets**: Drop Volumetric Clouds/Fog, Screen Space Reflections, and Ray Tracing to High or Medium.
+3. **GPU Utilization**: Check if GPU is pinned at 99-100%. If GPU usage drops to 60-70% while FPS drops, your CPU is bottlenecking the thread pacing.
+4. **VRAM Overflow**: When textures exceed physical GPU VRAM (e.g. 8GB cards in modern titles), textures page to system RAM, causing sudden 1-second freezes.
+5. **RAM Speed & Dual-Channel**: Ensure XMP/EXPO is enabled in BIOS and RAM is installed in slots 2 and 4.
+6. **Operating Temperatures**: CPU exceeding 90°C or GPU exceeding 84°C triggers thermal throttling.
+7. **Background Applications**: Disable Discord hardware acceleration, close browser video tabs, and pause antivirus scans.
+8. **Storage Performance**: Ensure modern AAA games are installed on an NVMe SSD, not an older mechanical HDD.
+9. **Display Drivers**: Clean install GPU drivers using DDU (Display Driver Uninstaller).
+10. **Windows Power Plan**: Switch to "Balanced" or "High Performance" to avoid low core clocks.
+11. **Shader Compilation**: Modern DirectX 12 games require shaders to compile; allow initial shader caching to finish.
+12. **Fan Curves & Airflow**: Clean dust from radiator and GPU heatsink fins.`,
       sources: [
         { title: 'Game Vault Forum — PC Game Requirements Checker', url: '/tools/pc-game-requirements-checker' },
-        { title: 'Game Vault Forum — Hardware Diagnostics', url: '/tools/gaming-pc-builder' },
-      ],
-      cardIds: { games: [], articles: [], videos: [], hardware: ['gpu-4070s'] },
-      actions: [
-        { id: 'act-perf-1', type: 'requirements', label: 'Launch PC Requirements Checker', target: 'cyberpunk-2077' },
-        { id: 'act-perf-2', type: 'navigate', label: 'Configure Upgrade in PC Builder', target: '/tools/gaming-pc-builder' },
-        { id: 'act-perf-3', type: 'search', label: 'Search Forum: "Micro-Stutter Fix"', target: 'micro stutter' }
-      ]
-    };
-  }
-
-  if (q.includes('build') || q.includes('pc') || q.includes('gpu') || q.includes('budget') || q.includes('1000') || q.includes('1500000')) {
-    return {
-      reply: `### Vault AI PC Hardware Recommendation
-
-For balanced 1080p and 1440p gaming within typical sweet-spot budgets ($1,000 - $1,400 or ₦1,500,000 - ₦2,100,000), here is our verified balanced component harmony:
-
-- **CPU**: AMD Ryzen 5 7600X or Intel Core i5-13600KF (Excellent single-core frame times, 6-core/12-thread or hybrid architecture).
-- **GPU**: NVIDIA GeForce RTX 4070 Super 12GB or AMD Radeon RX 7800 XT 16GB (Unmatched 1440p rasterization & DLSS 3.5 / FSR 3 support).
-- **Motherboard**: B650 AM5 Socket (Supports future Zen 5 CPU upgrades).
-- **RAM**: 32GB DDR5-6000 CL30 Dual-Channel.
-- **Storage**: 2TB NVMe PCIe 4.0 SSD (7,000+ MB/s read speed).
-- **Power Supply**: 750W 80+ Gold certified modular unit.
-
-You can inspect the complete component list and verify 10-point socket compatibility directly in our Gaming PC Builder tool below.`,
-      sources: [
         { title: 'Game Vault Forum — Gaming PC Builder', url: '/tools/gaming-pc-builder' },
       ],
-      cardIds: { games: [], articles: [], videos: [], hardware: ['cpu-7600x', 'gpu-4070s'] },
+      cardIds: { games: ['cyberpunk-2077'], articles: [], videos: [], hardware: ['gpu-4070s'] },
       actions: [
-        { id: 'act-bld-1', type: 'navigate', label: 'Open Gaming PC Builder ($1,200 Rig)', target: '/tools/gaming-pc-builder' },
-        { id: 'act-bld-2', type: 'requirements', label: 'Test This Rig Against Cyberpunk 2077', target: 'cyberpunk-2077' }
-      ]
+        { id: 'act-perf-1', type: 'requirements', label: 'Check Game Specs', target: 'cyberpunk-2077' },
+        { id: 'act-perf-2', type: 'navigate', label: 'Configure Upgrade in PC Builder', target: '/tools/gaming-pc-builder' },
+        { id: 'act-perf-3', type: 'search', label: 'Search Forum: "Micro-Stutter"', target: 'micro stutter' },
+      ],
     };
   }
 
-  if (q.includes('world of warships') || q.includes('warships')) {
+  // 6. PC Build / Hardware / Budget Questions
+  if (
+    q.includes('build') ||
+    q.includes('pc') ||
+    q.includes('hardware') ||
+    q.includes('gpu') ||
+    q.includes('cpu') ||
+    q.includes('budget') ||
+    q.includes('rtx') ||
+    q.includes('ryzen') ||
+    q.includes('intel') ||
+    q.includes('naira') ||
+    q.includes('₦') ||
+    q.includes('dollar') ||
+    q.includes('$')
+  ) {
     return {
-      reply: `### World of Warships Analysis & Tactical Insights
+      reply: `### ${memberGreeting}Vault AI Recommended PC Configurations
 
-World of Warships is a deep naval tactical strategy and simulation title featured extensively on the Game Vault platform.
+Here are our recommended hardware tiers balanced for optimal price-to-performance without bottlenecks:
 
-**Key Mechanics to Master:**
-- **Armor Angling**: Angling your bow 15–30 degrees dramatically increases the effective armor thickness against incoming AP (Armor Piercing) shells, causing deflections.
-- **Concealment Management**: Turn off anti-air guns when attempting to disengage from smoke screen cover.
-- **Citadel Targeting**: Aim at the waterline beneath smoke funnels and main turrets for maximum kinetic damage.
+| Tier | Budget (USD) | Budget (NGN ₦) | Recommended CPU | Recommended GPU | RAM & Storage |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Entry 1080p** | $600 – $800 | ₦900k – ₦1.2M | Ryzen 5 5600 / i5-12400F | RX 6600 8GB / RTX 3060 12GB | 16GB DDR4 + 1TB NVMe |
+| **Sweet Spot 1440p** | $1,000 – $1,400 | ₦1.5M – ₦2.1M | Ryzen 5 7600X / i5-13600KF | RTX 4070 Super 12GB / RX 7800 XT 16GB | 32GB DDR5-6000 + 2TB Gen4 |
+| **Enthusiast 4K** | $1,800+ | ₦2.8M+ | Ryzen 7 7800X3D | RTX 4080 Super 16GB / RX 7900 XTX | 32GB/64GB DDR5 + 2TB+ Gen4 |
 
-Check out our full tactical guide and video breakdown below!`,
+*Note: Prices fluctuate based on region, taxes, and retailers. Always verify current prices before purchasing.*
+
+Use our **Gaming PC Builder** to test component combinations, estimate power supply wattage, and check socket compatibility.`,
+      sources: [{ title: 'Game Vault Forum — Gaming PC Builder', url: '/tools/gaming-pc-builder' }],
+      cardIds: { games: [], articles: [], videos: [], hardware: ['cpu-7600x', 'gpu-4070s', 'cpu-7800x3d', 'gpu-7800xt'] },
+      actions: [
+        { id: 'act-bld-1', type: 'navigate', label: 'Open Gaming PC Builder ($1,200 Rig)', target: '/tools/gaming-pc-builder' },
+        { id: 'act-bld-2', type: 'requirements', label: 'Test Rig Against Cyberpunk 2077', target: 'cyberpunk-2077' },
+        { id: 'act-bld-3', type: 'topic', label: 'Ask PC Building Board', target: '/forum/new' },
+      ],
+    };
+  }
+
+  // 7. World of Warships
+  if (q.includes('world of warships') || q.includes('warships') || q.includes('naval') || q.includes('battleship')) {
+    return {
+      reply: `### ${memberGreeting}World of Warships Tactical Guide & Deep Dive
+
+World of Warships is an intricate tactical naval strategy title covered extensively across Game Vault Forum.
+
+#### Key Mechanics to Master:
+- **Armor Angling**: Angling your ship 15°–30° towards enemy salvos dramatically increases the effective armor thickness, bouncing AP (Armor Piercing) shells off your bow.
+- **Citadel Targeting**: Target the waterline directly beneath smoke stacks and main gun turrets for maximum kinetic penetration.
+- **Concealment & Smoke Screens**: Disable anti-air guns (\`P\` key) when attempting to disengage from smoke cover to remain undetected.
+- **Torpedo Spread Management**: Use narrow spreads against single targets and wide spreads when area-denying chokepoints.`,
       sources: [
         { title: 'Game Vault Forum — World of Warships Armor & Gunnery Guide', url: '/guides/world-of-warships-armor-angling-penetration-guide' },
         { title: 'Game Vault Forum — Why World of Warships Is More Interesting Than Expected', url: '/articles/why-world-of-warships-is-more-interesting-than-i-expected' },
       ],
-      cardIds: {
-        games: ['world-of-warships'],
-        articles: ['art-1'],
-        videos: ['vid-2'],
-        hardware: [],
-      },
+      cardIds: { games: ['world-of-warships'], articles: ['art-1', 'gui-1'], videos: ['vid-2'], hardware: [] },
       actions: [
-        { id: 'act-wows-1', type: 'navigate', label: 'Read World of Warships Guide', target: '/guides/world-of-warships-armor-angling-penetration-guide' },
-        { id: 'act-wows-2', type: 'video', label: 'Watch Tactical Naval Gameplay Video', target: 'vid-2' },
-        { id: 'act-wows-3', type: 'requirements', label: 'Check World of Warships PC Specs', target: 'world-of-warships' }
-      ]
+        { id: 'act-wows-1', type: 'navigate', label: 'Read Armor Angling Guide', target: '/guides/world-of-warships-armor-angling-penetration-guide' },
+        { id: 'act-wows-2', type: 'video', label: 'Watch Tactical Breakdown Video', target: 'vid-2' },
+        { id: 'act-wows-3', type: 'requirements', label: 'Check WoWS PC Specs', target: 'world-of-warships' },
+      ],
     };
   }
 
-  // General recommendation
+  // 8. Elden Ring / Shadow of the Erdtree
+  if (q.includes('elden ring') || q.includes('shadow of the erdtree') || q.includes('fromsoftware') || q.includes('soulsborne') || q.includes('scadutree')) {
+    return {
+      reply: `### ${memberGreeting}Elden Ring & Shadow of the Erdtree Coverage
+
+Elden Ring holds a **10/10 rating** on Game Vault Forum.
+
+#### Shadow of the Erdtree Survival Guide:
+- **Scadutree Fragments**: Collecting Scadutree Blessings is essential in the Realm of Shadow. They provide flat percentage increases to damage dealt and damage negation that scale independently of standard character level.
+- **Revered Spirit Ash**: Upgrades the resilience and attack power of your spirit ashes and spectral steed.
+- **Boss Progression**: Start in Gravesite Plain, explore Belurat, proceed through Castle Ensis to Scadu Altus, and explore the Shadow Keep before venturing into late-game areas.`,
+      sources: [
+        { title: 'Game Vault Forum — Shadow of the Erdtree Review (10/10)', url: '/reviews/elden-ring-shadow-of-the-erdtree-review' },
+        { title: 'Game Vault Forum — Scadutree Fragment Route Guide', url: '/guides/elden-ring-scadutree-fragment-route-boss-progression' },
+      ],
+      cardIds: { games: ['elden-ring'], articles: ['rev-1', 'gui-2'], videos: ['vid-1'], hardware: [] },
+      actions: [
+        { id: 'act-er-1', type: 'navigate', label: 'Read Scadutree Route Guide', target: '/guides/elden-ring-scadutree-fragment-route-boss-progression' },
+        { id: 'act-er-2', type: 'video', label: 'Watch 24-Min Erdtree Deep Dive', target: 'vid-1' },
+        { id: 'act-er-3', type: 'requirements', label: 'Check Elden Ring PC Specs', target: 'elden-ring' },
+      ],
+    };
+  }
+
+  // 9. Cyberpunk 2077
+  if (q.includes('cyberpunk') || q.includes('night city') || q.includes('phantom liberty') || q.includes('cd projekt')) {
+    return {
+      reply: `### ${memberGreeting}Cyberpunk 2077 & Phantom Liberty Overhaul
+
+Cyberpunk 2077 stands as one of the most technically demanding and visually stunning RPGs in modern gaming.
+
+#### Key Highlights from Our Coverage:
+- **Patch 2.1 Overhaul**: Completely revamps police AI, cyberware limiters, vehicle combat, and perk trees.
+- **Phantom Liberty Expansion**: Introduces Dogtown, an espionage thriller narrative starring Idris Elba, and the Relic perk tree.
+- **Hardware Demand**: Ray Tracing Overdrive (Full Path Tracing) requires DLSS 3.5 Frame Generation and an RTX 4070 or above for 60+ FPS at 1440p.`,
+      sources: [
+        { title: 'Game Vault Forum — Cyberpunk 2077 in 2026 Overhaul Article', url: '/articles/cyberpunk-2077-in-2026-complete-overhaul-journey' },
+        { title: 'Game Vault Forum — Games Catalog: Cyberpunk 2077', url: '/games/cyberpunk-2077' },
+      ],
+      cardIds: { games: ['cyberpunk-2077'], articles: ['art-2'], videos: ['vid-3'], hardware: ['gpu-4070s'] },
+      actions: [
+        { id: 'act-cp-1', type: 'requirements', label: 'Check Cyberpunk 2077 PC Specs', target: 'cyberpunk-2077' },
+        { id: 'act-cp-2', type: 'video', label: 'Watch Overhaul Journey Video', target: 'vid-3' },
+        { id: 'act-cp-3', type: 'navigate', label: 'Read 2026 Modding Article', target: '/articles/cyberpunk-2077-in-2026-complete-overhaul-journey' },
+      ],
+    };
+  }
+
+  // 10. Helldivers 2
+  if (q.includes('helldivers') || q.includes('super earth') || q.includes('stratagem') || q.includes('automaton') || q.includes('terminid')) {
+    return {
+      reply: `### ${memberGreeting}Helldivers 2 Galactic War Tactics
+
+Helldivers 2 holds a **9.0/10 rating** on Game Vault Forum for its chaotic cooperative design and live-service Galactic War.
+
+#### Super Helldive (Difficulty 10) Loadout Strategy:
+- **Automaton Front**: Quasar Cannon or Recoilless Rifle for Hulks and Gunships; Shield Generator Pack; 500kg Bomb and Orbital Laser for Fabricators.
+- **Terminid Front**: Flamethrower or Guard Dog Rover for crowd control; Orbital Railcannon Strike for Bile Titans; Stun Grenades for Chargers.
+- **Team Synergy**: Always maintain 2 heavy armor-piercing anti-tank weapons and 2 crowd-clearing loadouts per 4-player squad.`,
+      sources: [
+        { title: 'Game Vault Forum — Helldivers 2 Review (9.0/10)', url: '/reviews/helldivers-2-review' },
+        { title: 'Game Vault Forum — Super Helldive Stratagems Guide', url: '/guides/helldivers-2-super-helldive-stratagems-tactics' },
+      ],
+      cardIds: { games: ['helldivers-2'], articles: ['rev-2', 'gui-3'], videos: ['vid-4'], hardware: [] },
+      actions: [
+        { id: 'act-hd-1', type: 'navigate', label: 'Read Stratagems Guide', target: '/guides/helldivers-2-super-helldive-stratagems-tactics' },
+        { id: 'act-hd-2', type: 'video', label: 'Watch Galactic War Tactics Video', target: 'vid-4' },
+        { id: 'act-hd-3', type: 'requirements', label: 'Check Helldivers 2 PC Specs', target: 'helldivers-2' },
+      ],
+    };
+  }
+
+  // 11. PUBG Mobile
+  if (q.includes('pubg') || q.includes('battle royale') || q.includes('erangel') || q.includes('krafton')) {
+    return {
+      reply: `### ${memberGreeting}PUBG Mobile Gameplay & Tactics
+
+PUBG Mobile is featured on Game Vault with our official morning gameplay video showcasing tactical positioning and circle rotations.
+
+#### Tactical Tips:
+- **Circle Rotation**: Move with the narrow edge of the blue zone to reduce the angles enemies can attack from.
+- **Vehicle Security**: Always secure a Dacia or UAZ early for mobile cover in open final circles.
+- **Gyroscope Aiming**: Enable "Always On" gyroscope for fine micro-adjustments during high-recoil 4x/6x spraying.`,
+      sources: [
+        { title: 'Game Vault Forum — PUBG Mobile Video', url: '/videos/vid-pubg-morning' },
+        { title: 'Game Vault Forum — Games Catalog: PUBG Mobile', url: '/games/pubg-mobile' },
+      ],
+      cardIds: { games: ['pubg-mobile'], articles: [], videos: ['vid-pubg-morning'], hardware: [] },
+      actions: [
+        { id: 'act-pubg-1', type: 'video', label: 'Watch PUBG Morning Gameplay', target: 'vid-pubg-morning' },
+        { id: 'act-pubg-2', type: 'requirements', label: 'Check PUBG Mobile Specs', target: 'pubg-mobile' },
+      ],
+    };
+  }
+
+  // 12. Default Comprehensive Portal & Navigation
   return {
-    reply: `### Vault AI Gaming Recommendation & Assistive Portal
+    reply: `### ${memberGreeting}Vault AI Gaming Portal & Directory
 
-Welcome to Vault AI — your intelligent Game Vault companion! Here are curated recommendations from our verified game vault:
+Welcome! I am **Vault AI**, your gaming copilot for Game Vault Forum. Here are top recommendations and tools ready for you:
 
-- **Elden Ring & Shadow of the Erdtree** (RPG / Soulsborne, Score: 9.8/10) — The definitive dark fantasy open-world adventure.
-- **Helldivers 2** (Co-op PvE Shooter, Score: 9.0/10) — High-octane squad strategy and planetary liberation missions.
-- **Cyberpunk 2077** (Action RPG / Sci-Fi, Score: 9.2/10) — Night City fully revitalized with patch 2.1 and Phantom Liberty.
-- **World of Warships** (Tactical Naval Action, Score: 8.9/10) — Deep positioning, ballistic calculations, and fleet warfare.
+#### Featured Games in Database:
+- **Elden Ring & Shadow of the Erdtree** (Soulsborne Action RPG • 9.8/10)
+- **Helldivers 2** (Co-op Squad Shooter • 9.0/10)
+- **Cyberpunk 2077 & Phantom Liberty** (Open World Sci-Fi RPG • 9.2/10)
+- **World of Warships** (Naval Tactical Strategy • 8.9/10)
 
-Select an action below or ask me to check if your rig meets the system requirements!`,
+#### Quick Actions:
+- **[PC Game Requirements Checker](/tools/pc-game-requirements-checker)**: Test your CPU/GPU against game specs.
+- **[Gaming PC Builder](/tools/gaming-pc-builder)**: Configure a build with 10-point socket compatibility & dual currency ($/₦).
+- **[Community Forum](/forum)**: Join active discussions or post new gaming topics.
+
+${isVisitor ? `*Tip for Visitors: You can explore all games and tools freely! To post on the forum and save bookmarks, create a free account.*` : `*How can I assist your gaming session today?*`}`,
     sources: [
       { title: 'Game Vault Forum — Games Catalog', url: '/games' },
-      { title: 'Game Vault Forum — PC Requirements Checker', url: '/tools/pc-game-requirements-checker' },
+      { title: 'Game Vault Forum — Tools Hub', url: '/tools' },
+      { title: 'Game Vault Forum — Community Forum', url: '/forum' },
     ],
     cardIds: {
       games: ['elden-ring', 'helldivers-2', 'cyberpunk-2077', 'world-of-warships'],
       articles: ['art-1', 'art-2'],
       videos: ['vid-1'],
-      hardware: [],
+      hardware: ['gpu-4070s'],
     },
-    actions: [
-      { id: 'act-gen-1', type: 'navigate', label: 'Browse Full Games Catalog', target: '/games' },
-      { id: 'act-gen-2', type: 'requirements', label: 'Test System Requirements', target: 'elden-ring' },
-      { id: 'act-gen-3', type: 'navigate', label: 'Open PC Builder', target: '/tools/gaming-pc-builder' },
-      { id: 'act-gen-4', type: 'navigate', label: 'Explore Sitemap', target: '/sitemap' }
-    ]
+    actions: isVisitor
+      ? [
+          { id: 'act-gen-auth', type: 'auth', label: 'Join Free / Sign In', target: 'open' },
+          { id: 'act-gen-req', type: 'requirements', label: 'Test System Requirements', target: 'elden-ring' },
+          { id: 'act-gen-bld', type: 'navigate', label: 'Open PC Builder', target: '/tools/gaming-pc-builder' },
+          { id: 'act-gen-cat', type: 'navigate', label: 'Browse Games Catalog', target: '/games' },
+        ]
+      : [
+          { id: 'act-gen-top', type: 'topic', label: 'Draft Forum Topic', target: '/forum/new' },
+          { id: 'act-gen-req', type: 'requirements', label: 'Test System Requirements', target: 'elden-ring' },
+          { id: 'act-gen-bld', type: 'navigate', label: 'Open PC Builder', target: '/tools/gaming-pc-builder' },
+          { id: 'act-gen-for', type: 'navigate', label: 'Browse Forum', target: '/forum' },
+        ],
   };
 }
 

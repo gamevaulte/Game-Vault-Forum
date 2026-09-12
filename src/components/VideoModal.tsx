@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Youtube, ThumbsUp, Bookmark, Share2, Calendar, Clock, Eye, Gamepad2, Check } from 'lucide-react';
+import { X, Youtube, ThumbsUp, Bookmark, Share2, Calendar, Clock, Eye, Gamepad2, Check, ExternalLink, PlayCircle, ListChecks } from 'lucide-react';
 import { Video } from '../types';
 import { YOUTUBE_CHANNEL } from '../lib/constants';
 
@@ -119,7 +119,7 @@ export const VideoModal: React.FC<VideoModalProps> = ({
               </button>
 
               <a
-                href={`https://www.youtube.com/watch?v=${video.youtubeId}`}
+                href={video.youtubeUrl || `https://www.youtube.com/watch?v=${video.youtubeId}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-1.5 px-3.5 py-2 bg-red-600 hover:bg-red-500 text-white rounded-xl text-xs font-['Rajdhani'] font-bold uppercase tracking-wider transition-all shadow-lg shadow-red-950/40"
@@ -135,6 +135,36 @@ export const VideoModal: React.FC<VideoModalProps> = ({
             <p className="font-semibold text-white font-['Space_Grotesk']">Video Overview:</p>
             <p>{video.description}</p>
           </div>
+
+          {/* Video Summary Section */}
+          {video.summary && (
+            <div className="p-4 sm:p-5 rounded-2xl bg-purple-950/20 border border-purple-500/30 text-sm text-gray-300 space-y-3">
+              <div className="flex items-center gap-2 text-purple-300 font-['Space_Grotesk'] font-bold">
+                <PlayCircle className="w-4 h-4 text-purple-400" />
+                <span>Video Summary & Tactical Breakdown:</span>
+              </div>
+              <p className="text-xs sm:text-sm text-gray-300 leading-relaxed whitespace-pre-line">
+                {video.summary}
+              </p>
+
+              {video.keyTakeaways && video.keyTakeaways.length > 0 && (
+                <div className="pt-3 border-t border-purple-500/20 space-y-2">
+                  <div className="text-xs font-bold font-['Rajdhani'] uppercase tracking-wider text-cyan-300 flex items-center gap-1.5">
+                    <ListChecks className="w-3.5 h-3.5 text-cyan-400" />
+                    <span>Key Takeaways:</span>
+                  </div>
+                  <ul className="space-y-1.5">
+                    {video.keyTakeaways.map((item, idx) => (
+                      <li key={idx} className="text-xs text-gray-300 flex items-start gap-2">
+                        <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 mt-1.5 shrink-0" />
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Subscribe Banner */}
           <div className="flex flex-col sm:flex-row items-center justify-between p-4 rounded-2xl bg-white/[0.03] border border-white/10 backdrop-blur-xl gap-3">

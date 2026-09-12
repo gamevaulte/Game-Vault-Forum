@@ -54,6 +54,7 @@ import { SitemapView } from './views/SitemapView';
 import { VaultAiFloatingButton } from './components/ai/VaultAiFloatingButton';
 import { CookieConsentBanner } from './components/CookieConsentBanner';
 import { AdBanner } from './components/AdBanner';
+import { ShareModal } from './components/ShareModal';
 
 // Firebase Auth & Firestore Backend
 import { onAuthStateChanged, signOut, User as FirebaseUser } from 'firebase/auth';
@@ -139,6 +140,17 @@ export default function App() {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [profileInitialTab, setProfileInitialTab] = useState<'profile' | 'guidelines'>('profile');
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
+  const [shareState, setShareState] = useState<{
+    isOpen: boolean;
+    title: string;
+    url: string;
+    description?: string;
+  }>({
+    isOpen: false,
+    title: '',
+    url: '',
+    description: ''
+  });
 
   // Synchronize with Firebase Auth
   useEffect(() => {
@@ -232,7 +244,16 @@ export default function App() {
       }
     });
 
-    return () => unsubscribe();
+    const handleOpenAuth = () => {
+      setAuthPromptMessage('Sign in or register to get unlimited queries and unlock full community perks.');
+      setIsAuthModalOpen(true);
+    };
+    window.addEventListener('gv-open-auth-modal', handleOpenAuth);
+
+    return () => {
+      unsubscribe();
+      window.removeEventListener('gv-open-auth-modal', handleOpenAuth);
+    };
   }, []);
 
   // Ensure initial Firestore documents when admin is active
@@ -488,18 +509,24 @@ export default function App() {
     });
   };
 
-  // Share Handler (copies unique URL to clipboard)
-  const handleShare = (title: string, customPath?: string) => {
-    const fullUrl = customPath
-      ? `${window.location.origin}${customPath}`
-      : window.location.href;
-
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(fullUrl);
-      addToast(`Copied unique link for "${title}" to clipboard!`, 'success');
-    } else {
-      addToast(`Shared "${title}"!`, 'info');
+  // Share Handler (opens standard social sharing & copy link modal)
+  const handleShare = (title: string, customPath?: string, description?: string) => {
+    let fullUrl = window.location.href;
+    if (customPath) {
+      if (customPath.startsWith('http://') || customPath.startsWith('https://')) {
+        fullUrl = customPath;
+      } else {
+        const cleanPath = customPath.startsWith('/') ? customPath : `/${customPath}`;
+        fullUrl = `${window.location.origin}${cleanPath}`;
+      }
     }
+
+    setShareState({
+      isOpen: true,
+      title,
+      url: fullUrl,
+      description
+    });
   };
 
   // Forum Reply Handler: Restricts replies to registered & signed in users!
@@ -1351,6 +1378,7 @@ export default function App() {
             initialBuildId={route.buildId}
             onNavigateTab={handleNavigateTab}
             onShowToast={(msg, type) => addToast(msg, type)}
+            onShare={handleShare}
           />
         );
 
@@ -1525,6 +1553,16 @@ export default function App() {
         />
       )}
 
+      {/* Share Modal: Standard social network sharing & copy link modal */}
+      <ShareModal
+        isOpen={shareState.isOpen}
+        onClose={() => setShareState((prev) => ({ ...prev, isOpen: false }))}
+        title={shareState.title}
+        url={shareState.url}
+        description={shareState.description}
+        onCopiedToast={(msg) => addToast(msg, 'success')}
+      />
+
       {/* Toast Notification Layer */}
       <Toast toasts={toasts} onCloseToast={removeToast} />
 
@@ -1538,6 +1576,11 @@ export default function App() {
       <VaultAiFloatingButton
         currentTab={getActiveTab()}
         user={user}
+        isSignedIn={Boolean(firebaseUser)}
+        onOpenSignIn={() => {
+          setAuthPromptMessage('Sign in or register to get unlimited queries and unlock full community perks.');
+          setIsAuthModalOpen(true);
+        }}
         activeGameTitle={
           route.type === 'game' 
             ? findItemBySlugOrId(MOCK_GAMES, route.id || route.slug)?.title 

@@ -24,6 +24,8 @@ import { navigateTo } from '../../lib/router';
 interface VaultAiFloatingButtonProps {
   currentTab: PageTab;
   user?: UserAccount;
+  isSignedIn?: boolean;
+  onOpenSignIn?: () => void;
   activeGameTitle?: string;
   onNavigateToVaultAi?: () => void;
 }
@@ -31,6 +33,8 @@ interface VaultAiFloatingButtonProps {
 export const VaultAiFloatingButton: React.FC<VaultAiFloatingButtonProps> = ({
   currentTab,
   user,
+  isSignedIn = false,
+  onOpenSignIn,
   activeGameTitle,
   onNavigateToVaultAi
 }) => {
@@ -47,6 +51,12 @@ export const VaultAiFloatingButton: React.FC<VaultAiFloatingButtonProps> = ({
 
   // Handle action click from bubble inside drawer
   const handleExecuteAction = (action: VaultAiAction) => {
+    if (action.type === 'auth') {
+      setIsOpen(false);
+      onOpenSignIn?.();
+      return;
+    }
+
     if (action.type === 'quick_task') {
       handleSend(action.target);
       return;
@@ -121,7 +131,7 @@ export const VaultAiFloatingButton: React.FC<VaultAiFloatingButtonProps> = ({
     if (!text || isGenerating) return;
 
     // Check guest usage
-    const isGuest = !user || user.id === 'usr_gv_01'; // initial demo user or guest
+    const isGuest = !isSignedIn;
     const currentUsage = getGuestDailyUsage();
     if (isGuest && currentUsage.count >= GUEST_DAILY_LIMIT) {
       setMessages(prev => [
@@ -129,9 +139,12 @@ export const VaultAiFloatingButton: React.FC<VaultAiFloatingButtonProps> = ({
         {
           id: `msg_limit_${Date.now()}`,
           role: 'assistant',
-          content: `You have reached your daily guest limit of **${GUEST_DAILY_LIMIT}** Vault AI queries. Create a free account or sign in for unlimited access!`,
+          content: `### 🛡️ Guest Limit Reached (${GUEST_DAILY_LIMIT}/${GUEST_DAILY_LIMIT} Queries)\n\nYou have used your daily free guest queries. Register or sign in for unlimited queries and full forum privileges!`,
           timestamp: new Date().toISOString(),
-          isError: true
+          actions: [
+            { id: 'fl-lim-auth', type: 'auth', label: 'Sign In / Register Free', target: 'open' },
+            { id: 'fl-lim-tools', type: 'navigate', label: 'Open Tools Hub', target: '/tools' }
+          ]
         }
       ]);
       return;
@@ -160,6 +173,9 @@ export const VaultAiFloatingButton: React.FC<VaultAiFloatingButtonProps> = ({
         context: {
           currentPage: currentTab,
           selectedGame: activeGameTitle,
+          isGuest,
+          isSignedIn,
+          userName: isSignedIn ? (user?.name || user?.username) : undefined,
         }
       });
 

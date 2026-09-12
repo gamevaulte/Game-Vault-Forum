@@ -169,9 +169,17 @@ export const VaultAiView: React.FC<VaultAiViewProps> = ({
         const limitMsg: VaultAiMessage = {
           id: `limit_${Date.now()}`,
           role: 'assistant',
-          content: `You have reached your daily guest query limit of **${GUEST_DAILY_LIMIT} queries**. Please sign in or register to unlock unlimited, priority Vault AI access!`,
+          content: `### 🛡️ Guest Limit Reached (${GUEST_DAILY_LIMIT}/${GUEST_DAILY_LIMIT} Queries)
+
+You have used your **${GUEST_DAILY_LIMIT} free daily guest queries**. 
+
+Create a free member account or sign in to unlock **unlimited Vault AI queries**, save conversations across devices, and participate in community forum discussions!`,
           timestamp: new Date().toISOString(),
-          isError: true,
+          actions: [
+            { id: 'act-lim-auth', type: 'auth', label: 'Join Game Vault (Free 10s Sign Up)', target: 'open' },
+            { id: 'act-lim-tools', type: 'navigate', label: 'Explore Interactive Tools', target: '/tools' },
+            { id: 'act-lim-games', type: 'navigate', label: 'Browse Game Catalog', target: '/games' },
+          ],
         };
         const updated = conversations.map(c => 
           c.id === activeConversation.id 
@@ -238,6 +246,9 @@ export const VaultAiView: React.FC<VaultAiViewProps> = ({
         history,
         context: {
           currentPage: 'vault-ai',
+          isGuest,
+          isSignedIn,
+          userName: isSignedIn ? (user?.name || user?.username) : undefined,
         },
       });
 
@@ -282,6 +293,11 @@ export const VaultAiView: React.FC<VaultAiViewProps> = ({
   };
 
   const handleExecuteAction = (action: VaultAiAction) => {
+    if (action.type === 'auth') {
+      onOpenSignIn?.();
+      return;
+    }
+
     if (action.type === 'quick_task') {
       handleSendMessage(action.target);
       return;

@@ -3,6 +3,35 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Global fetch setter shim to prevent 'Cannot set property fetch of #<Window> which has only a getter' -->
+    <script>
+      (function() {
+        try {
+          var target = window;
+          var desc = null;
+          while (target) {
+            desc = Object.getOwnPropertyDescriptor(target, 'fetch');
+            if (desc) break;
+            target = Object.getPrototypeOf(target);
+          }
+          if (desc && desc.get && !desc.set) {
+            var _activeFetch = window.fetch ? window.fetch.bind(window) : undefined;
+            Object.defineProperty(window, 'fetch', {
+              get: function() {
+                return _activeFetch;
+              },
+              set: function(fn) {
+                _activeFetch = fn;
+              },
+              configurable: true,
+              enumerable: true
+            });
+          }
+        } catch (e) {
+          // Graceful fallback
+        }
+      })();
+    </script>
     <title>Game Vault Forum | Gaming Videos, Reviews, Guides & Community</title>
     <meta name="description" content="Game Vault Forum is a gaming community and media platform featuring gameplay videos, gaming reviews, guides, articles and discussions for gamers." />
     <meta name="keywords" content="Game Vault Forum, gaming forum, gaming community, gaming videos, gaming reviews, gaming guides, gaming news, gameplay videos, gaming discussions" />

@@ -76,7 +76,7 @@ export const BrandKitModal: React.FC<BrandKitModalProps> = ({
               Official Brand Assets & Media Kit
             </div>
             <h2 className="text-2xl sm:text-3xl font-bold font-['Rajdhani'] uppercase tracking-wider text-white">
-              Download Favicon & Image-Only Logo .GIF
+              Official Brand Identity & Vector Assets
             </h2>
             <p className="text-xs sm:text-sm text-slate-400 font-['Inter']">
               High-resolution vector SVG favicons, multi-size ICO files, retina PNG icons, and an animated image-only logo GIF for Game Vault Forum.

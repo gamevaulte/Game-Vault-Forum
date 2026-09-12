@@ -185,6 +185,7 @@ Vault AI is currently operating in offline resilience mode.
 }
 
 export const SMART_SUGGESTION_PROMPTS = [
+  { label: 'Visitor vs Member Perks', icon: '🛡️', prompt: 'What features are available for visitors on Game Vault Forum, what perks do registered members get, and how do I sign up?' },
   { label: 'Check Can I Run It', icon: '🖥️', prompt: 'Can my PC run Elden Ring and Cyberpunk 2077? What GPU/CPU specs do I need for solid 60 FPS?' },
   { label: 'Build PC Rig ($1,200)', icon: '💻', prompt: 'Configure a balanced 1440p gaming PC for $1,200 / ₦1,800,000. Recommend exact parts and power supply.' },
   { label: 'Fix Low FPS & Stutter', icon: '🔧', prompt: 'My game is running at low FPS with micro-stuttering. Guide me through the 12-point troubleshooting checklist.' },

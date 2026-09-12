@@ -17,7 +17,8 @@ import {
   Gamepad2,
   Search,
   PenTool,
-  Play
+  Play,
+  LogIn
 } from 'lucide-react';
 import { VaultAiMessage, VaultAiAction } from '../../types';
 import { 
@@ -69,6 +70,8 @@ export const VaultAiMessageBubble: React.FC<VaultAiMessageBubbleProps> = ({
     // Default built-in action dispatcher
     if (action.type === 'navigate') {
       navigateTo(action.target);
+    } else if (action.type === 'auth') {
+      window.dispatchEvent(new CustomEvent('gv-open-auth-modal'));
     } else if (action.type === 'requirements') {
       navigateTo(`/tools/pc-game-requirements-checker/${action.target}`);
     } else if (action.type === 'pc_build') {
@@ -98,6 +101,8 @@ export const VaultAiMessageBubble: React.FC<VaultAiMessageBubbleProps> = ({
         return <Search className="w-3.5 h-3.5 text-blue-400" />;
       case 'video':
         return <Play className="w-3.5 h-3.5 text-rose-400" />;
+      case 'auth':
+        return <LogIn className="w-3.5 h-3.5 text-emerald-400" />;
       default:
         return <Zap className="w-3.5 h-3.5 text-amber-400" />;
     }

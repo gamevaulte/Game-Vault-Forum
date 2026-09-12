@@ -12,7 +12,12 @@ import {
   MessageSquare,
   Send,
   Sparkles,
-  LogIn
+  LogIn,
+  Youtube,
+  ListChecks,
+  PlayCircle,
+  Layers,
+  Film
 } from 'lucide-react';
 import { Video, PostComment, UserAccount, PageTab } from '../types';
 import { YOUTUBE_CHANNEL } from '../lib/constants';
@@ -195,25 +200,135 @@ export const VideoPageView: React.FC<VideoPageViewProps> = ({
             </button>
 
             <a
-              href={`https://youtube.com/watch?v=${video.youtubeId}`}
+              href={video.youtubeUrl || `https://youtube.com/watch?v=${video.youtubeId}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="p-2.5 rounded-xl text-xs bg-red-600/20 hover:bg-red-600/30 text-red-300 border border-red-500/30 transition-all"
-              title="Open in YouTube"
+              className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl text-xs font-['Rajdhani'] font-bold uppercase tracking-wider bg-red-600 hover:bg-red-500 text-white shadow-lg shadow-red-950/40 border border-red-500/40 transition-all cursor-pointer"
+              title="Watch on YouTube"
             >
-              <ExternalLink className="w-4 h-4" />
+              <Youtube className="w-4 h-4 fill-current" />
+              <span className="hidden sm:inline">Watch on YouTube</span>
             </a>
           </div>
         </div>
 
         {/* Video Synopsis */}
         <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/10 space-y-3">
-          <h3 className="text-xs font-bold font-['Rajdhani'] uppercase tracking-wider text-purple-300">
-            About This Tactical Briefing
+          <h3 className="text-xs font-bold font-['Rajdhani'] uppercase tracking-wider text-purple-300 flex items-center gap-2">
+            <Film className="w-4 h-4 text-purple-400" />
+            <span>Tactical Synopsis</span>
           </h3>
           <p className="text-sm sm:text-base text-gray-300 leading-relaxed font-['Inter']">
             {video.description}
           </p>
+        </div>
+
+        {/* Comprehensive Video Summary & Analysis */}
+        {video.summary && (
+          <div className="p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-purple-950/20 via-black/40 to-[#0e101a] border border-purple-500/30 space-y-6 shadow-2xl">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-purple-500/20 pb-4">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 rounded-xl bg-purple-600/20 border border-purple-500/30 text-purple-300">
+                  <PlayCircle className="w-5 h-5 text-purple-400" />
+                </div>
+                <div>
+                  <h3 className="text-lg sm:text-xl font-['Space_Grotesk'] font-bold text-white tracking-tight">
+                    Video Summary & Tactical Breakdown
+                  </h3>
+                  <p className="text-xs text-purple-300/80 font-mono">
+                    Direct briefing summarizing official video analysis
+                  </p>
+                </div>
+              </div>
+
+              {video.youtubeUrl && (
+                <a
+                  href={video.youtubeUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-xs text-purple-300 hover:text-white font-mono hover:underline"
+                >
+                  <span>Link: {video.youtubeUrl.replace('https://', '')}</span>
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </a>
+              )}
+            </div>
+
+            {/* In-depth summary text */}
+            <div className="text-sm sm:text-base text-gray-300 leading-relaxed font-['Inter'] whitespace-pre-line space-y-4">
+              {video.summary}
+            </div>
+
+            {/* Key Takeaways */}
+            {video.keyTakeaways && video.keyTakeaways.length > 0 && (
+              <div className="pt-4 border-t border-white/10 space-y-3">
+                <h4 className="text-xs font-bold font-['Rajdhani'] uppercase tracking-wider text-cyan-300 flex items-center gap-2">
+                  <ListChecks className="w-4 h-4 text-cyan-400" />
+                  <span>Key Strategic Takeaways</span>
+                </h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {video.keyTakeaways.map((takeaway, idx) => (
+                    <div
+                      key={idx}
+                      className="p-3.5 rounded-xl bg-black/40 border border-white/10 text-xs sm:text-sm text-gray-300 flex items-start gap-2.5 leading-relaxed"
+                    >
+                      <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 mt-2 shrink-0" />
+                      <span>{takeaway}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Chapters */}
+            {video.chapters && video.chapters.length > 0 && (
+              <div className="pt-4 border-t border-white/10 space-y-3">
+                <h4 className="text-xs font-bold font-['Rajdhani'] uppercase tracking-wider text-purple-300 flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-purple-400" />
+                  <span>Video Chapters & Topics</span>
+                </h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                  {video.chapters.map((ch, idx) => (
+                    <div
+                      key={idx}
+                      className="flex items-center gap-2.5 p-2.5 rounded-xl bg-white/[0.02] border border-white/5 text-xs text-gray-300"
+                    >
+                      <span className="px-2 py-0.5 rounded bg-purple-950 text-purple-300 font-mono text-[11px] font-bold border border-purple-800/40">
+                        {ch.timestamp}
+                      </span>
+                      <span className="truncate font-medium">{ch.title}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Subscribe Banner */}
+        <div className="flex flex-col sm:flex-row items-center justify-between p-5 rounded-2xl bg-white/[0.02] border border-white/10 backdrop-blur-xl gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-red-600 flex items-center justify-center shrink-0 shadow-lg shadow-red-950/60 border border-white/20">
+              <Youtube className="w-5 h-5 text-white fill-current" />
+            </div>
+            <div>
+              <p className="text-sm font-bold text-white font-['Rajdhani'] uppercase tracking-wider flex items-center gap-1.5">
+                <span>{YOUTUBE_CHANNEL.name}</span>
+                <span className="text-red-400 font-mono text-xs font-normal">({YOUTUBE_CHANNEL.handle})</span>
+              </p>
+              <p className="text-xs text-gray-400">
+                Subscribe on YouTube for full-length gaming documentaries, tactical analyses, and hardware tests.
+              </p>
+            </div>
+          </div>
+          <a
+            href={YOUTUBE_CHANNEL.subscribeUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-5 py-2.5 bg-red-600 hover:bg-red-500 text-white rounded-full text-xs font-['Rajdhani'] font-bold uppercase tracking-wider shrink-0 transition-all shadow-md shadow-red-950/40"
+          >
+            Subscribe on YouTube
+          </a>
         </div>
       </div>
 

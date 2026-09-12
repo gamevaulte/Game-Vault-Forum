@@ -14,9 +14,6 @@ export type PageTab =
   | 'gaming-pc-builder'
   | 'vault-ai'
   | 'sitemap'
-  | 'finder'
-  | 'compare'
-  | 'quiz'
   | 'new-topic'
   | 'profile'
   | 'guidelines'
@@ -28,7 +25,7 @@ export type PageTab =
 
 export interface VaultAiAction {
   id: string;
-  type: 'navigate' | 'requirements' | 'pc_build' | 'search' | 'video' | 'review' | 'guide' | 'topic' | 'generate_tag' | 'quick_task';
+  type: 'navigate' | 'requirements' | 'pc_build' | 'search' | 'video' | 'review' | 'guide' | 'topic' | 'generate_tag' | 'quick_task' | 'auth';
   label: string;
   target: string;
   payload?: any;
@@ -64,6 +61,9 @@ export interface VaultAiContext {
   userPcSpec?: any;
   builderBudget?: string;
   assistiveTask?: string;
+  isGuest?: boolean;
+  isSignedIn?: boolean;
+  userName?: string;
 }
 
 export type GameGenre = 
@@ -90,6 +90,10 @@ export interface Video {
   views: string;
   duration: string;
   youtubeId: string;
+  youtubeUrl?: string;
+  summary?: string;
+  keyTakeaways?: string[];
+  chapters?: { timestamp: string; title: string }[];
   category: 'Gameplay' | 'Deep Dive' | 'Review' | 'Guide' | 'Tech';
   isFeatured?: boolean;
   thumbnail: string;
