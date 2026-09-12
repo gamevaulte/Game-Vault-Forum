@@ -308,6 +308,35 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
               </h3>
             );
           }
+          if (trimmed.startsWith('> ')) {
+            return (
+              <blockquote
+                key={idx}
+                className="my-5 pl-4 py-2 border-l-2 border-purple-500 bg-purple-950/25 rounded-r-xl italic text-purple-200 font-['Inter']"
+              >
+                {renderFormattedText(trimmed.replace(/^>\s*/, ''))}
+              </blockquote>
+            );
+          }
+          if (trimmed.split('\n').every((line) => /^\d+\.\s+/.test(line.trim()))) {
+            return (
+              <ol key={idx} className="space-y-3 my-4 pl-1">
+                {trimmed.split('\n').map((line, lIdx) => {
+                  const match = line.trim().match(/^(\d+)\.\s+(.*)$/);
+                  const num = match ? match[1] : `${lIdx + 1}`;
+                  const body = match ? match[2] : line.trim();
+                  return (
+                    <li key={lIdx} className="flex items-start gap-3 text-gray-300">
+                      <span className="w-5 h-5 rounded-full bg-purple-900/60 border border-purple-500/40 text-[11px] font-bold text-purple-300 flex items-center justify-center shrink-0 mt-0.5 shadow-sm shadow-purple-900/40">
+                        {num}
+                      </span>
+                      <span>{renderFormattedText(body)}</span>
+                    </li>
+                  );
+                })}
+              </ol>
+            );
+          }
           if (trimmed.split('\n').every((line) => line.trim().startsWith('•') || line.trim().startsWith('-'))) {
             return (
               <ul key={idx} className="space-y-2.5 my-4 pl-2">
