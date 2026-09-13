@@ -92,33 +92,9 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
   const relatedArticleSlug = relatedArticle ? getSeoSlug(relatedArticle) : '';
 
   const renderBoldText = (text: string, keyPrefix: string) => {
-    const boldRegex = /\*\*([^*]+)\*\*/g;
-    const parts: React.ReactNode[] = [];
-    let lastIndex = 0;
-    let match: RegExpExecArray | null;
-
-    while ((match = boldRegex.exec(text)) !== null) {
-      const [fullMatch, boldText] = match;
-      const startIndex = match.index;
-
-      if (startIndex > lastIndex) {
-        parts.push(text.substring(lastIndex, startIndex));
-      }
-
-      parts.push(
-        <strong key={`${keyPrefix}-bold-${startIndex}`} className="font-bold text-white">
-          {boldText}
-        </strong>
-      );
-
-      lastIndex = startIndex + fullMatch.length;
-    }
-
-    if (lastIndex < text.length) {
-      parts.push(text.substring(lastIndex));
-    }
-
-    return parts;
+    // Strip all asterisks around words and phrases
+    const cleanText = text.replace(/\*+([^*]+)\*+/g, '$1').replace(/\*/g, '');
+    return [cleanText];
   };
 
   const renderFormattedText = (text: string) => {
@@ -484,7 +460,7 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
           }
 
           if (trimmed.startsWith('## ')) {
-            const headingText = trimmed.replace(/^##\s*/, '');
+            const headingText = trimmed.replace(/^##\s*/, '').replace(/\*+([^*]+)\*+/g, '$1').replace(/\*/g, '');
             const isRecommendation = headingText.toLowerCase().includes('recommended');
             return (
               <h2
@@ -512,7 +488,7 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
                 key={idx}
                 className="text-lg sm:text-xl font-bold font-['Rajdhani'] uppercase tracking-wider text-purple-300 pt-4 pb-1"
               >
-                {trimmed.replace(/^###\s*/, '')}
+                {trimmed.replace(/^###\s*/, '').replace(/\*+([^*]+)\*+/g, '$1').replace(/\*/g, '')}
               </h3>
             );
           }

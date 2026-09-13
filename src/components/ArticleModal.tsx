@@ -117,14 +117,16 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
               }
 
               // Display cards
+              // In-article display cards
               if (trimmed.startsWith(':::')) {
                 const rawContent = trimmed.replace(/^:::[a-zA-Z0-9_\-]*\s*/, '').replace(/:::$/, '').trim();
                 const lines = rawContent.split('\n');
                 let title = 'Key Insight';
                 const bodyLines: string[] = [];
                 for (const l of lines) {
-                  if (l.toLowerCase().startsWith('title:')) title = l.substring(6).trim();
-                  else if (!l.toLowerCase().startsWith('badge:')) bodyLines.push(l);
+                  const cleanL = l.replace(/\*+([^*]+)\*+/g, '$1').replace(/\*/g, '').trim();
+                  if (cleanL.toLowerCase().startsWith('title:')) title = cleanL.substring(6).trim();
+                  else if (!cleanL.toLowerCase().startsWith('badge:')) bodyLines.push(cleanL);
                 }
                 return (
                   <div key={idx} className="my-5 p-4 rounded-xl border border-purple-500/30 bg-purple-950/20">
@@ -144,7 +146,12 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
               // Markdown tables
               if (trimmed.startsWith('|') && trimmed.includes('\n|')) {
                 const lines = trimmed.split('\n').filter(Boolean);
-                const parse = (l: string) => l.replace(/^\|/, '').replace(/\|$/, '').split('|').map(c => c.trim());
+                const parse = (l: string) =>
+                  l
+                    .replace(/^\|/, '')
+                    .replace(/\|$/, '')
+                    .split('|')
+                    .map((c) => c.replace(/\*+([^*]+)\*+/g, '$1').replace(/\*/g, '').trim());
                 const header = parse(lines[0]);
                 const rows = lines.slice(1).filter(l => !/^\|?\s*:?-+:?\s*(\|?\s*:?-+:?\s*)*\|?$/.test(l)).map(parse);
                 return (
@@ -178,7 +185,7 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
                     className="text-xl sm:text-2xl font-bold font-['Rajdhani'] uppercase tracking-wider text-white pt-6 pb-2 border-b border-[#252a42] flex items-center gap-2"
                   >
                     <span className="w-2 h-2 rounded-full bg-red-500 inline-block shrink-0"></span>
-                    <span>{trimmed.replace(/^##\s*/, '')}</span>
+                    <span>{trimmed.replace(/^##\s*/, '').replace(/\*+([^*]+)\*+/g, '$1').replace(/\*/g, '')}</span>
                   </h2>
                 );
               }
@@ -188,13 +195,14 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
                     key={idx}
                     className="text-base sm:text-lg font-bold font-['Rajdhani'] uppercase tracking-wider text-purple-300 pt-3 pb-1"
                   >
-                    {trimmed.replace(/^###\s*/, '')}
+                    {trimmed.replace(/^###\s*/, '').replace(/\*+([^*]+)\*+/g, '$1').replace(/\*/g, '')}
                   </h3>
                 );
               }
+              const cleanText = trimmed.replace(/\*+([^*]+)\*+/g, '$1').replace(/\*/g, '');
               return (
                 <p key={idx} className="text-slate-300 leading-relaxed whitespace-pre-line">
-                  {trimmed}
+                  {cleanText}
                 </p>
               );
             })}
