@@ -1,5 +1,8 @@
 export const CONTACT_EMAIL = 'contact@gamevault.forum';
 
+export const DISCORD_URL = 'https://discord.gg/73wDpN69';
+export const TWITTER_URL = 'https://x.com/gamevaultforum';
+
 export const YOUTUBE_CHANNEL = {
   name: 'Game Vault Forum',
   handle: '@gamevaultforum',

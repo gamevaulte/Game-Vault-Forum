@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Youtube, Twitter, Disc as Discord, Shield, Check, Send, ChevronRight, Lock, Sparkles } from 'lucide-react';
 import { PageTab } from '../types';
 import { VaultLogo } from './VaultLogo';
-import { YOUTUBE_CHANNEL } from '../lib/constants';
+import { YOUTUBE_CHANNEL, DISCORD_URL, TWITTER_URL } from '../lib/constants';
 
 interface FooterProps {
   onSelectTab: (tab: PageTab) => void;
@@ -88,20 +88,20 @@ export const Footer: React.FC<FooterProps> = ({
                 <Youtube className="w-4 h-4 fill-current" />
               </a>
               <a
-                href="https://discord.com"
+                href={DISCORD_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 hover:border-indigo-500/60 hover:bg-white/10 hover:text-indigo-400 text-gray-300 flex items-center justify-center backdrop-blur-md transition-colors"
-                title="Discord Community"
+                title="Discord Community (discord.gg/73wDpN69)"
               >
                 <Discord className="w-4 h-4" />
               </a>
               <a
-                href="https://x.com"
+                href={TWITTER_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 hover:border-cyan-500/60 hover:bg-white/10 hover:text-cyan-400 text-gray-300 flex items-center justify-center backdrop-blur-md transition-colors"
-                title="X / Twitter"
+                title="X / Twitter (@gamevaultforum)"
               >
                 <Twitter className="w-4 h-4" />
               </a>
