@@ -29,7 +29,8 @@ export function slugify(text: string): string {
 /**
  * Generates an SEO-optimized slug for an item based on its title or game title
  */
-export function getSeoSlug(item: { id: string; title?: string; gameTitle?: string; name?: string }): string {
+export function getSeoSlug(item: { id: string; title?: string; gameTitle?: string; name?: string; slug?: string }): string {
+  if (item.slug) return item.slug;
   const rawTitle = item.title || item.gameTitle || item.name || item.id;
   const slug = slugify(rawTitle);
   return slug || item.id;

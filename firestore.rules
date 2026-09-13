@@ -70,11 +70,8 @@ service cloud.firestore {
 
     // Contact Us Submissions & Information Collections
     match /contact_submissions/{submissionId} {
-      // PII Isolation: Only administrators or the authenticated submitter can read
       allow read: if isAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid);
-      // Validated submission from visitors or operatives
       allow create: if isValidId(submissionId) && isValidContactSubmission(incoming());
-      // Only administrators can triage or remove inquiries
       allow update: if isAdmin() && isValidContactSubmission(incoming());
       allow delete: if isAdmin();
     }
@@ -93,11 +90,14 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
-    match /Contact%20Us/{submissionId} {
-      allow read: if isAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid);
-      allow create: if isValidId(submissionId) && isValidContactSubmission(incoming());
-      allow update: if isAdmin() && isValidContactSubmission(incoming());
-      allow delete: if isAdmin();
+    match /{contactCollection}/{submissionId} {
+      allow read: if (contactCollection == 'Contact Us' || contactCollection == 'Contact%20Us') &&
+                     (isAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid));
+      allow create: if (contactCollection == 'Contact Us' || contactCollection == 'Contact%20Us') &&
+                      isValidId(submissionId) && isValidContactSubmission(incoming());
+      allow update: if (contactCollection == 'Contact Us' || contactCollection == 'Contact%20Us') &&
+                      isAdmin() && isValidContactSubmission(incoming());
+      allow delete: if (contactCollection == 'Contact Us' || contactCollection == 'Contact%20Us') && isAdmin();
     }
 
     // Newsletter Subscribers Collections

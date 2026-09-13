@@ -12,6 +12,7 @@ const ArticlesViewComponent: React.FC<ArticlesViewProps> = ({ articles, onSelect
 
   const categories = [
     'All',
+    'Hardware Guides',
     'Tactical Analysis',
     'Gaming Culture',
     'Opinions',

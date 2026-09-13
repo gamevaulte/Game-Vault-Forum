@@ -119,10 +119,13 @@ export interface Game {
 
 export interface Article {
   id: string;
+  slug?: string;
   title: string;
+  seoTitle?: string;
+  metaDescription?: string;
   excerpt: string;
   content: string;
-  category: 'Gaming News' | 'Opinions' | 'Gaming Culture' | 'Industry' | 'Tips' | 'Features' | 'Gaming Stories' | 'Tactical Analysis';
+  category: 'Gaming News' | 'Opinions' | 'Gaming Culture' | 'Industry' | 'Tips' | 'Features' | 'Gaming Stories' | 'Tactical Analysis' | 'Hardware Guides' | 'Hardware';
   author: {
     name: string;
     avatar: string;

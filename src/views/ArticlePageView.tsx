@@ -15,7 +15,14 @@ import {
   ShieldCheck, 
   Sparkles, 
   LogIn,
-  UserCheck
+  UserCheck,
+  CheckCircle2,
+  Cpu,
+  Monitor,
+  CheckSquare,
+  Wrench,
+  HelpCircle,
+  ExternalLink
 } from 'lucide-react';
 import { Article, PostComment, UserAccount, PageTab } from '../types';
 import { AdBanner } from '../components/AdBanner';
@@ -129,6 +136,10 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
       }
 
       const isInternalArticle = url.startsWith('/articles/') || url.includes('gamevault.forum/articles/');
+      const isPcBuilder = url.includes('gaming-pc-builder') || url === '#pc-builder';
+      const isRequirementsChecker = url.includes('pc-game-requirements-checker') || url.includes('pc-requirements') || url === '#requirements';
+      const isVaultAi = url.includes('vault-ai');
+      const isForum = url === '/forum' || url.startsWith('/forum/');
 
       parts.push(
         <a
@@ -147,6 +158,22 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
               } else {
                 window.location.href = url;
               }
+            } else if (isPcBuilder && onNavigateTab) {
+              e.preventDefault();
+              onNavigateTab('gaming-pc-builder');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else if (isRequirementsChecker && onNavigateTab) {
+              e.preventDefault();
+              onNavigateTab('pc-requirements');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else if (isVaultAi && onNavigateTab) {
+              e.preventDefault();
+              onNavigateTab('vault-ai');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else if (isForum && onNavigateTab) {
+              e.preventDefault();
+              onNavigateTab('forum');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
             }
           }}
           className="inline-flex items-baseline gap-1 font-semibold text-cyan-400 hover:text-cyan-300 underline decoration-cyan-500/60 underline-offset-4 transition-colors hover:decoration-cyan-300"
@@ -166,11 +193,175 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
     return parts;
   };
 
+  const renderMarkdownTable = (tableText: string, key: string | number) => {
+    const lines = tableText.trim().split('\n').map(l => l.trim()).filter(Boolean);
+    if (lines.length < 2) return null;
+
+    const parseRow = (line: string) => {
+      return line
+        .replace(/^\|/, '')
+        .replace(/\|$/, '')
+        .split('|')
+        .map(cell => cell.trim());
+    };
+
+    const headerRow = parseRow(lines[0]);
+    const isDivider = (line: string) => /^\|?\s*:?-+:?\s*(\|?\s*:?-+:?\s*)*\|?$/.test(line);
+    const dataRows = lines.slice(1).filter(l => !isDivider(l)).map(parseRow);
+
+    return (
+      <div key={key} className="my-8 overflow-hidden rounded-2xl border border-purple-500/30 bg-[#0c0e1c]/90 shadow-2xl shadow-black/60">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse min-w-[560px]">
+            <thead>
+              <tr className="bg-gradient-to-r from-purple-950/80 via-[#16182c] to-purple-950/80 border-b border-purple-500/30 text-purple-200">
+                {headerRow.map((h, i) => (
+                  <th key={i} className="px-4 sm:px-5 py-3.5 text-xs sm:text-sm font-['Rajdhani'] font-bold uppercase tracking-wider">
+                    {renderFormattedText(h)}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-white/5 text-xs sm:text-sm">
+              {dataRows.map((row, rIdx) => (
+                <tr 
+                  key={rIdx} 
+                  className={`transition-colors hover:bg-purple-900/15 ${rIdx % 2 === 0 ? 'bg-transparent' : 'bg-white/[0.02]'}`}
+                >
+                  {row.map((cell, cIdx) => (
+                    <td key={cIdx} className="px-4 sm:px-5 py-3.5 text-gray-300 font-['Inter'] align-top">
+                      {renderFormattedText(cell)}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    );
+  };
+
+  const renderDisplayCard = (cardText: string, key: string | number) => {
+    const rawContent = cardText
+      .replace(/^:::[a-zA-Z0-9_\-]*\s*/, '')
+      .replace(/:::$/, '')
+      .trim();
+    const lines = rawContent.split('\n');
+    let title = '';
+    let badge = 'Vault Insight';
+    let type: 'checklist' | 'highlight' | 'tool' | 'card' = 'card';
+    const contentLines: string[] = [];
+
+    if (cardText.startsWith(':::checklist')) type = 'checklist';
+    else if (cardText.startsWith(':::highlight')) type = 'highlight';
+    else if (cardText.startsWith(':::tool')) type = 'tool';
+
+    for (const line of lines) {
+      const trimmedLine = line.trim();
+      if (trimmedLine.toLowerCase().startsWith('title:')) {
+        title = trimmedLine.substring(6).trim();
+      } else if (trimmedLine.toLowerCase().startsWith('badge:')) {
+        badge = trimmedLine.substring(6).trim();
+      } else {
+        contentLines.push(line);
+      }
+    }
+
+    const borderColors = {
+      checklist: 'border-emerald-500/40 bg-emerald-950/15 text-emerald-300',
+      highlight: 'border-cyan-500/40 bg-cyan-950/15 text-cyan-300',
+      tool: 'border-purple-500/40 bg-purple-950/20 text-purple-300',
+      card: 'border-purple-500/30 bg-[#0d1020]/90 text-purple-300',
+    };
+
+    const icons = {
+      checklist: <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />,
+      highlight: <Sparkles className="w-5 h-5 text-cyan-400 shrink-0 mt-0.5" />,
+      tool: <Cpu className="w-5 h-5 text-purple-400 shrink-0 mt-0.5" />,
+      card: <ShieldCheck className="w-5 h-5 text-purple-400 shrink-0 mt-0.5" />,
+    };
+
+    return (
+      <div
+        key={key}
+        className={`my-8 p-5 sm:p-6 rounded-2xl border ${borderColors[type]} backdrop-blur-md shadow-2xl relative overflow-hidden`}
+      >
+        <div className="flex items-center justify-between gap-3 border-b border-white/10 pb-3 mb-4">
+          <div className="flex items-center gap-2.5">
+            {icons[type]}
+            <h4 className="text-lg sm:text-xl font-bold font-['Rajdhani'] uppercase tracking-wider text-white">
+              {title || 'Key Takeaway'}
+            </h4>
+          </div>
+          <span className="px-2.5 py-0.5 text-[11px] font-bold font-['Rajdhani'] uppercase tracking-wider rounded-full bg-white/10 border border-white/10">
+            {badge}
+          </span>
+        </div>
+        <div className="space-y-3 text-sm sm:text-base font-['Inter'] text-gray-200">
+          {contentLines.map((cLine, i) => {
+            const t = cLine.trim();
+            if (!t) return null;
+            if (t.startsWith('•') || t.startsWith('-') || t.startsWith('*')) {
+              return (
+                <div key={i} className="flex items-start gap-2.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-purple-400 mt-2 shrink-0 shadow-sm" />
+                  <span>{renderFormattedText(t.replace(/^[•\-*]\s*/, ''))}</span>
+                </div>
+              );
+            }
+            if (/^\d+\.\s+/.test(t)) {
+              const num = t.match(/^(\d+)\./)?.[1] || `${i + 1}`;
+              return (
+                <div key={i} className="flex items-start gap-2.5">
+                  <span className="w-5 h-5 rounded-md bg-white/10 border border-white/15 text-[11px] font-mono font-bold flex items-center justify-center shrink-0 mt-0.5 text-purple-300">
+                    {num}
+                  </span>
+                  <span>{renderFormattedText(t.replace(/^\d+\.\s+/, ''))}</span>
+                </div>
+              );
+            }
+            return <p key={i} className="leading-relaxed">{renderFormattedText(t)}</p>;
+          })}
+        </div>
+      </div>
+    );
+  };
+
+  const renderInArticleImage = (block: string, key: string | number) => {
+    const match = block.trim().match(/^!\[(.*?)\]\((.*?)\)$/);
+    if (!match) return null;
+    const [, alt, src] = match;
+
+    return (
+      <figure key={key} className="my-8 rounded-2xl overflow-hidden border border-purple-500/25 bg-[#0a0c16] shadow-2xl">
+        <div className="relative aspect-[16/9] w-full overflow-hidden bg-black/40">
+          <img
+            src={src}
+            alt={alt}
+            loading="lazy"
+            decoding="async"
+            className="w-full h-full object-cover hover:scale-[1.02] transition-transform duration-500"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent pointer-events-none" />
+        </div>
+        {alt && (
+          <figcaption className="px-4 py-2.5 text-center text-xs font-['Rajdhani'] uppercase tracking-wider text-purple-300/90 bg-[#0d0f1c] border-t border-white/5 flex items-center justify-center gap-2">
+            <Sparkles className="w-3.5 h-3.5 text-purple-400 shrink-0" />
+            <span>{alt}</span>
+          </figcaption>
+        )}
+      </figure>
+    );
+  };
+
   useEffect(() => {
     const articleImg = article.image || article.featuredImage;
+    const pageTitle = article.seoTitle || article.title;
+    const pageDesc = article.metaDescription || article.excerpt;
     updatePageSeo({
-      title: article.title,
-      description: article.excerpt,
+      title: pageTitle,
+      description: pageDesc,
       canonicalPath: `/articles/${articleSlug}`,
       ogType: 'article',
       imageUrl: articleImg,
@@ -181,19 +372,20 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
       schemaType: 'Article',
       schemaData: {
         headline: article.title,
-        description: article.excerpt,
+        description: pageDesc,
         image: [articleImg],
-        datePublished: '2025-01-15T08:00:00+00:00',
-        dateModified: '2026-09-01T12:00:00+00:00',
+        datePublished: '2026-09-13T04:00:00+00:00',
+        dateModified: '2026-09-13T10:00:00+00:00',
         author: {
           '@type': 'Person',
           name: article.author.name
         },
         articleSection: article.category,
-        wordCount: article.content ? article.content.split(/\s+/).length : 500
+        wordCount: article.content ? article.content.split(/\s+/).length : 500,
+        keywords: article.tags ? article.tags.join(', ') : undefined
       }
     });
-  }, [article.title, article.excerpt, articleSlug, article.image, article.featuredImage, article.author.name, article.category, article.content]);
+  }, [article.title, article.seoTitle, article.metaDescription, article.excerpt, articleSlug, article.image, article.featuredImage, article.author.name, article.category, article.content, article.tags]);
 
   return (
     <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-8 animate-in fade-in duration-300">
@@ -275,6 +467,22 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
         {article.content.split('\n\n').map((block, idx) => {
           const trimmed = block.trim();
           if (!trimmed) return null;
+
+          // In-article images
+          if (trimmed.startsWith('![') && trimmed.endsWith(')')) {
+            return renderInArticleImage(trimmed, idx);
+          }
+
+          // In-article display cards
+          if (trimmed.startsWith(':::')) {
+            return renderDisplayCard(trimmed, idx);
+          }
+
+          // In-article markdown tables
+          if (trimmed.startsWith('|') && trimmed.includes('\n|')) {
+            return renderMarkdownTable(trimmed, idx);
+          }
+
           if (trimmed.startsWith('## ')) {
             const headingText = trimmed.replace(/^##\s*/, '');
             const isRecommendation = headingText.toLowerCase().includes('recommended');

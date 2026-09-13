@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Calendar, Clock, ThumbsUp, Bookmark, Share2, Tag, BookOpen } from 'lucide-react';
+import { X, Calendar, Clock, ThumbsUp, Bookmark, Share2, Tag, BookOpen, Sparkles, CheckCircle2, Cpu, ShieldCheck } from 'lucide-react';
 import { Article } from '../types';
 
 interface ArticleModalProps {
@@ -97,6 +97,80 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
             {article.content.split('\n\n').map((block, idx) => {
               const trimmed = block.trim();
               if (!trimmed) return null;
+
+              // Images
+              if (trimmed.startsWith('![') && trimmed.endsWith(')')) {
+                const match = trimmed.match(/^!\[(.*?)\]\((.*?)\)$/);
+                if (match) {
+                  const [, alt, src] = match;
+                  return (
+                    <figure key={idx} className="my-5 rounded-xl overflow-hidden border border-[#252a42]">
+                      <img src={src} alt={alt} className="w-full aspect-video object-cover" />
+                      {alt && (
+                        <figcaption className="p-2 text-center text-xs text-purple-300/80 bg-[#101322]">
+                          {alt}
+                        </figcaption>
+                      )}
+                    </figure>
+                  );
+                }
+              }
+
+              // Display cards
+              if (trimmed.startsWith(':::')) {
+                const rawContent = trimmed.replace(/^:::[a-zA-Z0-9_\-]*\s*/, '').replace(/:::$/, '').trim();
+                const lines = rawContent.split('\n');
+                let title = 'Key Insight';
+                const bodyLines: string[] = [];
+                for (const l of lines) {
+                  if (l.toLowerCase().startsWith('title:')) title = l.substring(6).trim();
+                  else if (!l.toLowerCase().startsWith('badge:')) bodyLines.push(l);
+                }
+                return (
+                  <div key={idx} className="my-5 p-4 rounded-xl border border-purple-500/30 bg-purple-950/20">
+                    <h4 className="font-bold text-white font-['Rajdhani'] uppercase tracking-wider text-base mb-2 flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 text-purple-400" />
+                      {title}
+                    </h4>
+                    <div className="space-y-1.5 text-xs sm:text-sm text-slate-300">
+                      {bodyLines.map((bl, bi) => (
+                        <p key={bi}>{bl}</p>
+                      ))}
+                    </div>
+                  </div>
+                );
+              }
+
+              // Markdown tables
+              if (trimmed.startsWith('|') && trimmed.includes('\n|')) {
+                const lines = trimmed.split('\n').filter(Boolean);
+                const parse = (l: string) => l.replace(/^\|/, '').replace(/\|$/, '').split('|').map(c => c.trim());
+                const header = parse(lines[0]);
+                const rows = lines.slice(1).filter(l => !/^\|?\s*:?-+:?\s*(\|?\s*:?-+:?\s*)*\|?$/.test(l)).map(parse);
+                return (
+                  <div key={idx} className="my-5 overflow-x-auto rounded-xl border border-[#252a42] bg-[#0c0e1a]">
+                    <table className="w-full text-left text-xs border-collapse min-w-[500px]">
+                      <thead>
+                        <tr className="bg-purple-950/60 border-b border-[#252a42] text-purple-200">
+                          {header.map((h, hi) => (
+                            <th key={hi} className="p-2.5 font-bold uppercase font-['Rajdhani']">{h}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-white/5">
+                        {rows.map((row, ri) => (
+                          <tr key={ri} className="hover:bg-white/[0.02]">
+                            {row.map((cell, ci) => (
+                              <td key={ci} className="p-2.5 text-slate-300">{cell}</td>
+                            ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                );
+              }
+
               if (trimmed.startsWith('## ')) {
                 return (
                   <h2
