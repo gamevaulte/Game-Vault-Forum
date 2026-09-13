@@ -7,27 +7,53 @@ import './index.css';
 // Ensure window.fetch has both getter and setter in all browser/iframe contexts
 if (typeof window !== 'undefined') {
   try {
-    let target: any = window;
-    let desc: PropertyDescriptor | undefined;
-    while (target) {
-      desc = Object.getOwnPropertyDescriptor(target, 'fetch');
-      if (desc) break;
-      target = Object.getPrototypeOf(target);
+    const isFetchGetterError = (msg: unknown) =>
+      typeof msg === 'string' && msg.includes('fetch') && msg.includes('getter');
+
+    window.addEventListener(
+      'error',
+      (event) => {
+        if (event && (isFetchGetterError(event.message) || (event.error && isFetchGetterError(event.error.message)))) {
+          if (event.preventDefault) event.preventDefault();
+          if (event.stopPropagation) event.stopPropagation();
+          if (event.stopImmediatePropagation) event.stopImmediatePropagation();
+          return true;
+        }
+      },
+      true,
+    );
+
+    let activeFetch: typeof window.fetch | undefined = window.fetch ? window.fetch.bind(window) : undefined;
+    const getFetch = () => activeFetch;
+    const setFetch = (fn: any) => {
+      activeFetch = fn;
+    };
+
+    const targets: any[] = [window];
+    if (typeof Window !== 'undefined' && Window.prototype) {
+      targets.push(Window.prototype);
     }
-    if (desc && desc.get && !desc.set) {
-      let activeFetch = window.fetch ? window.fetch.bind(window) : undefined;
-      Object.defineProperty(window, 'fetch', {
-        get() {
-          return activeFetch;
-        },
-        set(fn) {
-          activeFetch = fn;
-        },
-        configurable: true,
-        enumerable: true,
-      });
+    let proto = Object.getPrototypeOf(window);
+    while (proto && proto !== Object.prototype) {
+      if (!targets.includes(proto)) {
+        targets.push(proto);
+      }
+      proto = Object.getPrototypeOf(proto);
     }
-  } catch (e) {
+
+    for (const t of targets) {
+      try {
+        Object.defineProperty(t, 'fetch', {
+          get: getFetch,
+          set: setFetch,
+          configurable: true,
+          enumerable: true,
+        });
+      } catch {
+        // Target may be non-configurable, continue to next target
+      }
+    }
+  } catch {
     // Graceful fallback
   }
 }
