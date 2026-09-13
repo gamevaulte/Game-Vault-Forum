@@ -197,9 +197,17 @@
       "schema": "Subscriber",
       "description": "Subscriber collection in Firestore storing email subscribers obtained through the website"
     },
+    "/Subscribers/{subscriberId}": {
+      "schema": "Subscribers",
+      "description": "Subscribers collection in Firestore storing email subscribers obtained through the website and popup forms"
+    },
     "/subscribers/{subscriberId}": {
       "schema": "Subscribers",
       "description": "Game Vault newsletter email subscribers stored from subscription forms"
+    },
+    "/Contact Us/{submissionId}": {
+      "schema": "ContactUs",
+      "description": "Contact Us collection in Firestore where contact us page information documents are stored with all fields"
     },
     "/contact_us/{submissionId}": {
       "schema": "ContactUs",

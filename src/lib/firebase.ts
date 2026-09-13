@@ -429,8 +429,9 @@ export async function saveNewsletterSubscriber(email: string, source: string = '
   };
 
   try {
-    // Persist into both Subscriber collection and subscribers collection
+    // Persist into Subscribers, Subscriber, and subscribers collections
     await Promise.all([
+      setDoc(doc(db, 'Subscribers', subId), payload, { merge: true }),
       setDoc(doc(db, 'Subscriber', subId), payload, { merge: true }),
       setDoc(doc(db, 'subscribers', subId), payload, { merge: true })
     ]);
@@ -438,13 +439,13 @@ export async function saveNewsletterSubscriber(email: string, source: string = '
     return subscriberRecord;
   } catch (error) {
     console.error('Failed to save subscriber to Firestore:', error);
-    handleFirestoreError(error, OperationType.WRITE, `Subscriber/${subId}`);
+    handleFirestoreError(error, OperationType.WRITE, `Subscribers/${subId}`);
     return subscriberRecord;
   }
 }
 
 /**
- * Save user inquiry into Firestore Contact Us collections (contact_us, ContactUs, contact_submissions)
+ * Save user inquiry into Firestore Contact Us collections (Contact Us, ContactUs, contact_us, contact_submissions)
  * All fields entered in the contact form are stored in the document.
  */
 export async function saveContactSubmission(input: {
@@ -514,16 +515,17 @@ export async function saveContactSubmission(input: {
   }
 
   try {
-    // Persist into contact_us, ContactUs, and contact_submissions collections
+    // Persist into Contact Us, ContactUs, contact_us, and contact_submissions collections
     await Promise.all([
-      setDoc(doc(db, 'contact_us', submissionId), firestoreData),
+      setDoc(doc(db, 'Contact Us', submissionId), firestoreData),
       setDoc(doc(db, 'ContactUs', submissionId), firestoreData),
+      setDoc(doc(db, 'contact_us', submissionId), firestoreData),
       setDoc(doc(db, 'contact_submissions', submissionId), firestoreData)
     ]);
     return submissionDoc;
   } catch (error) {
     console.error('Failed to save contact submission to Firestore:', error);
-    handleFirestoreError(error, OperationType.CREATE, `contact_us/${submissionId}`);
+    handleFirestoreError(error, OperationType.CREATE, `Contact Us/${submissionId}`);
     return submissionDoc;
   }
 }
@@ -533,6 +535,11 @@ export async function saveContactSubmission(input: {
  */
 export async function getContactSubmissionsFromFirestore(): Promise<ContactSubmission[]> {
   try {
+    const q0 = query(collection(db, 'Contact Us'), orderBy('createdAt', 'desc'), limit(50));
+    const snapshot0 = await getDocs(q0);
+    if (!snapshot0.empty) {
+      return snapshot0.docs.map(doc => doc.data() as ContactSubmission);
+    }
     const q1 = query(collection(db, 'contact_us'), orderBy('createdAt', 'desc'), limit(50));
     const snapshot1 = await getDocs(q1);
     if (!snapshot1.empty) {
@@ -552,6 +559,11 @@ export async function getContactSubmissionsFromFirestore(): Promise<ContactSubmi
  */
 export async function getSubscribersFromFirestore(): Promise<NewsletterSubscriber[]> {
   try {
+    const q0 = query(collection(db, 'Subscribers'), orderBy('subscribedAt', 'desc'), limit(100));
+    const snapshot0 = await getDocs(q0);
+    if (!snapshot0.empty) {
+      return snapshot0.docs.map(doc => doc.data() as NewsletterSubscriber);
+    }
     const q1 = query(collection(db, 'Subscriber'), orderBy('subscribedAt', 'desc'), limit(100));
     const snapshot1 = await getDocs(q1);
     if (!snapshot1.empty) {
@@ -575,13 +587,14 @@ export async function updateContactSubmissionStatus(
 ): Promise<void> {
   try {
     await Promise.allSettled([
-      updateDoc(doc(db, 'contact_us', submissionId), { status }),
+      updateDoc(doc(db, 'Contact Us', submissionId), { status }),
       updateDoc(doc(db, 'ContactUs', submissionId), { status }),
+      updateDoc(doc(db, 'contact_us', submissionId), { status }),
       updateDoc(doc(db, 'contact_submissions', submissionId), { status })
     ]);
   } catch (error) {
     console.error('Failed to update contact submission status:', error);
-    handleFirestoreError(error, OperationType.UPDATE, `contact_us/${submissionId}`);
+    handleFirestoreError(error, OperationType.UPDATE, `Contact Us/${submissionId}`);
   }
 }
 
@@ -601,6 +614,7 @@ export async function ensureInitialFirestoreDocuments(): Promise<void> {
       createdAt: new Date().toISOString()
     };
     await Promise.allSettled([
+      setDoc(doc(db, 'Subscribers', officialSubId), subPayload, { merge: true }),
       setDoc(doc(db, 'Subscriber', officialSubId), subPayload, { merge: true }),
       setDoc(doc(db, 'subscribers', officialSubId), subPayload, { merge: true })
     ]);
@@ -620,8 +634,9 @@ export async function ensureInitialFirestoreDocuments(): Promise<void> {
       source: 'contact_page'
     };
     await Promise.allSettled([
-      setDoc(doc(db, 'contact_us', officialContactId), contactPayload, { merge: true }),
+      setDoc(doc(db, 'Contact Us', officialContactId), contactPayload, { merge: true }),
       setDoc(doc(db, 'ContactUs', officialContactId), contactPayload, { merge: true }),
+      setDoc(doc(db, 'contact_us', officialContactId), contactPayload, { merge: true }),
       setDoc(doc(db, 'contact_submissions', officialContactId), contactPayload, { merge: true })
     ]);
   } catch (err) {

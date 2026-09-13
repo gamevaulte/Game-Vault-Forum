@@ -55,6 +55,7 @@ import { VaultAiFloatingButton } from './components/ai/VaultAiFloatingButton';
 import { CookieConsentBanner } from './components/CookieConsentBanner';
 import { AdBanner } from './components/AdBanner';
 import { ShareModal } from './components/ShareModal';
+import { EmailSubscribeModal } from './components/EmailSubscribeModal';
 
 // Firebase Auth & Firestore Backend
 import { onAuthStateChanged, signOut, User as FirebaseUser } from 'firebase/auth';
@@ -77,9 +78,12 @@ export default function App() {
   const [firebaseUser, setFirebaseUser] = useState<FirebaseUser | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
 
-  // Auth Modal State (pops up when guest attempts to like or comment)
+  // Auth Modal State (pops up when guest attempts to like or comment, or after 60s timed visitor prompt)
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authPromptMessage, setAuthPromptMessage] = useState<string>('');
+
+  // Email Subscribe Modal State (pops up for visitors after ~10 seconds to stay in the know)
+  const [isSubscribeModalOpen, setIsSubscribeModalOpen] = useState(false);
 
   // Interactive Content Lists with Persistence
   const [topics, setTopics] = useState<ForumTopic[]>(() => {
@@ -279,6 +283,66 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('gv_post_comments_v2', JSON.stringify(commentsMap));
   }, [commentsMap]);
+
+  // 1. Timed Newsletter Subscription Popup: Displays after ~10 seconds for new visitors to stay in the know
+  useEffect(() => {
+    const isSubscribed = localStorage.getItem('gv_newsletter_subscribed') === 'true';
+    const isDismissed = sessionStorage.getItem('gv_newsletter_popup_closed') === 'true';
+
+    if (isSubscribed || isDismissed) {
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      const currentSubscribed = localStorage.getItem('gv_newsletter_subscribed') === 'true';
+      const currentDismissed = sessionStorage.getItem('gv_newsletter_popup_closed') === 'true';
+      if (!currentSubscribed && !currentDismissed) {
+        setIsSubscribeModalOpen(true);
+      }
+    }, 10000); // 10 seconds
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  // 2. Timed Sign In / Sign Up Popup: Displays after ~60 seconds for unauthenticated visitors / guests
+  useEffect(() => {
+    // If visitor is already authenticated, don't trigger the prompt
+    if (firebaseUser) {
+      return;
+    }
+
+    const isDismissed = sessionStorage.getItem('gv_auth_popup_closed') === 'true';
+    if (isDismissed) {
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      if (!auth.currentUser && sessionStorage.getItem('gv_auth_popup_closed') !== 'true') {
+        // Dismiss subscription modal if currently open to prevent overlapping dialogs
+        setIsSubscribeModalOpen(false);
+        setAuthPromptMessage('Join the Game Vault community! Sign in or register for free to bookmark titles, vote on articles, join tactical discussions, and unlock personalized recommendations.');
+        setIsAuthModalOpen(true);
+      }
+    }, 60000); // 60 seconds
+
+    return () => clearTimeout(timer);
+  }, [firebaseUser]);
+
+  const handleCloseSubscribeModal = () => {
+    sessionStorage.setItem('gv_newsletter_popup_closed', 'true');
+    setIsSubscribeModalOpen(false);
+  };
+
+  const handleNewsletterSubscribed = (subscribedEmail: string) => {
+    localStorage.setItem('gv_newsletter_subscribed', 'true');
+    sessionStorage.setItem('gv_newsletter_popup_closed', 'true');
+    addToast(`Subscribed ${subscribedEmail} to the Vault Dispatch!`, 'success');
+  };
+
+  const handleCloseAuthModal = () => {
+    sessionStorage.setItem('gv_auth_popup_closed', 'true');
+    setIsAuthModalOpen(false);
+  };
 
   // Toast Helpers
   const addToast = (text: string, type: 'success' | 'info' = 'info') => {
@@ -655,6 +719,8 @@ export default function App() {
   const handleSubscribeNewsletter = async (email: string) => {
     try {
       await saveNewsletterSubscriber(email, 'footer');
+      localStorage.setItem('gv_newsletter_subscribed', 'true');
+      sessionStorage.setItem('gv_newsletter_popup_closed', 'true');
       addToast(`Access granted! ${email} has been registered to the Vault Dispatch in Firestore.`, 'success');
     } catch (err: any) {
       console.error('Newsletter subscription error:', err);
@@ -1540,18 +1606,26 @@ export default function App() {
         initialTab={profileInitialTab}
       />
 
-      {/* Auth Modal: Prompted when user attempts to comment or like without signing in */}
+      {/* Auth Modal: Prompted when guest attempts to like/comment, or after 60s timed visitor prompt */}
       {isAuthModalOpen && (
         <AuthGate
           isModal={true}
           promptMessage={authPromptMessage}
-          onClose={() => setIsAuthModalOpen(false)}
+          onClose={handleCloseAuthModal}
           onSuccess={() => {
             setIsAuthModalOpen(false);
-            addToast('Authentication verified! You can now like and comment.', 'success');
+            sessionStorage.setItem('gv_auth_popup_closed', 'true');
+            addToast('Authentication verified! Welcome to the Vault.', 'success');
           }}
         />
       )}
+
+      {/* Timed Email Subscription Popup: Displays after ~10 seconds for visitors */}
+      <EmailSubscribeModal
+        isOpen={isSubscribeModalOpen}
+        onClose={handleCloseSubscribeModal}
+        onSubscribed={handleNewsletterSubscribed}
+      />
 
       {/* Share Modal: Standard social network sharing & copy link modal */}
       <ShareModal

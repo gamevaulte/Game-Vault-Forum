@@ -93,6 +93,13 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
+    match /Contact%20Us/{submissionId} {
+      allow read: if isAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid);
+      allow create: if isValidId(submissionId) && isValidContactSubmission(incoming());
+      allow update: if isAdmin() && isValidContactSubmission(incoming());
+      allow delete: if isAdmin();
+    }
+
     // Newsletter Subscribers Collections
     match /subscribers/{subscriberId} {
       // PII Isolation: Newsletter mailing list is only readable by administrators
@@ -106,6 +113,14 @@ service cloud.firestore {
     }
 
     match /Subscriber/{subscriberId} {
+      allow read: if isAdmin();
+      allow create: if isValidId(subscriberId) && isValidSubscriber(incoming());
+      allow update: if (isAdmin() && isValidSubscriber(incoming())) || 
+                       (isValidSubscriber(incoming()) && incoming().diff(existing()).affectedKeys().hasOnly(['subscribedAt', 'status', 'source']));
+      allow delete: if isAdmin();
+    }
+
+    match /Subscribers/{subscriberId} {
       allow read: if isAdmin();
       allow create: if isValidId(subscriberId) && isValidSubscriber(incoming());
       allow update: if (isAdmin() && isValidSubscriber(incoming())) || 
