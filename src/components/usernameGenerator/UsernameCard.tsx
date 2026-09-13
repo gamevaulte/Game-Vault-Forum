@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Copy, Check, Heart, RefreshCw, ExternalLink, Globe } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { Copy, Check, Heart, RefreshCw, ExternalLink, CheckCircle2, MessageSquare, Gamepad2, Twitter, Youtube } from 'lucide-react';
 import { GeneratedUsername } from '../../types/usernameGenerator';
 import { SUPPORTED_PLATFORMS } from '../../lib/usernameGenerator';
 
@@ -20,11 +20,30 @@ export const UsernameCard: React.FC<UsernameCardProps> = ({
 }) => {
   const [copied, setCopied] = useState(false);
   const [showPlatformMenu, setShowPlatformMenu] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setShowPlatformMenu(false);
+      }
+    };
+    if (showPlatformMenu) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showPlatformMenu]);
 
   const handleCopy = () => {
     onCopy(username.name);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handlePlatformClick = (platformName: string) => {
+    onCopy(username.name);
   };
 
   return (
@@ -57,10 +76,56 @@ export const UsernameCard: React.FC<UsernameCardProps> = ({
         </button>
       </div>
 
-      {/* Main Username Display */}
-      <div className="my-2 select-all">
-        <div className="text-lg sm:text-xl font-bold font-['Space_Grotesk'] text-white tracking-wide group-hover:text-purple-300 transition-colors break-all">
-          {username.name}
+      {/* Main Username Display with Quick Sign Up Links */}
+      <div className="my-2">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div className="text-lg sm:text-xl font-bold font-['Space_Grotesk'] text-white tracking-wide group-hover:text-purple-300 transition-colors break-all select-all">
+            {username.name}
+          </div>
+
+          {/* Quick Sign-up Platform Badges Beside Username */}
+          <div className="flex items-center gap-1 shrink-0">
+            <a
+              href="https://www.twitch.tv/signup"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => handlePlatformClick('Twitch')}
+              className="p-1 rounded-md bg-purple-950/60 hover:bg-[#9146FF]/30 border border-purple-800/40 hover:border-[#9146FF]/60 text-purple-300 hover:text-[#9146FF] transition-all"
+              title={`Sign up on Twitch (copies "${username.name}")`}
+            >
+              <span className="text-[10px] font-mono font-bold px-0.5">Twitch</span>
+            </a>
+            <a
+              href="https://x.com/i/flow/signup"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => handlePlatformClick('X')}
+              className="p-1 rounded-md bg-black/60 hover:bg-white/10 border border-white/10 hover:border-white/30 text-slate-300 hover:text-white transition-all"
+              title={`Sign up on X / Twitter (copies "${username.name}")`}
+            >
+              <span className="text-[10px] font-mono font-bold px-0.5">X</span>
+            </a>
+            <a
+              href="https://discord.com/register"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => handlePlatformClick('Discord')}
+              className="p-1 rounded-md bg-indigo-950/60 hover:bg-[#5865F2]/30 border border-indigo-800/40 hover:border-[#5865F2]/60 text-indigo-300 hover:text-[#5865F2] transition-all"
+              title={`Sign up on Discord (copies "${username.name}")`}
+            >
+              <span className="text-[10px] font-mono font-bold px-0.5">Discord</span>
+            </a>
+            <a
+              href="https://store.steampowered.com/join/"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => handlePlatformClick('Steam')}
+              className="p-1 rounded-md bg-sky-950/60 hover:bg-sky-500/30 border border-sky-800/40 hover:border-sky-400/60 text-sky-300 hover:text-sky-200 transition-all"
+              title={`Sign up on Steam (copies "${username.name}")`}
+            >
+              <span className="text-[10px] font-mono font-bold px-0.5">Steam</span>
+            </a>
+          </div>
         </div>
       </div>
 
@@ -101,39 +166,58 @@ export const UsernameCard: React.FC<UsernameCardProps> = ({
           </button>
         </div>
 
-        {/* Platform Availability Check Dropdown */}
-        <div className="relative">
+        {/* Platform Availability Check Dropdown with CheckCircle2 icon */}
+        <div className="relative" ref={menuRef}>
           <button
             type="button"
             onClick={() => setShowPlatformMenu(!showPlatformMenu)}
-            className="flex items-center gap-1 text-[11px] font-mono text-slate-400 hover:text-cyan-300 px-2 py-1 rounded bg-black/40 hover:bg-black/60 border border-white/5 transition-colors cursor-pointer"
-            title="Check handle on platforms"
+            className="flex items-center gap-1.5 text-[11px] font-mono text-slate-300 hover:text-cyan-300 px-2.5 py-1.5 rounded-lg bg-black/40 hover:bg-black/60 border border-white/10 hover:border-cyan-500/40 transition-colors cursor-pointer"
+            title="Check availability and register username on all platforms"
           >
-            <Globe className="w-3 h-3 text-cyan-400" />
-            <span>Check</span>
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+            <span>Check & Sign Up</span>
           </button>
 
           {showPlatformMenu && (
-            <div className="absolute right-0 bottom-full mb-2 w-56 rounded-xl bg-[#141729] border border-purple-500/40 shadow-2xl p-2 z-30 text-xs">
-              <div className="px-2 py-1 text-[10px] font-mono text-slate-400 border-b border-white/10 mb-1">
-                Lookup on platforms (Availability varies):
+            <div className="absolute right-0 bottom-full mb-2 w-80 rounded-2xl bg-[#141729] border border-purple-500/40 shadow-2xl p-3 z-30 text-xs animate-in fade-in zoom-in-95 duration-150">
+              <div className="flex items-center justify-between px-2 py-1 text-[11px] font-mono text-cyan-300 border-b border-white/10 mb-2">
+                <span className="font-semibold flex items-center gap-1.5">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                  Sign Up on Platforms:
+                </span>
+                <span className="text-[10px] text-purple-300 font-mono font-bold truncate max-w-[120px]">
+                  "{username.name}"
+                </span>
               </div>
-              <div className="space-y-1">
-                {SUPPORTED_PLATFORMS.map(p => (
-                  <a
-                    key={p.id}
-                    href={p.checkUrlTemplate(username.name)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-between px-2 py-1.5 rounded hover:bg-white/10 text-slate-200 hover:text-white transition-colors"
-                  >
-                    <span>{p.name}</span>
-                    <ExternalLink className="w-3 h-3 text-purple-400" />
-                  </a>
-                ))}
+              <div className="space-y-1.5 max-h-72 overflow-y-auto pr-1">
+                {SUPPORTED_PLATFORMS.map(p => {
+                  const signUpUrl = p.signUpUrlTemplate ? p.signUpUrlTemplate(username.name) : p.checkUrlTemplate(username.name);
+                  return (
+                    <div
+                      key={p.id}
+                      className="flex items-center justify-between px-2.5 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-200 transition-colors gap-2"
+                    >
+                      <div className="min-w-0">
+                        <div className="font-semibold text-white text-xs">{p.name}</div>
+                        <div className="text-[10px] text-slate-400 truncate">{p.guidance.split('.')[0]}</div>
+                      </div>
+                      <a
+                        href={signUpUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={() => handlePlatformClick(p.name)}
+                        className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-purple-600/40 hover:bg-purple-600 text-purple-200 hover:text-white border border-purple-500/40 text-[10px] font-mono font-bold shrink-0 transition-colors"
+                        title={`Open ${p.name} sign up page`}
+                      >
+                        <span>Sign Up</span>
+                        <ExternalLink className="w-2.5 h-2.5" />
+                      </a>
+                    </div>
+                  );
+                })}
               </div>
-              <div className="mt-2 pt-1 border-t border-white/10 text-[9px] text-slate-400 px-1 italic">
-                Direct lookup link. Availability depends on the platform you want to use this name on.
+              <div className="mt-2.5 pt-2 border-t border-white/10 text-[10px] text-slate-400 px-1 leading-relaxed">
+                Clicking <strong className="text-purple-300">Sign Up</strong> copies <span className="font-mono text-cyan-300">"{username.name}"</span> to your clipboard and opens the platform's registration page.
               </div>
             </div>
           )}

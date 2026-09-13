@@ -12,43 +12,57 @@ export const SUPPORTED_PLATFORMS: SupportedPlatform[] = [
     name: 'Twitch',
     id: 'twitch',
     icon: 'twitch',
-    checkUrlTemplate: (name: string) => `https://www.twitch.tv/${encodeURIComponent(name.toLowerCase())}`,
-    guidance: 'Twitch usernames must be 4–25 alphanumeric characters. Open profile to check live status.'
-  },
-  {
-    name: 'YouTube',
-    id: 'youtube',
-    icon: 'youtube',
-    checkUrlTemplate: (name: string) => `https://www.youtube.com/@${encodeURIComponent(name)}`,
-    guidance: 'YouTube handles require 3–30 characters without spaces. Search channel handle.'
-  },
-  {
-    name: 'Discord',
-    id: 'discord',
-    icon: 'message-square',
-    checkUrlTemplate: (name: string) => `https://discord.com/search?q=${encodeURIComponent(name)}`,
-    guidance: 'Discord global unique handles are 2–32 lowercase letters, numbers, underscores, and periods.'
+    checkUrlTemplate: (name: string) => `https://www.twitch.tv/signup`,
+    signUpUrlTemplate: (name: string) => `https://www.twitch.tv/signup`,
+    guidance: 'Twitch usernames must be 4–25 alphanumeric characters. Open signup page to register.'
   },
   {
     name: 'X (Twitter)',
     id: 'x',
     icon: 'twitter',
-    checkUrlTemplate: (name: string) => `https://x.com/${encodeURIComponent(name)}`,
+    checkUrlTemplate: (name: string) => `https://x.com/i/flow/signup`,
+    signUpUrlTemplate: (name: string) => `https://x.com/i/flow/signup`,
     guidance: 'X handles can be up to 15 alphanumeric characters plus underscores.'
   },
   {
-    name: 'Reddit',
-    id: 'reddit',
-    icon: 'globe',
-    checkUrlTemplate: (name: string) => `https://www.reddit.com/user/${encodeURIComponent(name)}`,
-    guidance: 'Reddit usernames allow 3–20 characters with underscores and dashes.'
+    name: 'Discord',
+    id: 'discord',
+    icon: 'message-square',
+    checkUrlTemplate: (name: string) => `https://discord.com/register`,
+    signUpUrlTemplate: (name: string) => `https://discord.com/register`,
+    guidance: 'Discord global unique handles are 2–32 lowercase letters, numbers, underscores, and periods.'
   },
   {
     name: 'Steam',
     id: 'steam',
     icon: 'gamepad-2',
-    checkUrlTemplate: (name: string) => `https://steamcommunity.com/search/users/#text=${encodeURIComponent(name)}`,
-    guidance: 'Steam display names do not require global uniqueness, but custom URL profile IDs do.'
+    checkUrlTemplate: (name: string) => `https://store.steampowered.com/join/`,
+    signUpUrlTemplate: (name: string) => `https://store.steampowered.com/join/`,
+    guidance: 'Steam accounts let you pick your account name and custom profile URL.'
+  },
+  {
+    name: 'YouTube',
+    id: 'youtube',
+    icon: 'youtube',
+    checkUrlTemplate: (name: string) => `https://accounts.google.com/SignUp`,
+    signUpUrlTemplate: (name: string) => `https://accounts.google.com/SignUp`,
+    guidance: 'YouTube handles require a Google account. Open sign up to create your channel handle.'
+  },
+  {
+    name: 'Reddit',
+    id: 'reddit',
+    icon: 'globe',
+    checkUrlTemplate: (name: string) => `https://www.reddit.com/register/`,
+    signUpUrlTemplate: (name: string) => `https://www.reddit.com/register/`,
+    guidance: 'Reddit usernames allow 3–20 characters with underscores and dashes.'
+  },
+  {
+    name: 'Epic Games',
+    id: 'epic',
+    icon: 'gamepad-2',
+    checkUrlTemplate: (name: string) => `https://www.epicgames.com/id/register`,
+    signUpUrlTemplate: (name: string) => `https://www.epicgames.com/id/register`,
+    guidance: 'Epic Games display names require 3–16 characters.'
   }
 ];
 

@@ -58,5 +58,6 @@ export interface SupportedPlatform {
   id: 'discord' | 'twitch' | 'youtube' | 'x' | 'reddit' | 'steam' | 'epic';
   icon: string;
   checkUrlTemplate: (name: string) => string;
+  signUpUrlTemplate?: (name: string) => string;
   guidance: string;
 }
