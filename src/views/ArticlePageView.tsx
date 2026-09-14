@@ -186,13 +186,13 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
     const dataRows = lines.slice(1).filter(l => !isDivider(l)).map(parseRow);
 
     return (
-      <div key={key} className="my-8 overflow-hidden rounded-2xl border border-purple-500/30 bg-[#0c0e1c]/90 shadow-2xl shadow-black/60">
+      <div key={key} className="my-8 overflow-hidden rounded-2xl border border-white/10 bg-[#0c0e1c]/90 shadow-2xl shadow-black/60">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse min-w-[560px]">
             <thead>
-              <tr className="bg-gradient-to-r from-purple-950/80 via-[#16182c] to-purple-950/80 border-b border-purple-500/30 text-purple-200">
+              <tr className="bg-white/5 border-b border-white/10 text-slate-200">
                 {headerRow.map((h, i) => (
-                  <th key={i} className="px-4 sm:px-5 py-3.5 text-xs sm:text-sm font-['Rajdhani'] font-bold uppercase tracking-wider">
+                  <th key={i} className="px-4 sm:px-5 py-3.5 text-xs sm:text-sm font-['Space_Grotesk'] font-bold text-slate-200">
                     {renderFormattedText(h)}
                   </th>
                 ))}
@@ -202,7 +202,7 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
               {dataRows.map((row, rIdx) => (
                 <tr 
                   key={rIdx} 
-                  className={`transition-colors hover:bg-purple-900/15 ${rIdx % 2 === 0 ? 'bg-transparent' : 'bg-white/[0.02]'}`}
+                  className={`transition-colors hover:bg-white/[0.03] ${rIdx % 2 === 0 ? 'bg-transparent' : 'bg-white/[0.02]'}`}
                 >
                   {row.map((cell, cIdx) => (
                     <td key={cIdx} className="px-4 sm:px-5 py-3.5 text-gray-300 font-['Inter'] align-top">
@@ -247,15 +247,15 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
     const borderColors = {
       checklist: 'border-emerald-500/40 bg-emerald-950/15 text-emerald-300',
       highlight: 'border-cyan-500/40 bg-cyan-950/15 text-cyan-300',
-      tool: 'border-purple-500/40 bg-purple-950/20 text-purple-300',
-      card: 'border-purple-500/30 bg-[#0d1020]/90 text-purple-300',
+      tool: 'border-white/15 bg-white/[0.03] text-slate-300',
+      card: 'border-white/15 bg-[#0d1020]/90 text-slate-300',
     };
 
     const icons = {
       checklist: <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />,
       highlight: <Sparkles className="w-5 h-5 text-cyan-400 shrink-0 mt-0.5" />,
-      tool: <Cpu className="w-5 h-5 text-purple-400 shrink-0 mt-0.5" />,
-      card: <ShieldCheck className="w-5 h-5 text-purple-400 shrink-0 mt-0.5" />,
+      tool: <Cpu className="w-5 h-5 text-cyan-400 shrink-0 mt-0.5" />,
+      card: <ShieldCheck className="w-5 h-5 text-cyan-400 shrink-0 mt-0.5" />,
     };
 
     return (
@@ -266,11 +266,11 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
         <div className="flex items-center justify-between gap-3 border-b border-white/10 pb-3 mb-4">
           <div className="flex items-center gap-2.5">
             {icons[type]}
-            <h4 className="text-lg sm:text-xl font-bold font-['Rajdhani'] uppercase tracking-wider text-white">
+            <h4 className="text-lg sm:text-xl font-bold font-['Space_Grotesk'] text-white">
               {title || 'Key Takeaway'}
             </h4>
           </div>
-          <span className="px-2.5 py-0.5 text-[11px] font-bold font-['Rajdhani'] uppercase tracking-wider rounded-full bg-white/10 border border-white/10">
+          <span className="px-2.5 py-0.5 text-[11px] font-semibold rounded-full bg-white/10 border border-white/10 text-slate-300">
             {badge}
           </span>
         </div>
@@ -281,7 +281,7 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
             if (t.startsWith('•') || t.startsWith('-') || t.startsWith('*')) {
               return (
                 <div key={i} className="flex items-start gap-2.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-purple-400 mt-2 shrink-0 shadow-sm" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 mt-2 shrink-0 shadow-sm" />
                   <span>{renderFormattedText(t.replace(/^[•\-*]\s*/, ''))}</span>
                 </div>
               );
@@ -290,7 +290,7 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
               const num = t.match(/^(\d+)\./)?.[1] || `${i + 1}`;
               return (
                 <div key={i} className="flex items-start gap-2.5">
-                  <span className="w-5 h-5 rounded-md bg-white/10 border border-white/15 text-[11px] font-mono font-bold flex items-center justify-center shrink-0 mt-0.5 text-purple-300">
+                  <span className="w-5 h-5 rounded-md bg-white/10 border border-white/15 text-[11px] font-mono font-bold flex items-center justify-center shrink-0 mt-0.5 text-slate-200">
                     {num}
                   </span>
                   <span>{renderFormattedText(t.replace(/^\d+\.\s+/, ''))}</span>
@@ -459,49 +459,107 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
             return renderMarkdownTable(trimmed, idx);
           }
 
+          // Horizontal dividers
+          if (trimmed === '---' || trimmed === '***') {
+            return <hr key={idx} className="border-t border-white/10 my-8" />;
+          }
+
           if (trimmed.startsWith('## ')) {
-            const headingText = trimmed.replace(/^##\s*/, '').replace(/\*+([^*]+)\*+/g, '$1').replace(/\*/g, '');
-            const isRecommendation = headingText.toLowerCase().includes('recommended');
+            const lines = trimmed.split('\n');
+            const headingText = lines[0].replace(/^##\s*/, '').replace(/\*+([^*]+)\*+/g, '$1').replace(/\*/g, '');
+            const extraLines = lines.slice(1).join('\n').trim();
             return (
-              <h2
-                key={idx}
-                className={`text-2xl sm:text-3xl font-bold font-['Rajdhani'] uppercase tracking-wider pt-8 pb-2 border-b flex items-center gap-3 ${
-                  isRecommendation
-                    ? 'text-purple-300 border-purple-500/30'
-                    : 'text-white border-white/10'
-                }`}
-              >
-                <span
-                  className={`w-2.5 h-2.5 rounded-full inline-block shrink-0 shadow-lg ${
-                    isRecommendation
-                      ? 'bg-purple-400 shadow-purple-500/60'
-                      : 'bg-red-500 shadow-red-500/50'
-                  }`}
-                />
-                <span>{headingText}</span>
-              </h2>
+              <div key={idx} className="space-y-4 pt-6 pb-1">
+                <h2 className="text-2xl sm:text-3xl font-bold font-['Space_Grotesk'] text-white pb-2 border-b border-white/10 flex items-center gap-3">
+                  <span className="w-2.5 h-2.5 rounded-full inline-block shrink-0 shadow-lg bg-red-500 shadow-red-500/50" />
+                  <span>{headingText}</span>
+                </h2>
+                {extraLines && (
+                  <p className="leading-relaxed text-gray-300">
+                    {renderFormattedText(extraLines)}
+                  </p>
+                )}
+              </div>
             );
           }
+
           if (trimmed.startsWith('### ')) {
+            const lines = trimmed.split('\n');
+            const headingText = lines[0].replace(/^###\s*/, '').replace(/\*+([^*]+)\*+/g, '$1').replace(/\*/g, '');
+            const extraLines = lines.slice(1).join('\n').trim();
             return (
-              <h3
-                key={idx}
-                className="text-lg sm:text-xl font-bold font-['Rajdhani'] uppercase tracking-wider text-purple-300 pt-4 pb-1"
-              >
-                {trimmed.replace(/^###\s*/, '').replace(/\*+([^*]+)\*+/g, '$1').replace(/\*/g, '')}
-              </h3>
+              <div key={idx} className="space-y-3 pt-4 pb-1">
+                <h3 className="text-lg sm:text-xl font-bold font-['Space_Grotesk'] text-slate-100">
+                  {headingText}
+                </h3>
+                {extraLines && (
+                  <p className="leading-relaxed text-gray-300">
+                    {renderFormattedText(extraLines)}
+                  </p>
+                )}
+              </div>
             );
           }
+
           if (trimmed.startsWith('> ')) {
             return (
               <blockquote
                 key={idx}
-                className="my-5 pl-4 py-2 border-l-2 border-purple-500 bg-purple-950/25 rounded-r-xl italic text-purple-200 font-['Inter']"
+                className="my-5 pl-4 py-2.5 border-l-2 border-cyan-500/70 bg-white/[0.03] rounded-r-xl italic text-slate-200 font-['Inter']"
               >
                 {renderFormattedText(trimmed.replace(/^>\s*/, ''))}
               </blockquote>
             );
           }
+
+          // Check if block has intro text followed by bullet points
+          const blockLines = trimmed.split('\n');
+          const firstBulletIdx = blockLines.findIndex(l => l.trim().startsWith('•') || l.trim().startsWith('-'));
+          if (firstBulletIdx > 0 && blockLines.slice(firstBulletIdx).every(l => l.trim().startsWith('•') || l.trim().startsWith('-') || !l.trim())) {
+            const intro = blockLines.slice(0, firstBulletIdx).join('\n').trim();
+            const bullets = blockLines.slice(firstBulletIdx).filter(l => l.trim());
+            return (
+              <div key={idx} className="space-y-3 my-4">
+                {intro && <p className="leading-relaxed text-gray-300">{renderFormattedText(intro)}</p>}
+                <ul className="space-y-2.5 pl-2">
+                  {bullets.map((bLine, bIdx) => (
+                    <li key={bIdx} className="flex items-start gap-3 text-gray-300">
+                      <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 mt-2.5 shrink-0 shadow-sm shadow-cyan-500/40" />
+                      <span>{renderFormattedText(bLine.trim().replace(/^[•\-]\s*/, ''))}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            );
+          }
+
+          // Check if block has intro text followed by numbered points
+          const firstNumIdx = blockLines.findIndex(l => /^\d+\.\s+/.test(l.trim()));
+          if (firstNumIdx > 0 && blockLines.slice(firstNumIdx).every(l => /^\d+\.\s+/.test(l.trim()) || !l.trim())) {
+            const intro = blockLines.slice(0, firstNumIdx).join('\n').trim();
+            const nums = blockLines.slice(firstNumIdx).filter(l => l.trim());
+            return (
+              <div key={idx} className="space-y-3 my-4">
+                {intro && <p className="leading-relaxed text-gray-300">{renderFormattedText(intro)}</p>}
+                <ol className="space-y-3 pl-1">
+                  {nums.map((nLine, nIdx) => {
+                    const match = nLine.trim().match(/^(\d+)\.\s+(.*)$/);
+                    const num = match ? match[1] : `${nIdx + 1}`;
+                    const body = match ? match[2] : nLine.trim();
+                    return (
+                      <li key={nIdx} className="flex items-start gap-3 text-gray-300">
+                        <span className="w-5 h-5 rounded-full bg-white/10 border border-white/20 text-[11px] font-bold text-slate-200 flex items-center justify-center shrink-0 mt-0.5 shadow-sm">
+                          {num}
+                        </span>
+                        <span>{renderFormattedText(body)}</span>
+                      </li>
+                    );
+                  })}
+                </ol>
+              </div>
+            );
+          }
+
           if (trimmed.split('\n').every((line) => /^\d+\.\s+/.test(line.trim()))) {
             return (
               <ol key={idx} className="space-y-3 my-4 pl-1">
@@ -511,7 +569,7 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
                   const body = match ? match[2] : line.trim();
                   return (
                     <li key={lIdx} className="flex items-start gap-3 text-gray-300">
-                      <span className="w-5 h-5 rounded-full bg-purple-900/60 border border-purple-500/40 text-[11px] font-bold text-purple-300 flex items-center justify-center shrink-0 mt-0.5 shadow-sm shadow-purple-900/40">
+                      <span className="w-5 h-5 rounded-full bg-white/10 border border-white/20 text-[11px] font-bold text-slate-200 flex items-center justify-center shrink-0 mt-0.5 shadow-sm">
                         {num}
                       </span>
                       <span>{renderFormattedText(body)}</span>
@@ -521,18 +579,20 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
               </ol>
             );
           }
+
           if (trimmed.split('\n').every((line) => line.trim().startsWith('•') || line.trim().startsWith('-'))) {
             return (
               <ul key={idx} className="space-y-2.5 my-4 pl-2">
                 {trimmed.split('\n').map((line, lIdx) => (
                   <li key={lIdx} className="flex items-start gap-3 text-gray-300">
-                    <span className="w-1.5 h-1.5 rounded-full bg-purple-400 mt-2.5 shrink-0 shadow-sm shadow-purple-500/50" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 mt-2.5 shrink-0 shadow-sm shadow-cyan-500/40" />
                     <span>{renderFormattedText(line.trim().replace(/^[•\-]\s*/, ''))}</span>
                   </li>
                 ))}
               </ul>
             );
           }
+
           return (
             <p key={idx} className="leading-relaxed whitespace-pre-line text-gray-300">
               {renderFormattedText(trimmed)}
