@@ -65,7 +65,12 @@ export const ForumTopicModal: React.FC<ForumTopicModalProps> = ({
               <span>•</span>
               <span>{topic.views} Views</span>
               <span>•</span>
-              <span>{(Array.isArray(topic.replies) ? topic.replies.length : 0)} Replies</span>
+              <span>
+                {(() => {
+                  const count = Array.isArray(topic.replies) ? topic.replies.length : 0;
+                  return `${count} ${count === 1 ? 'Reply' : 'Replies'}`;
+                })()}
+              </span>
             </div>
           </div>
 
@@ -112,12 +117,12 @@ export const ForumTopicModal: React.FC<ForumTopicModalProps> = ({
           <div className="space-y-4 pt-2">
             <h3 className="text-base font-['Rajdhani'] font-bold uppercase tracking-wider text-purple-400 flex items-center gap-2">
               <MessageSquare className="w-4 h-4" />
-              Community Discussion ({topic.replies.length} replies)
+              Community Discussion ({Array.isArray(topic.replies) ? topic.replies.length : 0} {(Array.isArray(topic.replies) && topic.replies.length === 1) ? 'reply' : 'replies'})
             </h3>
 
-            {topic.replies.length === 0 ? (
+            {(!topic.replies || topic.replies.length === 0) ? (
               <div className="text-center py-8 rounded-xl bg-[#111320] border border-[#1d2235] text-slate-400 text-sm">
-                No replies yet. Be the first vault operative to share your thoughts!
+                No replies recorded yet. Be the first vault operative to share your thoughts!
               </div>
             ) : (
               <div className="space-y-3">

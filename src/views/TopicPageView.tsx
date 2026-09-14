@@ -140,7 +140,10 @@ export const TopicPageView: React.FC<TopicPageViewProps> = ({
             <span>•</span>
             <span className="flex items-center gap-1.5">
               <MessageSquare className="w-3.5 h-3.5 text-cyan-400" />
-              {(Array.isArray(topic.replies) ? topic.replies.length : 0)} replies
+              {(() => {
+                const count = Array.isArray(topic.replies) ? topic.replies.length : 0;
+                return `${count} ${count === 1 ? 'reply' : 'replies'}`;
+              })()}
             </span>
             <span>•</span>
             <span className="flex items-center gap-1.5">
@@ -241,7 +244,7 @@ export const TopicPageView: React.FC<TopicPageViewProps> = ({
           <div className="flex items-center gap-2.5">
             <MessageSquare className="w-5 h-5 text-purple-400" />
             <h3 className="text-xl font-bold font-['Rajdhani'] uppercase tracking-wider text-white">
-              Discussion Replies ({topic.replies.length})
+              Discussion Replies ({Array.isArray(topic.replies) ? topic.replies.length : 0})
             </h3>
           </div>
           <span className="text-xs text-gray-400 font-mono">
@@ -307,9 +310,13 @@ export const TopicPageView: React.FC<TopicPageViewProps> = ({
 
         {/* Replies List */}
         <div className="space-y-4 pt-4 border-t border-white/10">
-          {topic.replies.length === 0 ? (
-            <div className="text-center py-8 text-gray-500 text-xs font-mono">
-              No replies yet. Be the first registered operative to share your thoughts!
+          {(!topic.replies || topic.replies.length === 0) ? (
+            <div className="text-center py-10 px-4 bg-white/[0.02] border border-dashed border-white/10 rounded-2xl space-y-2">
+              <MessageSquare className="w-8 h-8 text-gray-600 mx-auto" />
+              <p className="text-sm font-bold font-['Space_Grotesk'] text-gray-300">No replies recorded yet</p>
+              <p className="text-xs text-gray-500 max-w-sm mx-auto">
+                Be the first vault operative to contribute tactical perspectives to this discussion thread.
+              </p>
             </div>
           ) : (
             topic.replies.map((reply) => {

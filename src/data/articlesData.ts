@@ -1,4 +1,5 @@
 import { Article } from '../types';
+import { NEW_ARTICLES_2026 } from './newArticlesData';
 
 export const MOCK_ARTICLES: Article[] = [
   {
@@ -2375,5 +2376,6 @@ Choosing the best gaming PC in 2026 comes down to matching your hardware investm
 • For an accessible, reliable, fully upgradeable 1080p entry point: Choose the Skytech Archangel.
 
 Ready to test whether your favorite games will run on these configurations? Try our interactive [PC Game Requirements Checker](/tools/pc-game-requirements-checker) or design a custom build with the [Gaming PC Builder](/tools/gaming-pc-builder). Have questions or need tailored advice? Join the discussion on the [Game Vault Community Forum](/forum).`
-  }
+  },
+  ...NEW_ARTICLES_2026
 ];

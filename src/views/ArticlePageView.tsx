@@ -22,7 +22,13 @@ import {
   CheckSquare,
   Wrench,
   HelpCircle,
-  ExternalLink
+  ExternalLink,
+  BarChart2,
+  Activity,
+  TrendingUp,
+  Zap,
+  Flame,
+  Info
 } from 'lucide-react';
 import { Article, PostComment, UserAccount, PageTab } from '../types';
 import { AdBanner } from '../components/AdBanner';
@@ -218,6 +224,160 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
     );
   };
 
+  const renderChartBlock = (chartText: string, key: string | number) => {
+    const rawContent = chartText
+      .replace(/^:::chart\s*/, '')
+      .replace(/:::$/, '')
+      .trim();
+    const lines = rawContent.split('\n');
+    let title = 'Performance & Benchmark Metrics';
+    let badge = 'Comparative Data';
+    let note = '';
+    const dataItems: {
+      label: string;
+      valueStr: string;
+      num: number;
+      color: string;
+      subtext?: string;
+    }[] = [];
+
+    for (const line of lines) {
+      const trimmedLine = line.trim();
+      if (!trimmedLine) continue;
+      if (trimmedLine.toLowerCase().startsWith('title:')) {
+        title = trimmedLine.substring(6).trim();
+      } else if (trimmedLine.toLowerCase().startsWith('badge:')) {
+        badge = trimmedLine.substring(6).trim();
+      } else if (trimmedLine.toLowerCase().startsWith('note:')) {
+        note = trimmedLine.substring(5).trim();
+      } else if (trimmedLine.includes(':')) {
+        const colonIdx = trimmedLine.indexOf(':');
+        const label = trimmedLine.substring(0, colonIdx).trim();
+        const rightPart = trimmedLine.substring(colonIdx + 1).trim();
+        const parts = rightPart.split('|').map((p) => p.trim());
+        const valueStr = parts[0] || '';
+        const numVal = parseFloat(parts[1] || valueStr.replace(/[^0-9.]/g, '')) || 0;
+        const color = parts[2] || 'cyan';
+        const subtext = parts[3] || '';
+        dataItems.push({ label, valueStr, num: numVal, color, subtext });
+      }
+    }
+
+    const maxVal = Math.max(...dataItems.map((d) => d.num), 1);
+
+    const colorGradients: Record<string, { bar: string; text: string; badge: string }> = {
+      emerald: {
+        bar: 'from-emerald-500 to-teal-400',
+        text: 'text-emerald-400',
+        badge: 'bg-emerald-950/60 text-emerald-300 border-emerald-500/30'
+      },
+      cyan: {
+        bar: 'from-cyan-500 to-blue-500',
+        text: 'text-cyan-400',
+        badge: 'bg-cyan-950/60 text-cyan-300 border-cyan-500/30'
+      },
+      indigo: {
+        bar: 'from-indigo-500 to-purple-500',
+        text: 'text-indigo-400',
+        badge: 'bg-indigo-950/60 text-indigo-300 border-indigo-500/30'
+      },
+      purple: {
+        bar: 'from-purple-500 to-fuchsia-500',
+        text: 'text-purple-400',
+        badge: 'bg-purple-950/60 text-purple-300 border-purple-500/30'
+      },
+      amber: {
+        bar: 'from-amber-500 to-yellow-400',
+        text: 'text-amber-400',
+        badge: 'bg-amber-950/60 text-amber-300 border-amber-500/30'
+      },
+      rose: {
+        bar: 'from-rose-500 to-red-500',
+        text: 'text-rose-400',
+        badge: 'bg-rose-950/60 text-rose-300 border-rose-500/30'
+      },
+      red: {
+        bar: 'from-red-500 to-rose-600',
+        text: 'text-red-400',
+        badge: 'bg-red-950/60 text-red-300 border-red-500/30'
+      }
+    };
+
+    return (
+      <div
+        key={key}
+        className="my-8 p-5 sm:p-7 rounded-2xl border border-white/10 bg-[#0d1020]/95 backdrop-blur-xl shadow-2xl shadow-black/80 relative overflow-hidden space-y-5"
+      >
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/10 pb-4">
+          <div className="flex items-center gap-2.5">
+            <div className="p-2 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-400">
+              <BarChart2 className="w-5 h-5" />
+            </div>
+            <div>
+              <h4 className="text-lg sm:text-xl font-bold font-['Space_Grotesk'] text-white">
+                {title}
+              </h4>
+              <p className="text-xs text-gray-400 mt-0.5">Interactive Hardware & Data Benchmark</p>
+            </div>
+          </div>
+          <span className="self-start sm:self-center px-3 py-1 text-xs font-['Rajdhani'] font-bold uppercase tracking-wider rounded-full bg-white/10 border border-white/15 text-cyan-300">
+            {badge}
+          </span>
+        </div>
+
+        <div className="space-y-4 pt-1">
+          {dataItems.map((item, dIdx) => {
+            const pct = Math.min(Math.max((item.num / maxVal) * 100, 4), 100);
+            const style = colorGradients[item.color] || colorGradients.cyan;
+
+            return (
+              <div key={dIdx} className="space-y-1.5 group">
+                <div className="flex items-center justify-between gap-4 text-xs sm:text-sm">
+                  <div className="flex items-baseline gap-2">
+                    <span className="font-semibold text-slate-200 group-hover:text-white transition-colors">
+                      {item.label}
+                    </span>
+                    {item.subtext && (
+                      <span className="hidden md:inline text-[11px] text-gray-500 font-['Inter']">
+                        ({item.subtext})
+                      </span>
+                    )}
+                  </div>
+                  <span
+                    className={`font-mono font-bold text-xs px-2 py-0.5 rounded border shrink-0 ${style.badge}`}
+                  >
+                    {item.valueStr}
+                  </span>
+                </div>
+
+                {/* Progress bar */}
+                <div className="w-full h-3 sm:h-3.5 bg-black/50 rounded-full overflow-hidden border border-white/5 p-0.5">
+                  <div
+                    className={`h-full rounded-full bg-gradient-to-r ${style.bar} transition-all duration-700 shadow-sm`}
+                    style={{ width: `${pct}%` }}
+                  />
+                </div>
+
+                {item.subtext && (
+                  <p className="md:hidden text-[11px] text-gray-500 font-['Inter'] pt-0.5">
+                    {item.subtext}
+                  </p>
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        {note && (
+          <div className="pt-3 border-t border-white/10 flex items-start gap-2 text-xs text-gray-400 font-['Inter']">
+            <Info className="w-4 h-4 text-gray-400 shrink-0 mt-0.5" />
+            <span>{note}</span>
+          </div>
+        )}
+      </div>
+    );
+  };
+
   const renderDisplayCard = (cardText: string, key: string | number) => {
     const rawContent = cardText
       .replace(/^:::[a-zA-Z0-9_\-]*\s*/, '')
@@ -226,12 +386,14 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
     const lines = rawContent.split('\n');
     let title = '';
     let badge = 'Vault Insight';
-    let type: 'checklist' | 'highlight' | 'tool' | 'card' = 'card';
+    let type: 'checklist' | 'highlight' | 'tool' | 'card' | 'takeaway' | 'proscons' = 'card';
     const contentLines: string[] = [];
 
     if (cardText.startsWith(':::checklist')) type = 'checklist';
     else if (cardText.startsWith(':::highlight')) type = 'highlight';
     else if (cardText.startsWith(':::tool')) type = 'tool';
+    else if (cardText.startsWith(':::takeaway')) type = 'takeaway';
+    else if (cardText.startsWith(':::proscons')) type = 'proscons';
 
     for (const line of lines) {
       const trimmedLine = line.trim();
@@ -247,6 +409,8 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
     const borderColors = {
       checklist: 'border-emerald-500/40 bg-emerald-950/15 text-emerald-300',
       highlight: 'border-cyan-500/40 bg-cyan-950/15 text-cyan-300',
+      takeaway: 'border-purple-500/40 bg-purple-950/20 text-purple-300',
+      proscons: 'border-amber-500/40 bg-amber-950/15 text-amber-300',
       tool: 'border-white/15 bg-white/[0.03] text-slate-300',
       card: 'border-white/15 bg-[#0d1020]/90 text-slate-300',
     };
@@ -254,6 +418,8 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
     const icons = {
       checklist: <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />,
       highlight: <Sparkles className="w-5 h-5 text-cyan-400 shrink-0 mt-0.5" />,
+      takeaway: <Zap className="w-5 h-5 text-purple-400 shrink-0 mt-0.5" />,
+      proscons: <Activity className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />,
       tool: <Cpu className="w-5 h-5 text-cyan-400 shrink-0 mt-0.5" />,
       card: <ShieldCheck className="w-5 h-5 text-cyan-400 shrink-0 mt-0.5" />,
     };
@@ -447,6 +613,11 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
           // In-article images
           if (trimmed.startsWith('![') && trimmed.endsWith(')')) {
             return renderInArticleImage(trimmed, idx);
+          }
+
+          // In-article charts & benchmarks
+          if (trimmed.startsWith(':::chart')) {
+            return renderChartBlock(trimmed, idx);
           }
 
           // In-article display cards

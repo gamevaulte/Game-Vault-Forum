@@ -85,17 +85,40 @@ export default function App() {
   // Email Subscribe Modal State (pops up for visitors after ~10 seconds to stay in the know)
   const [isSubscribeModalOpen, setIsSubscribeModalOpen] = useState(false);
 
-  // Interactive Content Lists with Persistence
+  // Interactive Content Lists with Persistence (strictly uninflated metrics)
   const [topics, setTopics] = useState<ForumTopic[]>(() => {
-    const saved = localStorage.getItem('gv_forum_topics_v2');
+    // Purge legacy storage keys that contained outdated or inflated mock reply metrics
+    try {
+      localStorage.removeItem('gv_forum_topics');
+      localStorage.removeItem('gv_forum_topics_v1');
+      localStorage.removeItem('gv_forum_topics_v2');
+    } catch {}
+
+    const saved = localStorage.getItem('gv_forum_topics_v3');
     if (saved) {
       try {
-        return JSON.parse(saved);
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed.map((t: ForumTopic) => {
+            const cleanReplies = Array.isArray(t.replies)
+              ? t.replies.filter((r) => r && typeof r.content === 'string' && r.content.trim().length > 0)
+              : [];
+            return {
+              ...t,
+              replies: cleanReplies,
+              repliesCount: cleanReplies.length
+            };
+          });
+        }
       } catch (e) {
         console.error('Failed to parse saved forum topics', e);
       }
     }
-    return MOCK_FORUM_TOPICS;
+    return MOCK_FORUM_TOPICS.map((t) => ({
+      ...t,
+      replies: Array.isArray(t.replies) ? t.replies : [],
+      repliesCount: Array.isArray(t.replies) ? t.replies.length : 0
+    }));
   });
 
   const [user, setUser] = useState<UserAccount>(() => {
@@ -269,7 +292,9 @@ export default function App() {
 
   // Persist topics, user, likes, comments
   useEffect(() => {
-    localStorage.setItem('gv_forum_topics_v2', JSON.stringify(topics));
+    try {
+      localStorage.setItem('gv_forum_topics_v3', JSON.stringify(topics));
+    } catch {}
   }, [topics]);
 
   useEffect(() => {
@@ -687,11 +712,12 @@ export default function App() {
     setTopics((prev) =>
       prev.map((t) => {
         if (t.id === topicId) {
-          const updatedTopic = {
+          const updatedReplies = [...(Array.isArray(t.replies) ? t.replies : []), newReply];
+          const updatedTopic: ForumTopic = {
             ...t,
-            repliesCount: t.repliesCount + 1,
+            repliesCount: updatedReplies.length,
             lastActivity: 'Just now',
-            replies: [...t.replies, newReply]
+            replies: updatedReplies
           };
           // Persist updated topic thread to Firestore
           saveTopicToFirestore(updatedTopic);

@@ -296,7 +296,7 @@ export const SitemapView: React.FC<SitemapViewProps> = ({ onNavigate }) => {
           title: topic.title,
           url: `/forum/${slug}`,
           category: 'forum' as const,
-          badge: `${count} Replies`,
+          badge: `${count} ${count === 1 ? 'Reply' : 'Replies'}`,
           badgeColor: 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20',
           description: `Community discussion thread started by @${authorHandle} with active gamer opinions and commentary.`,
           priority: '0.8',
