@@ -747,7 +747,7 @@ const HomeViewComponent: React.FC<HomeViewProps> = ({
                 <div className="flex items-center gap-4 text-xs text-gray-400 shrink-0 self-end sm:self-center">
                   <span className="flex items-center gap-1">
                     <MessageSquare className="w-3.5 h-3.5 text-gray-400" />
-                    {topic.repliesCount} replies
+                    {(Array.isArray(topic.replies) ? topic.replies.length : 0)} replies
                   </span>
                   <span>{topic.lastActivity}</span>
                 </div>

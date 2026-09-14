@@ -107,24 +107,21 @@ service cloud.firestore {
       // Visitors and members can subscribe
       allow create: if isValidId(subscriberId) && isValidSubscriber(incoming());
       // Re-subscription or status update allowed safely
-      allow update: if (isAdmin() && isValidSubscriber(incoming())) || 
-                       (isValidSubscriber(incoming()) && incoming().diff(existing()).affectedKeys().hasOnly(['subscribedAt', 'status', 'source']));
+      allow update: if isValidSubscriber(incoming());
       allow delete: if isAdmin();
     }
 
     match /Subscriber/{subscriberId} {
       allow read: if isAdmin();
       allow create: if isValidId(subscriberId) && isValidSubscriber(incoming());
-      allow update: if (isAdmin() && isValidSubscriber(incoming())) || 
-                       (isValidSubscriber(incoming()) && incoming().diff(existing()).affectedKeys().hasOnly(['subscribedAt', 'status', 'source']));
+      allow update: if isValidSubscriber(incoming());
       allow delete: if isAdmin();
     }
 
     match /Subscribers/{subscriberId} {
       allow read: if isAdmin();
       allow create: if isValidId(subscriberId) && isValidSubscriber(incoming());
-      allow update: if (isAdmin() && isValidSubscriber(incoming())) || 
-                       (isValidSubscriber(incoming()) && incoming().diff(existing()).affectedKeys().hasOnly(['subscribedAt', 'status', 'source']));
+      allow update: if isValidSubscriber(incoming());
       allow delete: if isAdmin();
     }
 

@@ -377,7 +377,7 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
                             {top.title}
                           </p>
                           <span className="text-xs text-slate-500 mt-1 inline-block">
-                            by {top.author.name} • {top.repliesCount} replies • {top.lastActivity}
+                            by {top.author.name} • {(Array.isArray(top.replies) ? top.replies.length : 0)} replies • {top.lastActivity}
                           </span>
                         </div>
                       ))}

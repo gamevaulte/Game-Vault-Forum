@@ -43,17 +43,17 @@ export const VaultLogo: React.FC<VaultLogoProps> = ({ size = 'md', showTagline =
       </div>
 
       {/* Brand Typography */}
-      <div className="flex flex-col">
-        <div className="flex items-center gap-1.5">
+      <div className="flex flex-col min-w-0">
+        <div className="flex items-center gap-1.5 whitespace-nowrap">
           <span className={`font-['Rajdhani'] font-bold tracking-wider ${titleSize} text-white uppercase`}>
             Game Vault
           </span>
-          <span className={`font-['Rajdhani'] font-semibold tracking-wider ${titleSize} text-purple-400 uppercase`}>
+          <span className={`font-['Rajdhani'] font-semibold tracking-wider ${titleSize} text-purple-400 uppercase hidden min-[360px]:inline`}>
             Forum
           </span>
         </div>
         {showTagline && (
-          <span className="text-[10px] tracking-widest text-slate-400 uppercase font-['Space_Grotesk'] font-medium -mt-1">
+          <span className="text-[10px] tracking-widest text-slate-400 uppercase font-['Space_Grotesk'] font-medium -mt-1 truncate">
             Watch • Play • Discuss • Discover
           </span>
         )}

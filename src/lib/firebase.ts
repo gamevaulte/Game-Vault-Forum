@@ -1,5 +1,5 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider } from "firebase/auth";
+import { getAuth, GoogleAuthProvider, updateProfile } from "firebase/auth";
 import { getAnalytics, isSupported } from "firebase/analytics";
 import { 
   getFirestore, 
@@ -122,8 +122,10 @@ export interface FirestoreUserRecord {
   uid: string;
   email: string;
   displayName: string;
+  name?: string;
   username: string;
   photoURL: string | null;
+  avatar?: string;
   role: 'user' | 'admin' | 'moderator';
   bio: string;
   badge: string;
@@ -328,7 +330,7 @@ export async function getUserFromFirestore(uid: string): Promise<FirestoreUserRe
 }
 
 /**
- * Updates an operative profile in Firestore collection 'Users'
+ * Updates an operative profile in Firestore collection 'Users' and synchronizes with Firebase Auth
  */
 export async function updateUserInFirestore(uid: string, updates: Partial<FirestoreUserRecord>): Promise<void> {
   const updatePayload = {
@@ -336,16 +338,25 @@ export async function updateUserInFirestore(uid: string, updates: Partial<Firest
     updatedAt: new Date().toISOString()
   };
 
-  try {
-    await updateDoc(doc(db, 'Users', uid), updatePayload);
-  } catch (err) {
-    // Attempt setDoc merge if document didn't exist yet
+  // Synchronize Firebase Auth currentUser profile if available
+  if (auth.currentUser && auth.currentUser.uid === uid) {
     try {
-      await setDoc(doc(db, 'Users', uid), updatePayload, { merge: true });
-    } catch (setErr) {
-      console.warn('Failed to update user in Firestore Users collection:', setErr);
+      const authUpdates: { displayName?: string; photoURL?: string } = {};
+      if (updates.displayName) authUpdates.displayName = updates.displayName;
+      if (updates.photoURL) authUpdates.photoURL = updates.photoURL;
+      if (Object.keys(authUpdates).length > 0) {
+        await updateProfile(auth.currentUser, authUpdates);
+      }
+    } catch (authErr) {
+      console.warn('Firebase Auth updateProfile warning:', authErr);
     }
   }
+
+  // Update Firestore collections 'Users' and 'users'
+  await Promise.allSettled([
+    setDoc(doc(db, 'Users', uid), updatePayload, { merge: true }),
+    setDoc(doc(db, 'users', uid), updatePayload, { merge: true })
+  ]);
 }
 
 /**
@@ -431,26 +442,15 @@ export async function saveNewsletterSubscriber(email: string, source: string = '
   try {
     // Primary collection in Firestore is 'subscribers'
     try {
-      await setDoc(doc(db, 'subscribers', subId), payload);
+      await setDoc(doc(db, 'subscribers', subId), payload, { merge: true });
     } catch (primaryErr: any) {
-      // If permission-denied because document already exists and unauthenticated update is restricted,
-      // it means this email address is already registered in the subscriber list.
-      const isAlreadySubscribed = 
-        primaryErr?.code === 'permission-denied' || 
-        primaryErr?.message?.includes('permission') || 
-        primaryErr?.message?.includes('already');
-      
-      if (!isAlreadySubscribed) {
-        console.warn('Primary subscribers collection write issue:', primaryErr);
-      } else {
-        console.info(`Subscriber ${clean} is already registered in Firestore.`);
-      }
+      console.warn('Primary subscribers collection write note:', primaryErr);
     }
 
     // Best-effort write to alias collections (Subscribers, Subscriber) without rejecting
     await Promise.allSettled([
-      setDoc(doc(db, 'Subscribers', subId), payload),
-      setDoc(doc(db, 'Subscriber', subId), payload)
+      setDoc(doc(db, 'Subscribers', subId), payload, { merge: true }),
+      setDoc(doc(db, 'Subscriber', subId), payload, { merge: true })
     ]);
 
     // Persist locally in browser for offline and session tracking

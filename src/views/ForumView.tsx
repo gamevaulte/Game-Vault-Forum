@@ -234,7 +234,7 @@ const ForumViewComponent: React.FC<ForumViewProps> = ({
                 <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center shrink-0 border-t sm:border-t-0 border-white/5 pt-2 sm:pt-0 text-xs text-gray-400 gap-1.5">
                   <div className="flex items-center gap-1 text-gray-200 font-mono font-semibold">
                     <MessageSquare className="w-3.5 h-3.5 text-purple-400" />
-                    <span>{topic.repliesCount} replies</span>
+                    <span>{(Array.isArray(topic.replies) ? topic.replies.length : 0)} replies</span>
                   </div>
                   <span className="text-[11px] text-gray-500">
                     Active {topic.lastActivity}

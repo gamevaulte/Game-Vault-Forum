@@ -237,7 +237,7 @@ export const Header: React.FC<HeaderProps> = ({
         </nav>
 
         {/* Right Action Icons */}
-        <div className="flex items-center gap-2.5 sm:gap-3">
+        <div className="flex items-center gap-1.5 sm:gap-2.5 md:gap-3 shrink-0">
           {/* Live Indicator Pill from Frosted Glass theme */}
           <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg backdrop-blur-md">
             <div className="w-2.5 h-2.5 bg-red-600 rounded-full animate-pulse"></div>
@@ -248,7 +248,7 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             id="header-search-btn"
             onClick={onOpenSearch}
-            className="flex items-center gap-2 px-3 py-1.5 text-xs text-gray-300 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 rounded-lg hover:text-white backdrop-blur-md transition-all group"
+            className="flex items-center gap-1.5 sm:gap-2 p-1.5 sm:px-3 sm:py-1.5 text-xs text-gray-300 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 rounded-lg hover:text-white backdrop-blur-md transition-all group shrink-0"
             title="Search the Vault (Ctrl+K)"
           >
             <Search className="w-4 h-4 text-purple-400 group-hover:text-cyan-400 transition-colors" />
@@ -264,7 +264,7 @@ export const Header: React.FC<HeaderProps> = ({
             href={YOUTUBE_CHANNEL.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-['Rajdhani'] font-bold uppercase tracking-wider text-white bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-500 hover:to-rose-600 rounded-lg shadow-lg shadow-red-950/40 border border-red-500/30 transition-all transform hover:scale-[1.02]"
+            className="flex items-center gap-1 sm:gap-1.5 p-1.5 sm:px-3 sm:py-1.5 text-xs font-['Rajdhani'] font-bold uppercase tracking-wider text-white bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-500 hover:to-rose-600 rounded-lg shadow-lg shadow-red-950/40 border border-red-500/30 transition-all transform hover:scale-[1.02] shrink-0"
             title={`Game Vault Forum on YouTube (${YOUTUBE_CHANNEL.handle})`}
           >
             <Youtube className="w-4 h-4 fill-white" />
@@ -277,7 +277,7 @@ export const Header: React.FC<HeaderProps> = ({
               <button
                 id="header-profile-btn"
                 onClick={onOpenProfile}
-                className="flex items-center gap-2 p-1.5 sm:px-2.5 sm:py-1.5 text-xs bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 rounded-lg text-gray-200 backdrop-blur-md transition-all cursor-pointer"
+                className="flex items-center gap-2 p-1.5 sm:px-2.5 sm:py-1.5 text-xs bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 rounded-lg text-gray-200 backdrop-blur-md transition-all cursor-pointer shrink-0"
                 title="Community Profile & Bookmarks"
               >
                 <img
@@ -285,7 +285,7 @@ export const Header: React.FC<HeaderProps> = ({
                   alt={user.name}
                   className="w-6 h-6 rounded-md object-cover border border-purple-500/50"
                 />
-                <span className="hidden md:inline font-['Space_Grotesk'] font-medium text-gray-300">
+                <span className="hidden md:inline font-['Space_Grotesk'] font-medium text-gray-300 max-w-[100px] truncate">
                   {user.name}
                 </span>
               </button>
@@ -295,7 +295,7 @@ export const Header: React.FC<HeaderProps> = ({
                 <button
                   id="header-signout-btn"
                   onClick={onSignOut}
-                  className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-gray-400 hover:text-red-300 bg-white/5 hover:bg-red-500/10 border border-white/10 hover:border-red-500/30 rounded-lg backdrop-blur-md transition-all cursor-pointer"
+                  className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-gray-400 hover:text-red-300 bg-white/5 hover:bg-red-500/10 border border-white/10 hover:border-red-500/30 rounded-lg backdrop-blur-md transition-all cursor-pointer shrink-0"
                   title="Sign Out of Game Vault"
                 >
                   <LogOut className="w-3.5 h-3.5" />
@@ -309,11 +309,11 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               id="header-signin-btn"
               onClick={onOpenSignIn}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-['Rajdhani'] font-bold uppercase tracking-wider text-white bg-purple-600 hover:bg-purple-500 rounded-lg shadow-md shadow-purple-900/40 border border-purple-400/40 transition-all transform hover:scale-[1.02] cursor-pointer"
+              className="flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 text-xs font-['Rajdhani'] font-bold uppercase tracking-wider text-white bg-purple-600 hover:bg-purple-500 rounded-lg shadow-md shadow-purple-900/40 border border-purple-400/40 transition-all transform hover:scale-[1.02] cursor-pointer shrink-0"
               title="Sign In / Register to Game Vault"
             >
               <LogIn className="w-3.5 h-3.5" />
-              <span>Sign In</span>
+              <span className="hidden xs:inline sm:inline">Sign In</span>
             </button>
           )}
 
@@ -321,7 +321,7 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             id="mobile-menu-toggle"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="lg:hidden p-2 text-gray-300 hover:text-white bg-white/5 border border-white/10 rounded-lg backdrop-blur-md transition-colors"
+            className="lg:hidden p-2 text-gray-300 hover:text-white bg-white/5 border border-white/10 rounded-lg backdrop-blur-md transition-colors shrink-0"
             aria-label="Toggle Navigation Menu"
           >
             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}

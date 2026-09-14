@@ -140,7 +140,7 @@ export const TopicPageView: React.FC<TopicPageViewProps> = ({
             <span>•</span>
             <span className="flex items-center gap-1.5">
               <MessageSquare className="w-3.5 h-3.5 text-cyan-400" />
-              {topic.repliesCount} replies
+              {(Array.isArray(topic.replies) ? topic.replies.length : 0)} replies
             </span>
             <span>•</span>
             <span className="flex items-center gap-1.5">

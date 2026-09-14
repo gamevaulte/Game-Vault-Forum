@@ -77,7 +77,7 @@ export const Footer: React.FC<FooterProps> = ({
             </p>
 
             {/* Social Icons */}
-            <div className="flex items-center gap-3 pt-2">
+            <div className="flex items-center gap-3 pt-2 flex-wrap">
               <a
                 href={YOUTUBE_CHANNEL.url}
                 target="_blank"
@@ -349,9 +349,9 @@ export const Footer: React.FC<FooterProps> = ({
         </div>
 
         {/* Bottom Bar: Copyright & Policies */}
-        <div className="pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-500">
+        <div className="pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-500 text-center sm:text-left">
           <p>© 2026 Game Vault Forum • Founded by Joel Ayuba. All rights reserved.</p>
-          <div className="flex flex-wrap items-center gap-4 sm:gap-6">
+          <div className="flex flex-wrap items-center justify-center sm:justify-end gap-3 sm:gap-6">
             <a 
               href="/contact"
               onClick={(e) => {

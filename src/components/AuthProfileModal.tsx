@@ -21,7 +21,13 @@ import {
   RefreshCw,
   CheckCircle,
   Clock,
-  Send
+  Send,
+  Edit3,
+  Camera,
+  Upload,
+  Check,
+  AlertCircle,
+  Sparkles
 } from 'lucide-react';
 import { UserAccount, Video, Game, Article, Review, Guide, ContactSubmission, NewsletterSubscriber, ContactSubmissionStatus } from '../types';
 import { 
@@ -29,6 +35,17 @@ import {
   getSubscribersFromFirestore, 
   updateContactSubmissionStatus 
 } from '../lib/firebase';
+
+const AVATAR_PRESETS = [
+  { id: 'av1', label: 'Tactical Ops', url: 'https://images.unsplash.com/photo-1566492031773-4f4e44671857?w=200&auto=format&fit=crop&q=80' },
+  { id: 'av2', label: 'Cyber Assassin', url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80' },
+  { id: 'av3', label: 'Stealth Scout', url: 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=200&auto=format&fit=crop&q=80' },
+  { id: 'av4', label: 'Vanguard Ranger', url: 'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=200&auto=format&fit=crop&q=80' },
+  { id: 'av5', label: 'Tech Specialist', url: 'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=200&auto=format&fit=crop&q=80' },
+  { id: 'av6', label: 'Shadowblade', url: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200&auto=format&fit=crop&q=80' },
+  { id: 'av7', label: 'Mech Pilot', url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&auto=format&fit=crop&q=80' },
+  { id: 'av8', label: 'Cyber Pulse', url: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=200&auto=format&fit=crop&q=80' }
+];
 
 interface AuthProfileModalProps {
   isOpen: boolean;
@@ -45,6 +62,7 @@ interface AuthProfileModalProps {
   onSelectReview: (r: Review) => void;
   onSelectGuide: (g: Guide) => void;
   onSignOut?: () => void;
+  onUpdateProfile?: (updated: { name: string; username: string; avatar: string; bio?: string }) => Promise<void>;
   initialTab?: 'profile' | 'guidelines' | 'admin';
 }
 
@@ -63,10 +81,29 @@ export const AuthProfileModal: React.FC<AuthProfileModalProps> = ({
   onSelectReview,
   onSelectGuide,
   onSignOut,
+  onUpdateProfile,
   initialTab = 'profile'
 }) => {
   const [activeTab, setActiveTab] = useState<'profile' | 'guidelines' | 'admin'>(initialTab);
   const isAdmin = user.email === 'contact@gamevault.forum' || user.email === 'joelotis40@gmail.com' || user.role === 'admin';
+
+  // Profile Edit State
+  const [isEditing, setIsEditing] = useState(false);
+  const [editName, setEditName] = useState(user.name);
+  const [editUsername, setEditUsername] = useState(user.username);
+  const [editAvatar, setEditAvatar] = useState(user.avatar);
+  const [editBio, setEditBio] = useState(user.bio || '');
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+
+  // Sync edits when user prop changes
+  useEffect(() => {
+    setEditName(user.name);
+    setEditUsername(user.username);
+    setEditAvatar(user.avatar);
+    setEditBio(user.bio || '');
+  }, [user]);
 
   // Admin Firestore state
   const [adminView, setAdminView] = useState<'inquiries' | 'subscribers'>('inquiries');
@@ -104,6 +141,92 @@ export const AuthProfileModal: React.FC<AuthProfileModalProps> = ({
       );
     } catch (err) {
       console.error('Error updating status:', err);
+    }
+  };
+
+  // Profile Image Upload / Resize
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      setSaveError('Please select a valid image file (PNG, JPG, WebP).');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        // Resize onto offscreen canvas to keep doc size compact & fast
+        const canvas = document.createElement('canvas');
+        const maxDim = 256;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > maxDim) {
+            height = Math.round((height * maxDim) / width);
+            width = maxDim;
+          }
+        } else {
+          if (height > maxDim) {
+            width = Math.round((width * maxDim) / height);
+            height = maxDim;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.drawImage(img, 0, 0, width, height);
+          const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.85);
+          setEditAvatar(compressedDataUrl);
+          setSaveError(null);
+        }
+      };
+      img.src = event.target?.result as string;
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleSaveProfile = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    const cleanName = editName.trim();
+    let cleanUsername = editUsername.trim();
+    if (!cleanUsername) cleanUsername = user.username;
+    if (!cleanUsername.startsWith('@')) cleanUsername = `@${cleanUsername}`;
+    const cleanAvatar = editAvatar.trim() || user.avatar;
+    const cleanBio = editBio.trim();
+
+    if (cleanName.length < 2) {
+      setSaveError('Display name must be at least 2 characters.');
+      return;
+    }
+
+    setIsSaving(true);
+    setSaveError(null);
+
+    try {
+      if (onUpdateProfile) {
+        await onUpdateProfile({
+          name: cleanName,
+          username: cleanUsername,
+          avatar: cleanAvatar,
+          bio: cleanBio
+        });
+      }
+      setSaveSuccess(true);
+      setTimeout(() => {
+        setSaveSuccess(false);
+        setIsEditing(false);
+      }, 1200);
+    } catch (err: any) {
+      console.error('Failed to update profile:', err);
+      setSaveError(err?.message || 'Failed to update profile. Please try again.');
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -185,51 +308,270 @@ export const AuthProfileModal: React.FC<AuthProfileModalProps> = ({
         <div className="p-6 overflow-y-auto space-y-6">
           {activeTab === 'profile' ? (
             <>
-              {/* User Identity Card */}
-              <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 p-5 rounded-2xl bg-[#131625] border border-[#232942]">
-                <img
-                  src={user.avatar}
-                  alt={user.name}
-                  className="w-16 h-16 rounded-xl object-cover border-2 border-purple-500/60 shadow-lg shadow-purple-950/50"
-                />
-                <div className="space-y-1 text-center sm:text-left flex-1">
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-                    <h2 className="text-xl font-['Space_Grotesk'] font-bold text-white">
-                      {user.name}
-                    </h2>
-                    <span className="text-xs font-mono text-purple-400 bg-purple-950/70 px-2 py-0.5 rounded border border-purple-800/40 w-fit mx-auto sm:mx-0">
-                      {user.badge}
+              {/* User Identity Card / Profile Editor */}
+              {isEditing ? (
+                <form onSubmit={handleSaveProfile} className="p-5 rounded-2xl bg-[#131625] border border-purple-500/30 space-y-5 shadow-lg shadow-purple-950/20">
+                  <div className="flex items-center justify-between border-b border-[#232942] pb-3">
+                    <div className="flex items-center gap-2">
+                      <Edit3 className="w-4 h-4 text-purple-400" />
+                      <h3 className="text-sm font-['Space_Grotesk'] font-bold text-white uppercase tracking-wider">
+                        Edit Operative Profile
+                      </h3>
+                    </div>
+                    <span className="text-[10px] font-mono text-cyan-400 bg-cyan-950/40 border border-cyan-500/30 px-2 py-0.5 rounded">
+                      Syncs with Firestore Database
                     </span>
                   </div>
-                  <p className="text-xs text-slate-400 font-mono">{user.username} • Joined {user.joinDate}</p>
-                  {user.email && (
-                    <p className="text-xs text-purple-300 font-mono flex items-center gap-1.5 justify-center sm:justify-start">
-                      <Mail className="w-3.5 h-3.5 text-purple-400" />
-                      {user.email}
-                    </p>
+
+                  {/* Profile Picture Section */}
+                  <div className="space-y-3">
+                    <label className="text-xs font-['Rajdhani'] font-bold uppercase tracking-wider text-purple-300 flex items-center gap-1.5">
+                      <Camera className="w-3.5 h-3.5" />
+                      Profile Picture / Operative Avatar
+                    </label>
+
+                    <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
+                      {/* Avatar Preview */}
+                      <div className="relative group shrink-0">
+                        <img
+                          src={editAvatar || user.avatar}
+                          alt={editName || 'Preview'}
+                          className="w-20 h-20 rounded-2xl object-cover border-2 border-purple-500 shadow-lg shadow-purple-950/60 bg-black/40"
+                          onError={(e) => {
+                            // Fallback if broken URL entered
+                            (e.target as HTMLImageElement).src = user.avatar;
+                          }}
+                        />
+                        <div className="absolute inset-0 rounded-2xl bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                          <Camera className="w-5 h-5 text-white" />
+                        </div>
+                      </div>
+
+                      {/* Avatar Selection Controls */}
+                      <div className="flex-1 w-full space-y-3">
+                        {/* Quick Presets */}
+                        <div>
+                          <p className="text-[11px] text-slate-400 mb-1.5">Select from Tactical Presets:</p>
+                          <div className="grid grid-cols-4 sm:grid-cols-8 gap-2">
+                            {AVATAR_PRESETS.map((preset) => (
+                              <button
+                                key={preset.id}
+                                type="button"
+                                onClick={() => {
+                                  setEditAvatar(preset.url);
+                                  setSaveError(null);
+                                }}
+                                className={`relative rounded-xl overflow-hidden border-2 transition-all p-0.5 cursor-pointer hover:scale-105 ${
+                                  editAvatar === preset.url
+                                    ? 'border-purple-400 ring-2 ring-purple-500/40'
+                                    : 'border-white/10 hover:border-white/30'
+                                }`}
+                                title={preset.label}
+                              >
+                                <img
+                                  src={preset.url}
+                                  alt={preset.label}
+                                  className="w-full h-10 object-cover rounded-lg"
+                                />
+                                {editAvatar === preset.url && (
+                                  <div className="absolute inset-0 bg-purple-600/40 flex items-center justify-center">
+                                    <Check className="w-3.5 h-3.5 text-white stroke-[3]" />
+                                  </div>
+                                )}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Custom URL & Upload */}
+                        <div className="flex flex-col sm:flex-row items-center gap-2 pt-1">
+                          <input
+                            type="url"
+                            value={editAvatar}
+                            onChange={(e) => setEditAvatar(e.target.value)}
+                            placeholder="Paste custom image URL (https://...)"
+                            className="w-full text-xs px-3 py-2 bg-[#090b14] border border-[#232942] focus:border-purple-500 rounded-lg text-slate-200 outline-none transition-colors"
+                          />
+                          <label className="w-full sm:w-auto shrink-0 flex items-center justify-center gap-1.5 px-3 py-2 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-purple-500/40 rounded-lg text-xs text-slate-200 cursor-pointer transition-colors">
+                            <Upload className="w-3.5 h-3.5 text-purple-400" />
+                            <span>Upload File</span>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={handleFileUpload}
+                              className="hidden"
+                            />
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Name & Username Inputs */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-['Rajdhani'] font-bold uppercase tracking-wider text-slate-300">
+                        Display Name <span className="text-purple-400">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        value={editName}
+                        onChange={(e) => setEditName(e.target.value)}
+                        placeholder="Your full or display name"
+                        maxLength={40}
+                        required
+                        className="w-full text-xs px-3 py-2.5 bg-[#090b14] border border-[#232942] focus:border-purple-500 rounded-lg text-white outline-none transition-colors"
+                      />
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-['Rajdhani'] font-bold uppercase tracking-wider text-slate-300">
+                        Operative Handle / Username
+                      </label>
+                      <input
+                        type="text"
+                        value={editUsername}
+                        onChange={(e) => setEditUsername(e.target.value)}
+                        placeholder="@username"
+                        maxLength={30}
+                        required
+                        className="w-full text-xs px-3 py-2.5 bg-[#090b14] border border-[#232942] focus:border-purple-500 rounded-lg text-white font-mono outline-none transition-colors"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Bio Input */}
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs font-['Rajdhani'] font-bold uppercase tracking-wider text-slate-300">
+                        Operative Bio & Tactical Tagline
+                      </label>
+                      <span className="text-[10px] font-mono text-slate-500">
+                        {editBio.length}/160
+                      </span>
+                    </div>
+                    <textarea
+                      value={editBio}
+                      onChange={(e) => setEditBio(e.target.value.slice(0, 160))}
+                      placeholder="Share your favorite gaming platforms, tactical roles, or vault goals..."
+                      rows={2}
+                      className="w-full text-xs px-3 py-2 bg-[#090b14] border border-[#232942] focus:border-purple-500 rounded-lg text-slate-200 outline-none transition-colors resize-none"
+                    />
+                  </div>
+
+                  {/* Error & Success Messages */}
+                  {saveError && (
+                    <div className="flex items-center gap-2 p-2.5 bg-red-900/30 border border-red-500/40 rounded-lg text-xs text-red-300">
+                      <AlertCircle className="w-4 h-4 shrink-0 text-red-400" />
+                      <span>{saveError}</span>
+                    </div>
                   )}
 
-                  <div className="flex items-center justify-center sm:justify-start gap-3 pt-2 text-xs text-slate-300 flex-wrap">
-                    <span className="flex items-center gap-1 bg-amber-500/10 px-2.5 py-1 rounded-lg border border-amber-500/20 text-amber-300">
-                      <Award className="w-3.5 h-3.5 text-amber-400" />
-                      <strong>{userRep}</strong> Reputation
-                    </span>
+                  {saveSuccess && (
+                    <div className="flex items-center gap-2 p-2.5 bg-emerald-900/30 border border-emerald-500/40 rounded-lg text-xs text-emerald-300">
+                      <CheckCircle className="w-4 h-4 shrink-0 text-emerald-400" />
+                      <span>Profile saved and synchronized to Firestore!</span>
+                    </div>
+                  )}
 
-                    {onSignOut && (
-                      <button
-                        onClick={() => {
-                          onClose();
-                          onSignOut();
-                        }}
-                        className="ml-auto px-3 py-1 bg-red-600/20 hover:bg-red-600/30 text-red-300 border border-red-500/30 rounded-lg text-xs font-['Rajdhani'] font-bold uppercase tracking-wider flex items-center gap-1.5 transition-colors cursor-pointer"
-                      >
-                        <LogOut className="w-3.5 h-3.5" />
-                        Sign Out
-                      </button>
+                  {/* Form Action Buttons */}
+                  <div className="flex items-center justify-end gap-3 pt-2 border-t border-[#232942]">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsEditing(false);
+                        setEditName(user.name);
+                        setEditUsername(user.username);
+                        setEditAvatar(user.avatar);
+                        setEditBio(user.bio || '');
+                        setSaveError(null);
+                      }}
+                      disabled={isSaving}
+                      className="px-4 py-2 bg-white/5 hover:bg-white/10 text-slate-300 rounded-lg text-xs font-['Rajdhani'] font-bold uppercase tracking-wider transition-colors cursor-pointer"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={isSaving}
+                      className="px-5 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-lg text-xs font-['Rajdhani'] font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all shadow-md shadow-purple-900/40 cursor-pointer disabled:opacity-50"
+                    >
+                      {isSaving ? (
+                        <>
+                          <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                          <span>Saving to Firestore...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Check className="w-3.5 h-3.5" />
+                          <span>Save Changes</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </form>
+              ) : (
+                <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 p-5 rounded-2xl bg-[#131625] border border-[#232942]">
+                  <img
+                    src={user.avatar}
+                    alt={user.name}
+                    className="w-16 h-16 rounded-xl object-cover border-2 border-purple-500/60 shadow-lg shadow-purple-950/50"
+                  />
+                  <div className="space-y-1 text-center sm:text-left flex-1 min-w-0">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                      <h2 className="text-xl font-['Space_Grotesk'] font-bold text-white truncate">
+                        {user.name}
+                      </h2>
+                      <span className="text-xs font-mono text-purple-400 bg-purple-950/70 px-2 py-0.5 rounded border border-purple-800/40 w-fit mx-auto sm:mx-0">
+                        {user.badge}
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-400 font-mono truncate">{user.username} • Joined {user.joinDate}</p>
+                    {user.bio && (
+                      <p className="text-xs text-slate-300 italic pt-0.5 pb-0.5 max-w-lg leading-relaxed break-words">
+                        "{user.bio}"
+                      </p>
                     )}
+                    {user.email && (
+                      <p className="text-xs text-purple-300 font-mono flex items-center gap-1.5 justify-center sm:justify-start">
+                        <Mail className="w-3.5 h-3.5 text-purple-400" />
+                        {user.email}
+                      </p>
+                    )}
+
+                    <div className="flex items-center justify-center sm:justify-start gap-2.5 pt-2 text-xs text-slate-300 flex-wrap">
+                      <span className="flex items-center gap-1 bg-amber-500/10 px-2.5 py-1 rounded-lg border border-amber-500/20 text-amber-300">
+                        <Award className="w-3.5 h-3.5 text-amber-400" />
+                        <strong>{userRep}</strong> Reputation
+                      </span>
+
+                      {/* Edit Profile Trigger */}
+                      <button
+                        id="open-profile-edit-btn"
+                        onClick={() => setIsEditing(true)}
+                        className="px-3 py-1 bg-purple-600/20 hover:bg-purple-600/30 text-purple-300 border border-purple-500/40 rounded-lg text-xs font-['Rajdhani'] font-bold uppercase tracking-wider flex items-center gap-1.5 transition-colors cursor-pointer"
+                        title="Edit profile name, username, and picture"
+                      >
+                        <Edit3 className="w-3.5 h-3.5 text-purple-400" />
+                        Edit Profile
+                      </button>
+
+                      {onSignOut && (
+                        <button
+                          onClick={() => {
+                            onClose();
+                            onSignOut();
+                          }}
+                          className="ml-auto px-3 py-1 bg-red-600/20 hover:bg-red-600/30 text-red-300 border border-red-500/30 rounded-lg text-xs font-['Rajdhani'] font-bold uppercase tracking-wider flex items-center gap-1.5 transition-colors cursor-pointer"
+                        >
+                          <LogOut className="w-3.5 h-3.5" />
+                          Sign Out
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
 
               {/* Verified Activity Statistics (Zero Base, increases only on action) */}
               <div className="space-y-2.5">

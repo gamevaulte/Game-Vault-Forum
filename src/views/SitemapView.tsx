@@ -289,7 +289,7 @@ export const SitemapView: React.FC<SitemapViewProps> = ({ onNavigate }) => {
       // 9. Community Forum Discussions
       ...MOCK_FORUM_TOPICS.map((topic) => {
         const slug = getSeoSlug(topic);
-        const count = topic.repliesCount ?? topic.replyCount ?? 0;
+        const count = Array.isArray(topic.replies) ? topic.replies.length : 0;
         const authorHandle = topic.author.username || topic.author.name.toLowerCase().replace(/\s+/g, '');
         return {
           id: `forum-${topic.id}`,

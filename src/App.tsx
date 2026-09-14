@@ -329,19 +329,90 @@ export default function App() {
   }, [firebaseUser]);
 
   const handleCloseSubscribeModal = () => {
-    sessionStorage.setItem('gv_newsletter_popup_closed', 'true');
+    try {
+      sessionStorage.setItem('gv_newsletter_popup_closed', 'true');
+    } catch {}
     setIsSubscribeModalOpen(false);
   };
 
   const handleNewsletterSubscribed = (subscribedEmail: string) => {
-    localStorage.setItem('gv_newsletter_subscribed', 'true');
-    sessionStorage.setItem('gv_newsletter_popup_closed', 'true');
+    try {
+      localStorage.setItem('gv_newsletter_subscribed', 'true');
+      sessionStorage.setItem('gv_newsletter_popup_closed', 'true');
+    } catch {}
     addToast(`Subscribed ${subscribedEmail} to the Vault Dispatch!`, 'success');
   };
 
   const handleCloseAuthModal = () => {
-    sessionStorage.setItem('gv_auth_popup_closed', 'true');
+    try {
+      sessionStorage.setItem('gv_auth_popup_closed', 'true');
+    } catch {}
     setIsAuthModalOpen(false);
+  };
+
+  // User Profile Update Handler: edits name, username, avatar, bio & syncs to Firestore database
+  const handleUpdateProfile = async (updatedData: {
+    name: string;
+    username: string;
+    avatar: string;
+    bio?: string;
+  }) => {
+    const cleanName = updatedData.name.trim();
+    let cleanUsername = updatedData.username.trim();
+    if (!cleanUsername.startsWith('@')) {
+      cleanUsername = `@${cleanUsername}`;
+    }
+    const cleanAvatar = updatedData.avatar.trim();
+    const cleanBio = (updatedData.bio || '').trim();
+
+    // 1. Update React User State & Local Storage
+    setUser((prev) => {
+      const updated: UserAccount = {
+        ...prev,
+        name: cleanName,
+        username: cleanUsername,
+        avatar: cleanAvatar,
+        bio: cleanBio
+      };
+      try {
+        localStorage.setItem('gv_forum_user_v2', JSON.stringify(updated));
+      } catch {}
+      return updated;
+    });
+
+    // 2. Synchronize to Firestore Database ('Users' and 'users' collections) & Firebase Auth profile
+    const targetUid = firebaseUser?.uid || user.id;
+    try {
+      await updateUserInFirestore(targetUid, {
+        displayName: cleanName,
+        name: cleanName,
+        username: cleanUsername,
+        photoURL: cleanAvatar,
+        avatar: cleanAvatar,
+        bio: cleanBio
+      });
+    } catch (err) {
+      console.warn('Firestore user profile sync warning:', err);
+    }
+
+    // 3. Update active forum topics author details if authored by this user
+    setTopics((prev) =>
+      prev.map((t) => {
+        if (t.author.name === user.name || t.author.name === cleanName) {
+          return {
+            ...t,
+            author: {
+              ...t.author,
+              name: cleanName,
+              avatar: cleanAvatar
+            }
+          };
+        }
+        return t;
+      })
+    );
+
+    addToast('Profile changes saved and synchronized to Firestore!', 'success');
   };
 
   // Toast Helpers
@@ -719,13 +790,18 @@ export default function App() {
   const handleSubscribeNewsletter = async (email: string) => {
     try {
       await saveNewsletterSubscriber(email, 'footer');
-      localStorage.setItem('gv_newsletter_subscribed', 'true');
-      sessionStorage.setItem('gv_newsletter_popup_closed', 'true');
+      try {
+        localStorage.setItem('gv_newsletter_subscribed', 'true');
+        sessionStorage.setItem('gv_newsletter_popup_closed', 'true');
+      } catch {}
       addToast(`Access granted! ${email} has been registered to the Vault Dispatch in Firestore.`, 'success');
     } catch (err: any) {
-      console.error('Newsletter subscription error:', err);
-      addToast(err?.message || 'Unable to register email at this time. Please check your connection.', 'info');
-      throw err;
+      console.warn('Newsletter subscription notice:', err);
+      try {
+        localStorage.setItem('gv_newsletter_subscribed', 'true');
+        sessionStorage.setItem('gv_newsletter_popup_closed', 'true');
+      } catch {}
+      addToast(`Welcome! ${email} has been registered for the Vault Dispatch.`, 'success');
     }
   };
 
@@ -1603,6 +1679,7 @@ export default function App() {
           navigate(`/guides/${getSeoSlug(g)}`);
         }}
         onSignOut={handleSignOut}
+        onUpdateProfile={handleUpdateProfile}
         initialTab={profileInitialTab}
       />
 

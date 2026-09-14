@@ -65,7 +65,7 @@ export const ForumTopicModal: React.FC<ForumTopicModalProps> = ({
               <span>•</span>
               <span>{topic.views} Views</span>
               <span>•</span>
-              <span>{topic.repliesCount} Replies</span>
+              <span>{(Array.isArray(topic.replies) ? topic.replies.length : 0)} Replies</span>
             </div>
           </div>
 
