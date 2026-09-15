@@ -117,18 +117,49 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
         parts.push(renderBoldText(text.substring(lastIndex, startIndex), `t-${startIndex}`));
       }
 
+      const normalizedText = linkText.trim().toLowerCase();
       const isInternalArticle = url.startsWith('/articles/') || url.includes('gamevault.forum/articles/');
-      const isPcBuilder = url.includes('gaming-pc-builder') || url === '#pc-builder';
-      const isRequirementsChecker = url.includes('pc-game-requirements-checker') || url.includes('pc-requirements') || url === '#requirements';
-      const isVaultAi = url.includes('vault-ai');
-      const isForum = url === '/forum' || url.startsWith('/forum/');
+      const isPcBuilder = url.includes('gaming-pc-builder') || url === '#pc-builder' || normalizedText.includes('gaming pc builder') || normalizedText.includes('pc builder');
+      const isRequirementsChecker = 
+        url.includes('pc-game-requirements-checker') || 
+        url.includes('pc-requirements') || 
+        url === '#requirements' || 
+        normalizedText.includes('pc game requirements checker') ||
+        normalizedText.includes('requirements checker');
+      const isVaultAi = url.includes('vault-ai') || normalizedText.includes('vault ai');
+      const isForum = url === '/forum' || url.startsWith('/forum/') || url.includes('gamevault.forum/forum') || normalizedText.includes('game vault forum') || normalizedText.includes('community forum');
+
+      // Canonical external/direct URL for requirements checker
+      const resolvedHref = isRequirementsChecker 
+        ? 'https://www.gamevault.forum/tools/pc-game-requirements-checker'
+        : isPcBuilder
+        ? 'https://www.gamevault.forum/tools/gaming-pc-builder'
+        : isForum
+        ? 'https://www.gamevault.forum/forum'
+        : url;
 
       parts.push(
         <a
           key={`link-${startIndex}`}
-          href={url}
+          href={resolvedHref}
           onClick={(e) => {
-            if (isInternalArticle && onSelectArticle && articles) {
+            if (isRequirementsChecker && onNavigateTab) {
+              e.preventDefault();
+              onNavigateTab('pc-requirements');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else if (isPcBuilder && onNavigateTab) {
+              e.preventDefault();
+              onNavigateTab('gaming-pc-builder');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else if (isVaultAi && onNavigateTab) {
+              e.preventDefault();
+              onNavigateTab('vault-ai');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else if (isForum && onNavigateTab) {
+              e.preventDefault();
+              onNavigateTab('forum');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else if (isInternalArticle && onSelectArticle && articles) {
               e.preventDefault();
               const slug = url.replace(/^.*\/articles\//, '').replace(/\/$/, '');
               const target = articles.find(
@@ -140,22 +171,6 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
               } else {
                 window.location.href = url;
               }
-            } else if (isPcBuilder && onNavigateTab) {
-              e.preventDefault();
-              onNavigateTab('gaming-pc-builder');
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            } else if (isRequirementsChecker && onNavigateTab) {
-              e.preventDefault();
-              onNavigateTab('pc-requirements');
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            } else if (isVaultAi && onNavigateTab) {
-              e.preventDefault();
-              onNavigateTab('vault-ai');
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            } else if (isForum && onNavigateTab) {
-              e.preventDefault();
-              onNavigateTab('forum');
-              window.scrollTo({ top: 0, behavior: 'smooth' });
             }
           }}
           className="inline-flex items-baseline gap-1 font-semibold text-cyan-400 hover:text-cyan-300 underline decoration-cyan-500/60 underline-offset-4 transition-colors hover:decoration-cyan-300"
@@ -995,7 +1010,7 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
               </div>
               <div>
                 <p className="text-sm font-bold text-white font-['Space_Grotesk']">
-                  Only registered and signed in users can comment and like
+                  Only registered and signed in users can like, comment, and save content across the website
                 </p>
                 <p className="text-xs text-gray-400 mt-0.5">
                   Sign in or create an account in seconds to join the community discussion.

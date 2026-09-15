@@ -1791,7 +1791,7 @@ Badge: Essential Step
 • Does your total budget represent the entire battle station (tower, monitor, keyboard, mouse, audio), or strictly the computer tower itself?
 :::
 
-If you are unsure whether your desired games will run smoothly on specific hardware combinations, you can test system configurations instantly using the interactive [PC Game Requirements Checker](/tools/pc-game-requirements-checker) on Game Vault.
+If you are unsure whether your desired games will run smoothly on specific hardware combinations, you can test system configurations instantly using the interactive [PC Game Requirements Checker](https://www.gamevault.forum/tools/pc-game-requirements-checker) on Game Vault.
 
 ---
 
@@ -2375,7 +2375,7 @@ Choosing the best gaming PC in 2026 comes down to matching your hardware investm
 • For the finest boutique craftsmanship, acoustics, and 4K capability: Choose the Corsair Vengeance a7500.
 • For an accessible, reliable, fully upgradeable 1080p entry point: Choose the Skytech Archangel.
 
-Ready to test whether your favorite games will run on these configurations? Try our interactive [PC Game Requirements Checker](/tools/pc-game-requirements-checker) or design a custom build with the [Gaming PC Builder](/tools/gaming-pc-builder). Have questions or need tailored advice? Join the discussion on the [Game Vault Community Forum](/forum).`
+Ready to test whether your favorite games will run on these configurations? Try our interactive [PC Game Requirements Checker](https://www.gamevault.forum/tools/pc-game-requirements-checker) or design a custom build with the [Gaming PC Builder](/tools/gaming-pc-builder). Have questions or need tailored advice? Join the discussion on the [Game Vault Community Forum](/forum).`
   },
   ...NEW_ARTICLES_2026
 ];

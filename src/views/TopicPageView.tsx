@@ -291,7 +291,7 @@ export const TopicPageView: React.FC<TopicPageViewProps> = ({
               </div>
               <div>
                 <p className="text-sm font-bold text-white font-['Space_Grotesk']">
-                  Only registered and signed in users can comment and like
+                  Only registered and signed in users can like, comment, and save content across the website
                 </p>
                 <p className="text-xs text-gray-400 mt-0.5">
                   Sign in or create an account in seconds to join the community discussion.

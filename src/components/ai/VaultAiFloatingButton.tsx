@@ -6,7 +6,8 @@ import {
   Maximize2, 
   Send, 
   Minimize2,
-  ChevronDown
+  ChevronDown,
+  ArrowLeftRight
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { PageTab, UserAccount, VaultAiMessage, VaultAiAction } from '../../types';
@@ -48,6 +49,26 @@ export const VaultAiFloatingButton: React.FC<VaultAiFloatingButtonProps> = ({
   const [inputValue, setInputValue] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Free mobility: dock to either left or right side of screen
+  const [dockSide, setDockSide] = useState<'left' | 'right'>(() => {
+    try {
+      const saved = localStorage.getItem('gv_vault_ai_dock_side');
+      if (saved === 'left' || saved === 'right') return saved;
+    } catch {}
+    return 'right';
+  });
+
+  const toggleDockSide = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    setDockSide((prev) => {
+      const next = prev === 'right' ? 'left' : 'right';
+      try {
+        localStorage.setItem('gv_vault_ai_dock_side', next);
+      } catch {}
+      return next;
+    });
+  };
 
   // Handle action click from bubble inside drawer
   const handleExecuteAction = (action: VaultAiAction) => {
@@ -225,7 +246,14 @@ export const VaultAiFloatingButton: React.FC<VaultAiFloatingButtonProps> = ({
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
+    <div
+      id="vault-ai-floating-container"
+      className={`fixed bottom-6 z-50 flex flex-col transition-all duration-300 ${
+        dockSide === 'left'
+          ? 'left-4 sm:left-6 items-start'
+          : 'right-4 sm:right-6 items-end'
+      }`}
+    >
       {/* Floating Chat Drawer */}
       <AnimatePresence>
         {isOpen && (
@@ -251,23 +279,32 @@ export const VaultAiFloatingButton: React.FC<VaultAiFloatingButtonProps> = ({
                       Copilot
                     </span>
                   </div>
-                  <p className="text-[11px] text-zinc-400 truncate max-w-[200px]">
+                  <p className="text-[11px] text-zinc-400 truncate max-w-[180px] sm:max-w-[200px]">
                     {contextLabel}
                   </p>
                 </div>
               </div>
 
               <div className="flex items-center gap-1 text-zinc-400">
+                {/* Switch side button */}
+                <button
+                  onClick={toggleDockSide}
+                  className="p-1.5 hover:text-white hover:bg-white/5 rounded-lg transition-colors cursor-pointer"
+                  title={dockSide === 'right' ? 'Move to left side of screen' : 'Move to right side of screen'}
+                  aria-label="Dock to opposite side of screen"
+                >
+                  <ArrowLeftRight className="w-4 h-4" />
+                </button>
                 <button
                   onClick={handleOpenFullPage}
-                  className="p-1.5 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
+                  className="p-1.5 hover:text-white hover:bg-white/5 rounded-lg transition-colors cursor-pointer"
                   title="Open Full Page"
                 >
                   <Maximize2 className="w-4 h-4" />
                 </button>
                 <button
                   onClick={() => setIsOpen(false)}
-                  className="p-1.5 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
+                  className="p-1.5 hover:text-white hover:bg-white/5 rounded-lg transition-colors cursor-pointer"
                   title="Close"
                 >
                   <X className="w-4 h-4" />
@@ -357,24 +394,52 @@ export const VaultAiFloatingButton: React.FC<VaultAiFloatingButtonProps> = ({
         )}
       </AnimatePresence>
 
-      {/* Floating Pill Button */}
-      <motion.button
-        whileHover={{ scale: 1.04 }}
-        whileTap={{ scale: 0.96 }}
-        onClick={() => setIsOpen(!isOpen)}
-        className="group relative flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 text-white font-medium text-xs shadow-xl shadow-purple-900/40 border border-purple-400/40 hover:border-purple-300 transition-all cursor-pointer"
-      >
-        {/* Glow effect */}
-        <div className="absolute -inset-0.5 rounded-full bg-gradient-to-r from-purple-600 to-cyan-500 opacity-40 blur group-hover:opacity-75 transition-opacity" />
+      {/* Floating Pill Button & Mobility Controls */}
+      <div className={`flex items-center gap-2 ${dockSide === 'left' ? 'flex-row' : 'flex-row-reverse'}`}>
+        <motion.div
+          id="vault-ai-floating-pill"
+          drag="x"
+          dragMomentum={false}
+          dragConstraints={{ left: -320, right: 320 }}
+          dragElastic={0.2}
+          onDragEnd={(_e, info) => {
+            if (dockSide === 'right' && info.offset.x < -35) {
+              setDockSide('left');
+              try { localStorage.setItem('gv_vault_ai_dock_side', 'left'); } catch {}
+            } else if (dockSide === 'left' && info.offset.x > 35) {
+              setDockSide('right');
+              try { localStorage.setItem('gv_vault_ai_dock_side', 'right'); } catch {}
+            }
+          }}
+          whileHover={{ scale: 1.03 }}
+          whileTap={{ scale: 0.97 }}
+          onClick={() => setIsOpen(!isOpen)}
+          className="group relative flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 text-white font-medium text-xs shadow-xl shadow-purple-900/40 border border-purple-400/40 hover:border-purple-300 transition-all cursor-grab active:cursor-grabbing select-none"
+          title={`${isOpen ? 'Close' : 'Open'} Ask Vault AI (drag left/right or click arrow button to switch sides)`}
+        >
+          {/* Glow effect */}
+          <div className="absolute -inset-0.5 rounded-full bg-gradient-to-r from-purple-600 to-cyan-500 opacity-40 blur group-hover:opacity-75 transition-opacity pointer-events-none" />
 
-        <div className="relative flex items-center gap-2">
-          <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center">
-            <Bot className="w-3.5 h-3.5 text-white" />
+          <div className="relative flex items-center gap-2">
+            <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center">
+              <Bot className="w-3.5 h-3.5 text-white" />
+            </div>
+            <span className="tracking-wide font-medium">{contextLabel}</span>
+            <Sparkles className="w-3.5 h-3.5 text-purple-200 animate-pulse" />
           </div>
-          <span className="tracking-wide">{contextLabel}</span>
-          <Sparkles className="w-3.5 h-3.5 text-purple-200 animate-pulse" />
-        </div>
-      </motion.button>
+        </motion.div>
+
+        {/* Quick Side Dock Button: Freely moves icon to either left or right */}
+        <button
+          id="vault-ai-dock-toggle"
+          onClick={toggleDockSide}
+          title={dockSide === 'right' ? 'Move Ask Vault AI to left side for better accessibility' : 'Move Ask Vault AI to right side for better accessibility'}
+          aria-label={dockSide === 'right' ? 'Move to left side' : 'Move to right side'}
+          className="p-2.5 rounded-full bg-[#0c0e18]/90 hover:bg-purple-950/60 text-purple-300 hover:text-white border border-purple-500/30 hover:border-purple-400 shadow-xl shadow-purple-950/50 backdrop-blur-md transition-all cursor-pointer flex items-center justify-center group"
+        >
+          <ArrowLeftRight className="w-3.5 h-3.5 transition-transform group-hover:scale-110" />
+        </button>
+      </div>
     </div>
   );
 };

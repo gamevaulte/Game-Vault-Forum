@@ -62,6 +62,8 @@ interface PcBuilderViewProps {
   onNavigateTab: (tab: PageTab) => void;
   onShowToast?: (msg: string, type?: 'success' | 'info') => void;
   onShare?: (title: string, customPath?: string, description?: string) => void;
+  isSignedIn?: boolean;
+  onOpenSignIn?: () => void;
 }
 
 const FAQ_ITEMS: FaqItem[] = [
@@ -99,7 +101,9 @@ export const PcBuilderView: React.FC<PcBuilderViewProps> = ({
   initialBuildId,
   onNavigateTab,
   onShowToast,
-  onShare
+  onShare,
+  isSignedIn,
+  onOpenSignIn
 }) => {
   // Step navigation (1 to 5, or 'results')
   const [activeStep, setActiveStep] = useState<number | 'results'>(1);
@@ -182,6 +186,14 @@ export const PcBuilderView: React.FC<PcBuilderViewProps> = ({
   // Save Build to collection
   const handleSaveBuild = () => {
     if (!currentBuild) return;
+    if (!isSignedIn) {
+      if (onOpenSignIn) {
+        onOpenSignIn();
+      } else {
+        toast('Only registered and signed in users can save custom PC builds.', 'info');
+      }
+      return;
+    }
     setSavedBuilds(prev => {
       const exists = prev.some(b => b.id === currentBuild.id);
       let updated: SavedPcBuild[];

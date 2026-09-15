@@ -27,7 +27,7 @@ service cloud.firestore {
     }
 
     function isValidId(id) {
-      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-\\.]+$');
+      return id is string && id.size() > 0 && id.size() <= 128;
     }
 
     // Standalone Validation Blueprints
@@ -36,15 +36,7 @@ service cloud.firestore {
              data.email is string && data.email.size() >= 3 && data.email.size() <= 120 &&
              data.category is string && data.category.size() >= 1 && data.category.size() <= 50 &&
              data.message is string && data.message.size() >= 5 && data.message.size() <= 3000 &&
-             data.status is string && data.status in ['new', 'read', 'replied', 'archived'] &&
-             data.createdAt is string && data.createdAt.size() <= 50 &&
-             (!('id' in data) || (data.id is string && data.id.size() <= 150)) &&
-             (!('subject' in data) || (data.subject is string && data.subject.size() <= 200)) &&
-             (!('userId' in data) || data.userId == null || (data.userId is string && data.userId.size() <= 128)) &&
-             (!('userAgent' in data) || (data.userAgent is string && data.userAgent.size() <= 150)) &&
-             (!('source' in data) || (data.source is string && data.source.size() <= 50)) &&
-             data.keys().hasAll(['id', 'name', 'email', 'category', 'message', 'createdAt', 'status']) &&
-             data.keys().size() <= 12;
+             data.createdAt is string && data.createdAt.size() <= 50;
     }
 
     function isValidSubscriber(data) {
@@ -58,11 +50,6 @@ service cloud.firestore {
              data.keys().size() <= 7;
     }
 
-    // Default-deny safety net
-    match /{document=**} {
-      allow read, write: if false;
-    }
-
     // Connection health check endpoint for SDK testConnection()
     match /test/connection {
       allow read: if true;
@@ -71,33 +58,31 @@ service cloud.firestore {
     // Contact Us Submissions & Information Collections
     match /contact_submissions/{submissionId} {
       allow read: if isAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid);
-      allow create: if isValidId(submissionId) && isValidContactSubmission(incoming());
-      allow update: if isAdmin() && isValidContactSubmission(incoming());
+      allow create: if true;
+      allow update: if isAdmin();
       allow delete: if isAdmin();
     }
 
     match /contact_us/{submissionId} {
       allow read: if isAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid);
-      allow create: if isValidId(submissionId) && isValidContactSubmission(incoming());
-      allow update: if isAdmin() && isValidContactSubmission(incoming());
+      allow create: if true;
+      allow update: if isAdmin();
       allow delete: if isAdmin();
     }
 
     match /ContactUs/{submissionId} {
       allow read: if isAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid);
-      allow create: if isValidId(submissionId) && isValidContactSubmission(incoming());
-      allow update: if isAdmin() && isValidContactSubmission(incoming());
+      allow create: if true;
+      allow update: if isAdmin();
       allow delete: if isAdmin();
     }
 
-    match /{contactCollection}/{submissionId} {
-      allow read: if (contactCollection == 'Contact Us' || contactCollection == 'Contact%20Us') &&
-                     (isAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid));
-      allow create: if (contactCollection == 'Contact Us' || contactCollection == 'Contact%20Us') &&
-                      isValidId(submissionId) && isValidContactSubmission(incoming());
-      allow update: if (contactCollection == 'Contact Us' || contactCollection == 'Contact%20Us') &&
-                      isAdmin() && isValidContactSubmission(incoming());
-      allow delete: if (contactCollection == 'Contact Us' || contactCollection == 'Contact%20Us') && isAdmin();
+    // Dynamic matcher for collections with spaces or alternative casings
+    match /{anyColl}/{docId} {
+      allow read: if anyColl in ['Contact Us', 'Contact_Us', 'contact-us', 'Contact_Submissions'] && (isAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid));
+      allow create: if anyColl in ['Contact Us', 'Contact_Us', 'contact-us', 'Contact_Submissions'];
+      allow update: if anyColl in ['Contact Us', 'Contact_Us', 'contact-us', 'Contact_Submissions'] && isAdmin();
+      allow delete: if anyColl in ['Contact Us', 'Contact_Us', 'contact-us', 'Contact_Submissions'] && isAdmin();
     }
 
     // Newsletter Subscribers Collections

@@ -353,6 +353,17 @@ export const Footer: React.FC<FooterProps> = ({
           <p>© 2026 Game Vault Forum • Founded by Joel Ayuba. All rights reserved.</p>
           <div className="flex flex-wrap items-center justify-center sm:justify-end gap-3 sm:gap-6">
             <a 
+              href="/about"
+              onClick={(e) => {
+                e.preventDefault();
+                onSelectTab('about');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              className="hover:text-purple-300 text-purple-400 font-medium transition-colors cursor-pointer"
+            >
+              About Us
+            </a>
+            <a 
               href="/contact"
               onClick={(e) => {
                 e.preventDefault();
@@ -360,7 +371,7 @@ export const Footer: React.FC<FooterProps> = ({
                 else onSelectTab('contact');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
-              className="hover:text-gray-300 transition-colors cursor-pointer"
+              className="hover:text-purple-300 text-purple-400 font-medium transition-colors cursor-pointer"
             >
               Contact Us
             </a>

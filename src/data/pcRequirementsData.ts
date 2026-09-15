@@ -1,9 +1,10 @@
 import { PcGameRequirements, CpuSpec, GpuSpec, UserPcSpec } from '../types/pcRequirements';
+import { EXPANDED_GAMES_REQUIREMENTS } from './expandedPcGamesData';
 
 // ==========================================
 // VERIFIED PUBLISHED PC GAMES DATABASE
 // ==========================================
-export const INITIAL_GAMES_REQUIREMENTS: PcGameRequirements[] = [
+const BASE_GAMES_REQUIREMENTS: PcGameRequirements[] = [
   {
     id: 'game-req-cyberpunk-2077',
     gameId: 'game-2',
@@ -709,6 +710,11 @@ export const INITIAL_GAMES_REQUIREMENTS: PcGameRequirements[] = [
       notes: 'Runs at high frame rates even on modest hardware configurations.'
     }
   }
+];
+
+export const INITIAL_GAMES_REQUIREMENTS: PcGameRequirements[] = [
+  ...BASE_GAMES_REQUIREMENTS,
+  ...EXPANDED_GAMES_REQUIREMENTS
 ];
 
 // ==========================================

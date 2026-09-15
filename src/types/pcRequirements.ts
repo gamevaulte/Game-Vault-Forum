@@ -7,7 +7,7 @@ export interface GameRequirementSpec {
   gpuTier: number; // 1 to 10 rating
   vramGb: number;
   storageGb: number;
-  storageType?: 'SSD' | 'HDD' | 'SSD Recommended' | 'SSD Required';
+  storageType?: 'SSD' | 'HDD' | 'SSD Recommended' | 'SSD Required' | (string & {});
   directX: string;
   additionalNotes?: string;
 }

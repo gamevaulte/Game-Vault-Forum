@@ -1,5 +1,6 @@
 import express from 'express';
 import path from 'path';
+import compression from 'compression';
 import { createServer as createViteServer } from 'vite';
 import { GoogleGenAI } from '@google/genai';
 import dotenv from 'dotenv';
@@ -8,68 +9,89 @@ dotenv.config();
 
 const PORT = 3000;
 
-// Knowledge base summary for Game Vault Forum RAG
+// Comprehensive Website Knowledge Base for Vault AI
 const VAULT_KNOWLEDGE_SUMMARY = `
-=== GAME VAULT FORUM OFFICIAL KNOWLEDGE BASE ===
-Website: Game Vault Forum (www.gamevault.forum)
-Tagline: "Your Vault for Everything Gaming. Watch. Play. Discuss. Discover."
-Founder: Joel Ayuba
-Official YouTube Channel: @GameVaultForum
+=== GAME VAULT FORUM COMPLETE WEBSITE KNOWLEDGE BASE ===
+Official Domain: www.gamevault.forum (Canonical: https://www.gamevault.forum)
+Tagline: "Your AI Gaming Assistant. Ask. Discover. Compare. Troubleshoot. Play smarter."
+Founder & Editor-in-Chief: Joel Ayuba
+Official YouTube Channel: @GameVaultForum (YouTube ID: UC-GameVaultForum)
+Official Contact Email: contact@gamevault.forum
 
-SITE STRUCTURE & NAVIGATION DIRECTORY:
-1. Home (/) — Featured showcase, trending gameplay videos, editor's choice reviews, tactical guides, community spotlight, and quick tool access.
-2. Videos (/videos) — Official Game Vault YouTube video catalog with embedded player, high-res thumbnails, duration, category badges, and comments.
-3. Articles (/articles) — Editorial essays, gaming culture analysis, industry trends, modding ecosystems, and game design deep-dives.
-4. Reviews (/reviews) — Scored reviews (e.g. 10/10, 9.2/10) with pros & cons, performance verdicts, graphics analysis, and platform breakdowns.
-5. Guides (/guides) — Tactical masterclasses (e.g. World of Warships armor angling, Elden Ring Scadutree routes, Helldivers 2 Super Helldive loadouts).
-6. Games Catalog (/games) — Verified database of games with specs, trailers, community ratings, developer/publisher info, release dates, and hardware requirements.
-7. Forum (/forum) — Community discussion hub with categories:
-   - General Gaming: Broad gaming news, discussions, game announcements, industry talk.
-   - PC Building & Tech: Hardware recommendations, rig builds, bottleneck fixes, overclocking, troubleshooting.
-   - Game Guides & Strategies: Walkthroughs, boss battle tactics, optimal character builds, fleet maneuvers.
-   - Competitive Gaming & Esports: Tournaments, meta strategies, ranked climbs, weapon tier lists.
-   - Off-Topic Vault: Chill gamer chatter, setups, gaming gear, anime, general discussion.
-   - New Topic Creation: (/forum/new) — Create rich discussion topics with formatting, tags, and category selection.
-8. Tools Hub (/tools) — 3 Core Interactive Gaming Tools:
-   - PC Game Requirements Checker (/tools/pc-game-requirements-checker): Test user CPU, GPU, RAM, and VRAM against verified minimum & recommended requirements for any game with pass/warn/fail indicators.
-   - Gaming PC Builder (/tools/gaming-pc-builder): Interactive custom rig builder with 10-point socket compatibility verification (AM4, AM5, LGA1700, LGA1851), PSU wattage calculator, balance score gauge, and dual currency (USD $ and Nigerian Naira ₦).
-   - Gaming Username Generator (/tools/gaming-username-generator): Instant distinctive gamertag generator across styles (Cyberpunk, Tactical, Mythic, Anime, Stealth, Pro Esports) with prefix/suffix customizers and copy-to-clipboard.
-   - Vault AI Assistant (/tools/vault-ai): Intelligent AI Copilot for gaming Q&A, hardware advice, performance troubleshooting, and site navigation.
-9. Community & Policy Pages:
-   - About (/about): Information on founder Joel Ayuba, mission, YouTube channel links, and platform vision.
-   - Contact (/contact): Direct contact form for inquiries, feedback, partnerships, and bug reports.
-   - Community Guidelines (/guidelines): Rules for respectful engagement, anti-toxicity, anti-cheating, and constructive discussions.
-   - Terms of Service (/terms), Privacy Policy (/privacy), Cookie Policy (/cookies), Sitemap (/sitemap).
+1. FULL WEBSITE STRUCTURE & DIRECTORY:
+- Home (/) : Featured showcase, trending gameplay videos, editor's choice reviews, tactical guides, community spotlight, and quick tool access.
+- Videos (/videos) : Official Game Vault YouTube video catalog with embedded 4K player, high-res thumbnails, duration, category badges, key takeaways, and tactical video summaries.
+- Articles (/articles) : Deep-dive editorial essays, gaming culture analysis, industry trends, modding ecosystems, and game design deep-dives.
+- Reviews (/reviews) : Scored reviews (e.g. 10/10, 9.2/10) with pros & cons, performance verdicts, graphics analysis, and platform breakdowns.
+- Guides (/guides) : Tactical masterclasses (e.g. World of Warships armor angling, Elden Ring Scadutree routes, Helldivers 2 Super Helldive loadouts).
+- Games Catalog (/games) : Verified database of games with specs, trailers, community ratings, developer/publisher info, release dates, and hardware requirements.
+- Community Forum (/forum) : Discussion hub with 5 dedicated boards:
+  * General Gaming: Broad gaming news, game releases, industry chatter, cross-platform discussion.
+  * PC Building & Tech: Hardware recommendations, custom rig builds, bottleneck fixes, overclocking, thermal issues.
+  * Game Guides & Strategies: Walkthroughs, boss battle tactics, optimal character builds, naval fleet maneuvers.
+  * Competitive Gaming & Esports: Tournaments, meta strategies, ranked climbs, weapon tier lists.
+  * Off-Topic Vault: Chill gamer chatter, battle station setups, gaming gear, anime, general discussion.
+  * New Topic Creation (/forum/new) : Rich topic composer with tags and formatting.
+- Tools Hub (/tools) : 3 Interactive Gaming Utilities:
+  * PC Game Requirements Checker (https://www.gamevault.forum/tools/pc-game-requirements-checker or /tools/pc-game-requirements-checker): Test user CPU, GPU, RAM, and VRAM against verified minimum & recommended requirements for 36+ games with pass/warn/fail indicators.
+  * Gaming PC Builder (/tools/gaming-pc-builder): Interactive custom rig builder with 10-point socket compatibility verification (AM4, AM5, LGA1700, LGA1851), PSU wattage calculator, balance score gauge, and dual currency (USD $ and Nigerian Naira ₦).
+  * Gaming Username Generator (/tools/gaming-username-generator): Instant distinctive gamertag generator across styles (Cyberpunk, Tactical, Mythic, Anime, Stealth, Pro Esports) with prefix/suffix customizers and copy-to-clipboard.
+  * Vault AI Assistant (/tools/vault-ai): Intelligent AI Copilot for gaming Q&A, hardware advice, performance troubleshooting, and site navigation.
+- Community & Legal Pages:
+  * About Us (/about): Background on founder Joel Ayuba, editorial integrity, mission, YouTube channel links, and platform vision.
+  * Contact Us (/contact): Direct contact form for inquiries, feedback, partnerships, and bug reports (stored securely in Firestore and backed up server-side). Email: contact@gamevault.forum.
+  * Community Guidelines (/guidelines): Rules for civil engagement, anti-toxicity, anti-cheating, spoiler warnings, and constructive discussions.
+  * Terms of Service (/terms), Privacy Policy (/privacy), Cookie Policy (/cookies), Sitemap (/sitemap).
 
-VISITOR (GUEST) VS. REGISTERED MEMBER (USER) ARCHITECTURE:
+2. VISITOR (GUEST) VS. REGISTERED MEMBER (USER) ARCHITECTURE:
+- Important Policy: Only registered and signed-in users can like, comment, and save content across the website!
 - Visitors (Guests):
   * Can freely browse all games, watch videos, read guides, read reviews, inspect forum threads, and use all 3 interactive tools without registering.
   * Can ask Vault AI up to 20 queries per day.
-  * CANNOT: Post new forum topics, post comments on articles/videos, like or bookmark content, or save custom profiles.
+  * CANNOT: Like posts/articles/videos, comment on articles/videos, save/bookmark content, or post new forum topics.
   * How to join: Click "Join Forum" or "Sign In" at the top header or use [ACTION:auth|Create Free Account / Sign In|open]. Registration is 100% free with email or Google sign-in.
 - Registered Members (Users):
-  * Unlocked features: Create forum topics (/forum/new), reply and comment on discussions, like articles/videos/topics, bookmark items to their private profile, earn reputation badges, and get unlimited Vault AI queries with synchronized conversation history.
-  * Vault AI assists members with personalized greetings, topic drafting, custom hardware matching, and saved build recommendations.
+  * Full privileges: Create forum topics (/forum/new), reply and comment on discussions, like articles/videos/topics, bookmark items to their private profile, earn reputation badges, and get unlimited Vault AI queries with synchronized conversation history.
 
-GAMES CATALOG (Verified in Game Vault Database):
-1. Elden Ring (ID: 'elden-ring', Genre: RPG/Action/Soulsborne, Platforms: PC, PS5, Xbox Series X/S, Developer: FromSoftware, Rating: 9.8/10, Link: /games/elden-ring)
-   - Expansions: Shadow of the Erdtree. Open-world Soulsborne masterpiece, challenging boss design, Scadutree blessings.
-2. World of Warships (ID: 'world-of-warships', Genre: Strategy/Simulation/Tactical Naval, Platforms: PC, Developer: Wargaming, Rating: 8.9/10, Link: /games/world-of-warships)
-   - Key mechanics: Armor angling (15-30 deg bow bounce), concealment mechanics, citadel penetrations, tactical fleet positioning, destroyer smokescreens.
-3. Cyberpunk 2077 (ID: 'cyberpunk-2077', Genre: RPG/Action/Open World, Platforms: PC, PS5, Xbox Series X/S, Developer: CD Projekt RED, Rating: 9.2/10, Link: /games/cyberpunk-2077)
-   - Patch 2.1 overhaul, Phantom Liberty DLC, Ray Tracing Overdrive, Dogtown vertical combat, Cyberware capacity system.
-4. Helldivers 2 (ID: 'helldivers-2', Genre: Action/Multiplayer/Co-op PvE, Platforms: PC, PS5, Developer: Arrowhead, Rating: 9.0/10, Link: /games/helldivers-2)
-   - 4-player squad co-op, Galactic War liberation map, stratagem management, friendly fire, Automaton and Terminid fronts.
-5. PUBG Mobile (ID: 'pubg-mobile', Genre: Battle Royale/Multiplayer/Action, Platforms: Mobile/PC Emulator, Developer: Krafton/Tencent, Rating: 8.5/10, Link: /games/pubg-mobile)
-   - 100-player drops, Erangel/Miramar rotations, circle positioning, squad tactical comms, gyro aiming.
-6. Black Myth: Wukong (ID: 'black-myth-wukong', Genre: Action/RPG, Platforms: PC, PS5, Developer: Game Science, Rating: 9.1/10, Link: /games/black-myth-wukong)
-   - Journey to the West lore, staff combat stances (Smash, Pillar, Thrust), spell transformations, mythic boss encounters.
-7. Baldur's Gate 3 (ID: 'baldurs-gate-3', Genre: RPG/Strategy, Platforms: PC, PS5, Xbox, Developer: Larian Studios, Rating: 9.9/10, Link: /games/baldurs-gate-3)
-   - Turn-based D&D 5e mechanics, massive branching narrative, co-op multiplayer, companion quests, Honor Mode.
-8. Hades II (ID: 'hades-2', Genre: Action/Roguelike, Platforms: PC, Developer: Supergiant Games, Rating: 9.4/10, Link: /games/hades-2)
-   - Melinoë, underworld witchcraft, Olympian boons, high replayability.
+3. COMPLETE GAMES DATABASE (36+ Verified PC & Console Titles):
+- Elden Ring & Shadow of the Erdtree (Soulsborne Action RPG • FromSoftware • 9.8/10 • /games/elden-ring)
+- World of Warships (Naval Tactical Strategy • Wargaming • 8.9/10 • /games/world-of-warships)
+- Cyberpunk 2077 & Phantom Liberty (Action RPG • CD Projekt RED • 9.2/10 • /games/cyberpunk-2077)
+- Helldivers 2 (Co-op PvE Shooter • Arrowhead • 9.0/10 • /games/helldivers-2)
+- PUBG Mobile (Battle Royale • Krafton/Tencent • 8.5/10 • /games/pubg-mobile)
+- Black Myth: Wukong (Action RPG • Game Science • 9.1/10 • /games/black-myth-wukong)
+- Baldur's Gate 3 (Turn-based RPG • Larian Studios • 9.9/10 • /games/baldurs-gate-3)
+- Hades II (Roguelike Action • Supergiant Games • 9.4/10 • /games/hades-2)
+- Grand Theft Auto V (Action / Open World • Rockstar Games • 9.6/10 • /games/grand-theft-auto-v)
+- Red Dead Redemption 2 (Open World Western • Rockstar Games • 9.8/10 • /games/red-dead-redemption-2)
+- The Witcher 3: Wild Hunt (Action RPG • CD Projekt RED • 9.8/10 • /games/the-witcher-3-wild-hunt)
+- Call of Duty: Warzone (Battle Royale • Activision • 8.2/10 • /games/call-of-duty-warzone)
+- Fortnite (Battle Royale • Epic Games • 8.6/10 • /games/fortnite)
+- Valorant (Tactical Hero Shooter • Riot Games • 8.8/10 • /games/valorant)
+- Counter-Strike 2 (Tactical Competitive FPS • Valve • 9.0/10 • /games/counter-strike-2)
+- Apex Legends (Fast-Paced Battle Royale • Respawn / EA • 8.7/10 • /games/apex-legends)
+- Forza Horizon 5 (Open World Racing • Playground Games • 9.2/10 • /games/forza-horizon-5)
+- Microsoft Flight Simulator (Simulation • Asobo Studio • 9.3/10 • /games/microsoft-flight-simulator)
+- Starfield (Space RPG • Bethesda Game Studios • 8.3/10 • /games/starfield)
+- Marvel's Spider-Man Remastered (Action Adventure • Insomniac Games • 9.1/10 • /games/marvels-spider-man-remastered)
+- God of War (Action Adventure • Santa Monica Studio • 9.7/10 • /games/god-of-war)
+- Ghost of Tsushima DIRECTOR'S CUT (Action Adventure • Sucker Punch • 9.5/10 • /games/ghost-of-tsushima)
+- Horizon Forbidden West Complete Edition (Action RPG • Guerrilla Games • 9.0/10 • /games/horizon-forbidden-west)
+- Monster Hunter: World (Action RPG • Capcom • 9.2/10 • /games/monster-hunter-world)
+- Hogwarts Legacy (Action RPG / Open World • Avalanche Software • 8.8/10 • /games/hogwarts-legacy)
+- Resident Evil 4 Remake (Survival Horror • Capcom • 9.6/10 • /games/resident-evil-4-remake)
+- Assassin's Creed Mirage (Action Adventure • Ubisoft • 8.1/10 • /games/assassins-creed-mirage)
+- Diablo IV (Action RPG • Blizzard Entertainment • 8.7/10 • /games/diablo-iv)
+- Overwatch 2 (Hero Shooter • Blizzard Entertainment • 8.0/10 • /games/overwatch-2)
+- Tom Clancy's Rainbow Six Siege (Tactical FPS • Ubisoft • 8.8/10 • /games/rainbow-six-siege)
+- S.T.A.L.K.E.R. 2: Heart of Chornobyl (Survival FPS • GSC Game World • 8.6/10 • /games/stalker-2-heart-of-chornobyl)
+- Rust (Multiplayer Survival • Facepunch Studios • 8.5/10 • /games/rust)
+- ARK: Survival Ascended (Survival Sandbox • Studio Wildcard • 7.9/10 • /games/ark-survival-ascended)
+- Star Wars Jedi: Survivor (Action Adventure • Respawn Entertainment • 8.9/10 • /games/star-wars-jedi-survivor)
+- Alan Wake 2 (Survival Horror • Remedy Entertainment • 9.5/10 • /games/alan-wake-2)
+- Cities: Skylines II (City Builder Simulation • Colossal Order • 7.8/10 • /games/cities-skylines-2)
 
-PUBLISHED ARTICLES, REVIEWS & GUIDES:
+4. PUBLISHED ARTICLES, REVIEWS & GUIDES:
 - Article: "Why World of Warships Is More Interesting Than I Expected" (Link: /articles/why-world-of-warships-is-more-interesting-than-i-expected, ID: 'art-1')
 - Article: "Cyberpunk 2077 in 2026: The Complete Overhaul Journey & Mod Ecosystem" (Link: /articles/cyberpunk-2077-in-2026-complete-overhaul-journey, ID: 'art-2')
 - Review: "Elden Ring: Shadow of the Erdtree Review — The Pinnacle of Expansion Craft" (Score: 10/10, Link: /reviews/elden-ring-shadow-of-the-erdtree-review, ID: 'rev-1')
@@ -78,19 +100,19 @@ PUBLISHED ARTICLES, REVIEWS & GUIDES:
 - Guide: "Elden Ring: Scadutree Fragment Route & Boss Progression Order" (Link: /guides/elden-ring-scadutree-fragment-route-boss-progression, ID: 'gui-2')
 - Guide: "Helldivers 2: Super Helldive Stratagem Loadout & Galactic War Tactics" (Link: /guides/helldivers-2-super-helldive-stratagems-tactics, ID: 'gui-3')
 
-CONNECTED YOUTUBE VIDEOS (Game Vault Channel):
+5. CONNECTED YOUTUBE VIDEOS (Game Vault Channel):
 - "Enjoying PUBG Mobile on a Good Morning" (11:45, ID: 'vid-pubg-morning', YouTube ID: 'O4jKXRh0HEY')
 - "Elden Ring: Shadow of the Erdtree — Ultimate Deep Dive & Lore Analysis" (24:18, ID: 'vid-1', YouTube ID: 'K_03fnT8j0A')
 - "Why World of Warships Is More Interesting Than I Expected — Tactical Analysis" (18:45, ID: 'vid-2', YouTube ID: 'q73K94x2P6M')
 - "Cyberpunk 2077 in 2026: The Complete Overhaul Journey" (21:04, ID: 'vid-3', YouTube ID: 'UnA7tepsc7s')
 - "Helldivers 2 — Galactic War Strategy & Team Mechanics Masterclass" (16:30, ID: 'vid-4', YouTube ID: 'lP_8hPq2VnQ')
 
-RECOMMENDED PC COMPONENT TIERS:
+6. RECOMMENDED PC COMPONENT TIERS:
 - Entry 1080p ($600 - $800 / ₦900k - ₦1.2M): Ryzen 5 5600 / Core i5-12400F + RX 6600 / RTX 3060 + 16GB DDR4 + 1TB NVMe + 650W Bronze
 - Sweet Spot 1440p ($1,000 - $1,400 / ₦1.5M - ₦2.1M): Ryzen 5 7600X / Core i5-13600KF + RTX 4070 Super / RX 7800 XT + 32GB DDR5-6000 + 2TB Gen4 + 750W Gold
 - High-End 4K / Enthusiast ($1,800+ / ₦2.8M+): Ryzen 7 7800X3D + RTX 4080 Super / RX 7900 XTX + 32GB/64GB DDR5 + 850W+ Gold
 
-12-POINT LOW FPS TROUBLESHOOTING CHECKLIST:
+7. 12-POINT LOW FPS TROUBLESHOOTING CHECKLIST:
 1. Render Resolution vs Display Native (check for unintended 4K rendering or DSR/VSR)
 2. Heavy Graphics Settings (Volumetric fog, ray tracing, shadow resolution, screen space reflections)
 3. GPU Utilization (Is GPU pinned at 99-100% or underutilized due to CPU bottleneck?)
@@ -109,19 +131,24 @@ const SYSTEM_INSTRUCTION = `
 You are Vault AI — the official AI Gaming Assistant & Website Copilot of Game Vault Forum (www.gamevault.forum).
 Tagline: "Your AI Gaming Assistant. Ask. Discover. Compare. Troubleshoot. Play smarter."
 
-PERSONALITY & IDENTITY:
-- You are helpful, knowledgeable, friendly, gaming-focused, objective, and deeply familiar with every section of Game Vault Forum.
-- Identify yourself as: "Vault AI — the Game Vault Forum gaming assistant."
-- Speak with professional composure; avoid excessive slang, hype, or artificial emojis.
-- Deliver structured, readable markdown with bold text, bullet points, and code/table formatting where helpful.
+PERSONALITY & CHAT ASSISTANT BEHAVIOR:
+- You are an attentive, conversational, helpful, friendly, and gaming-savvy assistant.
+- Greet users and visitors warmly and converse naturally. Listen carefully to what they ask.
+- You have studied the entire Game Vault Forum website in depth: its articles, games catalog, PC tools, discussion boards, author/founder Joel Ayuba, policies, and visitor/member permissions.
+- Respond with clear, well-structured, scannable answers. Use bold text, bullet points, and neat formatting.
+- Always provide direct links to relevant pages on Game Vault Forum (e.g., https://www.gamevault.forum/tools/pc-game-requirements-checker, /tools/gaming-pc-builder, /contact, /about, /forum, /games).
+- Proactively offer relevant next steps or follow-ups to help visitors and members get the most out of Game Vault Forum.
 
 USER VS. VISITOR ADAPTATION:
 - VISITOR MODE (Guest / Unregistered):
-  * Be warm, welcoming, and hospitable.
-  * Help visitors navigate the website, discover games, watch videos, read guides, and explore our 3 interactive tools (PC Requirements, PC Builder, Username Generator).
-  * If a visitor asks how to participate in discussions, save builds, or get unlimited AI queries, explain the benefits of joining Game Vault Forum (free account, 10-second setup, unlocks forum posting, comments, bookmarks, reputation, and unlimited Vault AI access) and provide the [ACTION:auth|Join Game Vault Forum (Free)|open] action button.
+  * Welcome them warmly!
+  * Guide visitors through exploring games, watching videos, reading guides, testing their PC in the PC Game Requirements Checker, building custom rigs, and generating gamertags.
+  * Remind visitors that browsing and using interactive tools is 100% free with no account needed.
+  * When a visitor asks about participating in discussions, commenting, liking, or saving content, explain that:
+    "Only registered and signed in users can like, comment, and save content across the website, as well as post new forum topics."
+  * Invite them to join for free (takes 10 seconds via email or Google sign-in) and provide the [ACTION:auth|Create Free Account / Sign In|open] button.
 - REGISTERED MEMBER MODE (Logged In / User):
-  * Greet them by name when provided (e.g., "Welcome back, Joel!").
+  * Greet them personally by name (e.g. "Welcome back, Joel!").
   * Assist them with drafting high-quality forum topics, sharing PC builds, comparing game specs, and finding strategic guides.
   * Provide direct forum drafting actions like [ACTION:topic|Draft Topic on Forum|/forum/new].
 
@@ -133,11 +160,11 @@ STRICT ACCURACY RULES:
 
 STRUCTURED METADATA TAGS:
 You can append interactive cards to your response:
-- Games: [CARD_GAME:elden-ring], [CARD_GAME:world-of-warships], [CARD_GAME:cyberpunk-2077], [CARD_GAME:helldivers-2], [CARD_GAME:pubg-mobile], [CARD_GAME:black-myth-wukong], [CARD_GAME:baldurs-gate-3], [CARD_GAME:hades-2]
+- Games: [CARD_GAME:elden-ring], [CARD_GAME:world-of-warships], [CARD_GAME:cyberpunk-2077], [CARD_GAME:helldivers-2], [CARD_GAME:pubg-mobile], [CARD_GAME:black-myth-wukong], [CARD_GAME:baldurs-gate-3], [CARD_GAME:hades-2], [CARD_GAME:grand-theft-auto-v], [CARD_GAME:red-dead-redemption-2], [CARD_GAME:the-witcher-3-wild-hunt], [CARD_GAME:fortnite], [CARD_GAME:valorant], [CARD_GAME:counter-strike-2]
 - Articles/Guides: [CARD_ARTICLE:art-1], [CARD_ARTICLE:art-2], [CARD_GUIDE:gui-1], [CARD_GUIDE:gui-2], [CARD_GUIDE:gui-3], [CARD_REVIEW:rev-1], [CARD_REVIEW:rev-2]
 - Videos: [CARD_VIDEO:vid-pubg-morning], [CARD_VIDEO:vid-1], [CARD_VIDEO:vid-2], [CARD_VIDEO:vid-3], [CARD_VIDEO:vid-4]
 - Hardware: [CARD_HW:gpu-4070s], [CARD_HW:cpu-7800x3d], [CARD_HW:cpu-7600x], [CARD_HW:gpu-7800xt]
-- Sources: [SOURCE:Game Vault Forum — World of Warships Guide|/guides/world-of-warships-armor-angling-penetration-guide]
+- Sources: [SOURCE:Title|url_path]
 
 ASSISTIVE ACTIONS:
 Always include 1-3 actionable buttons at the bottom:
@@ -166,6 +193,7 @@ function getGeminiClient(): GoogleGenAI | null {
 
 async function startServer() {
   const app = express();
+  app.use(compression());
   app.use(express.json({ limit: '5mb' }));
 
   // Health check
@@ -176,6 +204,39 @@ async function startServer() {
       time: new Date().toISOString(),
       aiConfigured: Boolean(process.env.GEMINI_API_KEY),
     });
+  });
+
+  // Contact Us submission endpoint (resilient server-side backup & monitoring)
+  const contactInquiriesMemory: any[] = [];
+
+  app.post('/api/contact', (req, res) => {
+    try {
+      const { name, email, category, subject, message, id, createdAt } = req.body || {};
+      if (!name || !email || !message) {
+        return res.status(400).json({ error: 'Missing required contact fields' });
+      }
+      const inquiry = {
+        id: id || `contact_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+        name: String(name).slice(0, 100),
+        email: String(email).slice(0, 120),
+        category: String(category || 'editorial').slice(0, 50),
+        subject: subject ? String(subject).slice(0, 200) : '',
+        message: String(message).slice(0, 3000),
+        createdAt: createdAt || new Date().toISOString(),
+        status: 'new',
+        receivedAt: new Date().toISOString(),
+      };
+      contactInquiriesMemory.unshift(inquiry);
+      console.log(`[Contact Us] Successfully recorded inquiry from ${inquiry.email} (${inquiry.category})`);
+      res.json({ success: true, id: inquiry.id });
+    } catch (err: any) {
+      console.error('[Contact Us] Server processing error:', err);
+      res.status(500).json({ error: 'Failed to process contact inquiry' });
+    }
+  });
+
+  app.get('/api/contact', (_req, res) => {
+    res.json({ inquiries: contactInquiriesMemory.slice(0, 50) });
   });
 
   // Admin status endpoint
@@ -319,7 +380,12 @@ async function startServer() {
     app.use(vite.middlewares);
   } else {
     const distPath = path.join(process.cwd(), 'dist');
-    app.use(express.static(distPath));
+    app.use(
+      express.static(distPath, {
+        maxAge: '7d',
+        etag: true,
+      })
+    );
     app.get('*', (_req, res) => {
       res.sendFile(path.join(distPath, 'index.html'));
     });
@@ -446,6 +512,155 @@ function generateLocalKnowledgeResponse(query: string, context: any = {}) {
   const q = query.toLowerCase().trim();
   const isVisitor = context.isGuest || !context.isSignedIn;
   const memberGreeting = context.userName ? `Hello, **${context.userName}**! ` : '';
+
+  // 0. Contact Us, Support, Feedback & Reaching Out
+  if (
+    q.includes('contact') ||
+    q.includes('support') ||
+    q.includes('feedback') ||
+    q.includes('email') ||
+    q.includes('reach out') ||
+    q.includes('bug report') ||
+    q.includes('inquiry') ||
+    q.includes('contact us')
+  ) {
+    return {
+      reply: `### ${memberGreeting}Contact Game Vault Forum Support & Editorial Team
+
+We would love to hear from you! Whether you have editorial feedback, partnership proposals, technical bug reports, or general inquiries:
+
+- **[Contact Us Page](/contact)**: Submit your message directly through our contact form. Submissions are securely transmitted and stored in our database for fast review.
+- **Direct Support Email**: [contact@gamevault.forum](mailto:contact@gamevault.forum)
+- **Founder & Editor**: Joel Ayuba
+- **YouTube Channel**: [@GameVaultForum](https://www.youtube.com/@GameVaultForum)
+
+We review every inquiry within 24–48 business hours.`,
+      sources: [
+        { title: 'Game Vault Forum — Contact Us', url: '/contact' },
+        { title: 'Game Vault Forum — About Joel Ayuba', url: '/about' },
+      ],
+      cardIds: { games: [], articles: [], videos: [], hardware: [] },
+      actions: [
+        { id: 'act-cnt-1', type: 'navigate', label: 'Open Contact Us Form', target: '/contact' },
+        { id: 'act-cnt-2', type: 'navigate', label: 'Read About Us', target: '/about' },
+        { id: 'act-cnt-3', type: 'navigate', label: 'Community Guidelines', target: '/guidelines' },
+      ],
+    };
+  }
+
+  // 0.1 PC Game Requirements Checker specific inquiry
+  if (
+    q.includes('pc game requirements checker') ||
+    q.includes('requirements checker') ||
+    q.includes('system requirements') ||
+    q.includes('can i run') ||
+    q.includes('can my pc run') ||
+    q.includes('specs checker')
+  ) {
+    return {
+      reply: `### ${memberGreeting}PC Game Requirements Checker
+
+Our verified **[PC Game Requirements Checker](https://www.gamevault.forum/tools/pc-game-requirements-checker)** allows you to test your PC's CPU, GPU, RAM, and VRAM against **36+ verified games** with instant Pass, Warn, or Fail ratings.
+
+#### Popular Games Supported:
+- **Elden Ring & Shadow of the Erdtree**
+- **Cyberpunk 2077 & Phantom Liberty**
+- **Grand Theft Auto V**
+- **Red Dead Redemption 2**
+- **The Witcher 3: Wild Hunt**
+- **Black Myth: Wukong**
+- **Helldivers 2**
+- **Call of Duty: Warzone & Fortnite**
+- **Valorant & Counter-Strike 2**
+- **World of Warships & PUBG Mobile**
+
+Test your hardware or inspect component upgrade paths instantly!`,
+      sources: [
+        { title: 'Game Vault Forum — PC Game Requirements Checker', url: 'https://www.gamevault.forum/tools/pc-game-requirements-checker' },
+        { title: 'Game Vault Forum — Gaming PC Builder', url: '/tools/gaming-pc-builder' },
+      ],
+      cardIds: { games: ['elden-ring', 'cyberpunk-2077', 'grand-theft-auto-v', 'red-dead-redemption-2'], articles: [], videos: [], hardware: ['gpu-4070s'] },
+      actions: [
+        { id: 'act-req-chk', type: 'navigate', label: 'Launch Requirements Checker', target: '/tools/pc-game-requirements-checker' },
+        { id: 'act-req-bld', type: 'navigate', label: 'Open Gaming PC Builder', target: '/tools/gaming-pc-builder' },
+        { id: 'act-req-cat', type: 'navigate', label: 'Browse 36+ Games', target: '/games' },
+      ],
+    };
+  }
+
+  // 0.2 Like, Comment, Save & Bookmark Permissions
+  if (
+    (q.includes('like') || q.includes('comment') || q.includes('save') || q.includes('bookmark')) &&
+    (q.includes('how') || q.includes('can i') || q.includes('error') || q.includes('why') || q.includes('sign in') || q.includes('guest') || q.includes('account'))
+  ) {
+    return {
+      reply: `### ${memberGreeting}Interacting with Content on Game Vault Forum
+
+On Game Vault Forum:
+> **Only registered and signed in users can like, comment, and save content across the website**, as well as post new discussion topics on the forum.
+
+#### How to Participate:
+- If you are currently a visitor/guest, you can create a free account in under 10 seconds using your email address or Google Sign-In.
+- Once signed in, you will instantly be able to:
+  * ❤️ **Like** any article, video, review, or forum discussion
+  * 💬 **Comment** and share your insights with the community
+  * 🔖 **Save/Bookmark** content to your private gamer profile
+  * ✍️ **Post** new topics in any of our 5 forum boards
+
+Signing up is 100% free with no subscription or hidden costs!`,
+      sources: [
+        { title: 'Game Vault Forum — Community Guidelines', url: '/guidelines' },
+        { title: 'Game Vault Forum — Terms of Service', url: '/terms' },
+      ],
+      cardIds: { games: [], articles: [], videos: [], hardware: [] },
+      actions: [
+        { id: 'act-auth-gate', type: 'auth', label: 'Sign In / Join Free Forum', target: 'open' },
+        { id: 'act-auth-disc', type: 'navigate', label: 'Browse Forum', target: '/forum' },
+      ],
+    };
+  }
+
+  // 0.3 Friendly Conversational Greetings
+  if (
+    q === 'hi' ||
+    q === 'hello' ||
+    q === 'hey' ||
+    q === 'yo' ||
+    q === 'greetings' ||
+    q.startsWith('hello ') ||
+    q.startsWith('hi ') ||
+    q.startsWith('hey ') ||
+    q.includes('how are you') ||
+    q.includes('what can you do') ||
+    q.includes('who are you')
+  ) {
+    return {
+      reply: `### ${memberGreeting}Hello! I am Vault AI, your Gaming Copilot!
+
+I am delighted to chat with you! As the official AI assistant for **Game Vault Forum**, I have read and studied the entire website to help you navigate, discover, and game smarter:
+
+#### Here is what I can do for you:
+- 🎮 **Check System Requirements**: Test your PC hardware against 36+ verified games in our **[PC Game Requirements Checker](https://www.gamevault.forum/tools/pc-game-requirements-checker)**.
+- 🖥️ **PC Building & Compatibility**: Help you configure a balanced gaming rig in our **[Gaming PC Builder](/tools/gaming-pc-builder)**.
+- ⚡ **Diagnose FPS Drops**: Run through our 12-point hardware and graphics troubleshooting checklist.
+- ⚔️ **Tactical Guides & Reviews**: Give you pro tips for Elden Ring, World of Warships, Cyberpunk 2077, and Helldivers 2.
+- 💬 **Community Discussions**: Help you draft forum topics or navigate our 5 discussion boards.
+- 🏷️ **Gamertag Generator**: Find unique tags in our **[Gaming Username Generator](/tools/gaming-username-generator)**.
+
+What are you playing or looking to build today?`,
+      sources: [
+        { title: 'Game Vault Forum — Tools Hub', url: '/tools' },
+        { title: 'Game Vault Forum — Games Directory', url: '/games' },
+        { title: 'Game Vault Forum — Discussion Boards', url: '/forum' },
+      ],
+      cardIds: { games: ['elden-ring', 'cyberpunk-2077', 'helldivers-2'], articles: ['art-1', 'art-2'], videos: ['vid-1'], hardware: ['gpu-4070s'] },
+      actions: [
+        { id: 'act-hi-req', type: 'navigate', label: 'PC Requirements Checker', target: '/tools/pc-game-requirements-checker' },
+        { id: 'act-hi-bld', type: 'navigate', label: 'Gaming PC Builder', target: '/tools/gaming-pc-builder' },
+        { id: 'act-hi-cat', type: 'navigate', label: 'Browse Games Catalog', target: '/games' },
+      ],
+    };
+  }
 
   // 1. Website identity, Mission, Founder, Visitor vs Member Guide
   if (

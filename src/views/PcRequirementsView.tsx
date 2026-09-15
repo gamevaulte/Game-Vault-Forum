@@ -41,6 +41,8 @@ interface PcRequirementsViewProps {
   onOpenVideo?: (gameTitle: string) => void;
   onOpenArticle?: (gameTitle: string) => void;
   onOpenForum?: (gameTitle: string) => void;
+  isSignedIn?: boolean;
+  onOpenSignIn?: () => void;
 }
 
 const STORAGE_KEY_USER_PC = 'gvf_saved_user_pc_v1';
@@ -52,7 +54,9 @@ export const PcRequirementsView: React.FC<PcRequirementsViewProps> = ({
   onNavigateTab,
   onOpenVideo,
   onOpenArticle,
-  onOpenForum
+  onOpenForum,
+  isSignedIn,
+  onOpenSignIn
 }) => {
   // Load games from localStorage if customized, or use INITIAL_GAMES_REQUIREMENTS
   const [games, setGames] = useState<PcGameRequirements[]>(() => {
@@ -61,7 +65,11 @@ export const PcRequirementsView: React.FC<PcRequirementsViewProps> = ({
         const saved = localStorage.getItem(STORAGE_KEY_CUSTOM_GAMES);
         if (saved) {
           const parsed = JSON.parse(saved);
-          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            const initialIds = new Set(INITIAL_GAMES_REQUIREMENTS.map((g) => g.id));
+            const userAdded = parsed.filter((g: PcGameRequirements) => !initialIds.has(g.id));
+            return [...INITIAL_GAMES_REQUIREMENTS, ...userAdded];
+          }
         }
       } catch (e) {
         console.error('Error loading saved game requirements:', e);
@@ -116,6 +124,10 @@ export const PcRequirementsView: React.FC<PcRequirementsViewProps> = ({
 
   // Handle Save PC
   const handleSavePc = () => {
+    if (!isSignedIn) {
+      if (onOpenSignIn) onOpenSignIn();
+      return;
+    }
     if (typeof window !== 'undefined') {
       localStorage.setItem(STORAGE_KEY_USER_PC, JSON.stringify(userPc));
       setIsSaved(true);

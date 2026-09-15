@@ -53,7 +53,7 @@ export const VaultLogo: React.FC<VaultLogoProps> = ({ size = 'md', showTagline =
           </span>
         </div>
         {showTagline && (
-          <span className="text-[10px] tracking-widest text-slate-400 uppercase font-['Space_Grotesk'] font-medium -mt-1 truncate">
+          <span className="hidden xl:block text-[10px] tracking-widest text-slate-400 uppercase font-['Space_Grotesk'] font-medium -mt-1 truncate">
             Watch • Play • Discuss • Discover
           </span>
         )}

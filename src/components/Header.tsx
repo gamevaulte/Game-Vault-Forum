@@ -39,6 +39,7 @@ export const Header: React.FC<HeaderProps> = ({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // Primary desktop navigation tabs (About and Contact are cleanly located in the footer and mobile drawer)
   const navItems: { id: PageTab; label: string }[] = [
     { id: 'home', label: 'Home' },
     { id: 'videos', label: 'Videos' },
@@ -46,9 +47,7 @@ export const Header: React.FC<HeaderProps> = ({
     { id: 'articles', label: 'Articles' },
     { id: 'reviews', label: 'Reviews' },
     { id: 'guides', label: 'Guides' },
-    { id: 'forum', label: 'Forum' },
-    { id: 'about', label: 'About' },
-    { id: 'contact', label: 'Contact' }
+    { id: 'forum', label: 'Forum' }
   ];
 
   const toolsItems = [
@@ -61,11 +60,11 @@ export const Header: React.FC<HeaderProps> = ({
       badge: 'Flagship AI'
     },
     {
-      id: 'gaming-username-generator' as PageTab,
-      label: 'Username Generator',
-      desc: 'Create unique gaming names',
-      href: '/tools/gaming-username-generator',
-      icon: Sparkles
+      id: 'pc-requirements' as PageTab,
+      label: 'PC Requirements Checker',
+      desc: 'Can My PC Run This Game?',
+      href: '/tools/pc-game-requirements-checker',
+      icon: Monitor
     },
     {
       id: 'gaming-pc-builder' as PageTab,
@@ -75,11 +74,11 @@ export const Header: React.FC<HeaderProps> = ({
       icon: Wrench
     },
     {
-      id: 'pc-requirements' as PageTab,
-      label: 'PC Requirements Checker',
-      desc: 'Can My PC Run This Game?',
-      href: '/tools/pc-game-requirements-checker',
-      icon: Monitor
+      id: 'gaming-username-generator' as PageTab,
+      label: 'Username Generator',
+      desc: 'Create unique gaming names',
+      href: '/tools/gaming-username-generator',
+      icon: Sparkles
     }
   ];
 
@@ -98,8 +97,8 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-black/30 backdrop-blur-xl border-b border-white/5 transition-colors">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between gap-4">
+    <header className="sticky top-0 z-40 w-full max-w-full overflow-x-clip bg-black/40 backdrop-blur-xl border-b border-white/5 transition-colors">
+      <div className="max-w-7xl mx-auto px-2.5 sm:px-4 lg:px-6 h-16 sm:h-18 flex items-center justify-between gap-2 sm:gap-3">
         {/* Brand Logo */}
         <a
           href="/"
@@ -107,14 +106,14 @@ export const Header: React.FC<HeaderProps> = ({
             e.preventDefault();
             handleNavClick('home');
           }}
-          className="cursor-pointer"
+          className="cursor-pointer shrink-0"
         >
           <VaultLogo size="md" showTagline={true} />
         </a>
 
-        {/* Desktop Navigation */}
-        <nav className="hidden lg:flex items-center space-x-0.5 xl:space-x-1 font-['Rajdhani'] font-semibold tracking-wider text-sm xl:text-base uppercase">
-          {navItems.slice(0, 7).map((item) => {
+        {/* Desktop Navigation: perfectly fitted without overflow on desktop and laptops */}
+        <nav className="hidden lg:flex items-center space-x-0.5 xl:space-x-1 font-['Rajdhani'] font-semibold tracking-wider text-xs xl:text-sm uppercase shrink">
+          {navItems.map((item) => {
             const isActive = currentTab === item.id;
             const href = item.id === 'home' ? '/' : `/${item.id}`;
             return (
@@ -126,7 +125,7 @@ export const Header: React.FC<HeaderProps> = ({
                   e.preventDefault();
                   handleNavClick(item.id);
                 }}
-                className={`relative px-2.5 xl:px-3 py-1.5 xl:py-2 rounded-xl transition-all duration-200 ${
+                className={`relative px-2 xl:px-2.5 py-1.5 rounded-lg xl:rounded-xl transition-all duration-200 whitespace-nowrap ${
                   isActive
                     ? 'text-white bg-white/10 backdrop-blur-md border border-white/20 shadow-lg shadow-purple-900/10'
                     : 'text-gray-400 hover:text-white hover:bg-white/5'
@@ -134,7 +133,7 @@ export const Header: React.FC<HeaderProps> = ({
               >
                 {item.label}
                 {isActive && (
-                  <span className="absolute bottom-1 left-3 right-3 h-0.5 bg-gradient-to-r from-purple-400 to-cyan-400 rounded-full" />
+                  <span className="absolute bottom-1 left-2.5 right-2.5 h-0.5 bg-gradient-to-r from-purple-400 to-cyan-400 rounded-full" />
                 )}
               </a>
             );
@@ -146,16 +145,16 @@ export const Header: React.FC<HeaderProps> = ({
               type="button"
               id="nav-tools-dropdown"
               onClick={() => setToolsDropdownOpen(!toolsDropdownOpen)}
-              className={`relative px-2.5 xl:px-3 py-1.5 xl:py-2 rounded-xl transition-all duration-200 flex items-center gap-1 cursor-pointer ${
+              className={`relative px-2 xl:px-2.5 py-1.5 rounded-lg xl:rounded-xl transition-all duration-200 flex items-center gap-1 cursor-pointer whitespace-nowrap ${
                 isToolsActive
                   ? 'text-white bg-white/10 backdrop-blur-md border border-white/20 shadow-lg shadow-purple-900/10'
                   : 'text-gray-400 hover:text-white hover:bg-white/5'
               }`}
             >
               <span>Tools</span>
-              <ChevronDown className={`w-3.5 h-3.5 transition-transform ${toolsDropdownOpen ? 'rotate-180' : ''}`} />
+              <ChevronDown className={`w-3 h-3 transition-transform ${toolsDropdownOpen ? 'rotate-180' : ''}`} />
               {isToolsActive && (
-                <span className="absolute bottom-1 left-3 right-3 h-0.5 bg-gradient-to-r from-purple-400 to-cyan-400 rounded-full" />
+                <span className="absolute bottom-1 left-2.5 right-2.5 h-0.5 bg-gradient-to-r from-purple-400 to-cyan-400 rounded-full" />
               )}
             </button>
 
@@ -208,52 +207,27 @@ export const Header: React.FC<HeaderProps> = ({
               </div>
             )}
           </div>
-
-          {navItems.slice(7).map((item) => {
-            const isActive = currentTab === item.id;
-            const href = `/${item.id}`;
-            return (
-              <a
-                key={item.id}
-                id={`nav-${item.id}`}
-                href={href}
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleNavClick(item.id);
-                }}
-                className={`relative px-2.5 xl:px-3 py-1.5 xl:py-2 rounded-xl transition-all duration-200 ${
-                  isActive
-                    ? 'text-white bg-white/10 backdrop-blur-md border border-white/20 shadow-lg shadow-purple-900/10'
-                    : 'text-gray-400 hover:text-white hover:bg-white/5'
-                }`}
-              >
-                {item.label}
-                {isActive && (
-                  <span className="absolute bottom-1 left-3 right-3 h-0.5 bg-gradient-to-r from-purple-400 to-cyan-400 rounded-full" />
-                )}
-              </a>
-            );
-          })}
         </nav>
 
-        {/* Right Action Icons */}
-        <div className="flex items-center gap-1.5 sm:gap-2.5 md:gap-3 shrink-0">
-          {/* Live Indicator Pill from Frosted Glass theme */}
-          <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg backdrop-blur-md">
-            <div className="w-2.5 h-2.5 bg-red-600 rounded-full animate-pulse"></div>
-            <span className="text-[11px] font-bold uppercase tracking-widest text-gray-200">Live</span>
+        {/* Right Action Icons: responsive and protected against edge overflowing */}
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+          {/* Live Indicator Pill: only on larger viewports */}
+          <div className="hidden xl:flex items-center gap-2 px-2.5 py-1 bg-white/5 border border-white/10 rounded-lg backdrop-blur-md">
+            <div className="w-2 h-2 bg-red-600 rounded-full animate-pulse"></div>
+            <span className="text-[10px] font-bold uppercase tracking-widest text-gray-200">Live</span>
           </div>
 
           {/* Global Search Button */}
           <button
             id="header-search-btn"
             onClick={onOpenSearch}
-            className="flex items-center gap-1.5 sm:gap-2 p-1.5 sm:px-3 sm:py-1.5 text-xs text-gray-300 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 rounded-lg hover:text-white backdrop-blur-md transition-all group shrink-0"
+            className="flex items-center gap-1.5 p-2 sm:px-2.5 sm:py-1.5 text-xs text-gray-300 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 rounded-lg hover:text-white backdrop-blur-md transition-all group shrink-0"
             title="Search the Vault (Ctrl+K)"
+            aria-label="Search Game Vault"
           >
-            <Search className="w-4 h-4 text-purple-400 group-hover:text-cyan-400 transition-colors" />
-            <span className="hidden sm:inline text-gray-300 font-medium font-['Space_Grotesk']">Search Vault</span>
-            <kbd className="hidden md:inline-block px-1.5 py-0.5 text-[10px] bg-white/10 text-gray-300 rounded border border-white/10">
+            <Search className="w-4 h-4 text-purple-400 group-hover:text-cyan-400 transition-colors shrink-0" />
+            <span className="hidden md:inline text-gray-300 font-medium font-['Space_Grotesk']">Search</span>
+            <kbd className="hidden 2xl:inline-block px-1.5 py-0.5 text-[10px] bg-white/10 text-gray-300 rounded border border-white/10">
               ⌘K
             </kbd>
           </button>
@@ -264,11 +238,12 @@ export const Header: React.FC<HeaderProps> = ({
             href={YOUTUBE_CHANNEL.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1 sm:gap-1.5 p-1.5 sm:px-3 sm:py-1.5 text-xs font-['Rajdhani'] font-bold uppercase tracking-wider text-white bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-500 hover:to-rose-600 rounded-lg shadow-lg shadow-red-950/40 border border-red-500/30 transition-all transform hover:scale-[1.02] shrink-0"
+            className="flex items-center gap-1.5 p-2 sm:px-2.5 sm:py-1.5 text-xs font-['Rajdhani'] font-bold uppercase tracking-wider text-white bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-500 hover:to-rose-600 rounded-lg shadow-lg shadow-red-950/40 border border-red-500/30 transition-all transform hover:scale-[1.02] shrink-0"
             title={`Game Vault Forum on YouTube (${YOUTUBE_CHANNEL.handle})`}
+            aria-label="YouTube Channel"
           >
-            <Youtube className="w-4 h-4 fill-white" />
-            <span className="hidden sm:inline">YouTube</span>
+            <Youtube className="w-4 h-4 fill-white shrink-0" />
+            <span className="hidden lg:inline">YouTube</span>
           </a>
 
           {/* User Account / Profile or Sign In */}
@@ -277,15 +252,15 @@ export const Header: React.FC<HeaderProps> = ({
               <button
                 id="header-profile-btn"
                 onClick={onOpenProfile}
-                className="flex items-center gap-2 p-1.5 sm:px-2.5 sm:py-1.5 text-xs bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 rounded-lg text-gray-200 backdrop-blur-md transition-all cursor-pointer shrink-0"
+                className="flex items-center gap-1.5 p-1.5 sm:px-2 sm:py-1.5 text-xs bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 rounded-lg text-gray-200 backdrop-blur-md transition-all cursor-pointer shrink-0"
                 title="Community Profile & Bookmarks"
               >
                 <img
                   src={user.avatar}
                   alt={user.name}
-                  className="w-6 h-6 rounded-md object-cover border border-purple-500/50"
+                  className="w-5 h-5 sm:w-6 sm:h-6 rounded-md object-cover border border-purple-500/50 shrink-0"
                 />
-                <span className="hidden md:inline font-['Space_Grotesk'] font-medium text-gray-300 max-w-[100px] truncate">
+                <span className="hidden 2xl:inline font-['Space_Grotesk'] font-medium text-gray-300 max-w-[90px] truncate">
                   {user.name}
                 </span>
               </button>
@@ -295,11 +270,11 @@ export const Header: React.FC<HeaderProps> = ({
                 <button
                   id="header-signout-btn"
                   onClick={onSignOut}
-                  className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-gray-400 hover:text-red-300 bg-white/5 hover:bg-red-500/10 border border-white/10 hover:border-red-500/30 rounded-lg backdrop-blur-md transition-all cursor-pointer shrink-0"
+                  className="hidden md:flex items-center gap-1 px-2 py-1.5 text-xs text-gray-400 hover:text-red-300 bg-white/5 hover:bg-red-500/10 border border-white/10 hover:border-red-500/30 rounded-lg backdrop-blur-md transition-all cursor-pointer shrink-0"
                   title="Sign Out of Game Vault"
                 >
                   <LogOut className="w-3.5 h-3.5" />
-                  <span className="hidden lg:inline text-[11px] font-['Rajdhani'] font-bold uppercase tracking-wider">
+                  <span className="hidden xl:inline text-[10px] font-['Rajdhani'] font-bold uppercase tracking-wider">
                     Exit
                   </span>
                 </button>
@@ -309,15 +284,15 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               id="header-signin-btn"
               onClick={onOpenSignIn}
-              className="flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 text-xs font-['Rajdhani'] font-bold uppercase tracking-wider text-white bg-purple-600 hover:bg-purple-500 rounded-lg shadow-md shadow-purple-900/40 border border-purple-400/40 transition-all transform hover:scale-[1.02] cursor-pointer shrink-0"
+              className="flex items-center gap-1 px-2 sm:px-2.5 py-1.5 text-xs font-['Rajdhani'] font-bold uppercase tracking-wider text-white bg-purple-600 hover:bg-purple-500 rounded-lg shadow-md shadow-purple-900/40 border border-purple-400/40 transition-all transform hover:scale-[1.02] cursor-pointer shrink-0"
               title="Sign In / Register to Game Vault"
             >
-              <LogIn className="w-3.5 h-3.5" />
-              <span className="hidden xs:inline sm:inline">Sign In</span>
+              <LogIn className="w-3.5 h-3.5 shrink-0" />
+              <span className="text-[11px] sm:text-xs">Sign In</span>
             </button>
           )}
 
-          {/* Mobile Menu Hamburger */}
+          {/* Mobile/Tablet Menu Hamburger */}
           <button
             id="mobile-menu-toggle"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -329,7 +304,7 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
       </div>
 
-      {/* Mobile Menu Dropdown Drawer */}
+      {/* Mobile & Tablet Drawer Menu */}
       {mobileMenuOpen && (
         <div className="lg:hidden border-b border-white/10 bg-[#07080d]/95 backdrop-blur-2xl px-4 py-5 animate-in slide-in-from-top-2 duration-200 max-h-[85vh] overflow-y-auto">
           <div className="grid grid-cols-2 gap-2 mb-4">
@@ -391,6 +366,43 @@ export const Header: React.FC<HeaderProps> = ({
                   </a>
                 );
               })}
+            </div>
+          </div>
+
+          {/* Quick Links: About & Contact Us */}
+          <div className="pt-3 border-t border-white/10 mb-4">
+            <div className="text-[11px] font-mono text-cyan-400 font-bold uppercase tracking-wider mb-2">
+              Information & Desk
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <a
+                href="/about"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleNavClick('about');
+                }}
+                className={`px-3 py-2 rounded-xl text-left font-['Rajdhani'] font-bold text-xs tracking-wider uppercase transition-all ${
+                  currentTab === 'about'
+                    ? 'bg-white/15 text-white border border-white/25'
+                    : 'text-gray-400 bg-white/5 hover:text-white'
+                }`}
+              >
+                About Game Vault
+              </a>
+              <a
+                href="/contact"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleNavClick('contact');
+                }}
+                className={`px-3 py-2 rounded-xl text-left font-['Rajdhani'] font-bold text-xs tracking-wider uppercase transition-all ${
+                  currentTab === 'contact'
+                    ? 'bg-white/15 text-white border border-white/25'
+                    : 'text-gray-400 bg-white/5 hover:text-white'
+                }`}
+              >
+                Contact Us
+              </a>
             </div>
           </div>
 

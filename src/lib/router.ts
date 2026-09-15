@@ -86,6 +86,9 @@ export function parseRoute(rawPath: string): Route {
     }
     return { type: 'gaming-pc-builder' };
   }
+  if (seg1 === 'pc-game-requirements-checker' || seg1 === 'pc-requirements') {
+    return { type: 'pc-requirements', gameSlug: seg2 };
+  }
 
   if (seg1 === 'videos') {
     if (seg2) return { type: 'video', id: seg2, slug: seg2 };

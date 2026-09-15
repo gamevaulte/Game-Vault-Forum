@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { PageTab, Video, Game, Article, Review, Guide, ForumTopic, UserAccount, PostComment } from './types';
 import {
   MOCK_VIDEOS,
@@ -18,44 +18,48 @@ import { getSeoSlug, findItemBySlugOrId, updatePageSeo } from './lib/seo';
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
 import { Toast, ToastMessage } from './components/Toast';
-import { GlobalSearchModal } from './components/GlobalSearchModal';
-import { AuthProfileModal } from './components/AuthProfileModal';
 import { AuthGate } from './components/AuthGate';
-
-// Views
-import { HomeView } from './views/HomeView';
-import { VideosView } from './views/VideosView';
-import { GamesView } from './views/GamesView';
-import { ArticlesView } from './views/ArticlesView';
-import { ReviewsView } from './views/ReviewsView';
-import { GuidesView } from './views/GuidesView';
-import { ForumView } from './views/ForumView';
-import { AboutView } from './views/AboutView';
-
-// Dedicated Page Views with Unique URLs
-import { ArticlePageView } from './views/ArticlePageView';
-import { VideoPageView } from './views/VideoPageView';
-import { GamePageView } from './views/GamePageView';
-import { ReviewPageView } from './views/ReviewPageView';
-import { GuidePageView } from './views/GuidePageView';
-import { TopicPageView } from './views/TopicPageView';
-import { NewTopicPageView } from './views/NewTopicPageView';
-import { GuidelinesPageView } from './views/GuidelinesPageView';
-import { PrivacyPolicyView } from './views/PrivacyPolicyView';
-import { TermsOfServiceView } from './views/TermsOfServiceView';
-import { CookiePolicyView } from './views/CookiePolicyView';
-import { ContactPageView } from './views/ContactPageView';
-import { PcRequirementsView } from './views/PcRequirementsView';
-import { UsernameGeneratorView } from './views/UsernameGeneratorView';
-import { PcBuilderView } from './views/PcBuilderView';
-import { ToolsHubView } from './views/ToolsHubView';
-import { VaultAiView } from './views/VaultAiView';
-import { SitemapView } from './views/SitemapView';
-import { VaultAiFloatingButton } from './components/ai/VaultAiFloatingButton';
 import { CookieConsentBanner } from './components/CookieConsentBanner';
 import { AdBanner } from './components/AdBanner';
-import { ShareModal } from './components/ShareModal';
-import { EmailSubscribeModal } from './components/EmailSubscribeModal';
+import { VaultAiFloatingButton } from './components/ai/VaultAiFloatingButton';
+
+// Eager Homepage View (Guarantees sub-second initial paint)
+import { HomeView } from './views/HomeView';
+
+// Route-Based Code Splitting for Latency and Performance Optimization
+const VideosView = lazy(() => import('./views/VideosView').then(m => ({ default: m.VideosView })));
+const GamesView = lazy(() => import('./views/GamesView').then(m => ({ default: m.GamesView })));
+const ArticlesView = lazy(() => import('./views/ArticlesView').then(m => ({ default: m.ArticlesView })));
+const ReviewsView = lazy(() => import('./views/ReviewsView').then(m => ({ default: m.ReviewsView })));
+const GuidesView = lazy(() => import('./views/GuidesView').then(m => ({ default: m.GuidesView })));
+const ForumView = lazy(() => import('./views/ForumView').then(m => ({ default: m.ForumView })));
+const AboutView = lazy(() => import('./views/AboutView').then(m => ({ default: m.AboutView })));
+
+// Dedicated Page Views
+const ArticlePageView = lazy(() => import('./views/ArticlePageView').then(m => ({ default: m.ArticlePageView })));
+const VideoPageView = lazy(() => import('./views/VideoPageView').then(m => ({ default: m.VideoPageView })));
+const GamePageView = lazy(() => import('./views/GamePageView').then(m => ({ default: m.GamePageView })));
+const ReviewPageView = lazy(() => import('./views/ReviewPageView').then(m => ({ default: m.ReviewPageView })));
+const GuidePageView = lazy(() => import('./views/GuidePageView').then(m => ({ default: m.GuidePageView })));
+const TopicPageView = lazy(() => import('./views/TopicPageView').then(m => ({ default: m.TopicPageView })));
+const NewTopicPageView = lazy(() => import('./views/NewTopicPageView').then(m => ({ default: m.NewTopicPageView })));
+const GuidelinesPageView = lazy(() => import('./views/GuidelinesPageView').then(m => ({ default: m.GuidelinesPageView })));
+const PrivacyPolicyView = lazy(() => import('./views/PrivacyPolicyView').then(m => ({ default: m.PrivacyPolicyView })));
+const TermsOfServiceView = lazy(() => import('./views/TermsOfServiceView').then(m => ({ default: m.TermsOfServiceView })));
+const CookiePolicyView = lazy(() => import('./views/CookiePolicyView').then(m => ({ default: m.CookiePolicyView })));
+const ContactPageView = lazy(() => import('./views/ContactPageView').then(m => ({ default: m.ContactPageView })));
+const PcRequirementsView = lazy(() => import('./views/PcRequirementsView').then(m => ({ default: m.PcRequirementsView })));
+const UsernameGeneratorView = lazy(() => import('./views/UsernameGeneratorView').then(m => ({ default: m.UsernameGeneratorView })));
+const PcBuilderView = lazy(() => import('./views/PcBuilderView').then(m => ({ default: m.PcBuilderView })));
+const ToolsHubView = lazy(() => import('./views/ToolsHubView').then(m => ({ default: m.ToolsHubView })));
+const VaultAiView = lazy(() => import('./views/VaultAiView').then(m => ({ default: m.VaultAiView })));
+const SitemapView = lazy(() => import('./views/SitemapView').then(m => ({ default: m.SitemapView })));
+
+// Interactive Secondary Modals
+const GlobalSearchModal = lazy(() => import('./components/GlobalSearchModal').then(m => ({ default: m.GlobalSearchModal })));
+const AuthProfileModal = lazy(() => import('./components/AuthProfileModal').then(m => ({ default: m.AuthProfileModal })));
+const ShareModal = lazy(() => import('./components/ShareModal').then(m => ({ default: m.ShareModal })));
+const EmailSubscribeModal = lazy(() => import('./components/EmailSubscribeModal').then(m => ({ default: m.EmailSubscribeModal })));
 
 // Firebase Auth & Firestore Backend
 import { onAuthStateChanged, signOut, User as FirebaseUser } from 'firebase/auth';
@@ -283,6 +287,25 @@ export default function App() {
     };
   }, []);
 
+  // Idle Route Prefetching: Pre-warms popular view chunks without degrading initial render performance
+  useEffect(() => {
+    const idlePrefetch = () => {
+      import('./views/VideosView');
+      import('./views/ArticlesView');
+      import('./views/GamesView');
+      import('./views/ForumView');
+      import('./components/GlobalSearchModal');
+    };
+
+    if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+      const handle = (window as any).requestIdleCallback(idlePrefetch, { timeout: 3000 });
+      return () => (window as any).cancelIdleCallback(handle);
+    } else {
+      const timer = setTimeout(idlePrefetch, 2500);
+      return () => clearTimeout(timer);
+    }
+  }, []);
+
   // Ensure initial Firestore documents when admin is active
   useEffect(() => {
     if (firebaseUser && firebaseUser.email === 'contact@gamevault.forum') {
@@ -481,7 +504,7 @@ export default function App() {
   // Like Toggle Handler: Restricts likes to registered & signed in users only!
   const handleToggleLike = (itemId: string, itemTitle?: string, defaultBase: number = 0) => {
     if (!firebaseUser) {
-      setAuthPromptMessage('Only registered and signed in users can like a post. Sign in or register to join!');
+      setAuthPromptMessage('Only registered and signed in users can like content across the website. Sign in or register to join the community!');
       setIsAuthModalOpen(true);
       return;
     }
@@ -548,7 +571,7 @@ export default function App() {
   // Comment Handlers for Articles & Videos: Restricts commenting to registered & signed in users!
   const handleAddPostComment = (postId: string, content: string, postTitle?: string) => {
     if (!firebaseUser) {
-      setAuthPromptMessage('Only registered and signed in users can comment on a post. Sign in or register to join!');
+      setAuthPromptMessage('Only registered and signed in users can comment on content across the website. Sign in or register to join discussions!');
       setIsAuthModalOpen(true);
       return;
     }
@@ -612,12 +635,18 @@ export default function App() {
     handleToggleLike(commentId, 'Comment', 0);
   };
 
-  // Bookmark Toggle
+  // Bookmark Toggle - Restricts saving content to registered & signed in users only!
   const handleToggleBookmark = (
     type: 'videos' | 'games' | 'articles' | 'reviews' | 'guides',
     id: string,
     itemName: string
   ) => {
+    if (!firebaseUser) {
+      setAuthPromptMessage('Only registered and signed in users can save content across the website. Sign in or register to build your personal Vault collection!');
+      setIsAuthModalOpen(true);
+      return;
+    }
+
     setUser((prev) => {
       const currentList = prev.bookmarks[type] || [];
       const isAlreadyBookmarked = currentList.includes(id);
@@ -1509,6 +1538,11 @@ export default function App() {
           <PcRequirementsView
             initialGameSlug={route.gameSlug}
             currentUser={user}
+            isSignedIn={Boolean(firebaseUser)}
+            onOpenSignIn={() => {
+              setAuthPromptMessage('Only registered and signed in users can save custom PC configurations. Sign in or register to join!');
+              setIsAuthModalOpen(true);
+            }}
             onNavigateTab={(tab) => navigate(tab === 'home' ? '/' : tab === 'pc-requirements' ? '/tools/pc-game-requirements-checker' : `/${tab}`)}
             onOpenVideo={(gameTitle) => {
               const matched = MOCK_VIDEOS.find((v) => v.game.toLowerCase() === gameTitle.toLowerCase()) || MOCK_VIDEOS[0];
@@ -1544,6 +1578,11 @@ export default function App() {
           <PcBuilderView
             currentUser={user}
             initialBuildId={route.buildId}
+            isSignedIn={Boolean(firebaseUser)}
+            onOpenSignIn={() => {
+              setAuthPromptMessage('Only registered and signed in users can save custom PC builds. Sign in or register to join!');
+              setIsAuthModalOpen(true);
+            }}
             onNavigateTab={handleNavigateTab}
             onShowToast={(msg, type) => addToast(msg, type)}
             onShare={handleShare}
@@ -1618,7 +1657,18 @@ export default function App() {
 
       {/* Main Routed Content Area */}
       <main className="flex-1 w-full">
-        {renderCurrentPage()}
+        <Suspense
+          fallback={
+            <div className="min-h-[50vh] flex flex-col items-center justify-center py-20 space-y-3">
+              <div className="w-8 h-8 rounded-full border-2 border-purple-500/20 border-t-purple-500 animate-spin" />
+              <p className="text-[11px] font-mono uppercase tracking-widest text-zinc-500 animate-pulse">
+                Accessing Vault Data...
+              </p>
+            </div>
+          }
+        >
+          {renderCurrentPage()}
+        </Suspense>
       </main>
 
       {/* Footer */}
@@ -1634,80 +1684,84 @@ export default function App() {
       />
 
       {/* Global Search Modal */}
-      <GlobalSearchModal
-        isOpen={isSearchOpen}
-        onClose={() => setIsSearchOpen(false)}
-        videos={MOCK_VIDEOS}
-        games={MOCK_GAMES}
-        articles={MOCK_ARTICLES}
-        reviews={MOCK_REVIEWS}
-        guides={MOCK_GUIDES}
-        topics={topics}
-        onSelectVideo={(v) => {
-          setIsSearchOpen(false);
-          navigate(`/videos/${getSeoSlug(v)}`);
-        }}
-        onSelectGame={(g) => {
-          setIsSearchOpen(false);
-          navigate(`/games/${getSeoSlug(g)}`);
-        }}
-        onSelectArticle={(a) => {
-          setIsSearchOpen(false);
-          navigate(`/articles/${getSeoSlug(a)}`);
-        }}
-        onSelectReview={(r) => {
-          setIsSearchOpen(false);
-          navigate(`/reviews/${getSeoSlug({ id: r.id, title: `${r.gameTitle} review` })}`);
-        }}
-        onSelectGuide={(g) => {
-          setIsSearchOpen(false);
-          navigate(`/guides/${getSeoSlug(g)}`);
-        }}
-        onSelectTopic={(t) => {
-          setIsSearchOpen(false);
-          navigate(`/forum/${getSeoSlug(t)}`);
-        }}
-      />
+      <Suspense fallback={null}>
+        <GlobalSearchModal
+          isOpen={isSearchOpen}
+          onClose={() => setIsSearchOpen(false)}
+          videos={MOCK_VIDEOS}
+          games={MOCK_GAMES}
+          articles={MOCK_ARTICLES}
+          reviews={MOCK_REVIEWS}
+          guides={MOCK_GUIDES}
+          topics={topics}
+          onSelectVideo={(v) => {
+            setIsSearchOpen(false);
+            navigate(`/videos/${getSeoSlug(v)}`);
+          }}
+          onSelectGame={(g) => {
+            setIsSearchOpen(false);
+            navigate(`/games/${getSeoSlug(g)}`);
+          }}
+          onSelectArticle={(a) => {
+            setIsSearchOpen(false);
+            navigate(`/articles/${getSeoSlug(a)}`);
+          }}
+          onSelectReview={(r) => {
+            setIsSearchOpen(false);
+            navigate(`/reviews/${getSeoSlug({ id: r.id, title: `${r.gameTitle} review` })}`);
+          }}
+          onSelectGuide={(g) => {
+            setIsSearchOpen(false);
+            navigate(`/guides/${getSeoSlug(g)}`);
+          }}
+          onSelectTopic={(t) => {
+            setIsSearchOpen(false);
+            navigate(`/forum/${getSeoSlug(t)}`);
+          }}
+        />
+      </Suspense>
 
       {/* Community Profile & Bookmarks Modal */}
-      <AuthProfileModal
-        isOpen={isProfileOpen || route.type === 'profile'}
-        onClose={() => {
-          setIsProfileOpen(false);
-          if (route.type === 'profile') {
-            navigate('/');
-          }
-        }}
-        user={user}
-        videos={MOCK_VIDEOS}
-        games={MOCK_GAMES}
-        articles={MOCK_ARTICLES}
-        reviews={MOCK_REVIEWS}
-        guides={MOCK_GUIDES}
-        onSelectVideo={(v) => {
-          setIsProfileOpen(false);
-          navigate(`/videos/${getSeoSlug(v)}`);
-        }}
-        onSelectGame={(g) => {
-          setIsProfileOpen(false);
-          navigate(`/games/${getSeoSlug(g)}`);
-        }}
-        onSelectArticle={(a) => {
-          setIsProfileOpen(false);
-          navigate(`/articles/${getSeoSlug(a)}`);
-        }}
-        onSelectReview={(r) => {
-          setIsProfileOpen(false);
-          navigate(`/reviews/${getSeoSlug({ id: r.id, title: `${r.gameTitle} review` })}`);
-        }}
-        onSelectGuide={(g) => {
-          setIsProfileOpen(false);
-          navigate(`/guides/${getSeoSlug(g)}`);
-        }}
-        onSignOut={handleSignOut}
-        onUpdateProfile={handleUpdateProfile}
-        initialTab={profileInitialTab}
-      />
+      <Suspense fallback={null}>
+        <AuthProfileModal
+          isOpen={isProfileOpen || route.type === 'profile'}
+          onClose={() => {
+            setIsProfileOpen(false);
+            if (route.type === 'profile') {
+              navigate('/');
+            }
+          }}
+          user={user}
+          videos={MOCK_VIDEOS}
+          games={MOCK_GAMES}
+          articles={MOCK_ARTICLES}
+          reviews={MOCK_REVIEWS}
+          guides={MOCK_GUIDES}
+          onSelectVideo={(v) => {
+            setIsProfileOpen(false);
+            navigate(`/videos/${getSeoSlug(v)}`);
+          }}
+          onSelectGame={(g) => {
+            setIsProfileOpen(false);
+            navigate(`/games/${getSeoSlug(g)}`);
+          }}
+          onSelectArticle={(a) => {
+            setIsProfileOpen(false);
+            navigate(`/articles/${getSeoSlug(a)}`);
+          }}
+          onSelectReview={(r) => {
+            setIsProfileOpen(false);
+            navigate(`/reviews/${getSeoSlug({ id: r.id, title: `${r.gameTitle} review` })}`);
+          }}
+          onSelectGuide={(g) => {
+            setIsProfileOpen(false);
+            navigate(`/guides/${getSeoSlug(g)}`);
+          }}
+          onSignOut={handleSignOut}
+          onUpdateProfile={handleUpdateProfile}
+          initialTab={profileInitialTab}
+        />
+      </Suspense>
 
       {/* Auth Modal: Prompted when guest attempts to like/comment, or after 60s timed visitor prompt */}
       {isAuthModalOpen && (
@@ -1724,21 +1778,25 @@ export default function App() {
       )}
 
       {/* Timed Email Subscription Popup: Displays after ~10 seconds for visitors */}
-      <EmailSubscribeModal
-        isOpen={isSubscribeModalOpen}
-        onClose={handleCloseSubscribeModal}
-        onSubscribed={handleNewsletterSubscribed}
-      />
+      <Suspense fallback={null}>
+        <EmailSubscribeModal
+          isOpen={isSubscribeModalOpen}
+          onClose={handleCloseSubscribeModal}
+          onSubscribed={handleNewsletterSubscribed}
+        />
+      </Suspense>
 
       {/* Share Modal: Standard social network sharing & copy link modal */}
-      <ShareModal
-        isOpen={shareState.isOpen}
-        onClose={() => setShareState((prev) => ({ ...prev, isOpen: false }))}
-        title={shareState.title}
-        url={shareState.url}
-        description={shareState.description}
-        onCopiedToast={(msg) => addToast(msg, 'success')}
-      />
+      <Suspense fallback={null}>
+        <ShareModal
+          isOpen={shareState.isOpen}
+          onClose={() => setShareState((prev) => ({ ...prev, isOpen: false }))}
+          title={shareState.title}
+          url={shareState.url}
+          description={shareState.description}
+          onCopiedToast={(msg) => addToast(msg, 'success')}
+        />
+      </Suspense>
 
       {/* Toast Notification Layer */}
       <Toast toasts={toasts} onCloseToast={removeToast} />
