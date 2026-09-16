@@ -163,24 +163,26 @@ export function updatePageSeo(meta: PageSeoOptions) {
   const twitterImageTag = document.querySelector('meta[name="twitter:image"]');
   if (twitterImageTag) twitterImageTag.setAttribute('content', resolvedImage);
 
-  // 8. Update Canonical Link & Open Graph URL
-  if (meta.canonicalPath) {
-    const cleanPath = meta.canonicalPath.startsWith('/') ? meta.canonicalPath : `/${meta.canonicalPath}`;
-    const canonicalUrl = `${CANONICAL_BASE_URL}${cleanPath}`;
+  // 8. Update Canonical Link & Open Graph URL (Ensures every single page has its own canonical URL)
+  const rawPath = meta.canonicalPath || (typeof window !== 'undefined' ? window.location.pathname : '/');
+  const cleanPath = rawPath.startsWith('/') ? rawPath : `/${rawPath}`;
+  const canonicalUrl = `${CANONICAL_BASE_URL}${cleanPath}`;
 
-    let canonicalLink = document.querySelector('link[rel="canonical"]');
-    if (!canonicalLink) {
-      canonicalLink = document.createElement('link');
-      canonicalLink.setAttribute('rel', 'canonical');
-      document.head.appendChild(canonicalLink);
-    }
-    canonicalLink.setAttribute('href', canonicalUrl);
-
-    const ogUrlTag = document.querySelector('meta[property="og:url"]');
-    if (ogUrlTag) {
-      ogUrlTag.setAttribute('content', canonicalUrl);
-    }
+  let canonicalLink = document.querySelector('link[rel="canonical"]');
+  if (!canonicalLink) {
+    canonicalLink = document.createElement('link');
+    canonicalLink.setAttribute('rel', 'canonical');
+    document.head.appendChild(canonicalLink);
   }
+  canonicalLink.setAttribute('href', canonicalUrl);
+
+  let ogUrlTag = document.querySelector('meta[property="og:url"]');
+  if (!ogUrlTag) {
+    ogUrlTag = document.createElement('meta');
+    ogUrlTag.setAttribute('property', 'og:url');
+    document.head.appendChild(ogUrlTag);
+  }
+  ogUrlTag.setAttribute('content', canonicalUrl);
 
   // 9. Structured Data (JSON-LD) injection for Google Search Console & Rich Snippets
   let schemaScript = document.getElementById('gv-dynamic-seo-schema') as HTMLScriptElement | null;
@@ -192,9 +194,6 @@ export function updatePageSeo(meta: PageSeoOptions) {
   }
 
   const schemas: any[] = [];
-  const canonicalUrl = meta.canonicalPath
-    ? `${CANONICAL_BASE_URL}${meta.canonicalPath.startsWith('/') ? meta.canonicalPath : `/${meta.canonicalPath}`}`
-    : `${CANONICAL_BASE_URL}/`;
 
   // BreadcrumbList Schema
   if (meta.breadcrumbs && meta.breadcrumbs.length > 0) {

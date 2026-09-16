@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Search, Youtube, User, Menu, X, Bookmark, Sparkles, LogOut, LogIn, ChevronDown, Wrench, Monitor, Bot } from 'lucide-react';
+import { Search, Youtube, User, Menu, X, Bookmark, Sparkles, LogOut, LogIn, ChevronDown, Wrench, Monitor, Bot, Dices } from 'lucide-react';
 import { PageTab, UserAccount } from '../types';
 import { VaultLogo } from './VaultLogo';
 import { YOUTUBE_CHANNEL } from '../lib/constants';
@@ -27,7 +27,17 @@ export const Header: React.FC<HeaderProps> = ({
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [toolsDropdownOpen, setToolsDropdownOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const toolsMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 15);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -79,6 +89,14 @@ export const Header: React.FC<HeaderProps> = ({
       desc: 'Create unique gaming names',
       href: '/tools/gaming-username-generator',
       icon: Sparkles
+    },
+    {
+      id: 'game-picker-wheel' as PageTab,
+      label: 'Game Picker Wheel',
+      desc: "Can't decide what to play? Spin the wheel!",
+      href: '/game-picker-wheel',
+      icon: Dices,
+      badge: 'New'
     }
   ];
 
@@ -87,7 +105,8 @@ export const Header: React.FC<HeaderProps> = ({
     currentTab === 'vault-ai' ||
     currentTab === 'gaming-username-generator' ||
     currentTab === 'gaming-pc-builder' ||
-    currentTab === 'pc-requirements';
+    currentTab === 'pc-requirements' ||
+    currentTab === 'game-picker-wheel';
 
   const handleNavClick = (tab: PageTab) => {
     onSelectTab(tab);
@@ -97,7 +116,14 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full max-w-full overflow-x-clip bg-black/40 backdrop-blur-xl border-b border-white/5 transition-colors">
+    <header 
+      id="main-navigation-header"
+      className={`sticky top-0 z-50 w-full max-w-full overflow-x-clip transition-all duration-300 ${
+        isScrolled
+          ? 'bg-[#070913]/85 backdrop-blur-xl border-b border-purple-500/20 shadow-xl shadow-black/60'
+          : 'bg-black/40 backdrop-blur-lg border-b border-white/5'
+      }`}
+    >
       <div className="max-w-7xl mx-auto px-2.5 sm:px-4 lg:px-6 h-16 sm:h-18 flex items-center justify-between gap-2 sm:gap-3">
         {/* Brand Logo */}
         <a

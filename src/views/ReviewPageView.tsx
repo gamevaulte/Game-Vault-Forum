@@ -19,6 +19,7 @@ interface ReviewPageViewProps {
   onShare: () => void;
   onBack: () => void;
   onNavigateTab: (tab: PageTab) => void;
+  onViewUserProfile?: (author: { id?: string; name: string; username?: string; avatar: string; role?: string; badge?: string }) => void;
 }
 
 export const ReviewPageView: React.FC<ReviewPageViewProps> = ({
@@ -27,7 +28,8 @@ export const ReviewPageView: React.FC<ReviewPageViewProps> = ({
   onToggleBookmark,
   onShare,
   onBack,
-  onNavigateTab
+  onNavigateTab,
+  onViewUserProfile
 }) => {
   const reviewSlug = getSeoSlug({ id: review.id, title: `${review.gameTitle} review` });
 
@@ -134,15 +136,30 @@ export const ReviewPageView: React.FC<ReviewPageViewProps> = ({
 
         {/* Reviewer / Author Byline */}
         <div className="flex items-center justify-between gap-4 p-4 rounded-2xl bg-white/[0.02] border border-white/5">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-purple-600/30 border border-purple-500/50 flex items-center justify-center text-purple-300 font-bold font-mono">
+          <button
+            type="button"
+            onClick={() => {
+              const reviewerName = typeof review.author === 'string' ? review.author : review.reviewer || 'Marcus Vance';
+              onViewUserProfile?.({
+                name: reviewerName,
+                avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80',
+                role: 'Senior Vault Tactical Critic',
+                badge: 'Lead Reviewer'
+              });
+            }}
+            className="flex items-center gap-3 text-left group cursor-pointer hover:opacity-90 transition-opacity"
+            title="View Reviewer Dossier"
+          >
+            <div className="w-10 h-10 rounded-full bg-purple-600/30 border border-purple-500/50 flex items-center justify-center text-purple-300 font-bold font-mono group-hover:border-purple-400 transition-colors">
               <UserCheck className="w-5 h-5 text-purple-400" />
             </div>
             <div>
-              <p className="text-sm font-bold text-white font-['Space_Grotesk']">{typeof review.author === 'string' ? review.author : review.reviewer || 'Game Vault Staff'}</p>
-              <p className="text-xs text-gray-400">Senior Vault Tactical Critic</p>
+              <p className="text-sm font-bold text-white font-['Space_Grotesk'] group-hover:text-purple-300 transition-colors">
+                {typeof review.author === 'string' ? review.author : review.reviewer || 'Game Vault Staff'}
+              </p>
+              <p className="text-xs text-gray-400 group-hover:text-gray-300 transition-colors">Senior Vault Tactical Critic • Click to View Profile</p>
             </div>
-          </div>
+          </button>
 
           <div className="flex items-center gap-2">
             <button

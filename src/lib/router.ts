@@ -29,10 +29,23 @@ export type Route =
   | { type: 'tools' }
   | { type: 'gaming-username-generator' }
   | { type: 'gaming-pc-builder'; buildId?: string }
+  | { type: 'game-picker-wheel'; games?: string[] }
   | { type: 'vault-ai'; initialPrompt?: string }
   | { type: 'sitemap' };
 
 export function parseRoute(rawPath: string): Route {
+  // Extract query params if present
+  let sharedGames: string[] | undefined;
+  if (rawPath.includes('?')) {
+    try {
+      const q = new URLSearchParams(rawPath.split('?')[1].split('#')[0]);
+      const g = q.get('games');
+      if (g) {
+        sharedGames = g.split(',').map((x) => x.trim()).filter(Boolean);
+      }
+    } catch {}
+  }
+
   // Support both /path and #/path formats
   let clean = rawPath.replace(/^[#?]/, '').replace(/^#\/?/, '').replace(/^\//, '');
   // Strip search params or trailing slashes
@@ -51,6 +64,9 @@ export function parseRoute(rawPath: string): Route {
     if (!seg2) return { type: 'tools' };
     if (seg2 === 'vault-ai' || seg2 === 'ai') {
       return { type: 'vault-ai' };
+    }
+    if (seg2 === 'game-picker-wheel' || seg2 === 'wheel' || seg2 === 'game-wheel') {
+      return { type: 'game-picker-wheel', games: sharedGames };
     }
     if (seg2 === 'gaming-username-generator' || seg2 === 'username-generator') {
       return { type: 'gaming-username-generator' };
@@ -73,6 +89,9 @@ export function parseRoute(rawPath: string): Route {
   // Direct root tool paths
   if (seg1 === 'vault-ai' || seg1 === 'ai') {
     return { type: 'vault-ai' };
+  }
+  if (seg1 === 'game-picker-wheel' || seg1 === 'wheel' || seg1 === 'picker-wheel') {
+    return { type: 'game-picker-wheel', games: sharedGames };
   }
   if (seg1 === 'gaming-username-generator' || seg1 === 'username-generator') {
     return { type: 'gaming-username-generator' };
@@ -198,6 +217,8 @@ export function routeToUrl(route: Route): string {
         : '/tools/gaming-pc-builder';
     case 'vault-ai':
       return '/tools/vault-ai';
+    case 'game-picker-wheel':
+      return '/game-picker-wheel';
     case 'sitemap':
       return '/sitemap';
   }

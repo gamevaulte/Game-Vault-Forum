@@ -31,6 +31,7 @@ interface TopicPageViewProps {
   onShare: () => void;
   onBack: () => void;
   onNavigateTab: (tab: PageTab) => void;
+  onViewUserProfile?: (author: { id?: string; name: string; username?: string; avatar: string; role?: string; badge?: string }) => void;
 }
 
 export const TopicPageView: React.FC<TopicPageViewProps> = ({
@@ -47,7 +48,8 @@ export const TopicPageView: React.FC<TopicPageViewProps> = ({
   onOpenSignIn,
   onShare,
   onBack,
-  onNavigateTab
+  onNavigateTab,
+  onViewUserProfile
 }) => {
   const [replyText, setReplyText] = useState('');
 
@@ -157,15 +159,25 @@ export const TopicPageView: React.FC<TopicPageViewProps> = ({
         <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/10 space-y-5">
           {/* Author Header */}
           <div className="flex items-center justify-between gap-4 border-b border-white/10 pb-4">
-            <div className="flex items-center gap-3.5">
+            <button
+              type="button"
+              onClick={() => onViewUserProfile?.({
+                name: topic.author.name,
+                avatar: topic.author.avatar,
+                role: topic.author.isStaff ? 'Vault Staff Specialist' : (topic.author.badge || 'Forum Operative'),
+                badge: topic.author.badge
+              })}
+              className="flex items-center gap-3.5 text-left group cursor-pointer hover:opacity-90 transition-opacity"
+              title={`View ${topic.author.name}'s profile`}
+            >
               <img
                 src={topic.author.avatar}
                 alt={topic.author.name}
-                className="w-12 h-12 rounded-full object-cover border-2 border-purple-500/50 shadow-md shadow-purple-950/50"
+                className="w-12 h-12 rounded-full object-cover border-2 border-purple-500/50 shadow-md shadow-purple-950/50 group-hover:border-purple-400 transition-colors"
               />
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-bold text-white font-['Space_Grotesk']">
+                  <span className="text-sm font-bold text-white font-['Space_Grotesk'] group-hover:text-purple-300 transition-colors">
                     {topic.author.name}
                   </span>
                   {topic.author.isStaff && (
@@ -180,11 +192,11 @@ export const TopicPageView: React.FC<TopicPageViewProps> = ({
                     </span>
                   )}
                 </div>
-                <span className="text-xs text-gray-400 mt-0.5 block">
-                  Original Poster • {topic.timestamp}
+                <span className="text-xs text-gray-400 mt-0.5 block group-hover:text-gray-300 transition-colors">
+                  Original Poster • {topic.timestamp} • View Dossier
                 </span>
               </div>
-            </div>
+            </button>
 
             <button
               onClick={onShare}
@@ -328,14 +340,26 @@ export const TopicPageView: React.FC<TopicPageViewProps> = ({
                   className="p-4 sm:p-5 rounded-2xl bg-white/[0.02] border border-white/5 space-y-3 transition-colors hover:border-white/10"
                 >
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
+                    <button
+                      type="button"
+                      onClick={() => onViewUserProfile?.({
+                        id: reply.author.id,
+                        name: reply.author.name,
+                        username: reply.author.username,
+                        avatar: reply.author.avatar,
+                        role: reply.author.role || reply.author.badge || 'Recruit Operative',
+                        badge: reply.author.badge
+                      })}
+                      className="flex items-center gap-3 text-left group cursor-pointer hover:opacity-90 transition-opacity"
+                      title={`View ${reply.author.name}'s profile`}
+                    >
                       <img
                         src={reply.author.avatar}
                         alt={reply.author.name}
-                        className="w-8 h-8 rounded-full object-cover border border-purple-500/40"
+                        className="w-8 h-8 rounded-full object-cover border border-purple-500/40 group-hover:border-purple-400 transition-colors"
                       />
                       <div>
-                        <span className="text-xs font-bold text-white font-['Space_Grotesk'] block">
+                        <span className="text-xs font-bold text-white font-['Space_Grotesk'] block group-hover:text-purple-300 transition-colors">
                           {reply.author.name}
                         </span>
                         {reply.author.badge && (
@@ -344,7 +368,7 @@ export const TopicPageView: React.FC<TopicPageViewProps> = ({
                           </span>
                         )}
                       </div>
-                    </div>
+                    </button>
                     <span className="text-[11px] text-gray-500 font-mono">{reply.timestamp}</span>
                   </div>
 

@@ -25,6 +25,7 @@ interface GuidePageViewProps {
   onBack: () => void;
   onNavigateTab: (tab: PageTab) => void;
   onFilterForumByGame?: (gameTitle: string) => void;
+  onViewUserProfile?: (author: { id?: string; name: string; username?: string; avatar: string; role?: string; badge?: string }) => void;
 }
 
 export const GuidePageView: React.FC<GuidePageViewProps> = ({
@@ -36,7 +37,8 @@ export const GuidePageView: React.FC<GuidePageViewProps> = ({
   onShare,
   onBack,
   onNavigateTab,
-  onFilterForumByGame
+  onFilterForumByGame,
+  onViewUserProfile
 }) => {
   const guideSlug = getSeoSlug(guide);
 
@@ -140,12 +142,24 @@ export const GuidePageView: React.FC<GuidePageViewProps> = ({
           </p>
 
           <div className="flex items-center gap-3 pt-2 text-xs text-gray-400 font-mono border-t border-white/5">
-            <div className="flex items-center gap-2">
-              <div className="w-6 h-6 rounded-full bg-purple-600 flex items-center justify-center text-white text-[10px] font-bold">
+            <button
+              type="button"
+              onClick={() => {
+                onViewUserProfile?.({
+                  name: 'Elena Rostova',
+                  avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=120&auto=format&fit=crop&q=80',
+                  role: 'Combat Systems Specialist',
+                  badge: 'Lead Guide Curator'
+                });
+              }}
+              className="flex items-center gap-2 text-left group cursor-pointer hover:opacity-90 transition-opacity"
+              title="View Guide Curator Dossier"
+            >
+              <div className="w-6 h-6 rounded-full bg-purple-600 flex items-center justify-center text-white text-[10px] font-bold group-hover:bg-purple-500 transition-colors">
                 GV
               </div>
-              <span className="text-gray-300 font-medium">Curated by Game Vault Tactical Staff</span>
-            </div>
+              <span className="text-gray-300 font-medium group-hover:text-purple-300 transition-colors">Curated by Game Vault Tactical Staff • View Profile</span>
+            </button>
             <span>•</span>
             <span>Category: {guide.category}</span>
           </div>

@@ -12,6 +12,7 @@ export type PageTab =
   | 'tools'
   | 'gaming-username-generator'
   | 'gaming-pc-builder'
+  | 'game-picker-wheel'
   | 'vault-ai'
   | 'sitemap'
   | 'new-topic'
@@ -146,8 +147,11 @@ export interface Article {
 export interface PostComment {
   id: string;
   author: {
+    id?: string;
     name: string;
+    username?: string;
     avatar: string;
+    role?: string;
     badge?: string;
   };
   content: string;
@@ -201,9 +205,12 @@ export interface Guide {
 export interface ForumReply {
   id: string;
   author: {
+    id?: string;
     name: string;
+    username?: string;
     avatar: string;
     badge: string;
+    role?: string;
     isStaff?: boolean;
   };
   content: string;
@@ -215,10 +222,12 @@ export interface ForumTopic {
   id: string;
   title: string;
   author: {
+    id?: string;
     name: string;
     username?: string;
     avatar: string;
     badge: string;
+    role?: string;
     isStaff?: boolean;
   };
   category: string;
@@ -242,6 +251,25 @@ export interface UserStats {
   topicsCount: number;
 }
 
+export interface PublicUserProfileData {
+  id?: string;
+  name: string;
+  username: string;
+  avatar: string;
+  role: string;
+  badge?: string;
+  joinDate?: string;
+  createdAt?: string;
+  reputation: number;
+  stats: {
+    likesCount: number;
+    commentsCount: number;
+    savesCount: number;
+    topicsCount: number;
+  };
+  bio?: string;
+}
+
 export interface UserAccount {
   id: string;
   name: string;
@@ -254,6 +282,7 @@ export interface UserAccount {
   role?: string;
   reputation: number;
   joinDate: string;
+  createdAt?: string;
   bookmarks: {
     videos: string[];
     games: string[];

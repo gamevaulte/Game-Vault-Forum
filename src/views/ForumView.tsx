@@ -20,13 +20,15 @@ interface ForumViewProps {
   onSelectTopic: (t: ForumTopic) => void;
   onOpenNewTopic: () => void;
   onOpenGuidelines: () => void;
+  onViewUserProfile?: (author: { id?: string; name: string; username?: string; avatar: string; role?: string; badge?: string }) => void;
 }
 
 const ForumViewComponent: React.FC<ForumViewProps> = ({
   topics,
   onSelectTopic,
   onOpenNewTopic,
-  onOpenGuidelines
+  onOpenGuidelines,
+  onViewUserProfile
 }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -189,13 +191,28 @@ const ForumViewComponent: React.FC<ForumViewProps> = ({
                 className="p-5 bg-white/[0.03] hover:bg-white/[0.06] border border-white/10 hover:border-white/20 rounded-2xl cursor-pointer transition-all duration-200 group flex flex-col sm:flex-row sm:items-center justify-between gap-4 backdrop-blur-md"
               >
                 <div className="flex items-start gap-3.5 flex-1">
-                  <img
-                    src={topic.author.avatar}
-                    alt={topic.author.name}
-                    loading="lazy"
-                    decoding="async"
-                    className="w-10 h-10 rounded-full object-cover border border-white/10 shrink-0 mt-0.5"
-                  />
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onViewUserProfile?.({
+                        name: topic.author.name,
+                        avatar: topic.author.avatar,
+                        role: topic.author.isStaff ? 'Vault Staff Specialist' : (topic.author.badge || 'Forum Operative'),
+                        badge: topic.author.badge
+                      });
+                    }}
+                    className="shrink-0 mt-0.5 group/avatar cursor-pointer"
+                    title={`View ${topic.author.name}'s profile`}
+                  >
+                    <img
+                      src={topic.author.avatar}
+                      alt={topic.author.name}
+                      loading="lazy"
+                      decoding="async"
+                      className="w-10 h-10 rounded-full object-cover border border-white/10 group-hover/avatar:border-purple-400 transition-colors"
+                    />
+                  </button>
                   <div className="space-y-1 flex-1">
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="text-[11px] font-mono uppercase bg-white/5 text-purple-300 px-2.5 py-0.5 rounded-full border border-white/10">
@@ -218,7 +235,22 @@ const ForumViewComponent: React.FC<ForumViewProps> = ({
                     </h3>
 
                     <div className="flex items-center gap-3 text-xs text-gray-400 flex-wrap pt-0.5">
-                      <span className="text-gray-300 font-semibold">{topic.author.name}</span>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onViewUserProfile?.({
+                            name: topic.author.name,
+                            avatar: topic.author.avatar,
+                            role: topic.author.isStaff ? 'Vault Staff Specialist' : (topic.author.badge || 'Forum Operative'),
+                            badge: topic.author.badge
+                          });
+                        }}
+                        className="text-gray-300 hover:text-purple-300 font-semibold transition-colors cursor-pointer"
+                        title={`View ${topic.author.name}'s profile`}
+                      >
+                        {topic.author.name}
+                      </button>
                       <span>•</span>
                       <span>{topic.timestamp}</span>
                       <span>•</span>

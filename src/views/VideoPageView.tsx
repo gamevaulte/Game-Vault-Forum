@@ -40,6 +40,7 @@ interface VideoPageViewProps {
   onOpenSignIn: () => void;
   onBack: () => void;
   onNavigateTab: (tab: PageTab) => void;
+  onViewUserProfile?: (author: { id?: string; name: string; username?: string; avatar: string; role?: string; badge?: string }) => void;
 }
 
 export const VideoPageView: React.FC<VideoPageViewProps> = ({
@@ -59,7 +60,8 @@ export const VideoPageView: React.FC<VideoPageViewProps> = ({
   isSignedIn,
   onOpenSignIn,
   onBack,
-  onNavigateTab
+  onNavigateTab,
+  onViewUserProfile
 }) => {
   const [commentText, setCommentText] = useState('');
 
@@ -418,14 +420,26 @@ export const VideoPageView: React.FC<VideoPageViewProps> = ({
                   className="p-4 sm:p-5 rounded-2xl bg-white/[0.02] border border-white/5 space-y-2.5 transition-colors hover:border-white/10"
                 >
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
+                    <button
+                      type="button"
+                      onClick={() => onViewUserProfile?.({
+                        id: comment.author.id,
+                        name: comment.author.name,
+                        username: comment.author.username,
+                        avatar: comment.author.avatar,
+                        role: comment.author.role || comment.author.badge || 'Recruit Operative',
+                        badge: comment.author.badge
+                      })}
+                      className="flex items-center gap-3 text-left group cursor-pointer hover:opacity-90 transition-opacity"
+                      title={`View ${comment.author.name}'s profile`}
+                    >
                       <img
                         src={comment.author.avatar}
                         alt={comment.author.name}
-                        className="w-8 h-8 rounded-full object-cover border border-purple-500/40"
+                        className="w-8 h-8 rounded-full object-cover border border-purple-500/40 group-hover:border-purple-400 transition-colors"
                       />
                       <div>
-                        <span className="text-xs font-bold text-white font-['Space_Grotesk'] block">
+                        <span className="text-xs font-bold text-white font-['Space_Grotesk'] block group-hover:text-purple-300 transition-colors">
                           {comment.author.name}
                         </span>
                         {comment.author.badge && (
@@ -434,7 +448,7 @@ export const VideoPageView: React.FC<VideoPageViewProps> = ({
                           </span>
                         )}
                       </div>
-                    </div>
+                    </button>
                     <span className="text-[11px] text-gray-500 font-mono">{comment.timestamp}</span>
                   </div>
 

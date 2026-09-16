@@ -53,6 +53,7 @@ interface ArticlePageViewProps {
   onOpenSignIn: () => void;
   onBack: () => void;
   onNavigateTab: (tab: PageTab) => void;
+  onViewUserProfile?: (author: { id?: string; name: string; username?: string; avatar: string; role?: string; badge?: string }) => void;
 }
 
 export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
@@ -74,7 +75,8 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
   isSignedIn,
   onOpenSignIn,
   onBack,
-  onNavigateTab
+  onNavigateTab,
+  onViewUserProfile
 }) => {
   const [commentText, setCommentText] = useState('');
 
@@ -572,22 +574,32 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
 
         {/* Author bar & Date */}
         <div className="flex flex-wrap items-center justify-between gap-4 py-4 border-y border-white/10 bg-white/[0.01] px-4 rounded-2xl">
-          <div className="flex items-center gap-3.5">
+          <button
+            type="button"
+            onClick={() => onViewUserProfile?.({
+              name: article.author.name,
+              avatar: article.author.avatar,
+              role: article.author.role,
+              badge: 'Editorial Contributor'
+            })}
+            className="flex items-center gap-3.5 text-left group cursor-pointer hover:opacity-90 transition-opacity"
+            title={`View ${article.author.name}'s profile`}
+          >
             <img
               src={article.author.avatar}
               alt={article.author.name}
-              className="w-12 h-12 rounded-full object-cover border-2 border-purple-500/50 shadow-md shadow-purple-950/50"
+              className="w-12 h-12 rounded-full object-cover border-2 border-purple-500/50 shadow-md shadow-purple-950/50 group-hover:border-purple-400 transition-colors"
             />
             <div>
               <div className="flex items-center gap-2">
-                <p className="text-sm font-bold text-white font-['Space_Grotesk']">{article.author.name}</p>
+                <p className="text-sm font-bold text-white font-['Space_Grotesk'] group-hover:text-purple-300 transition-colors">{article.author.name}</p>
                 <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-purple-900/60 text-purple-300 border border-purple-500/30 font-mono">
                   {article.author.role}
                 </span>
               </div>
-              <p className="text-xs text-gray-400 mt-0.5">Official Game Vault Editorial Contributor</p>
+              <p className="text-xs text-gray-400 mt-0.5 group-hover:text-gray-300 transition-colors">Official Game Vault Editorial Contributor • Click to View Profile</p>
             </div>
-          </div>
+          </button>
 
           <div className="flex items-center gap-5 text-xs text-gray-400">
             <span className="flex items-center gap-1.5">
@@ -1043,14 +1055,26 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
                   className="p-4 sm:p-5 rounded-2xl bg-white/[0.02] border border-white/5 space-y-2.5 transition-colors hover:border-white/10"
                 >
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
+                    <button
+                      type="button"
+                      onClick={() => onViewUserProfile?.({
+                        id: comment.author.id,
+                        name: comment.author.name,
+                        username: comment.author.username,
+                        avatar: comment.author.avatar,
+                        role: comment.author.role || comment.author.badge || 'Recruit Operative',
+                        badge: comment.author.badge
+                      })}
+                      className="flex items-center gap-3 text-left group cursor-pointer hover:opacity-90 transition-opacity"
+                      title={`View ${comment.author.name}'s profile`}
+                    >
                       <img
                         src={comment.author.avatar}
                         alt={comment.author.name}
-                        className="w-8 h-8 rounded-full object-cover border border-purple-500/40"
+                        className="w-8 h-8 rounded-full object-cover border border-purple-500/40 group-hover:border-purple-400 transition-colors"
                       />
                       <div>
-                        <span className="text-xs font-bold text-white font-['Space_Grotesk'] block">
+                        <span className="text-xs font-bold text-white font-['Space_Grotesk'] block group-hover:text-purple-300 transition-colors">
                           {comment.author.name}
                         </span>
                         {comment.author.badge && (
@@ -1059,7 +1083,7 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
                           </span>
                         )}
                       </div>
-                    </div>
+                    </button>
                     <span className="text-[11px] text-gray-500 font-mono">{comment.timestamp}</span>
                   </div>
 

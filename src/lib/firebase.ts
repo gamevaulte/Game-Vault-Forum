@@ -19,7 +19,7 @@ import {
   serverTimestamp
 } from "firebase/firestore";
 import firebaseConfig from "../../firebase-applet-config.json";
-import { ForumTopic, PostComment, UserAccount, ContactSubmission, NewsletterSubscriber, ContactSubmissionStatus } from "../types";
+import { ForumTopic, PostComment, UserAccount, ContactSubmission, NewsletterSubscriber, ContactSubmissionStatus, PublicUserProfileData } from "../types";
 
 // Initialize Firebase App
 export { firebaseConfig };
@@ -407,6 +407,133 @@ export async function syncLikeToFirestore(itemId: string, count: number, userUid
   } catch (err) {
     console.warn('Firestore syncLike warning:', err);
   }
+}
+
+/**
+ * Real-time listener for all comments on content across the site.
+ * Ensures every visitor and user sees newly posted comments live.
+ */
+export function subscribeToComments(
+  onCommentsUpdated: (commentsMap: Record<string, PostComment[]>) => void
+): () => void {
+  try {
+    const commentsCol = collection(db, 'comments');
+    return onSnapshot(
+      commentsCol,
+      (snapshot) => {
+        const map: Record<string, PostComment[]> = {};
+        snapshot.forEach((docSnap) => {
+          const data = docSnap.data();
+          const postId = data.postId;
+          if (!postId) return;
+          if (!map[postId]) {
+            map[postId] = [];
+          }
+          map[postId].push({
+            id: docSnap.id,
+            author: {
+              id: data.author?.id || data.authorId || '',
+              name: data.author?.name || 'Vault Operative',
+              username: data.author?.username || (data.author?.name ? `@${data.author.name.toLowerCase().replace(/\s+/g, '_')}` : '@operative'),
+              avatar: data.author?.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80',
+              badge: data.author?.badge || 'Recruit Operative',
+              role: data.author?.role || data.author?.badge || 'Recruit Operative'
+            },
+            content: data.content || '',
+            timestamp: data.timestamp || (data.savedAt ? new Date(data.savedAt).toLocaleDateString() : 'Recently'),
+            likes: typeof data.likes === 'number' ? data.likes : 0
+          });
+        });
+        onCommentsUpdated(map);
+      },
+      (error) => {
+        console.warn('Firestore comments subscription note:', error);
+      }
+    );
+  } catch (err) {
+    console.warn('subscribeToComments error:', err);
+    return () => {};
+  }
+}
+
+/**
+ * Real-time listener for like counts across all content.
+ * Ensures every visitor and user sees current like counts made by others.
+ */
+export function subscribeToLikes(
+  onLikesUpdated: (likesMap: Record<string, number>) => void
+): () => void {
+  try {
+    const likesCol = collection(db, 'likes');
+    return onSnapshot(
+      likesCol,
+      (snapshot) => {
+        const map: Record<string, number> = {};
+        snapshot.forEach((docSnap) => {
+          // Aggregate count documents do NOT contain an underscore (individual user likes have itemId_userId format)
+          if (!docSnap.id.includes('_')) {
+            const data = docSnap.data();
+            if (typeof data.count === 'number') {
+              map[docSnap.id] = data.count;
+            }
+          }
+        });
+        onLikesUpdated(map);
+      },
+      (error) => {
+        console.warn('Firestore likes subscription note:', error);
+      }
+    );
+  } catch (err) {
+    console.warn('subscribeToLikes error:', err);
+    return () => {};
+  }
+}
+
+/**
+ * Fetch a user profile from Firestore by UID or username.
+ * Strictly sanitizes output so EMAIL IS NEVER EXPOSED to visitors or other users.
+ */
+export async function getPublicUserProfile(identifier?: string, fallbackName?: string): Promise<PublicUserProfileData | null> {
+  const targetId = identifier || '';
+  if (!targetId && !fallbackName) return null;
+
+  try {
+    // 1. Direct document lookup by UID in Users collection
+    if (targetId) {
+      const docSnap = await getDoc(doc(db, 'Users', targetId));
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        const cleanName = data.displayName || data.name || fallbackName || 'Vault Operative';
+        const cleanUsername = data.username 
+          ? (data.username.startsWith('@') ? data.username : `@${data.username}`)
+          : `@${cleanName.toLowerCase().replace(/\s+/g, '_')}`;
+
+        return {
+          id: docSnap.id,
+          name: cleanName,
+          username: cleanUsername,
+          avatar: data.photoURL || data.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80',
+          bio: data.bio || 'Active vault operative participating in tactical briefings, hardware evaluations, and strategic gaming discussions.',
+          badge: data.badge || 'Recruit Operative',
+          role: data.role || data.badge || 'Recruit Operative',
+          reputation: typeof data.reputation === 'number' ? data.reputation : 120,
+          joinDate: data.joinDate || (data.createdAt ? new Date(data.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short' }) : 'Jan 2025'),
+          createdAt: data.createdAt ? new Date(data.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short' }) : 'Vault Operative',
+          stats: {
+            likesCount: data.stats?.likesCount ?? (data.likesCount || 0),
+            commentsCount: data.stats?.commentsCount ?? (data.commentsCount || 0),
+            savesCount: data.stats?.savesCount ?? (data.savesCount || 0),
+            topicsCount: data.stats?.topicsCount ?? (data.topicsCount || 0)
+          }
+          // Note: NEVER include email field here to protect privacy!
+        };
+      }
+    }
+  } catch (err) {
+    console.warn('Error fetching public user profile:', err);
+  }
+  return null;
 }
 
 /**

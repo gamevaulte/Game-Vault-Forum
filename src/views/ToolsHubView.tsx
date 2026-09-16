@@ -4,7 +4,8 @@ import {
   Wrench, 
   Monitor, 
   ShieldCheck,
-  Bot
+  Bot,
+  Dices
 } from 'lucide-react';
 import { ToolHeader } from '../components/tools/ToolHeader';
 import { ToolCard } from '../components/tools/ToolCard';
@@ -20,13 +21,24 @@ export const ToolsHubView: React.FC<ToolsHubViewProps> = ({ onNavigateTab }) => 
       {/* Header */}
       <ToolHeader
         title="Gaming Tools & Hardware Utilities"
-        subtitle="Free, community-tested tools built for gamers. From synthesizing unique handles to custom PC hardware balancing and hardware spec validation."
+        subtitle="Free, community-tested tools built for gamers. From random game decision wheels to synthesizing unique handles, custom PC balancing, and hardware spec validation."
         breadcrumbs={[{ label: 'Gaming Tools' }]}
         icon={<Wrench className="w-6 h-6" />}
       />
 
       {/* Featured Primary Tools Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mb-12">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+        <ToolCard
+          title="Game Picker Wheel"
+          subtitle="Can't decide what to play?"
+          description="Add your games, spin the interactive virtual wheel with physics & audio, and let Game Vault Forum randomly pick your next game."
+          badge="Interactive"
+          icon={<Dices className="w-6 h-6 text-purple-400" />}
+          actionText="Spin the Wheel"
+          onClick={() => onNavigateTab('game-picker-wheel')}
+          featured={true}
+        />
+
         <ToolCard
           title="Vault AI Gaming Assistant"
           subtitle="Your intelligent gaming companion"
@@ -43,21 +55,21 @@ export const ToolsHubView: React.FC<ToolsHubViewProps> = ({ onNavigateTab }) => 
           subtitle="Create your next gaming identity"
           description="Synthesize creative, memorable gamer tags tailored by theme, style, numbers, and platform constraints for Steam, Twitch, YouTube, and Discord."
           badge="New Tool"
-          icon={<Sparkles className="w-6 h-6" />}
+          icon={<Sparkles className="w-6 h-6 text-cyan-400" />}
           actionText="Generate Username"
           onClick={() => onNavigateTab('gaming-username-generator')}
-          featured={true}
+          featured={false}
         />
 
         <ToolCard
           title="Gaming PC Builder"
           subtitle="Build around your budget & games"
           description="Intelligent component builder balancing CPU/GPU harmony, verified 10-point socket compatibility, estimated street pricing, and real gameplay projections."
-          badge="New Tool"
-          icon={<Wrench className="w-6 h-6" />}
+          badge="PC Builder"
+          icon={<Wrench className="w-6 h-6 text-emerald-400" />}
           actionText="Build My PC"
           onClick={() => onNavigateTab('gaming-pc-builder')}
-          featured={true}
+          featured={false}
         />
 
         <ToolCard
@@ -65,7 +77,7 @@ export const ToolsHubView: React.FC<ToolsHubViewProps> = ({ onNavigateTab }) => 
           subtitle="Can My PC Run This Game?"
           description="Benchmark your current hardware specifications against verified minimum and recommended system requirements for modern releases."
           badge="Popular"
-          icon={<Monitor className="w-6 h-6" />}
+          icon={<Monitor className="w-6 h-6 text-amber-400" />}
           actionText="Check PC Requirements"
           onClick={() => onNavigateTab('pc-requirements')}
           featured={false}

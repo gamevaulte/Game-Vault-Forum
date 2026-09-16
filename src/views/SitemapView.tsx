@@ -188,6 +188,18 @@ export const SitemapView: React.FC<SitemapViewProps> = ({ onNavigate }) => {
         changefreq: 'Monthly',
         isNew: true
       },
+      {
+        id: 'game-picker-wheel',
+        title: 'Game Picker Wheel — Random Game Decision Spinner',
+        url: '/game-picker-wheel',
+        category: 'tools',
+        badge: 'Interactive Spinner',
+        badgeColor: 'bg-amber-500/15 text-amber-300 border-amber-500/30',
+        description: 'Interactive virtual wheel to randomly select what game to play next with custom entries, quick presets, audio toggles, and result actions.',
+        priority: '0.9',
+        changefreq: 'Weekly',
+        isNew: true
+      },
 
       // 3. PC Requirements Direct Game Checkers (NEW)
       ...MOCK_GAMES.map((game) => {

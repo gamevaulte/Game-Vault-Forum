@@ -52,6 +52,7 @@ const PcRequirementsView = lazy(() => import('./views/PcRequirementsView').then(
 const UsernameGeneratorView = lazy(() => import('./views/UsernameGeneratorView').then(m => ({ default: m.UsernameGeneratorView })));
 const PcBuilderView = lazy(() => import('./views/PcBuilderView').then(m => ({ default: m.PcBuilderView })));
 const ToolsHubView = lazy(() => import('./views/ToolsHubView').then(m => ({ default: m.ToolsHubView })));
+const GamePickerWheelView = lazy(() => import('./views/GamePickerWheelView').then(m => ({ default: m.GamePickerWheelView })));
 const VaultAiView = lazy(() => import('./views/VaultAiView').then(m => ({ default: m.VaultAiView })));
 const SitemapView = lazy(() => import('./views/SitemapView').then(m => ({ default: m.SitemapView })));
 
@@ -60,6 +61,8 @@ const GlobalSearchModal = lazy(() => import('./components/GlobalSearchModal').th
 const AuthProfileModal = lazy(() => import('./components/AuthProfileModal').then(m => ({ default: m.AuthProfileModal })));
 const ShareModal = lazy(() => import('./components/ShareModal').then(m => ({ default: m.ShareModal })));
 const EmailSubscribeModal = lazy(() => import('./components/EmailSubscribeModal').then(m => ({ default: m.EmailSubscribeModal })));
+const PublicUserProfileModal = lazy(() => import('./components/PublicUserProfileModal').then(m => ({ default: m.PublicUserProfileModal })));
+import type { PublicUserProfileData } from './components/PublicUserProfileModal';
 
 // Firebase Auth & Firestore Backend
 import { onAuthStateChanged, signOut, User as FirebaseUser } from 'firebase/auth';
@@ -72,7 +75,10 @@ import {
   saveCommentToFirestore, 
   syncLikeToFirestore, 
   saveNewsletterSubscriber,
-  ensureInitialFirestoreDocuments 
+  ensureInitialFirestoreDocuments,
+  subscribeToComments,
+  subscribeToLikes,
+  getPublicUserProfile
 } from './lib/firebase';
 
 export default function App() {
@@ -171,6 +177,13 @@ export default function App() {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [profileInitialTab, setProfileInitialTab] = useState<'profile' | 'guidelines'>('profile');
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
+  const [publicProfileModal, setPublicProfileModal] = useState<{
+    isOpen: boolean;
+    profile: PublicUserProfileData | null;
+  }>({
+    isOpen: false,
+    profile: null
+  });
   const [shareState, setShareState] = useState<{
     isOpen: boolean;
     title: string;
@@ -284,6 +297,46 @@ export default function App() {
     return () => {
       unsubscribe();
       window.removeEventListener('gv-open-auth-modal', handleOpenAuth);
+    };
+  }, []);
+
+  // Real-time Firestore sync: Every user/visitor sees up-to-the-minute likes and comments made on content
+  useEffect(() => {
+    const unsubLikes = subscribeToLikes((firestoreLikes) => {
+      setLikesMap((prev) => {
+        const next = { ...prev, ...firestoreLikes };
+        try {
+          localStorage.setItem('gv_post_likes_v2', JSON.stringify(next));
+        } catch {}
+        return next;
+      });
+    });
+
+    const unsubComments = subscribeToComments((firestoreComments) => {
+      setCommentsMap((prev) => {
+        const next = { ...prev };
+        Object.keys(firestoreComments).forEach((contentId) => {
+          const incoming = firestoreComments[contentId] || [];
+          const existing = next[contentId] || [];
+          const map = new Map<string, PostComment>();
+          existing.forEach((c) => map.set(c.id, c));
+          incoming.forEach((c) => map.set(c.id, c));
+          next[contentId] = Array.from(map.values()).sort((a, b) => {
+            const timeA = (a as any).createdAt?.seconds || 0;
+            const timeB = (b as any).createdAt?.seconds || 0;
+            return timeA - timeB;
+          });
+        });
+        try {
+          localStorage.setItem('gv_post_comments_v2', JSON.stringify(next));
+        } catch {}
+        return next;
+      });
+    });
+
+    return () => {
+      unsubLikes();
+      unsubComments();
     };
   }, []);
 
@@ -579,8 +632,11 @@ export default function App() {
     const newComment: PostComment = {
       id: `comment-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
       author: {
+        id: firebaseUser.uid,
         name: user.name,
+        username: user.username,
         avatar: user.avatar,
+        role: user.role || user.badge || 'Recruit Operative',
         badge: user.badge
       },
       content,
@@ -729,8 +785,11 @@ export default function App() {
     const newReply = {
       id: `reply-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
       author: {
+        id: firebaseUser.uid,
         name: user.name,
+        username: user.username,
         avatar: user.avatar,
+        role: user.role || user.badge || 'Recruit Operative',
         badge: user.badge
       },
       content: replyText,
@@ -797,8 +856,11 @@ export default function App() {
       category: newTopicData.category || 'General Gaming',
       tags: newTopicData.tags || ['Discussion'],
       author: newTopicData.author || {
+        id: firebaseUser.uid,
         name: user.name,
+        username: user.username,
         avatar: user.avatar,
+        role: user.role || user.badge || 'Recruit Operative',
         badge: user.badge
       },
       repliesCount: 0,
@@ -840,6 +902,66 @@ export default function App() {
 
     addToast(`Discussion "${fullTopic.title}" opened in ${fullTopic.category}!`, 'success');
     navigate(`/forum/${getSeoSlug(fullTopic)}`);
+  };
+
+  // Handler to open public user profile popup (dossier) for any clicked user/visitor
+  const handleViewUserProfile = async (author: { id?: string; name: string; username?: string; avatar: string; role?: string; badge?: string }) => {
+    const fallbackUsername = author.username || author.name.toLowerCase().replace(/[^a-z0-9]/g, '_');
+    const initialData: PublicUserProfileData = {
+      id: author.id,
+      name: author.name,
+      username: fallbackUsername,
+      avatar: author.avatar,
+      role: author.role || author.badge || 'Recruit Operative',
+      badge: author.badge,
+      createdAt: 'Vault Operative',
+      joinDate: 'Vault Operative',
+      reputation: 25,
+      stats: {
+        likesCount: 0,
+        commentsCount: 0,
+        savesCount: 0,
+        topicsCount: 0
+      },
+      bio: 'Active tactical operative and gaming intelligence contributor across the Game Vault Forum ecosystem.'
+    };
+
+    // If viewing own profile while signed in, populate from local state directly
+    if (firebaseUser && (author.id === firebaseUser.uid || author.name === user.name)) {
+      initialData.name = user.name;
+      initialData.username = user.username;
+      initialData.avatar = user.avatar;
+      initialData.role = user.role || 'Recruit Operative';
+      initialData.reputation = user.reputation;
+      initialData.stats = user.stats;
+      initialData.bio = user.bio;
+      initialData.badge = user.badge;
+      initialData.createdAt = user.createdAt || user.joinDate || 'Active Operative';
+      initialData.joinDate = user.joinDate || 'Active Operative';
+    }
+
+    setPublicProfileModal({
+      isOpen: true,
+      profile: initialData
+    });
+
+    // If an id or name is present, fetch live public Firestore document (strictly strips email for privacy)
+    if (author.id || author.name) {
+      try {
+        const liveProfile = await getPublicUserProfile(author.id, author.name);
+        if (liveProfile) {
+          setPublicProfileModal({
+            isOpen: true,
+            profile: {
+              ...initialData,
+              ...liveProfile
+            }
+          });
+        }
+      } catch (err) {
+        console.warn('Could not fetch live profile:', err);
+      }
+    }
   };
 
   const handleSubscribeNewsletter = async (email: string) => {
@@ -1007,6 +1129,17 @@ export default function App() {
           ]
         });
         break;
+      case 'game-picker-wheel':
+        updatePageSeo({
+          title: '🎮 Game Picker Wheel | Random Game Chooser | Game Vault Forum',
+          description: "Can't decide what to play? Add your games, spin the wheel, and let Game Vault Forum choose for you! Features physics animations, sound effects, AI suggestions, and wheel saving.",
+          canonicalPath: '/game-picker-wheel',
+          breadcrumbs: [
+            { name: 'Tools', path: '/tools' },
+            { name: 'Game Picker Wheel', path: '/game-picker-wheel' }
+          ]
+        });
+        break;
       case 'tools':
         updatePageSeo({
           title: 'Gaming Tools & Hardware Utilities | Game Vault Forum',
@@ -1081,6 +1214,8 @@ export default function App() {
         return 'gaming-username-generator';
       case 'gaming-pc-builder':
         return 'gaming-pc-builder';
+      case 'game-picker-wheel':
+        return 'game-picker-wheel';
       case 'vault-ai':
         return 'vault-ai';
       case 'tools':
@@ -1134,6 +1269,7 @@ export default function App() {
     else if (tab === 'pc-requirements') navigate('/tools/pc-game-requirements-checker');
     else if (tab === 'gaming-username-generator') navigate('/tools/gaming-username-generator');
     else if (tab === 'gaming-pc-builder') navigate('/tools/gaming-pc-builder');
+    else if (tab === 'game-picker-wheel') navigate('/game-picker-wheel');
     else if (tab === 'tools') navigate('/tools');
     else if (tab === 'sitemap') navigate('/sitemap');
     else navigate(`/${tab}`);
@@ -1190,6 +1326,7 @@ export default function App() {
             }}
             onBack={() => navigate('/articles')}
             onNavigateTab={(t) => navigate(t === 'home' ? '/' : `/${t}`)}
+            onViewUserProfile={handleViewUserProfile}
           />
         );
       }
@@ -1240,6 +1377,7 @@ export default function App() {
             }}
             onBack={() => navigate('/videos')}
             onNavigateTab={(t) => navigate(t === 'home' ? '/' : `/${t}`)}
+            onViewUserProfile={handleViewUserProfile}
           />
         );
       }
@@ -1317,6 +1455,7 @@ export default function App() {
             onShare={() => handleShare(review.gameTitle, `/reviews/${reviewSlug}`)}
             onBack={() => navigate('/reviews')}
             onNavigateTab={(t) => navigate(t === 'home' ? '/' : `/${t}`)}
+            onViewUserProfile={handleViewUserProfile}
           />
         );
       }
@@ -1353,6 +1492,7 @@ export default function App() {
             onFilterForumByGame={() => navigate('/forum')}
             onBack={() => navigate('/guides')}
             onNavigateTab={(t) => navigate(t === 'home' ? '/' : `/${t}`)}
+            onViewUserProfile={handleViewUserProfile}
           />
         );
       }
@@ -1398,6 +1538,7 @@ export default function App() {
             onShare={() => handleShare(topic.title, `/forum/${topicSlug}`)}
             onBack={() => navigate('/forum')}
             onNavigateTab={(t) => navigate(t === 'home' ? '/' : `/${t}`)}
+            onViewUserProfile={handleViewUserProfile}
           />
         );
       }
@@ -1523,6 +1664,7 @@ export default function App() {
             onSelectTopic={(t) => navigate(`/forum/${getSeoSlug(t)}`)}
             onOpenNewTopic={() => navigate('/forum/new')}
             onOpenGuidelines={() => navigate('/guidelines')}
+            onViewUserProfile={handleViewUserProfile}
           />
         );
 
@@ -1600,6 +1742,21 @@ export default function App() {
               setIsAuthModalOpen(true);
             }}
             initialPrompt={route.type === 'vault-ai' ? route.initialPrompt : undefined}
+          />
+        );
+
+      case 'game-picker-wheel':
+        return (
+          <GamePickerWheelView
+            currentUser={user}
+            isSignedIn={Boolean(firebaseUser)}
+            onOpenSignIn={() => {
+              setAuthPromptMessage('Sign in or register to save your custom wheels to the cloud.');
+              setIsAuthModalOpen(true);
+            }}
+            onNavigateTab={handleNavigateTab}
+            onShowToast={(msg, type) => addToast(msg, type === 'error' ? 'info' : type)}
+            initialSharedGames={route.type === 'game-picker-wheel' ? route.games : undefined}
           />
         );
 
@@ -1795,6 +1952,15 @@ export default function App() {
           url={shareState.url}
           description={shareState.description}
           onCopiedToast={(msg) => addToast(msg, 'success')}
+        />
+      </Suspense>
+
+      {/* Public User Profile Modal (Dossier Popup when any visitor/user clicks an author/user profile) */}
+      <Suspense fallback={null}>
+        <PublicUserProfileModal
+          isOpen={publicProfileModal.isOpen}
+          onClose={() => setPublicProfileModal({ isOpen: false, profile: null })}
+          profile={publicProfileModal.profile}
         />
       </Suspense>
 
