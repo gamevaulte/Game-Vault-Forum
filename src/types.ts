@@ -10,6 +10,7 @@ export type PageTab =
   | 'contact' 
   | 'pc-requirements'
   | 'tools'
+  | 'game-avatar-generator'
   | 'gaming-username-generator'
   | 'gaming-pc-builder'
   | 'game-picker-wheel'

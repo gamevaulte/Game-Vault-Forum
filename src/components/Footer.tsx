@@ -167,6 +167,37 @@ export const Footer: React.FC<FooterProps> = ({
               </li>
               <li>
                 <a
+                  href="/game-avatar-generator"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onSelectTab('game-avatar-generator');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  className="hover:text-cyan-300 text-cyan-300 font-medium transition-colors flex items-center gap-1.5 group text-left"
+                >
+                  <ChevronRight className="w-3 h-3 text-cyan-400 group-hover:text-cyan-300 transition-colors" />
+                  <span>Game Avatar Generator</span>
+                  <span className="px-1.5 py-0.2 text-[9px] bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 rounded font-bold">
+                    New
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/game-picker-wheel"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onSelectTab('game-picker-wheel');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  className="hover:text-cyan-300 transition-colors flex items-center gap-1.5 group text-left"
+                >
+                  <ChevronRight className="w-3 h-3 text-gray-600 group-hover:text-cyan-400 transition-colors" />
+                  <span>Game Picker Wheel</span>
+                </a>
+              </li>
+              <li>
+                <a
                   href="/tools/gaming-username-generator"
                   onClick={(e) => {
                     e.preventDefault();

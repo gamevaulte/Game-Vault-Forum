@@ -1,6 +1,6 @@
 {
   "name": "Game Vault Forum",
-  "description": "A premium gaming website, YouTube channel hub, community forum, and Vault AI gaming assistant with custom PC building, hardware benchmarking, and gamer tools.",
+  "description": "A premium gaming website, YouTube channel hub, community forum, Game Avatar Generator, and Vault AI gaming assistant with custom PC building, hardware benchmarking, and gamer tools.",
   "requestFramePermissions": [],
   "majorCapabilities": [
     "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"

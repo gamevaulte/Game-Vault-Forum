@@ -52,6 +52,7 @@ const PcRequirementsView = lazy(() => import('./views/PcRequirementsView').then(
 const UsernameGeneratorView = lazy(() => import('./views/UsernameGeneratorView').then(m => ({ default: m.UsernameGeneratorView })));
 const PcBuilderView = lazy(() => import('./views/PcBuilderView').then(m => ({ default: m.PcBuilderView })));
 const ToolsHubView = lazy(() => import('./views/ToolsHubView').then(m => ({ default: m.ToolsHubView })));
+const AvatarGeneratorView = lazy(() => import('./views/AvatarGeneratorView').then(m => ({ default: m.AvatarGeneratorView })));
 const GamePickerWheelView = lazy(() => import('./views/GamePickerWheelView').then(m => ({ default: m.GamePickerWheelView })));
 const VaultAiView = lazy(() => import('./views/VaultAiView').then(m => ({ default: m.VaultAiView })));
 const SitemapView = lazy(() => import('./views/SitemapView').then(m => ({ default: m.SitemapView })));
@@ -1129,6 +1130,17 @@ export default function App() {
           ]
         });
         break;
+      case 'game-avatar-generator':
+        updatePageSeo({
+          title: 'Game Avatar Generator — Create Your Gaming Avatar | Game Vault Forum',
+          description: 'Create a unique gaming avatar with the Game Vault Forum Avatar Generator. Customize your character, outfit, colors, accessories and gaming style.',
+          canonicalPath: '/game-avatar-generator',
+          breadcrumbs: [
+            { name: 'Tools', path: '/tools' },
+            { name: 'Game Avatar Generator', path: '/game-avatar-generator' }
+          ]
+        });
+        break;
       case 'game-picker-wheel':
         updatePageSeo({
           title: '🎮 Game Picker Wheel | Random Game Chooser | Game Vault Forum',
@@ -1210,6 +1222,8 @@ export default function App() {
         return 'forum';
       case 'pc-requirements':
         return 'pc-requirements';
+      case 'game-avatar-generator':
+        return 'game-avatar-generator';
       case 'gaming-username-generator':
         return 'gaming-username-generator';
       case 'gaming-pc-builder':
@@ -1266,6 +1280,7 @@ export default function App() {
   const handleNavigateTab = (tab: PageTab) => {
     if (tab === 'home') navigate('/');
     else if (tab === 'vault-ai') navigate('/tools/vault-ai');
+    else if (tab === 'game-avatar-generator') navigate('/game-avatar-generator');
     else if (tab === 'pc-requirements') navigate('/tools/pc-game-requirements-checker');
     else if (tab === 'gaming-username-generator') navigate('/tools/gaming-username-generator');
     else if (tab === 'gaming-pc-builder') navigate('/tools/gaming-pc-builder');
@@ -1705,6 +1720,14 @@ export default function App() {
 
       case 'tools':
         return <ToolsHubView onNavigateTab={handleNavigateTab} />;
+
+      case 'game-avatar-generator':
+        return (
+          <AvatarGeneratorView
+            onNavigate={(tab, path) => navigate(path || (tab === 'home' ? '/' : `/${tab}`))}
+            currentUser={firebaseUser}
+          />
+        );
 
       case 'gaming-username-generator':
         return (

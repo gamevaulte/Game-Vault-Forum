@@ -27,6 +27,7 @@ export type Route =
   | { type: 'register' }
   | { type: 'pc-requirements'; gameSlug?: string }
   | { type: 'tools' }
+  | { type: 'game-avatar-generator' }
   | { type: 'gaming-username-generator' }
   | { type: 'gaming-pc-builder'; buildId?: string }
   | { type: 'game-picker-wheel'; games?: string[] }
@@ -65,6 +66,9 @@ export function parseRoute(rawPath: string): Route {
     if (seg2 === 'vault-ai' || seg2 === 'ai') {
       return { type: 'vault-ai' };
     }
+    if (seg2 === 'game-avatar-generator' || seg2 === 'avatar-generator' || seg2 === 'avatar') {
+      return { type: 'game-avatar-generator' };
+    }
     if (seg2 === 'game-picker-wheel' || seg2 === 'wheel' || seg2 === 'game-wheel') {
       return { type: 'game-picker-wheel', games: sharedGames };
     }
@@ -89,6 +93,9 @@ export function parseRoute(rawPath: string): Route {
   // Direct root tool paths
   if (seg1 === 'vault-ai' || seg1 === 'ai') {
     return { type: 'vault-ai' };
+  }
+  if (seg1 === 'game-avatar-generator' || seg1 === 'avatar-generator' || seg1 === 'avatar') {
+    return { type: 'game-avatar-generator' };
   }
   if (seg1 === 'game-picker-wheel' || seg1 === 'wheel' || seg1 === 'picker-wheel') {
     return { type: 'game-picker-wheel', games: sharedGames };
@@ -209,6 +216,8 @@ export function routeToUrl(route: Route): string {
         : '/tools/pc-game-requirements-checker';
     case 'tools':
       return '/tools';
+    case 'game-avatar-generator':
+      return '/game-avatar-generator';
     case 'gaming-username-generator':
       return '/tools/gaming-username-generator';
     case 'gaming-pc-builder':

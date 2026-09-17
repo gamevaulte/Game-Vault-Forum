@@ -252,6 +252,79 @@ async function startServer() {
     res.json({ inquiries: contactInquiriesMemory.slice(0, 50) });
   });
 
+  // AI Avatar Interpretation Endpoint (Original character generator with copyright safety)
+  app.post('/api/avatar/ai-interpret', async (req, res) => {
+    try {
+      const { prompt } = req.body || {};
+      if (!prompt || typeof prompt !== 'string') {
+        return res.status(400).json({ error: 'Prompt is required' });
+      }
+
+      const ai = getGeminiClient();
+      if (!ai) {
+        return res.json({ 
+          fallback: true, 
+          message: 'AI engine offline; using client-side generator.',
+          config: null 
+        });
+      }
+
+      const systemPrompt = `You are the Game Vault Forum Avatar AI Designer.
+Your task is to translate a gamer's natural language request into a valid JSON object matching this exact TypeScript structure for an avatar configuration:
+
+{
+  "style": one of ["gamer","cyberpunk","fantasy","sci-fi","anime","cartoon","pixel-art","futuristic","warrior","military","space-explorer","medieval","horror","racing","esports","casual-gamer"],
+  "characterType": one of ["male","female","androgynous"],
+  "skinTone": one of ["fair","warm","tan","olive","rich-bronze","deep-mocha","cyber-silver","neon-violet","frost-blue","orc-green"],
+  "hairstyle": one of ["short","fade","spiky","curly","long","ponytail","braided","mohawk","buzz-cut","futuristic"],
+  "hairColor": one of ["black","brown","blonde","red","white","silver","blue","purple","green"],
+  "eyeShape": one of ["focused","intense","calm","cyber-hud","glowing-slit","anime-spark"],
+  "eyeColor": one of ["brown","blue","green","gray","amber","purple","cybernetic","glowing","crimson"],
+  "outfit": one of ["gaming-hoodie","tactical-outfit","cyberpunk-jacket","fantasy-armor","sci-fi-armor","streetwear","esports-jersey","military-outfit","space-suit","casual-clothing","futuristic-suit","fantasy-robe"],
+  "outfitPrimaryColor": hex string e.g. "#1e1b4b",
+  "outfitSecondaryColor": hex string e.g. "#06b6d4",
+  "accessories": array containing any of ["gaming-headset","sunglasses","face-mask","cap","beanie","helmet","visor","backpack","shoulder-armor","cybernetic-implant","gaming-controller","microphone","fantasy-prop","futuristic-gadget"],
+  "gamingPersonality": one of ["competitive","casual","strategic","explorer","story-lover","rpg-fan","horror-fan","racing-fan","shooter-fan","sports-gamer","strategy-gamer","multiplayer-gamer","achievement-hunter","completionist","retro-gamer"],
+  "background": one of ["gaming-room","neon-city","space-station","fantasy-kingdom","dark-forest","futuristic-battlefield","cyberpunk-street","esports-arena","desert-landscape","snowy-mountain","sci-fi-laboratory","arcade","abstract","solid"],
+  "lightingColor": hex string e.g. "#06b6d4",
+  "enableAura": boolean,
+  "previewMode": "square" or "circle"
+}
+
+IMPORTANT COPYRIGHT & SAFETY RULES:
+- Always generate ORIGINAL characters.
+- If the user mentions a copyrighted character (e.g., Master Chief, Kratos, Geralt, Pikachu), transform the request into an original archetype inspired by broad visual motifs rather than copying.
+- Never claim the avatar is an official or licensed character.
+- Return ONLY valid raw JSON without markdown code fences or conversational filler.`;
+
+      const response = await ai.models.generateContent({
+        model: 'gemini-2.5-flash',
+        contents: [{ role: 'user', parts: [{ text: `User request: ${prompt}` }] }],
+        config: {
+          systemInstruction: systemPrompt,
+          temperature: 0.7,
+        },
+      });
+
+      const text = response.text || '';
+      const cleanJson = text.replace(/```json/g, '').replace(/```/g, '').trim();
+      const parsedConfig = JSON.parse(cleanJson);
+
+      return res.json({
+        success: true,
+        message: 'Original gaming character generated successfully!',
+        config: parsedConfig
+      });
+    } catch (err: any) {
+      console.warn('AI Avatar interpretation note:', err?.message || err);
+      return res.json({
+        fallback: true,
+        message: 'Applying smart parameter synthesis.',
+        config: null
+      });
+    }
+  });
+
   // Admin status endpoint
   app.get('/api/vault-ai/admin-status', (_req, res) => {
     res.json({

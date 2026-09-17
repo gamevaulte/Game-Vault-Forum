@@ -29,6 +29,17 @@ export const ToolsHubView: React.FC<ToolsHubViewProps> = ({ onNavigateTab }) => 
       {/* Featured Primary Tools Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
         <ToolCard
+          title="Game Avatar Generator"
+          subtitle="Create your unique gaming avatar"
+          description="Design custom gaming profile pictures with customizable hairstyles, cyberpunk armor, tactical headsets, RGB ambient lighting, dynamic backgrounds, and high-res PNG/WebP exports."
+          badge="New Tool"
+          icon={<Sparkles className="w-6 h-6 text-cyan-400" />}
+          actionText="Create Avatar"
+          onClick={() => onNavigateTab('game-avatar-generator')}
+          featured={true}
+        />
+
+        <ToolCard
           title="Game Picker Wheel"
           subtitle="Can't decide what to play?"
           description="Add your games, spin the interactive virtual wheel with physics & audio, and let Game Vault Forum randomly pick your next game."

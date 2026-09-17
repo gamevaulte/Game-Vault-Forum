@@ -190,6 +190,18 @@ export const SitemapView: React.FC<SitemapViewProps> = ({ onNavigate }) => {
         isNew: true
       },
       {
+        id: 'game-avatar-generator',
+        title: 'Game Avatar Generator — Create Your Unique Gaming Avatar',
+        url: '/game-avatar-generator',
+        category: 'tools',
+        badge: 'Avatar Creator',
+        badgeColor: 'bg-cyan-500/15 text-cyan-300 border-cyan-500/30',
+        description: 'Interactive gaming avatar creator with customizable hairstyles, cyberpunk armor, tactical headsets, dynamic backgrounds, and high-resolution PNG/WebP exports.',
+        priority: '0.9',
+        changefreq: 'Weekly',
+        isNew: true
+      },
+      {
         id: 'game-picker-wheel',
         title: 'Game Picker Wheel — Random Game Decision Spinner',
         url: '/game-picker-wheel',

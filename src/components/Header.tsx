@@ -96,18 +96,27 @@ export const Header: React.FC<HeaderProps> = ({
       icon: Sparkles
     },
     {
+      id: 'game-avatar-generator' as PageTab,
+      label: 'Game Avatar Generator',
+      desc: 'Create unique gaming profile avatars',
+      href: '/game-avatar-generator',
+      icon: Sparkles,
+      badge: 'New'
+    },
+    {
       id: 'game-picker-wheel' as PageTab,
       label: 'Game Picker Wheel',
       desc: "Can't decide what to play? Spin the wheel!",
       href: '/game-picker-wheel',
       icon: Dices,
-      badge: 'New'
+      badge: 'Popular'
     }
   ];
 
   const isToolsActive =
     currentTab === 'tools' ||
     currentTab === 'vault-ai' ||
+    currentTab === 'game-avatar-generator' ||
     currentTab === 'gaming-username-generator' ||
     currentTab === 'gaming-pc-builder' ||
     currentTab === 'pc-requirements' ||
