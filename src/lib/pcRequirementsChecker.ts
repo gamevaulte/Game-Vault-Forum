@@ -353,7 +353,7 @@ export function detectBrowserHardware(): {
  * Generate share text and links for results
  */
 export function generateShareLinks(gameTitle: string, result: CheckerResult) {
-  const currentUrl = typeof window !== 'undefined' ? window.location.href : 'https://www.gamevault.forum/tools/pc-game-requirements-checker';
+  const currentUrl = typeof window !== 'undefined' ? window.location.href : 'https://gamevault.forum/tools/pc-game-requirements-checker';
   const shareText = `I checked whether my PC can run ${gameTitle} on the Game Vault Forum PC Game Requirements Checker. Result: ${result.summaryBadge}! Check your PC:`;
 
   return {

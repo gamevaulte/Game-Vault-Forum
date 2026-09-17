@@ -76,7 +76,7 @@ export const PrivacyPolicyView: React.FC<PrivacyPolicyViewProps> = ({
             <span>Publisher: Joel Ayuba (Game Vault Forum)</span>
           </div>
           <p className="text-sm text-gray-300 leading-relaxed font-['Inter'] pt-2">
-            At Game Vault Forum (accessible from <span className="text-purple-300 font-mono">https://www.gamevault.forum</span>), the privacy of our visitors is of paramount importance. This Privacy Policy document outlines the types of personal information that is received and collected by Game Vault Forum and how it is used, including disclosures concerning third-party advertising partners such as Google AdSense.
+            At Game Vault Forum (accessible from <span className="text-purple-300 font-mono">https://gamevault.forum</span>), the privacy of our visitors is of paramount importance. This Privacy Policy document outlines the types of personal information that is received and collected by Game Vault Forum and how it is used, including disclosures concerning third-party advertising partners such as Google AdSense.
           </p>
         </div>
 

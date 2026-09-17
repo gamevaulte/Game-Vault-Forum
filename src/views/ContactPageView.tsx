@@ -294,7 +294,7 @@ export const ContactPageView: React.FC<ContactPageViewProps> = ({
                 <p><span className="text-gray-500">Editor-in-Chief:</span> Joel Ayuba</p>
                 <p><span className="text-gray-500">Direct Email:</span> <a href="mailto:contact@gamevault.forum" className="text-purple-400 hover:underline">contact@gamevault.forum</a></p>
                 <p><span className="text-gray-500">YouTube Channel:</span> <span className="text-cyan-400">@GameVaultForum</span></p>
-                <p><span className="text-gray-500">Website:</span> <span className="text-slate-300">www.gamevault.forum</span></p>
+                <p><span className="text-gray-500">Website:</span> <span className="text-slate-300">gamevault.forum</span></p>
               </div>
             </div>
 

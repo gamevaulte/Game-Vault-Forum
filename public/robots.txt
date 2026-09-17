@@ -1,5 +1,5 @@
 # Game Vault Forum robots.txt
-# https://www.gamevault.forum
+# https://gamevault.forum
 # Permits search engine bots to crawl and index all public gaming content and forum discussions
 
 User-agent: *
@@ -40,5 +40,5 @@ User-agent: YandexBot
 Allow: /
 
 # Sitemap & Host declarations for Search Console validation
-Sitemap: https://www.gamevault.forum/sitemap.xml
-Host: https://www.gamevault.forum
+Sitemap: https://gamevault.forum/sitemap.xml
+Host: https://gamevault.forum

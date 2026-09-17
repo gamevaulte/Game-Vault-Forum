@@ -25,6 +25,12 @@
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    overflow-x: clip;
+  }
+
+  body {
+    overflow-x: clip;
+    min-height: 100vh;
   }
 
   /* Optimize media and image rendering off the critical path */

@@ -21,6 +21,7 @@ import {
   CheckCircle2
 } from 'lucide-react';
 import { MOCK_GAMES, MOCK_VIDEOS, MOCK_ARTICLES, MOCK_REVIEWS, MOCK_GUIDES, MOCK_FORUM_TOPICS } from '../data/mockData';
+import { INITIAL_GAMES_REQUIREMENTS } from '../data/pcRequirementsData';
 import { getSeoSlug } from '../lib/seo';
 
 interface SitemapItem {
@@ -201,22 +202,29 @@ export const SitemapView: React.FC<SitemapViewProps> = ({ onNavigate }) => {
         isNew: true
       },
 
-      // 3. PC Requirements Direct Game Checkers (NEW)
-      ...MOCK_GAMES.map((game) => {
-        const slug = getSeoSlug(game);
-        return {
-          id: `req-${game.id}`,
-          title: `${game.title} — PC System Requirements & Can You Run It?`,
-          url: `/tools/pc-game-requirements-checker/${slug}`,
-          category: 'tools' as const,
-          badge: 'Game Specs',
-          badgeColor: 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20',
-          description: `Direct hardware requirement analysis, minimum & recommended PC specs, and frame-rate estimates for ${game.title}.`,
-          priority: '0.8',
-          changefreq: 'Weekly',
-          isNew: true
-        };
-      }),
+      // 3. PC Requirements Direct Game Checkers (All 50 Games in Vault Database)
+      ...(() => {
+        const seen = new Set<string>();
+        const list: SitemapItem[] = [];
+        INITIAL_GAMES_REQUIREMENTS.forEach((req) => {
+          const slug = req.slug || getSeoSlug(req);
+          if (seen.has(slug)) return;
+          seen.add(slug);
+          list.push({
+            id: `req-${req.id}`,
+            title: `${req.title} — PC System Requirements & Can You Run It?`,
+            url: `/tools/pc-game-requirements-checker/${slug}`,
+            category: 'tools' as const,
+            badge: 'Game Specs',
+            badgeColor: 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20',
+            description: `Direct hardware requirement analysis, minimum & recommended PC specs, and frame-rate estimates for ${req.title}.`,
+            priority: '0.8',
+            changefreq: 'Weekly',
+            isNew: true
+          });
+        });
+        return list;
+      })(),
 
       // 4. Games Catalog Detail Pages
       ...MOCK_GAMES.map((game) => {
@@ -266,9 +274,9 @@ export const SitemapView: React.FC<SitemapViewProps> = ({ onNavigate }) => {
         };
       }),
 
-      // 7. Reviews & Benchmarks
+      // 7. Reviews & Benchmarks (Canonical Review Slugs)
       ...MOCK_REVIEWS.map((review) => {
-        const slug = getSeoSlug(review);
+        const slug = getSeoSlug({ id: review.id, title: `${review.gameTitle} review` });
         return {
           id: `review-${review.id}`,
           title: `${review.gameTitle} Review (${review.score}/10 — ${review.scoreLabel})`,
@@ -277,7 +285,7 @@ export const SitemapView: React.FC<SitemapViewProps> = ({ onNavigate }) => {
           badge: `${review.score}/10 ${review.scoreLabel}`,
           badgeColor: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
           description: review.shortVerdict || `Full scored review for ${review.gameTitle} detailing gameplay, visuals, audio, and technical performance.`,
-          priority: '0.8',
+          priority: '0.9',
           changefreq: 'Weekly'
         };
       }),
@@ -433,7 +441,7 @@ export const SitemapView: React.FC<SitemapViewProps> = ({ onNavigate }) => {
   }, [sitemapItems]);
 
   const handleCopy = (url: string) => {
-    const fullUrl = `https://www.gamevault.forum${url}`;
+    const fullUrl = `https://gamevault.forum${url}`;
     navigator.clipboard.writeText(fullUrl);
     setCopiedUrl(url);
     setTimeout(() => setCopiedUrl(null), 2000);

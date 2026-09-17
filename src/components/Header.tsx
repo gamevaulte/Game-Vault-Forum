@@ -32,11 +32,16 @@ export const Header: React.FC<HeaderProps> = ({
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 15);
+      const scrollPos = window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;
+      setIsScrolled(scrollPos > 8);
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('resize', handleScroll, { passive: true });
     handleScroll();
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleScroll);
+    };
   }, []);
 
   useEffect(() => {
@@ -118,10 +123,10 @@ export const Header: React.FC<HeaderProps> = ({
   return (
     <header 
       id="main-navigation-header"
-      className={`sticky top-0 z-50 w-full max-w-full overflow-x-clip transition-all duration-300 ${
+      className={`sticky top-0 z-50 w-full transition-all duration-300 ${
         isScrolled
-          ? 'bg-[#070913]/85 backdrop-blur-xl border-b border-purple-500/20 shadow-xl shadow-black/60'
-          : 'bg-black/40 backdrop-blur-lg border-b border-white/5'
+          ? 'bg-[#070913]/92 backdrop-blur-xl border-b border-purple-500/30 shadow-2xl shadow-black/80 supports-[backdrop-filter]:bg-[#070913]/88'
+          : 'bg-[#070913]/80 backdrop-blur-lg border-b border-white/10 shadow-lg shadow-black/40 supports-[backdrop-filter]:bg-[#070913]/70'
       }`}
     >
       <div className="max-w-7xl mx-auto px-2.5 sm:px-4 lg:px-6 h-16 sm:h-18 flex items-center justify-between gap-2 sm:gap-3">

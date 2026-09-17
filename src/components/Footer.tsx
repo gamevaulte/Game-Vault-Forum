@@ -107,7 +107,7 @@ export const Footer: React.FC<FooterProps> = ({
               </a>
               <div className="flex items-center gap-1.5 px-3 py-1 text-xs text-gray-300 bg-white/5 border border-white/10 rounded-full backdrop-blur-md">
                 <Shield className="w-3.5 h-3.5 text-purple-400" />
-                <span>www.gamevault.forum</span>
+                <span>gamevault.forum</span>
               </div>
             </div>
           </div>

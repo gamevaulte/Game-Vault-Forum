@@ -133,11 +133,11 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
 
       // Canonical external/direct URL for requirements checker
       const resolvedHref = isRequirementsChecker 
-        ? 'https://www.gamevault.forum/tools/pc-game-requirements-checker'
+        ? 'https://gamevault.forum/tools/pc-game-requirements-checker'
         : isPcBuilder
-        ? 'https://www.gamevault.forum/tools/gaming-pc-builder'
+        ? 'https://gamevault.forum/tools/gaming-pc-builder'
         : isForum
-        ? 'https://www.gamevault.forum/forum'
+        ? 'https://gamevault.forum/forum'
         : url;
 
       parts.push(

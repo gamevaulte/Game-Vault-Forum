@@ -1,6 +1,6 @@
 # Game Vault Forum ads.txt
 # Authorized Digital Sellers configuration for Google AdSense
-# Domain: https://www.gamevault.forum
+# Domain: https://gamevault.forum
 # Publisher ID: ca-pub-6121667798720008
 # Last Verified: 2026-09-07
 

@@ -1788,7 +1788,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#050507] text-gray-100 flex flex-col selection:bg-purple-600 selection:text-white font-['Inter'] relative overflow-x-hidden">
+    <div className="min-h-screen bg-[#050507] text-gray-100 flex flex-col selection:bg-purple-600 selection:text-white font-['Inter'] relative overflow-x-clip">
       {/* Frosted Glass Ambient Atmospheric Lighting */}
       <div className="fixed top-[-10%] left-[-10%] w-[500px] lg:w-[45%] h-[500px] lg:h-[45%] bg-purple-900/30 blur-[130px] rounded-full pointer-events-none -z-10 animate-vault-glow" />
       <div className="fixed bottom-[-10%] right-[-10%] w-[500px] lg:w-[45%] h-[500px] lg:h-[45%] bg-blue-900/20 blur-[130px] rounded-full pointer-events-none -z-10" />

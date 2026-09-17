@@ -102,7 +102,7 @@ const HomeViewComponent: React.FC<HomeViewProps> = ({
               Official Hub & Community
             </span>
             <span className="text-gray-500">•</span>
-            <span className="font-mono text-purple-400">www.gamevault.forum</span>
+            <span className="font-mono text-purple-400">gamevault.forum</span>
           </div>
 
           {/* Main Brand Title */}

@@ -93,7 +93,7 @@ export interface PageSeoOptions {
   noIndex?: boolean;
 }
 
-export const CANONICAL_BASE_URL = 'https://www.gamevault.forum';
+export const CANONICAL_BASE_URL = 'https://gamevault.forum';
 
 /**
  * Updates dynamic browser metadata and JSON-LD structured data for search engine crawlers and social cards
@@ -164,9 +164,13 @@ export function updatePageSeo(meta: PageSeoOptions) {
   if (twitterImageTag) twitterImageTag.setAttribute('content', resolvedImage);
 
   // 8. Update Canonical Link & Open Graph URL (Ensures every single page has its own canonical URL)
+  // Strips any www prefix, cleans double slashes, and formats root vs subpages properly
   const rawPath = meta.canonicalPath || (typeof window !== 'undefined' ? window.location.pathname : '/');
-  const cleanPath = rawPath.startsWith('/') ? rawPath : `/${rawPath}`;
-  const canonicalUrl = `${CANONICAL_BASE_URL}${cleanPath}`;
+  let cleanPath = rawPath.startsWith('/') ? rawPath : `/${rawPath}`;
+  if (cleanPath.length > 1 && cleanPath.endsWith('/')) {
+    cleanPath = cleanPath.replace(/\/+$/, '');
+  }
+  const canonicalUrl = cleanPath === '/' ? `${CANONICAL_BASE_URL}/` : `${CANONICAL_BASE_URL}${cleanPath}`;
 
   let canonicalLink = document.querySelector('link[rel="canonical"]');
   if (!canonicalLink) {
