@@ -176,15 +176,18 @@ export interface AvatarConfig {
 export interface SavedAvatar {
   id: string;
   name: string;
+  genre?: string;
   config: AvatarConfig;
   previewDataUrl?: string;
   createdAt: string;
   userId?: string;
+  authorName?: string;
 }
 
 export interface AvatarPreset {
   id: string;
   name: string;
+  genre?: string;
   tagline: string;
   description: string;
   badge: string;

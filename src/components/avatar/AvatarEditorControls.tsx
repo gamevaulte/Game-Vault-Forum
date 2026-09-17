@@ -27,7 +27,8 @@ import {
   GAMING_PERSONALITIES, 
   AVATAR_BACKGROUNDS, 
   PREDEFINED_PALETTES,
-  AVATAR_PRESETS
+  AVATAR_PRESETS,
+  GENRE_CATEGORIES
 } from '../../data/avatarData';
 import { 
   Palette, 
@@ -67,6 +68,11 @@ export const AvatarEditorControls: React.FC<AvatarEditorControlsProps> = ({
   onOpenAiMode
 }) => {
   const [activeTab, setActiveTab] = useState<TabKey>('presets');
+  const [selectedGenre, setSelectedGenre] = useState<string>('all');
+
+  const filteredPresets = selectedGenre === 'all'
+    ? AVATAR_PRESETS
+    : AVATAR_PRESETS.filter(p => p.genre === selectedGenre);
 
   const toggleAccessory = (accId: AccessoryType) => {
     const current = config.accessories || [];
@@ -159,16 +165,56 @@ export const AvatarEditorControls: React.FC<AvatarEditorControlsProps> = ({
         })}
       </div>
 
-      {/* Tab 1: Presets */}
+      {/* Tab 1: Presets & Genre Filter */}
       {activeTab === 'presets' && (
         <div className="flex flex-col gap-4 animate-in fade-in duration-200">
-          <div className="flex items-center justify-between">
-            <span className="text-xs text-slate-400">Click any preset card to load instantly:</span>
-            <span className="text-xs text-slate-500">{AVATAR_PRESETS.length} Archetypes Available</span>
+          {/* Genre Category Quick Filter Chips */}
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold uppercase tracking-wider text-slate-300">
+                Filter by Gaming Genre:
+              </span>
+              <span className="text-xs text-cyan-400 font-medium">
+                {filteredPresets.length} Avatars
+              </span>
+            </div>
+
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1.5 scrollbar-thin scrollbar-thumb-slate-700">
+              {GENRE_CATEGORIES.map((genre) => {
+                const isSelected = selectedGenre === genre.id;
+                const count = genre.id === 'all' 
+                  ? AVATAR_PRESETS.length 
+                  : AVATAR_PRESETS.filter(p => p.genre === genre.id).length;
+                return (
+                  <button
+                    key={genre.id}
+                    type="button"
+                    onClick={() => setSelectedGenre(genre.id)}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap transition-all ${
+                      isSelected
+                        ? 'bg-cyan-500 text-slate-950 font-bold shadow-md shadow-cyan-500/20 ring-1 ring-cyan-400'
+                        : 'bg-slate-800/80 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700/60'
+                    }`}
+                  >
+                    <span>{genre.label}</span>
+                    <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${
+                      isSelected ? 'bg-slate-950/20 text-slate-900 font-extrabold' : 'bg-slate-900 text-slate-400'
+                    }`}>
+                      {count}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between border-t border-slate-800/80 pt-3">
+            <span className="text-xs text-slate-400">Click any avatar to apply its character style:</span>
+            <span className="text-xs text-slate-500">Universal Formats</span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[460px] overflow-y-auto pr-1">
-            {AVATAR_PRESETS.map((preset) => {
+            {filteredPresets.map((preset) => {
               const isSelected = config.style === preset.config.style && config.outfit === preset.config.outfit;
               return (
                 <div
@@ -680,14 +726,14 @@ export const AvatarEditorControls: React.FC<AvatarEditorControlsProps> = ({
             <div className="flex items-center justify-between p-3 rounded-xl bg-slate-800/40 border border-slate-800">
               <div className="flex flex-col">
                 <span className="text-xs font-medium text-slate-300">Preview Shape</span>
-                <span className="text-[10px] text-slate-500">Simulate Discord circle vs Square</span>
+                <span className="text-[10px] text-slate-500">Preview as square or circle (download is full square)</span>
               </div>
               <div className="flex items-center gap-1 bg-slate-900 p-1 rounded-lg border border-slate-700">
                 <button
                   type="button"
                   onClick={() => onChange({ previewMode: 'square' })}
                   className={`p-1.5 rounded-md ${
-                    config.previewMode === 'square' ? 'bg-cyan-500/20 text-cyan-400' : 'text-slate-500 hover:text-slate-300'
+                    config.previewMode === 'square' ? 'bg-cyan-500/20 text-cyan-400 font-bold' : 'text-slate-500 hover:text-slate-300'
                   }`}
                   title="Square Preview"
                 >
@@ -697,7 +743,7 @@ export const AvatarEditorControls: React.FC<AvatarEditorControlsProps> = ({
                   type="button"
                   onClick={() => onChange({ previewMode: 'circle' })}
                   className={`p-1.5 rounded-md ${
-                    config.previewMode === 'circle' ? 'bg-cyan-500/20 text-cyan-400' : 'text-slate-500 hover:text-slate-300'
+                    config.previewMode === 'circle' ? 'bg-cyan-500/20 text-cyan-400 font-bold' : 'text-slate-500 hover:text-slate-300'
                   }`}
                   title="Circle Preview"
                 >

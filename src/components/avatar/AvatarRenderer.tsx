@@ -38,6 +38,12 @@ export const AvatarRenderer = forwardRef<AvatarRendererRef, AvatarRendererProps>
       if (!svgRef.current) return '';
       const clone = svgRef.current.cloneNode(true) as SVGSVGElement;
       
+      // CRITICAL: In downloaded/exported images, strictly keep full square dimension and avoid circular background!
+      clone.querySelectorAll('[clip-path], [clipPath]').forEach(el => {
+        el.removeAttribute('clip-path');
+        el.removeAttribute('clipPath');
+      });
+
       // If transparent requested, remove background group
       if (transparent) {
         const bgGroup = clone.querySelector('#avatar-bg-layer');
@@ -47,6 +53,7 @@ export const AvatarRenderer = forwardRef<AvatarRendererRef, AvatarRendererProps>
       // Ensure explicit width/height
       clone.setAttribute('width', '1024');
       clone.setAttribute('height', '1024');
+      clone.setAttribute('viewBox', '0 0 500 500');
       clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
 
       return new XMLSerializer().serializeToString(clone);
@@ -59,6 +66,13 @@ export const AvatarRenderer = forwardRef<AvatarRendererRef, AvatarRendererProps>
           }
 
           const clone = svgRef.current.cloneNode(true) as SVGSVGElement;
+          
+          // CRITICAL: In downloaded/exported images, strictly keep full square dimension and avoid circular background!
+          clone.querySelectorAll('[clip-path], [clipPath]').forEach(el => {
+            el.removeAttribute('clip-path');
+            el.removeAttribute('clipPath');
+          });
+
           if (transparent && format === 'png') {
             const bgGroup = clone.querySelector('#avatar-bg-layer');
             if (bgGroup) bgGroup.remove();
@@ -66,6 +80,7 @@ export const AvatarRenderer = forwardRef<AvatarRendererRef, AvatarRendererProps>
 
           clone.setAttribute('width', String(exportSize));
           clone.setAttribute('height', String(exportSize));
+          clone.setAttribute('viewBox', '0 0 500 500');
           clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
 
           const svgData = new XMLSerializer().serializeToString(clone);
@@ -83,13 +98,13 @@ export const AvatarRenderer = forwardRef<AvatarRendererRef, AvatarRendererProps>
               return reject(new Error('Canvas context could not be created'));
             }
 
-            // Fill solid white/dark background for JPG or non-transparent exports
+            // Fill solid dark/custom background for JPG or non-transparent exports
             if (format === 'jpeg' || (!transparent && format !== 'png')) {
               ctx.fillStyle = '#0f172a';
               ctx.fillRect(0, 0, exportSize, exportSize);
             }
 
-            // Draw image onto canvas
+            // Draw full square image onto canvas (never clipped)
             ctx.drawImage(image, 0, 0, exportSize, exportSize);
             URL.revokeObjectURL(blobUrl);
 
@@ -177,19 +192,18 @@ export const AvatarRenderer = forwardRef<AvatarRendererRef, AvatarRendererProps>
             {[[40, 60], [80, 110], [130, 40], [200, 70], [280, 30], [340, 80], [420, 50], [460, 130], [45, 230], [460, 260]].map(([cx, cy], i) => (
               <circle key={i} cx={cx} cy={cy} r={i % 2 === 0 ? 1.5 : 2.5} fill="#ffffff" opacity={0.7 + (i % 3) * 0.1} />
             ))}
-            {/* Metallic Station Viewport Ring */}
-            <circle cx="250" cy="250" r="235" fill="none" stroke="#1e293b" strokeWidth="24" />
-            <circle cx="250" cy="250" r="222" fill="none" stroke="#334155" strokeWidth="2" />
-            {/* Station Bolts */}
-            {[0, 45, 90, 135, 180, 225, 270, 315].map((deg, i) => (
-              <circle 
-                key={i} 
-                cx={250 + 235 * Math.cos((deg * Math.PI) / 180)} 
-                cy={250 + 235 * Math.sin((deg * Math.PI) / 180)} 
-                r="4" 
-                fill="#475569" 
-              />
-            ))}
+            {/* Structural Square Window Bulkheads & Telemetry Trusses */}
+            <rect x="0" y="0" width="36" height="500" fill="#0f172a" />
+            <rect x="464" y="0" width="36" height="500" fill="#0f172a" />
+            <rect x="0" y="0" width="500" height="28" fill="#1e293b" />
+            <line x1="36" y1="0" x2="36" y2="500" stroke="#0284c7" strokeWidth="2.5" opacity="0.7" />
+            <line x1="464" y1="0" x2="464" y2="500" stroke="#0284c7" strokeWidth="2.5" opacity="0.7" />
+            <line x1="0" y1="28" x2="500" y2="28" stroke="#38bdf8" strokeWidth="2" opacity="0.6" />
+            {/* Corner Truss Gussets */}
+            <polygon points="0,0 80,0 0,80" fill="#1e293b" stroke="#334155" strokeWidth="1" />
+            <polygon points="500,0 420,0 500,80" fill="#1e293b" stroke="#334155" strokeWidth="1" />
+            {/* Holographic Nav Matrix grid */}
+            <line x1="80" y1="380" x2="420" y2="380" stroke="#38bdf8" strokeWidth="1" strokeDasharray="6,4" opacity="0.4" />
           </g>
         );
 
@@ -606,14 +620,14 @@ export const AvatarRenderer = forwardRef<AvatarRendererRef, AvatarRendererProps>
       <g id="head-and-face">
         {/* Neck */}
         <path d="M 215,260 L 215,330 Q 250,345 285,330 L 285,260 Z" fill={skin.hex} />
-        {/* Neck Shadow under chin */}
-        <path d="M 215,260 Q 250,290 285,260 L 285,275 Q 250,305 215,275 Z" fill="#000000" opacity="0.15" />
+        {/* Neck Shadow under chin for realistic ambient occlusion */}
+        <path d="M 215,260 Q 250,295 285,260 L 285,280 Q 250,312 215,280 Z" fill="#000000" opacity="0.22" />
 
         {/* Ears */}
         <circle cx="165" cy="225" r="16" fill={skin.hex} />
-        <circle cx="166" cy="225" r="10" fill="#000000" opacity="0.12" />
+        <circle cx="166" cy="225" r="10" fill="#000000" opacity="0.14" />
         <circle cx="335" cy="225" r="16" fill={skin.hex} />
-        <circle cx="334" cy="225" r="10" fill="#000000" opacity="0.12" />
+        <circle cx="334" cy="225" r="10" fill="#000000" opacity="0.14" />
 
         {/* Head / Face Base */}
         <path 
@@ -627,8 +641,25 @@ export const AvatarRenderer = forwardRef<AvatarRendererRef, AvatarRendererProps>
           fill={skin.hex} 
         />
 
+        {/* Soft volumetric cheek & temple highlight */}
+        <path 
+          d="M 185,150 Q 250,135 315,150 Q 250,158 185,150 Z" 
+          fill="#ffffff" 
+          opacity="0.12" 
+        />
+
+        {/* Subtle jawline contour */}
+        <path 
+          d="M 195,250 Q 250,274 305,250" 
+          stroke="#000000" 
+          strokeWidth="1.5" 
+          strokeLinecap="round" 
+          fill="none" 
+          opacity="0.15" 
+        />
+
         {/* Nose */}
-        <path d="M 250,195 L 246,220 L 254,220 Z" fill="#000000" opacity="0.18" />
+        <path d="M 250,195 L 246,220 L 254,220 Z" fill="#000000" opacity="0.2" />
 
         {/* Mouth & Expression */}
         {renderMouth()}
@@ -987,18 +1018,76 @@ export const AvatarRenderer = forwardRef<AvatarRendererRef, AvatarRendererProps>
     );
   };
 
-  // Visual Style Filter Overlays
+  // Visual Style Filter Overlays across all genres
   const renderStyleOverlay = () => {
     switch (config.style) {
-      case 'cyberpunk':
+      case 'anime':
         return (
-          <g id="style-filter-cyberpunk" opacity="0.18">
-            {/* Scanlines */}
-            {Array.from({ length: 50 }).map((_, i) => (
-              <line key={i} x1="0" y1={i * 10} x2="500" y2={i * 10} stroke="#06b6d4" strokeWidth="1" />
-            ))}
+          <g id="style-filter-anime">
+            {/* Anime Sparkle Stars & Shonen Catchlights */}
+            <g opacity="0.7" filter="url(#glow-blur)">
+              <path d="M 90,80 L 93,88 L 101,91 L 93,94 L 90,102 L 87,94 L 79,91 L 87,88 Z" fill="#ffffff" />
+              <path d="M 410,120 L 412,126 L 418,128 L 412,130 L 410,136 L 408,130 L 402,128 L 408,126 Z" fill="#facc15" />
+              <path d="M 380,240 L 382,245 L 387,247 L 382,249 L 380,254 L 378,249 L 373,247 L 378,245 Z" fill="#38bdf8" />
+            </g>
+            {/* Subtle dynamic action line accents */}
+            <line x1="20" y1="30" x2="80" y2="60" stroke="#ffffff" strokeWidth="1.2" opacity="0.3" />
+            <line x1="480" y1="30" x2="420" y2="60" stroke="#ffffff" strokeWidth="1.2" opacity="0.3" />
           </g>
         );
+
+      case 'cartoon':
+        return (
+          <g id="style-filter-cartoon">
+            {/* Comic Halftone Pop Accent Dots */}
+            <g opacity="0.18">
+              {[50, 70, 90].map((cx, i) => (
+                <circle key={`dot1-${i}`} cx={cx} cy="50" r={i + 2.5} fill="#ffffff" />
+              ))}
+              {[410, 430, 450].map((cx, i) => (
+                <circle key={`dot2-${i}`} cx={cx} cy="50" r={i + 2.5} fill="#ffffff" />
+              ))}
+            </g>
+            {/* Bold dynamic action burst line */}
+            <line x1="25" y1="40" x2="65" y2="70" stroke={lightingColor} strokeWidth="2.5" strokeLinecap="round" opacity="0.4" />
+            <line x1="475" y1="40" x2="435" y2="70" stroke={lightingColor} strokeWidth="2.5" strokeLinecap="round" opacity="0.4" />
+          </g>
+        );
+
+      case 'cyberpunk':
+        return (
+          <g id="style-filter-cyberpunk">
+            {/* CRT Scanlines */}
+            <g opacity="0.14">
+              {Array.from({ length: 50 }).map((_, i) => (
+                <line key={i} x1="0" y1={i * 10} x2="500" y2={i * 10} stroke="#06b6d4" strokeWidth="1" />
+              ))}
+            </g>
+            {/* Cyber HUD Corner Telemetry Brackets */}
+            <path d="M 20,40 L 20,20 L 40,20" fill="none" stroke={lightingColor} strokeWidth="2.5" />
+            <path d="M 480,40 L 480,20 L 460,20" fill="none" stroke={lightingColor} strokeWidth="2.5" />
+            <path d="M 20,460 L 20,480 L 40,480" fill="none" stroke={lightingColor} strokeWidth="2.5" />
+            <path d="M 480,460 L 480,480 L 460,480" fill="none" stroke={lightingColor} strokeWidth="2.5" />
+          </g>
+        );
+
+      case 'sci-fi':
+      case 'space-explorer':
+        return (
+          <g id="style-filter-scifi">
+            {/* Hexagonal Nanotech Mesh Accent */}
+            <g opacity="0.14">
+              <polygon points="60,80 75,70 90,80 90,100 75,110 60,100" fill="none" stroke="#38bdf8" strokeWidth="1.5" />
+              <polygon points="90,100 105,90 120,100 120,120 105,130 90,120" fill="none" stroke="#38bdf8" strokeWidth="1.5" />
+              <polygon points="410,80 425,70 440,80 440,100 425,110 410,100" fill="none" stroke="#38bdf8" strokeWidth="1.5" />
+            </g>
+            {/* Optical coordinate crosshair */}
+            <circle cx="250" cy="50" r="12" fill="none" stroke="#38bdf8" strokeWidth="1" opacity="0.3" />
+            <line x1="250" y1="35" x2="250" y2="65" stroke="#38bdf8" strokeWidth="1" opacity="0.3" />
+            <line x1="235" y1="50" x2="265" y2="50" stroke="#38bdf8" strokeWidth="1" opacity="0.3" />
+          </g>
+        );
+
       case 'pixel-art':
         return (
           <g id="style-filter-pixel" opacity="0.14">
@@ -1011,12 +1100,30 @@ export const AvatarRenderer = forwardRef<AvatarRendererRef, AvatarRendererProps>
             ))}
           </g>
         );
+
       case 'fantasy':
+      case 'medieval':
+      case 'warrior':
         return (
-          <g id="style-filter-fantasy" opacity="0.2">
-            <circle cx="250" cy="250" r="230" fill="url(#fantasy-vignette)" />
+          <g id="style-filter-fantasy">
+            {/* Arcane Mana Motes */}
+            <g opacity="0.55" filter="url(#glow-blur)">
+              <circle cx="120" cy="140" r="3" fill="#c084fc" />
+              <circle cx="380" cy="110" r="3.5" fill="#facc15" />
+              <circle cx="100" cy="290" r="2.5" fill="#e879f9" />
+              <circle cx="400" cy="300" r="3" fill="#60a5fa" />
+            </g>
           </g>
         );
+
+      case 'horror':
+        return (
+          <g id="style-filter-horror">
+            {/* Dark Spectral Mist accents */}
+            <rect x="0" y="440" width="500" height="60" fill="#020617" opacity="0.4" filter="url(#glow-blur)" />
+          </g>
+        );
+
       default:
         return null;
     }

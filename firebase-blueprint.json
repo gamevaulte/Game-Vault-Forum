@@ -170,9 +170,47 @@
         "createdAt": { "type": "string", "description": "Record creation timestamp" }
       },
       "required": ["email", "subscribedAt", "status"]
+    },
+    "AvatarPreset": {
+      "title": "Avatar Preset",
+      "description": "Gaming avatar presets across all gaming genres (anime, cyberpunk, cartoons, fantasy, sci-fi, esports, retro, horror, etc.)",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique preset ID" },
+        "name": { "type": "string", "description": "Avatar name" },
+        "genre": { "type": "string", "description": "Genre category (e.g. anime, cyberpunk, cartoon, fantasy, sci-fi, etc.)" },
+        "tagline": { "type": "string", "description": "Short catchy tagline" },
+        "badge": { "type": "string", "description": "Style badge label" },
+        "description": { "type": "string", "description": "Detailed background lore or description" },
+        "config": { "type": "object", "description": "Full AvatarConfig configuration object" },
+        "createdAt": { "type": "string", "description": "Creation timestamp" }
+      },
+      "required": ["id", "name", "genre", "config"]
+    },
+    "UserAvatar": {
+      "title": "User Saved Avatar",
+      "description": "Custom user generated and saved gaming avatars",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique avatar document ID" },
+        "userId": { "type": "string", "description": "UID of the creator" },
+        "name": { "type": "string", "description": "Custom avatar title" },
+        "genre": { "type": "string", "description": "Genre classification" },
+        "config": { "type": "object", "description": "Avatar configuration schema" },
+        "createdAt": { "type": "string", "description": "Save timestamp" }
+      },
+      "required": ["id", "name", "config", "createdAt"]
     }
   },
   "firestore": {
+    "/avatar_presets/{presetId}": {
+      "schema": "AvatarPreset",
+      "description": "Public catalog of gaming avatar presets across all genres"
+    },
+    "/avatars/{avatarId}": {
+      "schema": "UserAvatar",
+      "description": "Community and user created gaming avatars"
+    },
     "/Users/{userId}": {
       "schema": "Users",
       "description": "Primary user profiles collection stored upon registration with required identity, credential, and baseline statistics"
