@@ -173,7 +173,7 @@ Horror games prove that modern players do not merely seek escapist power fantasi
 
 ---
 
-Ready to test your gaming rig's readiness for the latest path-traced horror titles? Check out our [PC Game Requirements Checker](https://gamevault.forum/tools/pc-game-requirements-checker) or design an optimized battle station with our [Gaming PC Builder](/tools/gaming-pc-builder). Join fellow operatives on the [Game Vault Forum](/forum) to share your most terrifying gaming memories.`
+Ready to test your gaming rig's readiness for the latest path-traced horror titles? Check out our [PC Game Requirements Checker](https://www.gamevault.forum/tools/pc-game-requirements-checker) or design an optimized battle station with our [Gaming PC Builder](/tools/gaming-pc-builder). Join fellow operatives on the [Game Vault Forum](/forum) to share your most terrifying gaming memories.`
   },
 
   // =========================================================================
@@ -357,7 +357,7 @@ Many enthusiasts own a modest local desktop or gaming laptop for competitive esp
 
 Whichever path fits your budget and lifestyle, modern gaming has never been more flexible or accessible.
 
-Ready to price out a dedicated rig? Experiment with our [Gaming PC Builder](/tools/gaming-pc-builder) or verify your hardware compatibility with the [PC Game Requirements Checker](https://gamevault.forum/tools/pc-game-requirements-checker). Share your setup and debate the future of hardware on the [Game Vault Community Forum](/forum).`
+Ready to price out a dedicated rig? Experiment with our [Gaming PC Builder](/tools/gaming-pc-builder) or verify your hardware compatibility with the [PC Game Requirements Checker](https://www.gamevault.forum/tools/pc-game-requirements-checker). Share your setup and debate the future of hardware on the [Game Vault Community Forum](/forum).`
   },
 
   // =========================================================================
@@ -517,6 +517,6 @@ Before subscribing to any service, run this three-question readiness audit:
 
 If you answered yes to all three, you are primed to enjoy an extraordinary, near-instantaneous gaming experience without ever buying an expensive desktop graphics card.
 
-Ready to check if your computer's display and hardware can take advantage of high-refresh streaming? Use our [PC Game Requirements Checker](https://gamevault.forum/tools/pc-game-requirements-checker) or design a custom local rig with the [Gaming PC Builder](/tools/gaming-pc-builder). Join the conversation on the [Game Vault Community Forum](/forum) to discuss provider speeds and optimization tweaks.`
+Ready to check if your computer's display and hardware can take advantage of high-refresh streaming? Use our [PC Game Requirements Checker](https://www.gamevault.forum/tools/pc-game-requirements-checker) or design a custom local rig with the [Gaming PC Builder](/tools/gaming-pc-builder). Join the conversation on the [Game Vault Community Forum](/forum) to discuss provider speeds and optimization tweaks.`
   }
 ];

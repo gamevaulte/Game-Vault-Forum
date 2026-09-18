@@ -20,6 +20,7 @@ import {
 } from "firebase/firestore";
 import firebaseConfig from "../../firebase-applet-config.json";
 import { ForumTopic, PostComment, UserAccount, ContactSubmission, NewsletterSubscriber, ContactSubmissionStatus, PublicUserProfileData } from "../types";
+import { SavedAvatar } from "../types/avatar";
 
 // Initialize Firebase App
 export { firebaseConfig };
@@ -453,6 +454,104 @@ export function subscribeToComments(
   } catch (err) {
     console.warn('subscribeToComments error:', err);
     return () => {};
+  }
+}
+
+/**
+ * Real-time listener for forum topics and replies.
+ * Ensures every visitor and user sees new discussions, answers, and interactions live.
+ */
+export function subscribeToTopics(
+  onTopicsUpdated: (topics: ForumTopic[]) => void
+): () => void {
+  try {
+    const topicsCol = collection(db, 'topics');
+    return onSnapshot(
+      topicsCol,
+      (snapshot) => {
+        const topicsList: ForumTopic[] = [];
+        snapshot.forEach((docSnap) => {
+          const data = docSnap.data();
+          topicsList.push({
+            id: docSnap.id,
+            title: data.title || 'Untitled Discussion',
+            author: data.author || {
+              id: '',
+              name: 'Vault Operative',
+              username: '@operative',
+              avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80',
+              badge: 'Recruit Operative',
+              role: 'Recruit Operative'
+            },
+            category: data.category || 'General Gaming',
+            repliesCount: typeof data.repliesCount === 'number' ? data.repliesCount : (Array.isArray(data.replies) ? data.replies.length : 0),
+            views: typeof data.views === 'number' ? data.views : 1,
+            lastActivity: data.lastActivity || 'Recently',
+            timestamp: data.timestamp || 'Recently',
+            isPinned: Boolean(data.isPinned),
+            isLocked: Boolean(data.isLocked),
+            tags: Array.isArray(data.tags) ? data.tags : ['Discussion'],
+            initialPost: data.initialPost || '',
+            likes: typeof data.likes === 'number' ? data.likes : 0,
+            replies: Array.isArray(data.replies) ? data.replies : []
+          });
+        });
+        if (topicsList.length > 0) {
+          onTopicsUpdated(topicsList);
+        }
+      },
+      (error) => {
+        console.warn('Firestore topics subscription note:', error);
+      }
+    );
+  } catch (err) {
+    console.warn('subscribeToTopics error:', err);
+    return () => {};
+  }
+}
+
+/**
+ * Save user generated avatar to Firestore
+ */
+export async function saveUserAvatarToFirestore(userId: string, avatar: SavedAvatar): Promise<void> {
+  try {
+    const avatarDocId = avatar.id || `avatar_${Date.now()}`;
+    await setDoc(doc(db, 'avatars', avatarDocId), {
+      ...avatar,
+      userId,
+      savedAt: new Date().toISOString()
+    }, { merge: true });
+  } catch (err) {
+    console.warn('Firestore saveUserAvatar warning:', err);
+  }
+}
+
+/**
+ * Fetch saved avatars for a registered user from Firestore
+ */
+export async function getUserSavedAvatarsFromFirestore(userId: string): Promise<SavedAvatar[]> {
+  try {
+    const avatarsQuery = query(collection(db, 'avatars'));
+    const snapshot = await getDocs(avatarsQuery);
+    const userAvatars: SavedAvatar[] = [];
+    snapshot.forEach((docSnap) => {
+      const data = docSnap.data();
+      if (data.userId === userId) {
+        userAvatars.push({
+          id: docSnap.id,
+          name: data.name || 'Gamer Avatar',
+          config: data.config,
+          previewDataUrl: data.previewDataUrl || '',
+          createdAt: data.createdAt || data.savedAt || new Date().toISOString(),
+          userId: data.userId,
+          authorName: data.authorName
+        });
+      }
+    });
+    return userAvatars;
+  } catch (err) {
+    console.warn('Firestore getUserSavedAvatars warning:', err);
+    return [];
   }
 }
 

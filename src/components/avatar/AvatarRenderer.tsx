@@ -23,7 +23,11 @@ export const AvatarRenderer = forwardRef<AvatarRendererRef, AvatarRendererProps>
   const svgRef = useRef<SVGSVGElement | null>(null);
 
   // Helper colors
-  const skin = SKIN_TONES.find(s => s.id === config.skinTone) || SKIN_TONES[1];
+  const baseSkin = SKIN_TONES.find(s => s.id === config.skinTone) || SKIN_TONES[1];
+  const skin = {
+    ...baseSkin,
+    hex: config.customSkinColor || baseSkin.hex
+  };
   const hairColorHex = config.hairColor === 'custom' && config.customHairColor 
     ? config.customHairColor 
     : (HAIR_COLORS.find(h => h.id === config.hairColor)?.hex || '#18181b');

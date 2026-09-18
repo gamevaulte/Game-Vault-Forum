@@ -453,7 +453,7 @@ export const SitemapView: React.FC<SitemapViewProps> = ({ onNavigate }) => {
   }, [sitemapItems]);
 
   const handleCopy = (url: string) => {
-    const fullUrl = `https://gamevault.forum${url}`;
+    const fullUrl = `https://www.gamevault.forum${url}`;
     navigator.clipboard.writeText(fullUrl);
     setCopiedUrl(url);
     setTimeout(() => setCopiedUrl(null), 2000);

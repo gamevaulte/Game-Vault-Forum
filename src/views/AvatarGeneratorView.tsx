@@ -13,6 +13,7 @@ import {
 import { AvatarRenderer, AvatarRendererRef } from '../components/avatar/AvatarRenderer';
 import { AvatarEditorControls } from '../components/avatar/AvatarEditorControls';
 import { updatePageSeo, CANONICAL_BASE_URL } from '../lib/seo';
+import { saveUserAvatarToFirestore, getUserSavedAvatarsFromFirestore } from '../lib/firebase';
 import { 
   Sparkles, 
   Download, 
@@ -41,11 +42,13 @@ import {
 interface AvatarGeneratorViewProps {
   onNavigate: (tab: string, path?: string) => void;
   currentUser?: any;
+  onOpenSignIn?: () => void;
 }
 
 export const AvatarGeneratorView: React.FC<AvatarGeneratorViewProps> = ({
   onNavigate,
-  currentUser
+  currentUser,
+  onOpenSignIn
 }) => {
   const [config, setConfig] = useState<AvatarConfig>(() => {
     // Check if URL has shared parameters or config
@@ -137,6 +140,22 @@ export const AvatarGeneratorView: React.FC<AvatarGeneratorViewProps> = ({
     }
   }, [savedAvatars]);
 
+  // Sync cloud-saved avatars for registered user
+  useEffect(() => {
+    const userUid = currentUser?.uid || currentUser?.id;
+    if (userUid) {
+      getUserSavedAvatarsFromFirestore(userUid).then((cloudAvatars) => {
+        if (cloudAvatars && cloudAvatars.length > 0) {
+          setSavedAvatars(prev => {
+            const map = new Map<string, SavedAvatar>();
+            [...cloudAvatars, ...prev].forEach(a => map.set(a.id, a));
+            return Array.from(map.values());
+          });
+        }
+      }).catch(err => console.warn('Cloud avatars sync note:', err));
+    }
+  }, [currentUser]);
+
   const handleConfigChange = (updated: Partial<AvatarConfig>) => {
     setConfig(prev => ({ ...prev, ...updated }));
   };
@@ -195,24 +214,40 @@ export const AvatarGeneratorView: React.FC<AvatarGeneratorViewProps> = ({
     }
   };
 
-  // Save Avatar to History
+  // Save Avatar to History & Profile - Restricted to Registered/Signed In Users
   const handleSaveAvatar = async () => {
+    if (!currentUser) {
+      if (onOpenSignIn) {
+        onOpenSignIn();
+      }
+      return;
+    }
+
     if (!rendererRef.current) return;
     const avatarName = avatarNameInput.trim() || `Gamer Avatar #${savedAvatars.length + 1}`;
     try {
       const previewDataUrl = await rendererRef.current.exportAvatar('png', 256, false);
+      const userUid = currentUser.uid || currentUser.id || 'user';
       const newSaved: SavedAvatar = {
         id: `avatar_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
         name: avatarName,
         config: { ...config, name: avatarName },
         previewDataUrl,
         createdAt: new Date().toISOString(),
-        userId: currentUser?.uid || 'guest'
+        userId: userUid,
+        authorName: currentUser.displayName || currentUser.name || 'Operative'
       };
 
       setSavedAvatars(prev => [newSaved, ...prev]);
       setAvatarNameInput('');
       setShowSavedModal(true);
+
+      // Persist to user's saved avatars in Firestore
+      try {
+        await saveUserAvatarToFirestore(userUid, newSaved);
+      } catch (err) {
+        console.warn('Firestore saveUserAvatar note:', err);
+      }
     } catch (err) {
       console.error('Failed to save avatar:', err);
     }

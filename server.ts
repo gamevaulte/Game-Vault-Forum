@@ -12,7 +12,7 @@ const PORT = 3000;
 // Comprehensive Website Knowledge Base for Vault AI
 const VAULT_KNOWLEDGE_SUMMARY = `
 === GAME VAULT FORUM COMPLETE WEBSITE KNOWLEDGE BASE ===
-Official Domain: gamevault.forum (Canonical: https://gamevault.forum)
+Official Domain: gamevault.forum (Canonical: https://www.gamevault.forum)
 Tagline: "Your AI Gaming Assistant. Ask. Discover. Compare. Troubleshoot. Play smarter."
 Founder & Editor-in-Chief: Joel Ayuba
 Official YouTube Channel: @GameVaultForum (YouTube ID: UC-GameVaultForum)
@@ -33,7 +33,7 @@ Official Contact Email: contact@gamevault.forum
   * Off-Topic Vault: Chill gamer chatter, battle station setups, gaming gear, anime, general discussion.
   * New Topic Creation (/forum/new) : Rich topic composer with tags and formatting.
 - Tools Hub (/tools) : 3 Interactive Gaming Utilities:
-  * PC Game Requirements Checker (https://gamevault.forum/tools/pc-game-requirements-checker or /tools/pc-game-requirements-checker): Test user CPU, GPU, RAM, and VRAM against verified minimum & recommended requirements for 36+ games with pass/warn/fail indicators.
+  * PC Game Requirements Checker (https://www.gamevault.forum/tools/pc-game-requirements-checker or /tools/pc-game-requirements-checker): Test user CPU, GPU, RAM, and VRAM against verified minimum & recommended requirements for 36+ games with pass/warn/fail indicators.
   * Gaming PC Builder (/tools/gaming-pc-builder): Interactive custom rig builder with 10-point socket compatibility verification (AM4, AM5, LGA1700, LGA1851), PSU wattage calculator, balance score gauge, and dual currency (USD $ and Nigerian Naira ₦).
   * Gaming Username Generator (/tools/gaming-username-generator): Instant distinctive gamertag generator across styles (Cyberpunk, Tactical, Mythic, Anime, Stealth, Pro Esports) with prefix/suffix customizers and copy-to-clipboard.
   * Vault AI Assistant (/tools/vault-ai): Intelligent AI Copilot for gaming Q&A, hardware advice, performance troubleshooting, and site navigation.
@@ -136,7 +136,7 @@ PERSONALITY & CHAT ASSISTANT BEHAVIOR:
 - Greet users and visitors warmly and converse naturally. Listen carefully to what they ask.
 - You have studied the entire Game Vault Forum website in depth: its articles, games catalog, PC tools, discussion boards, author/founder Joel Ayuba, policies, and visitor/member permissions.
 - Respond with clear, well-structured, scannable answers. Use bold text, bullet points, and neat formatting.
-- Always provide direct links to relevant pages on Game Vault Forum (e.g., https://gamevault.forum/tools/pc-game-requirements-checker, /tools/gaming-pc-builder, /contact, /about, /forum, /games).
+- Always provide direct links to relevant pages on Game Vault Forum (e.g., https://www.gamevault.forum/tools/pc-game-requirements-checker, /tools/gaming-pc-builder, /contact, /about, /forum, /games).
 - Proactively offer relevant next steps or follow-ups to help visitors and members get the most out of Game Vault Forum.
 
 USER VS. VISITOR ADAPTATION:
@@ -646,7 +646,7 @@ We review every inquiry within 24–48 business hours.`,
     return {
       reply: `### ${memberGreeting}PC Game Requirements Checker
 
-Our verified **[PC Game Requirements Checker](https://gamevault.forum/tools/pc-game-requirements-checker)** allows you to test your PC's CPU, GPU, RAM, and VRAM against **36+ verified games** with instant Pass, Warn, or Fail ratings.
+Our verified **[PC Game Requirements Checker](https://www.gamevault.forum/tools/pc-game-requirements-checker)** allows you to test your PC's CPU, GPU, RAM, and VRAM against **36+ verified games** with instant Pass, Warn, or Fail ratings.
 
 #### Popular Games Supported:
 - **Elden Ring & Shadow of the Erdtree**
@@ -662,7 +662,7 @@ Our verified **[PC Game Requirements Checker](https://gamevault.forum/tools/pc-g
 
 Test your hardware or inspect component upgrade paths instantly!`,
       sources: [
-        { title: 'Game Vault Forum — PC Game Requirements Checker', url: 'https://gamevault.forum/tools/pc-game-requirements-checker' },
+        { title: 'Game Vault Forum — PC Game Requirements Checker', url: 'https://www.gamevault.forum/tools/pc-game-requirements-checker' },
         { title: 'Game Vault Forum — Gaming PC Builder', url: '/tools/gaming-pc-builder' },
       ],
       cardIds: { games: ['elden-ring', 'cyberpunk-2077', 'grand-theft-auto-v', 'red-dead-redemption-2'], articles: [], videos: [], hardware: ['gpu-4070s'] },
@@ -726,7 +726,7 @@ Signing up is 100% free with no subscription or hidden costs!`,
 I am delighted to chat with you! As the official AI assistant for **Game Vault Forum**, I have read and studied the entire website to help you navigate, discover, and game smarter:
 
 #### Here is what I can do for you:
-- 🎮 **Check System Requirements**: Test your PC hardware against 36+ verified games in our **[PC Game Requirements Checker](https://gamevault.forum/tools/pc-game-requirements-checker)**.
+- 🎮 **Check System Requirements**: Test your PC hardware against 36+ verified games in our **[PC Game Requirements Checker](https://www.gamevault.forum/tools/pc-game-requirements-checker)**.
 - 🖥️ **PC Building & Compatibility**: Help you configure a balanced gaming rig in our **[Gaming PC Builder](/tools/gaming-pc-builder)**.
 - ⚡ **Diagnose FPS Drops**: Run through our 12-point hardware and graphics troubleshooting checklist.
 - ⚔️ **Tactical Guides & Reviews**: Give you pro tips for Elden Ring, World of Warships, Cyberpunk 2077, and Helldivers 2.

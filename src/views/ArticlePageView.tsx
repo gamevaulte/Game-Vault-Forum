@@ -28,7 +28,8 @@ import {
   TrendingUp,
   Zap,
   Flame,
-  Info
+  Info,
+  CornerDownRight
 } from 'lucide-react';
 import { Article, PostComment, UserAccount, PageTab } from '../types';
 import { AdBanner } from '../components/AdBanner';
@@ -79,6 +80,8 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
   onViewUserProfile
 }) => {
   const [commentText, setCommentText] = useState('');
+  const [replyingTo, setReplyingTo] = useState<{ id: string; authorName: string } | null>(null);
+  const [subReplyText, setSubReplyText] = useState('');
 
   const handleSubmitComment = (e: React.FormEvent) => {
     e.preventDefault();
@@ -133,11 +136,11 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
 
       // Canonical external/direct URL for requirements checker
       const resolvedHref = isRequirementsChecker 
-        ? 'https://gamevault.forum/tools/pc-game-requirements-checker'
+        ? 'https://www.gamevault.forum/tools/pc-game-requirements-checker'
         : isPcBuilder
-        ? 'https://gamevault.forum/tools/gaming-pc-builder'
+        ? 'https://www.gamevault.forum/tools/gaming-pc-builder'
         : isForum
-        ? 'https://gamevault.forum/forum'
+        ? 'https://www.gamevault.forum/forum'
         : url;
 
       parts.push(
@@ -1087,12 +1090,22 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
                     <span className="text-[11px] text-gray-500 font-mono">{comment.timestamp}</span>
                   </div>
 
+                  {comment.replyToAuthor && (
+                    <div className="pl-11">
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-purple-500/10 border border-purple-500/20 text-[10px] font-mono text-purple-300">
+                        <CornerDownRight className="w-2.5 h-2.5" />
+                        <span>Replying to @{comment.replyToAuthor}</span>
+                      </span>
+                    </div>
+                  )}
+
                   <p className="text-sm text-gray-300 leading-relaxed font-['Inter'] pl-11">
                     {comment.content}
                   </p>
 
-                  <div className="flex items-center gap-3 pl-11 pt-1">
+                  <div className="flex items-center gap-4 pl-11 pt-1">
                     <button
+                      type="button"
                       onClick={() => onToggleCommentLike(comment.id)}
                       className={`flex items-center gap-1.5 text-xs transition-colors cursor-pointer ${
                         userHasLiked
@@ -1104,7 +1117,75 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
                       <ThumbsUp className={`w-3.5 h-3.5 ${userHasLiked ? 'fill-current' : ''}`} />
                       <span>{cLikes}</span>
                     </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (!isSignedIn) {
+                          onOpenSignIn();
+                          return;
+                        }
+                        if (replyingTo?.id === comment.id) {
+                          setReplyingTo(null);
+                          setSubReplyText('');
+                        } else {
+                          setReplyingTo({ id: comment.id, authorName: comment.author.name });
+                          setSubReplyText(`@${comment.author.name} `);
+                        }
+                      }}
+                      className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-purple-300 transition-colors cursor-pointer"
+                      title={isSignedIn ? 'Reply to this operative' : 'Sign in to reply'}
+                    >
+                      <CornerDownRight className="w-3.5 h-3.5 text-purple-400" />
+                      <span>Reply</span>
+                    </button>
                   </div>
+
+                  {/* Inline Reply-to-Comment Form */}
+                  {replyingTo?.id === comment.id && (
+                    <form
+                      onSubmit={(e) => {
+                        e.preventDefault();
+                        if (!subReplyText.trim()) return;
+                        onAddComment(subReplyText.trim());
+                        setSubReplyText('');
+                        setReplyingTo(null);
+                      }}
+                      className="mt-3 pl-11 space-y-2 animate-in fade-in duration-150"
+                    >
+                      <div className="flex items-center justify-between text-[11px] text-purple-300 font-mono">
+                        <span>Replying to <span className="font-bold">@{replyingTo.authorName}</span>:</span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setReplyingTo(null);
+                            setSubReplyText('');
+                          }}
+                          className="text-gray-400 hover:text-white cursor-pointer"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          value={subReplyText}
+                          onChange={(e) => setSubReplyText(e.target.value)}
+                          placeholder={`Reply to ${comment.author.name}...`}
+                          className="flex-1 px-3 py-2 bg-black/40 border border-purple-500/40 rounded-xl text-xs text-white placeholder-gray-500 focus:outline-none focus:border-purple-400"
+                          autoFocus
+                        />
+                        <button
+                          type="submit"
+                          disabled={!subReplyText.trim()}
+                          className="px-4 py-2 bg-purple-600 hover:bg-purple-500 disabled:opacity-40 text-white rounded-xl text-xs font-bold font-['Rajdhani'] uppercase tracking-wider flex items-center gap-1.5 cursor-pointer transition-all shadow-md shadow-purple-900/40"
+                        >
+                          <Send className="w-3 h-3" />
+                          <span>Reply</span>
+                        </button>
+                      </div>
+                    </form>
+                  )}
                 </div>
               );
             })

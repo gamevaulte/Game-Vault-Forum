@@ -79,6 +79,7 @@ import {
   ensureInitialFirestoreDocuments,
   subscribeToComments,
   subscribeToLikes,
+  subscribeToTopics,
   getPublicUserProfile
 } from './lib/firebase';
 
@@ -335,9 +336,37 @@ export default function App() {
       });
     });
 
+    const unsubTopics = subscribeToTopics((firestoreTopics) => {
+      setTopics((prev) => {
+        const map = new Map<string, ForumTopic>();
+        prev.forEach((t) => map.set(t.id, t));
+        firestoreTopics.forEach((ft) => {
+          const existing = map.get(ft.id);
+          if (existing) {
+            // Keep clean replies and update counters
+            const cleanReplies = Array.isArray(ft.replies) && ft.replies.length > 0 ? ft.replies : existing.replies;
+            map.set(ft.id, {
+              ...existing,
+              ...ft,
+              replies: cleanReplies,
+              repliesCount: Math.max(ft.repliesCount || 0, cleanReplies.length)
+            });
+          } else {
+            map.set(ft.id, ft);
+          }
+        });
+        const updated = Array.from(map.values());
+        try {
+          localStorage.setItem('gv_forum_topics_v3', JSON.stringify(updated));
+        } catch {}
+        return updated;
+      });
+    });
+
     return () => {
       unsubLikes();
       unsubComments();
+      unsubTopics();
     };
   }, []);
 
@@ -1726,6 +1755,10 @@ export default function App() {
           <AvatarGeneratorView
             onNavigate={(tab, path) => navigate(path || (tab === 'home' ? '/' : `/${tab}`))}
             currentUser={firebaseUser}
+            onOpenSignIn={() => {
+              setAuthPromptMessage('Only registered and signed in users can save generated avatars to their profile. Please sign in or register below!');
+              setIsAuthModalOpen(true);
+            }}
           />
         );
 
@@ -1940,6 +1973,10 @@ export default function App() {
           onSignOut={handleSignOut}
           onUpdateProfile={handleUpdateProfile}
           initialTab={profileInitialTab}
+          onNavigateToAvatarGenerator={() => {
+            setIsProfileOpen(false);
+            navigate('/game-avatar-generator');
+          }}
         />
       </Suspense>
 

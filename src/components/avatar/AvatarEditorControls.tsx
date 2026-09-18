@@ -299,35 +299,103 @@ export const AvatarEditorControls: React.FC<AvatarEditorControlsProps> = ({
             </div>
           </div>
 
-          {/* Skin Tone Palette */}
-          <div className="flex flex-col gap-2.5">
+          {/* Skin Tone Palette & Custom Color Picker */}
+          <div className="flex flex-col gap-3">
             <div className="flex items-center justify-between">
-              <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider">
-                3. Skin Tone & Complexion
+              <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+                <Palette className="w-3.5 h-3.5 text-cyan-400" />
+                <span>3. Skin Tone & Color Palette</span>
               </label>
-              <span className="text-xs text-cyan-400">
-                {SKIN_TONES.find(s => s.id === config.skinTone)?.label}
-              </span>
+              <div className="flex items-center gap-1.5">
+                <span className="text-xs text-cyan-400 font-mono">
+                  {config.customSkinColor ? 'Custom Color' : (SKIN_TONES.find(s => s.id === config.skinTone)?.label || 'Warm')}
+                </span>
+                <span 
+                  className="w-3.5 h-3.5 rounded-full border border-slate-700 shadow-sm"
+                  style={{ backgroundColor: config.customSkinColor || (SKIN_TONES.find(s => s.id === config.skinTone)?.hex || '#fcd34d') }}
+                />
+              </div>
             </div>
 
-            <div className="grid grid-cols-5 sm:grid-cols-10 gap-2">
-              {SKIN_TONES.map((st) => {
-                const isSelected = config.skinTone === st.id;
-                return (
+            {/* Curated Skin Tone Color Palettes */}
+            <div className="space-y-2">
+              <span className="text-[11px] text-slate-400 font-medium">Palette Presets (Natural & Fantasy/Cyber):</span>
+              <div className="grid grid-cols-5 sm:grid-cols-10 gap-2">
+                {SKIN_TONES.map((st) => {
+                  const currentSkinHex = config.customSkinColor || (SKIN_TONES.find(s => s.id === config.skinTone)?.hex || '#fcd34d');
+                  const isSelected = !config.customSkinColor ? config.skinTone === st.id : currentSkinHex.toLowerCase() === st.hex.toLowerCase();
+                  return (
+                    <button
+                      key={st.id}
+                      type="button"
+                      onClick={() => onChange({ skinTone: st.id, customSkinColor: undefined })}
+                      title={`${st.label}: ${st.desc} (${st.hex})`}
+                      className={`h-10 rounded-xl border transition-all flex items-center justify-center relative ${
+                        isSelected ? 'border-cyan-400 scale-105 shadow-md ring-2 ring-cyan-500/50' : 'border-slate-700/80 hover:scale-105'
+                      }`}
+                      style={{ backgroundColor: st.hex }}
+                    >
+                      {isSelected && <Check className="w-4 h-4 text-slate-900 drop-shadow" />}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Custom Skin Color Picker */}
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-3 rounded-xl bg-slate-800/40 border border-slate-800 mt-1">
+              <div className="flex items-center gap-2.5 w-full sm:w-auto">
+                <div 
+                  className="w-8 h-8 rounded-lg border border-white/20 shadow-inner shrink-0" 
+                  style={{ backgroundColor: config.customSkinColor || (SKIN_TONES.find(s => s.id === config.skinTone)?.hex || '#fcd34d') }} 
+                />
+                <div className="flex flex-col">
+                  <span className="text-xs font-medium text-slate-200">Custom Skin Color Picker</span>
+                  <span className="text-[10px] text-slate-500 font-mono uppercase">
+                    {config.customSkinColor || (SKIN_TONES.find(s => s.id === config.skinTone)?.hex || '#fcd34d')}
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+                <input
+                  type="color"
+                  value={
+                    config.customSkinColor && config.customSkinColor.startsWith('#') && config.customSkinColor.length === 7
+                      ? config.customSkinColor
+                      : (SKIN_TONES.find(s => s.id === config.skinTone)?.hex || '#fcd34d')
+                  }
+                  onChange={(e) => {
+                    const hex = e.target.value;
+                    onChange({ customSkinColor: hex });
+                  }}
+                  className="w-9 h-9 rounded-lg cursor-pointer bg-transparent border-0"
+                  title="Pick custom skin color from picker"
+                />
+                <input
+                  type="text"
+                  value={config.customSkinColor || ''}
+                  onChange={(e) => {
+                    let val = e.target.value.trim();
+                    if (val && !val.startsWith('#')) val = `#${val}`;
+                    onChange({ customSkinColor: val });
+                  }}
+                  placeholder={SKIN_TONES.find(s => s.id === config.skinTone)?.hex || '#fcd34d'}
+                  maxLength={7}
+                  className="w-24 text-xs px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-slate-200 font-mono uppercase focus:border-cyan-500 focus:outline-none"
+                  title="Enter custom HEX code"
+                />
+                {config.customSkinColor && (
                   <button
-                    key={st.id}
                     type="button"
-                    onClick={() => onChange({ skinTone: st.id })}
-                    title={`${st.label}: ${st.desc}`}
-                    className={`h-10 rounded-xl border transition-all flex items-center justify-center relative ${
-                      isSelected ? 'border-cyan-400 scale-105 shadow-md ring-2 ring-cyan-500/50' : 'border-slate-700/80 hover:scale-105'
-                    }`}
-                    style={{ backgroundColor: st.hex }}
+                    onClick={() => onChange({ customSkinColor: undefined })}
+                    className="text-[11px] px-2 py-1.5 text-slate-400 hover:text-slate-200 bg-slate-800 hover:bg-slate-700 rounded-lg border border-slate-700 transition-colors shrink-0"
+                    title="Reset to preset palette"
                   >
-                    {isSelected && <Check className="w-4 h-4 text-slate-900 drop-shadow" />}
+                    Reset
                   </button>
-                );
-              })}
+                )}
+              </div>
             </div>
           </div>
         </div>

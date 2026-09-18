@@ -246,7 +246,7 @@ export const PcBuilderView: React.FC<PcBuilderViewProps> = ({
 - **CPU Cooler:** ${currentBuild.components.cooler.model} (${formatPrice(currentBuild.components.cooler.priceUsd, currency)})
 - **Case:** ${currentBuild.components.case.model} (${formatPrice(currentBuild.components.case.priceUsd, currency)})
 
-*Generated on Game Vault Forum: https://gamevault.forum/tools/gaming-pc-builder*
+*Generated on Game Vault Forum: https://www.gamevault.forum/tools/gaming-pc-builder*
     `.trim();
 
     navigator.clipboard.writeText(md);

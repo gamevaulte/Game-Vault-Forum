@@ -93,7 +93,7 @@ export interface PageSeoOptions {
   noIndex?: boolean;
 }
 
-export const CANONICAL_BASE_URL = 'https://gamevault.forum';
+export const CANONICAL_BASE_URL = 'https://www.gamevault.forum';
 
 /**
  * Updates dynamic browser metadata and JSON-LD structured data for search engine crawlers and social cards

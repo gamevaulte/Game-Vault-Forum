@@ -153,6 +153,7 @@ export interface AvatarConfig {
   style: AvatarVisualStyle;
   characterType: CharacterType;
   skinTone: SkinTone;
+  customSkinColor?: string;
   hairstyle: Hairstyle;
   hairColor: HairColor;
   customHairColor?: string;

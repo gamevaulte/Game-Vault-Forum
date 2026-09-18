@@ -158,6 +158,9 @@ export interface PostComment {
   content: string;
   timestamp: string;
   likes: number;
+  replyToId?: string;
+  replyToAuthor?: string;
+  parentId?: string;
 }
 
 export type ArticleComment = PostComment;
@@ -217,6 +220,8 @@ export interface ForumReply {
   content: string;
   timestamp: string;
   likes: number;
+  replyToId?: string;
+  replyToAuthor?: string;
 }
 
 export interface ForumTopic {

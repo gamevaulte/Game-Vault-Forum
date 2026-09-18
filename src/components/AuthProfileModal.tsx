@@ -30,10 +30,12 @@ import {
   Sparkles
 } from 'lucide-react';
 import { UserAccount, Video, Game, Article, Review, Guide, ContactSubmission, NewsletterSubscriber, ContactSubmissionStatus } from '../types';
+import { SavedAvatar } from '../types/avatar';
 import { 
   getContactSubmissionsFromFirestore, 
   getSubscribersFromFirestore, 
-  updateContactSubmissionStatus 
+  updateContactSubmissionStatus,
+  getUserSavedAvatarsFromFirestore
 } from '../lib/firebase';
 
 const AVATAR_PRESETS = [
@@ -64,6 +66,7 @@ interface AuthProfileModalProps {
   onSignOut?: () => void;
   onUpdateProfile?: (updated: { name: string; username: string; avatar: string; bio?: string }) => Promise<void>;
   initialTab?: 'profile' | 'guidelines' | 'admin';
+  onNavigateToAvatarGenerator?: () => void;
 }
 
 export const AuthProfileModal: React.FC<AuthProfileModalProps> = ({
@@ -82,7 +85,8 @@ export const AuthProfileModal: React.FC<AuthProfileModalProps> = ({
   onSelectGuide,
   onSignOut,
   onUpdateProfile,
-  initialTab = 'profile'
+  initialTab = 'profile',
+  onNavigateToAvatarGenerator
 }) => {
   const [activeTab, setActiveTab] = useState<'profile' | 'guidelines' | 'admin'>(initialTab);
   const isAdmin = user.email === 'contact@gamevault.forum' || user.email === 'joelotis40@gmail.com' || user.role === 'admin';
@@ -96,6 +100,35 @@ export const AuthProfileModal: React.FC<AuthProfileModalProps> = ({
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [savedAvatars, setSavedAvatars] = useState<SavedAvatar[]>([]);
+
+  // Load user saved avatars from local storage and Firestore when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      let localList: SavedAvatar[] = [];
+      try {
+        const stored = localStorage.getItem('gamevault_saved_avatars');
+        if (stored) localList = JSON.parse(stored);
+      } catch (err) {
+        console.warn('Local saved avatars error:', err);
+      }
+      setSavedAvatars(localList);
+
+      if (user.id) {
+        getUserSavedAvatarsFromFirestore(user.id).then((cloudAvatars) => {
+          if (cloudAvatars && cloudAvatars.length > 0) {
+            setSavedAvatars((prev) => {
+              const map = new Map<string, SavedAvatar>();
+              [...cloudAvatars, ...prev].forEach(a => map.set(a.id, a));
+              return Array.from(map.values());
+            });
+          }
+        }).catch((err) => {
+          console.warn('Cloud saved avatars note:', err);
+        });
+      }
+    }
+  }, [isOpen, user.id]);
 
   // Sync edits when user prop changes
   useEffect(() => {
@@ -381,6 +414,84 @@ export const AuthProfileModal: React.FC<AuthProfileModalProps> = ({
                               </button>
                             ))}
                           </div>
+                        </div>
+
+                        {/* Saved Avatars from Game Avatar Generator */}
+                        <div className="pt-2 border-t border-[#232942]">
+                          <div className="flex items-center justify-between mb-1.5">
+                            <p className="text-[11px] font-semibold text-cyan-400 flex items-center gap-1.5">
+                              <Sparkles className="w-3.5 h-3.5" />
+                              <span>From Your Game Avatar Generator ({savedAvatars.length}):</span>
+                            </p>
+                            {onNavigateToAvatarGenerator && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  onClose();
+                                  onNavigateToAvatarGenerator();
+                                }}
+                                className="text-[10px] text-cyan-300 hover:text-white underline cursor-pointer flex items-center gap-1 transition-colors"
+                              >
+                                Create / Edit in Generator &rarr;
+                              </button>
+                            )}
+                          </div>
+
+                          {savedAvatars.length > 0 ? (
+                            <div className="grid grid-cols-4 sm:grid-cols-6 gap-2 max-h-36 overflow-y-auto p-1.5 bg-[#090b14] rounded-xl border border-cyan-500/20">
+                              {savedAvatars.map((saved) => {
+                                const isSelected = editAvatar === saved.previewDataUrl;
+                                return (
+                                  <button
+                                    key={saved.id}
+                                    type="button"
+                                    onClick={() => {
+                                      setEditAvatar(saved.previewDataUrl);
+                                      setSaveError(null);
+                                    }}
+                                    className={`group relative rounded-xl overflow-hidden border-2 transition-all p-0.5 cursor-pointer hover:scale-105 flex flex-col items-center bg-[#131625] ${
+                                      isSelected
+                                        ? 'border-cyan-400 ring-2 ring-cyan-500/50 shadow-md shadow-cyan-500/20'
+                                        : 'border-white/10 hover:border-cyan-400/40'
+                                    }`}
+                                    title={`Use "${saved.name}" as profile photo`}
+                                  >
+                                    <img
+                                      src={saved.previewDataUrl}
+                                      alt={saved.name}
+                                      className="w-full h-12 object-cover rounded-lg bg-slate-900"
+                                    />
+                                    <span className="text-[9px] text-slate-300 group-hover:text-cyan-300 truncate w-full px-1 text-center font-mono mt-0.5">
+                                      {saved.name}
+                                    </span>
+                                    {isSelected && (
+                                      <div className="absolute inset-0 bg-cyan-600/40 flex items-center justify-center rounded-lg">
+                                        <Check className="w-4 h-4 text-white stroke-[3] drop-shadow" />
+                                      </div>
+                                    )}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          ) : (
+                            <div className="p-2.5 rounded-xl bg-cyan-950/20 border border-cyan-500/20 flex items-center justify-between gap-2">
+                              <span className="text-[11px] text-slate-400">
+                                No generated avatars saved yet. Customize a character in the Game Avatar Generator!
+                              </span>
+                              {onNavigateToAvatarGenerator && (
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    onClose();
+                                    onNavigateToAvatarGenerator();
+                                  }}
+                                  className="text-[10px] px-2.5 py-1 bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/40 rounded-lg font-bold uppercase transition-colors shrink-0 cursor-pointer"
+                                >
+                                  Open Generator
+                                </button>
+                              )}
+                            </div>
+                          )}
                         </div>
 
                         {/* Custom URL & Upload */}
