@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Search, Youtube, User, Menu, X, Bookmark, Sparkles, LogOut, LogIn, ChevronDown, Wrench, Monitor, Bot, Dices } from 'lucide-react';
+import { Search, Youtube, User, Menu, X, Bookmark, Sparkles, LogOut, LogIn, ChevronDown, Wrench, Monitor, Bot, Dices, Gauge } from 'lucide-react';
 import { PageTab, UserAccount } from '../types';
 import { VaultLogo } from './VaultLogo';
 import { YOUTUBE_CHANNEL } from '../lib/constants';
@@ -67,6 +67,14 @@ export const Header: React.FC<HeaderProps> = ({
 
   const toolsItems = [
     {
+      id: 'fps-calculator' as PageTab,
+      label: 'FPS / Performance Calculator',
+      desc: 'Estimate PC gaming FPS & bottlenecks',
+      href: '/fps-performance-calculator',
+      icon: Gauge,
+      badge: 'Featured'
+    },
+    {
       id: 'vault-ai' as PageTab,
       label: 'Vault AI Assistant',
       desc: 'Ask, discover, compare & troubleshoot',
@@ -115,6 +123,7 @@ export const Header: React.FC<HeaderProps> = ({
 
   const isToolsActive =
     currentTab === 'tools' ||
+    currentTab === 'fps-calculator' ||
     currentTab === 'vault-ai' ||
     currentTab === 'game-avatar-generator' ||
     currentTab === 'gaming-username-generator' ||

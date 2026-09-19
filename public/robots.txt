@@ -13,6 +13,15 @@ Disallow: /forum/new
 User-agent: Mediapartners-Google
 Allow: /
 
+User-agent: AdsBot-Google
+Allow: /
+
+User-agent: AdsBot-Google-Mobile
+Allow: /
+
+User-agent: Google-Display-Ads-Bot
+Allow: /
+
 User-agent: Googlebot
 Allow: /
 Disallow: /profile

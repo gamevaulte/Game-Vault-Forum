@@ -142,6 +142,18 @@ export const SitemapView: React.FC<SitemapViewProps> = ({ onNavigate }) => {
         isNew: true
       },
       {
+        id: 'fps-performance-calculator',
+        title: 'FPS / Performance Calculator — PC Gaming Benchmark & Bottleneck Estimator',
+        url: '/fps-performance-calculator',
+        category: 'tools',
+        badge: 'Featured Tool',
+        badgeColor: 'bg-purple-500/20 text-purple-300 border-purple-500/30',
+        description: 'Estimate real-world gaming FPS ranges, hardware bottleneck analysis, sweet-spot graphics presets, and AI-assisted performance tuning for PC gamers.',
+        priority: '0.95',
+        changefreq: 'Daily',
+        isNew: true
+      },
+      {
         id: 'vault-ai',
         title: 'Vault AI — Intelligent Gaming Assistant',
         url: '/tools/vault-ai',

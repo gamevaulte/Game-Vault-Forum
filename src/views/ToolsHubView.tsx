@@ -5,7 +5,8 @@ import {
   Monitor, 
   ShieldCheck,
   Bot,
-  Dices
+  Dices,
+  Gauge
 } from 'lucide-react';
 import { ToolHeader } from '../components/tools/ToolHeader';
 import { ToolCard } from '../components/tools/ToolCard';
@@ -28,6 +29,17 @@ export const ToolsHubView: React.FC<ToolsHubViewProps> = ({ onNavigateTab }) => 
 
       {/* Featured Primary Tools Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+        <ToolCard
+          title="FPS / Performance Calculator"
+          subtitle="Check your PC's estimated gaming performance"
+          description="Enter your PC hardware, choose a game, and select your preferred resolution and graphics settings to get an estimated FPS range, bottleneck diagnostics, and sweet-spot tuning."
+          badge="Featured Tool"
+          icon={<Gauge className="w-6 h-6 text-purple-400" />}
+          actionText="Calculate FPS"
+          onClick={() => onNavigateTab('fps-calculator')}
+          featured={true}
+        />
+
         <ToolCard
           title="Game Avatar Generator"
           subtitle="Create your unique gaming avatar"

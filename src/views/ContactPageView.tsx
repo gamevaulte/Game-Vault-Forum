@@ -291,8 +291,9 @@ export const ContactPageView: React.FC<ContactPageViewProps> = ({
                 Game Vault Forum is an independent gaming publication founded and operated by Joel Ayuba. We adhere to high ethical standards in gaming journalism, editorial objectivity, and reader privacy.
               </p>
               <div className="space-y-1.5 pt-1 text-xs font-mono text-gray-300 border-t border-white/5">
-                <p><span className="text-gray-500">Editor-in-Chief:</span> Joel Ayuba</p>
-                <p><span className="text-gray-500">Direct Email:</span> <a href="mailto:contact@gamevault.forum" className="text-purple-400 hover:underline">contact@gamevault.forum</a></p>
+                <p><span className="text-gray-500">Editor-in-Chief & Publisher:</span> Joel Ayuba</p>
+                <p><span className="text-gray-500">Direct Email:</span> <a href="mailto:contact@gamevault.forum" className="text-purple-400 hover:underline">contact@gamevault.forum</a> • <a href="mailto:joelotis40@gmail.com" className="text-purple-400 hover:underline">joelotis40@gmail.com</a></p>
+                <p><span className="text-gray-500">AdSense Publisher ID:</span> <span className="text-cyan-400 font-mono">pub-6121667798720008</span></p>
                 <p><span className="text-gray-500">YouTube Channel:</span> <span className="text-cyan-400">@GameVaultForum</span></p>
                 <p><span className="text-gray-500">Website:</span> <span className="text-slate-300">gamevault.forum</span></p>
               </div>

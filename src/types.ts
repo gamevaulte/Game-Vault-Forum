@@ -9,6 +9,7 @@ export type PageTab =
   | 'about' 
   | 'contact' 
   | 'pc-requirements'
+  | 'fps-calculator'
   | 'tools'
   | 'game-avatar-generator'
   | 'gaming-username-generator'

@@ -167,6 +167,23 @@ export const Footer: React.FC<FooterProps> = ({
               </li>
               <li>
                 <a
+                  href="/fps-performance-calculator"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onSelectTab('fps-calculator');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  className="hover:text-cyan-300 transition-colors flex items-center gap-1.5 group text-left"
+                >
+                  <ChevronRight className="w-3 h-3 text-gray-600 group-hover:text-cyan-400 transition-colors" />
+                  <span>FPS / Performance Calculator</span>
+                  <span className="px-1.5 py-0.2 text-[9px] bg-purple-500/20 text-purple-300 border border-purple-500/30 rounded font-bold">
+                    Featured
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a
                   href="/game-avatar-generator"
                   onClick={(e) => {
                     e.preventDefault();
@@ -381,7 +398,7 @@ export const Footer: React.FC<FooterProps> = ({
 
         {/* Bottom Bar: Copyright & Policies */}
         <div className="pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-500 text-center sm:text-left">
-          <p>© 2026 Game Vault Forum • Founded by Joel Ayuba. All rights reserved.</p>
+          <p>© 2026 Game Vault Forum • Founded & Operated by Joel Ayuba. Publisher ID: pub-6121667798720008. All rights reserved.</p>
           <div className="flex flex-wrap items-center justify-center sm:justify-end gap-3 sm:gap-6">
             <a 
               href="/about"

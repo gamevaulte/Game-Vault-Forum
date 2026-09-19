@@ -49,6 +49,7 @@ const TermsOfServiceView = lazy(() => import('./views/TermsOfServiceView').then(
 const CookiePolicyView = lazy(() => import('./views/CookiePolicyView').then(m => ({ default: m.CookiePolicyView })));
 const ContactPageView = lazy(() => import('./views/ContactPageView').then(m => ({ default: m.ContactPageView })));
 const PcRequirementsView = lazy(() => import('./views/PcRequirementsView').then(m => ({ default: m.PcRequirementsView })));
+const FpsCalculatorView = lazy(() => import('./views/FpsCalculatorView').then(m => ({ default: m.FpsCalculatorView })));
 const UsernameGeneratorView = lazy(() => import('./views/UsernameGeneratorView').then(m => ({ default: m.UsernameGeneratorView })));
 const PcBuilderView = lazy(() => import('./views/PcBuilderView').then(m => ({ default: m.PcBuilderView })));
 const ToolsHubView = lazy(() => import('./views/ToolsHubView').then(m => ({ default: m.ToolsHubView })));
@@ -547,7 +548,7 @@ export default function App() {
   };
 
   // Toast Helpers
-  const addToast = (text: string, type: 'success' | 'info' = 'info') => {
+  const addToast = (text: string, type: 'success' | 'info' | 'error' = 'info') => {
     const id = Date.now().toString() + Math.random().toString(36).substring(2, 6);
     setToasts((prev) => [...prev, { id, text, type }]);
   };
@@ -1137,6 +1138,17 @@ export default function App() {
           ]
         });
         break;
+      case 'fps-calculator':
+        updatePageSeo({
+          title: '🎮 FPS / Performance Calculator | PC Gaming Benchmark & Bottleneck Estimator | Game Vault Forum',
+          description: "Estimate your PC's real-world gaming FPS before playing. Check hardware bottlenecks, optimal resolution and graphics presets, and realistic performance ranges with Game Vault Forum.",
+          canonicalPath: '/fps-performance-calculator',
+          breadcrumbs: [
+            { name: 'Tools', path: '/tools' },
+            { name: 'FPS / Performance Calculator', path: '/fps-performance-calculator' }
+          ]
+        });
+        break;
       case 'gaming-username-generator':
         updatePageSeo({
           title: 'Gaming Username Generator | Create Unique Gamer Names | Game Vault Forum',
@@ -1251,6 +1263,8 @@ export default function App() {
         return 'forum';
       case 'pc-requirements':
         return 'pc-requirements';
+      case 'fps-calculator':
+        return 'fps-calculator';
       case 'game-avatar-generator':
         return 'game-avatar-generator';
       case 'gaming-username-generator':
@@ -1311,6 +1325,7 @@ export default function App() {
     else if (tab === 'vault-ai') navigate('/tools/vault-ai');
     else if (tab === 'game-avatar-generator') navigate('/game-avatar-generator');
     else if (tab === 'pc-requirements') navigate('/tools/pc-game-requirements-checker');
+    else if (tab === 'fps-calculator') navigate('/fps-performance-calculator');
     else if (tab === 'gaming-username-generator') navigate('/tools/gaming-username-generator');
     else if (tab === 'gaming-pc-builder') navigate('/tools/gaming-pc-builder');
     else if (tab === 'game-picker-wheel') navigate('/game-picker-wheel');
@@ -1744,6 +1759,22 @@ export default function App() {
             onOpenForum={() => {
               navigate('/forum');
             }}
+          />
+        );
+
+      case 'fps-calculator':
+        return (
+          <FpsCalculatorView
+            initialGameSlug={route.gameSlug}
+            currentUser={user}
+            isSignedIn={Boolean(firebaseUser)}
+            onOpenSignIn={() => {
+              setAuthPromptMessage('Only registered and signed-in members can save custom hardware configurations to the cloud. Sign in or register to get started!');
+              setIsAuthModalOpen(true);
+            }}
+            onNavigateTab={handleNavigateTab}
+            onShowToast={(msg, type) => addToast(msg, type)}
+            onShare={handleShare}
           />
         );
 

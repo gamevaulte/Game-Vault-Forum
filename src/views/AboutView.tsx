@@ -202,14 +202,19 @@ export const AboutView: React.FC<AboutViewProps> = ({ onNavigateTab, onOpenBrand
       <div className="p-8 rounded-3xl bg-[#101324] border border-white/10 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl">
         <div className="space-y-2 text-center md:text-left">
           <span className="text-xs font-['Rajdhani'] font-bold uppercase tracking-widest text-purple-400">
-            Editorial Team & Operations
+            Editorial Leadership & Publisher Verification
           </span>
           <h3 className="text-2xl font-bold font-['Space_Grotesk'] text-white">
-            Lead Publisher: Joel Ayuba
+            Lead Publisher & Founder: Joel Ayuba
           </h3>
           <p className="text-xs sm:text-sm text-gray-400 max-w-xl leading-relaxed">
-            Leading editorial direction, game testing, hardware benchmarks, and community moderation across Game Vault Forum and YouTube.
+            Leading editorial direction, game testing, hardware benchmarks, and community moderation across Game Vault Forum and YouTube (@GameVaultForum).
           </p>
+          <div className="pt-1 flex flex-wrap items-center gap-3 text-xs text-slate-300 font-mono">
+            <span>Direct Publisher Email: <a href="mailto:joelotis40@gmail.com" className="text-purple-400 hover:underline">joelotis40@gmail.com</a> / <a href="mailto:contact@gamevault.forum" className="text-purple-400 hover:underline">contact@gamevault.forum</a></span>
+            <span className="text-gray-500">•</span>
+            <span>AdSense Publisher ID: <strong className="text-cyan-400">pub-6121667798720008</strong></span>
+          </div>
         </div>
 
         <div className="flex flex-wrap items-center gap-3">

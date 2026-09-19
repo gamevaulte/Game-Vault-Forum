@@ -26,6 +26,7 @@ export type Route =
   | { type: 'login' }
   | { type: 'register' }
   | { type: 'pc-requirements'; gameSlug?: string }
+  | { type: 'fps-calculator'; gameSlug?: string }
   | { type: 'tools' }
   | { type: 'game-avatar-generator' }
   | { type: 'gaming-username-generator' }
@@ -87,10 +88,16 @@ export function parseRoute(rawPath: string): Route {
     if (seg2 === 'pc-game-requirements-checker' || seg2 === 'pc-requirements') {
       return { type: 'pc-requirements', gameSlug: seg3 };
     }
+    if (seg2 === 'fps-performance-calculator' || seg2 === 'fps-calculator' || seg2 === 'performance-calculator') {
+      return { type: 'fps-calculator', gameSlug: seg3 };
+    }
     return { type: 'tools' };
   }
 
   // Direct root tool paths
+  if (seg1 === 'fps-performance-calculator' || seg1 === 'fps-calculator' || seg1 === 'performance-calculator') {
+    return { type: 'fps-calculator', gameSlug: seg2 };
+  }
   if (seg1 === 'vault-ai' || seg1 === 'ai') {
     return { type: 'vault-ai' };
   }
@@ -214,6 +221,10 @@ export function routeToUrl(route: Route): string {
       return route.gameSlug
         ? `/tools/pc-game-requirements-checker/${route.gameSlug}`
         : '/tools/pc-game-requirements-checker';
+    case 'fps-calculator':
+      return route.gameSlug
+        ? `/fps-performance-calculator/${route.gameSlug}`
+        : '/fps-performance-calculator';
     case 'tools':
       return '/tools';
     case 'game-avatar-generator':
