@@ -33,6 +33,7 @@ export type Route =
   | { type: 'gaming-pc-builder'; buildId?: string }
   | { type: 'game-picker-wheel'; games?: string[] }
   | { type: 'vault-ai'; initialPrompt?: string }
+  | { type: 'author'; slug: string }
   | { type: 'sitemap' };
 
 export function parseRoute(rawPath: string): Route {
@@ -155,6 +156,10 @@ export function parseRoute(rawPath: string): Route {
     return { type: 'forum' };
   }
 
+  if (seg1 === 'author' || seg1 === 'authors') {
+    return { type: 'author', slug: seg2 || 'joel-ayuba' };
+  }
+
   if (seg1 === 'about' || seg1 === 'about-game-vault') return { type: 'about' };
   if (seg1 === 'contact' || seg1 === 'contact-us') return { type: 'contact' };
   if (seg1 === 'profile') return { type: 'profile' };
@@ -199,6 +204,8 @@ export function routeToUrl(route: Route): string {
       return `/forum/${route.slug || route.id}`;
     case 'new-topic':
       return '/forum/new';
+    case 'author':
+      return `/authors/${route.slug || 'joel-ayuba'}`;
     case 'about':
       return '/about';
     case 'contact':

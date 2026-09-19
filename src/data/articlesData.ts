@@ -1496,9 +1496,9 @@ If you're fascinated by how timeless gameplay loops capture player imagination o
 
 Discover how landmark titles from Pokémon and Super Mario to Grand Theft Auto, Minecraft, and Counter-Strike transformed the industry and became unforgettable milestones in our shared history.`,
     author: {
-      name: 'Marcus Vance',
-      avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=120&auto=format&fit=crop&q=80',
-      role: 'Lead Vault Editor'
+      name: 'Joel Ayuba',
+      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80',
+      role: 'Founder & Lead Publisher'
     },
     publicationDate: 'Sept 2, 2026',
     readingTime: '8 min read',

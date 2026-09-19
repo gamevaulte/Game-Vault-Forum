@@ -57,6 +57,7 @@ const AvatarGeneratorView = lazy(() => import('./views/AvatarGeneratorView').the
 const GamePickerWheelView = lazy(() => import('./views/GamePickerWheelView').then(m => ({ default: m.GamePickerWheelView })));
 const VaultAiView = lazy(() => import('./views/VaultAiView').then(m => ({ default: m.VaultAiView })));
 const SitemapView = lazy(() => import('./views/SitemapView').then(m => ({ default: m.SitemapView })));
+const AuthorPageView = lazy(() => import('./views/AuthorPageView').then(m => ({ default: m.AuthorPageView })));
 
 // Interactive Secondary Modals
 const GlobalSearchModal = lazy(() => import('./components/GlobalSearchModal').then(m => ({ default: m.GlobalSearchModal })));
@@ -81,7 +82,8 @@ import {
   subscribeToComments,
   subscribeToLikes,
   subscribeToTopics,
-  getPublicUserProfile
+  getPublicUserProfile,
+  isSearchCrawler
 } from './lib/firebase';
 
 export default function App() {
@@ -303,39 +305,63 @@ export default function App() {
     };
   }, []);
 
-  // Real-time Firestore sync: Every user/visitor sees up-to-the-minute likes and comments made on content
+  // Real-time Firestore sync: Decoupled from the critical rendering path so public articles render instantly without blocking
   useEffect(() => {
-    const unsubLikes = subscribeToLikes((firestoreLikes) => {
-      setLikesMap((prev) => {
-        const next = { ...prev, ...firestoreLikes };
-        try {
-          localStorage.setItem('gv_post_likes_v2', JSON.stringify(next));
-        } catch {}
-        return next;
-      });
-    });
+    // Search engine bots and automated crawlers must never open persistent real-time streaming Listen channels
+    if (isSearchCrawler()) {
+      return;
+    }
 
-    const unsubComments = subscribeToComments((firestoreComments) => {
-      setCommentsMap((prev) => {
-        const next = { ...prev };
-        Object.keys(firestoreComments).forEach((contentId) => {
-          const incoming = firestoreComments[contentId] || [];
-          const existing = next[contentId] || [];
-          const map = new Map<string, PostComment>();
-          existing.forEach((c) => map.set(c.id, c));
-          incoming.forEach((c) => map.set(c.id, c));
-          next[contentId] = Array.from(map.values()).sort((a, b) => {
-            const timeA = (a as any).createdAt?.seconds || 0;
-            const timeB = (b as any).createdAt?.seconds || 0;
-            return timeA - timeB;
-          });
+    let unsubLikes: () => void = () => {};
+    let unsubComments: () => void = () => {};
+
+    // Defer listener initialization slightly until after primary page content has mounted and rendered
+    const timer = setTimeout(() => {
+      unsubLikes = subscribeToLikes((firestoreLikes) => {
+        setLikesMap((prev) => {
+          const next = { ...prev, ...firestoreLikes };
+          try {
+            localStorage.setItem('gv_post_likes_v2', JSON.stringify(next));
+          } catch {}
+          return next;
         });
-        try {
-          localStorage.setItem('gv_post_comments_v2', JSON.stringify(next));
-        } catch {}
-        return next;
       });
-    });
+
+      unsubComments = subscribeToComments((firestoreComments) => {
+        setCommentsMap((prev) => {
+          const next = { ...prev };
+          Object.keys(firestoreComments).forEach((contentId) => {
+            const incoming = firestoreComments[contentId] || [];
+            const existing = next[contentId] || [];
+            const map = new Map<string, PostComment>();
+            existing.forEach((c) => map.set(c.id, c));
+            incoming.forEach((c) => map.set(c.id, c));
+            next[contentId] = Array.from(map.values()).sort((a, b) => {
+              const timeA = (a as any).createdAt?.seconds || 0;
+              const timeB = (b as any).createdAt?.seconds || 0;
+              return timeA - timeB;
+            });
+          });
+          try {
+            localStorage.setItem('gv_post_comments_v2', JSON.stringify(next));
+          } catch {}
+          return next;
+        });
+      });
+    }, 1200);
+
+    return () => {
+      clearTimeout(timer);
+      unsubLikes();
+      unsubComments();
+    };
+  }, []);
+
+  // Dedicated forum topic listener: ONLY active when user is in the community forum!
+  useEffect(() => {
+    if (isSearchCrawler()) return;
+    const isForumRoute = route.type === 'forum' || route.type === 'topic' || route.type === 'new-topic';
+    if (!isForumRoute) return;
 
     const unsubTopics = subscribeToTopics((firestoreTopics) => {
       setTopics((prev) => {
@@ -344,7 +370,6 @@ export default function App() {
         firestoreTopics.forEach((ft) => {
           const existing = map.get(ft.id);
           if (existing) {
-            // Keep clean replies and update counters
             const cleanReplies = Array.isArray(ft.replies) && ft.replies.length > 0 ? ft.replies : existing.replies;
             map.set(ft.id, {
               ...existing,
@@ -365,11 +390,9 @@ export default function App() {
     });
 
     return () => {
-      unsubLikes();
-      unsubComments();
       unsubTopics();
     };
-  }, []);
+  }, [route.type]);
 
   // Idle Route Prefetching: Pre-warms popular view chunks without degrading initial render performance
   useEffect(() => {
@@ -937,6 +960,10 @@ export default function App() {
 
   // Handler to open public user profile popup (dossier) for any clicked user/visitor
   const handleViewUserProfile = async (author: { id?: string; name: string; username?: string; avatar: string; role?: string; badge?: string }) => {
+    if (author.name.toLowerCase().includes('joel ayuba') || (author.role && author.role.toLowerCase().includes('founder'))) {
+      navigate('/authors/joel-ayuba');
+      return;
+    }
     const fallbackUsername = author.username || author.name.toLowerCase().replace(/[^a-z0-9]/g, '_');
     const initialData: PublicUserProfileData = {
       id: author.id,
@@ -1250,6 +1277,7 @@ export default function App() {
         return 'games';
       case 'articles':
       case 'article':
+      case 'author':
         return 'articles';
       case 'reviews':
       case 'review':
@@ -1724,6 +1752,17 @@ export default function App() {
             onOpenNewTopic={() => navigate('/forum/new')}
             onOpenGuidelines={() => navigate('/guidelines')}
             onViewUserProfile={handleViewUserProfile}
+          />
+        );
+
+      case 'author':
+        return (
+          <AuthorPageView
+            authorSlug={route.slug || 'joel-ayuba'}
+            onBack={() => navigate('/articles')}
+            onSelectArticle={(a) => navigate(`/articles/${getSeoSlug(a)}`)}
+            onNavigateTab={handleNavigateTab}
+            onShare={handleShare}
           />
         );
 

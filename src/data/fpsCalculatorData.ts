@@ -1,5 +1,6 @@
 import { CpuSpec, GpuSpec } from '../types/pcRequirements';
 import { CPU_DATABASE, GPU_DATABASE } from './pcRequirementsData';
+import { ADDITIONAL_GAME_PERFORMANCE_PROFILES } from './expandedGamesProfiles';
 
 export interface ExtendedGpuSpec extends GpuSpec {
   isLaptop?: boolean;
@@ -117,7 +118,7 @@ export const ALL_CALCULATOR_GPUS: ExtendedGpuSpec[] = deduplicateById(
 );
 
 // Verified Game Performance Profiles
-export const GAME_PERFORMANCE_PROFILES: GamePerformanceProfile[] = [
+const BASE_GAME_PERFORMANCE_PROFILES: GamePerformanceProfile[] = [
   {
     id: 'game-cyberpunk-2077',
     title: 'Cyberpunk 2077 (v2.1+ / Phantom Liberty)',
@@ -497,6 +498,96 @@ export const GAME_PERFORMANCE_PROFILES: GamePerformanceProfile[] = [
     benchmarkNotes: 'New Atlantis city center places heavy demand on CPU cache and system memory bandwidth.'
   }
 ];
+
+export const GAME_PERFORMANCE_PROFILES: GamePerformanceProfile[] = deduplicateById(
+  BASE_GAME_PERFORMANCE_PROFILES,
+  ADDITIONAL_GAME_PERFORMANCE_PROFILES
+);
+
+export function createUniversalGameProfile(
+  title: string,
+  customConfig?: Partial<GamePerformanceProfile>
+): GamePerformanceProfile {
+  const cleanTitle = title.trim();
+  const slug = cleanTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+  const id = `game-custom-${slug || Date.now()}`;
+  
+  // Smart heuristic based on keywords
+  const lower = cleanTitle.toLowerCase();
+  let demandTier: 1 | 2 | 3 | 4 | 5 = 3;
+  let cpuHeavy = false;
+  let supportsRayTracing = false;
+  let supportsDlss = true;
+  let supportsFsr = true;
+  let supportsXeSS = true;
+  let supportsFrameGen = false;
+  let genre = 'Action / PC Game';
+  let engine = 'DirectX 12 PC Game Engine';
+
+  if (lower.includes('indie') || lower.includes('2d') || lower.includes('pixel') || lower.includes('card') || lower.includes('roguelike') || lower.includes('chess') || lower.includes('terraria') || lower.includes('stardew') || lower.includes('hades') || lower.includes('brotato') || lower.includes('balatro') || lower.includes('vampire')) {
+    demandTier = 1;
+    genre = 'Indie / 2D Action';
+    engine = 'Lightweight 2D / C# Engine';
+  } else if (lower.includes('esport') || lower.includes('cs') || lower.includes('counter') || lower.includes('valorant') || lower.includes('overwatch') || lower.includes('league') || lower.includes('dota') || lower.includes('rocket league') || lower.includes('siege')) {
+    demandTier = 2;
+    genre = 'Competitive Esports';
+    engine = 'Competitive Low-Latency Engine';
+  } else if (lower.includes('sim') || lower.includes('city') || lower.includes('civilization') || lower.includes('total war') || lower.includes('stellaris') || lower.includes('tycoon') || lower.includes('factory') || lower.includes('paradox') || lower.includes('planet')) {
+    demandTier = 3;
+    cpuHeavy = true;
+    genre = 'Simulation / Strategy';
+    engine = 'Complex Simulation & AI Engine';
+  } else if (lower.includes('remake') || lower.includes('unreal 5') || lower.includes('ue5') || lower.includes('alan wake') || lower.includes('wukong') || lower.includes('stalker') || lower.includes('pathtracing') || lower.includes('rtx')) {
+    demandTier = 5;
+    supportsRayTracing = true;
+    supportsFrameGen = true;
+    genre = 'Next-Gen AAA Action';
+    engine = 'Unreal Engine 5 / Next-Gen DirectX 12';
+  } else if (lower.includes('rpg') || lower.includes('action') || lower.includes('open world') || lower.includes('warzone') || lower.includes('gta') || lower.includes('assassin') || lower.includes('horizon') || lower.includes('cyberpunk') || lower.includes('space marine')) {
+    demandTier = 4;
+    supportsRayTracing = true;
+    genre = 'Open World / AAA Action';
+    engine = 'Modern High-Fidelity DirectX 12 Engine';
+  }
+
+  const targetGpu = demandTier === 1 ? 2 : demandTier === 2 ? 3 : demandTier === 3 ? 5 : demandTier === 4 ? 6 : 8;
+  const targetCpu = cpuHeavy ? Math.min(10, demandTier + 3) : Math.max(3, demandTier + 1);
+
+  const defaultProfile: GamePerformanceProfile = {
+    id,
+    title: cleanTitle,
+    slug,
+    coverImage: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=800&auto=format&fit=crop&q=80',
+    genre,
+    releaseYear: new Date().getFullYear(),
+    engine,
+    demandTier,
+    cpuHeavy,
+    supportsRayTracing,
+    supportsDlss,
+    supportsFsr,
+    supportsXeSS,
+    supportsFrameGen,
+    target60Fps1080pGpuTier: targetGpu,
+    target60Fps1080pCpuTier: targetCpu,
+    vramBaselineGb: demandTier === 1 
+      ? { '720p': 1, '900p': 1.5, '1080p': 2, '1440p': 3, '4k': 4 }
+      : demandTier === 2
+      ? { '720p': 2, '900p': 3, '1080p': 4, '1440p': 6, '4k': 8 }
+      : demandTier === 3
+      ? { '720p': 3, '900p': 4, '1080p': 6, '1440p': 8, '4k': 10 }
+      : demandTier === 4
+      ? { '720p': 4, '900p': 5, '1080p': 6, '1440p': 8, '4k': 12 }
+      : { '720p': 6, '900p': 7, '1080p': 8, '1440p': 12, '4k': 16 },
+    hasVerifiedBenchmarks: false,
+    benchmarkNotes: 'Universal PC gaming calculation profile calibrated dynamically for hardware bottlenecks.'
+  };
+
+  return {
+    ...defaultProfile,
+    ...customConfig
+  };
+}
 
 export const RESOLUTION_DEFINITIONS: Record<string, { label: string; width: number; height: number; pixels: number; multiplier: number }> = {
   '720p': { label: '720p (HD)', width: 1280, height: 720, pixels: 921600, multiplier: 0.44 },

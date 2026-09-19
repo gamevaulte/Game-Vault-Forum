@@ -24,7 +24,11 @@ import {
   ArrowRight,
   Info,
   SlidersHorizontal,
-  Bot
+  Bot,
+  Plus,
+  Trash2,
+  Wand2,
+  Globe
 } from 'lucide-react';
 import { 
   FpsCalculationInput, 
@@ -48,8 +52,10 @@ import {
   TARGET_FPS_OPTIONS,
   RAM_CAPACITY_OPTIONS,
   VRAM_OPTIONS_CALCULATOR,
-  GamePerformanceProfile
+  GamePerformanceProfile,
+  createUniversalGameProfile
 } from '../data/fpsCalculatorData';
+import { CustomGameCalibrationModal } from '../components/fps/CustomGameCalibrationModal';
 import { 
   calculateGamingPerformance, 
   generateLocalAiExplanation, 
@@ -82,6 +88,34 @@ export const FpsCalculatorView: React.FC<FpsCalculatorViewProps> = ({
 }) => {
   // Mode selection: Quick Check vs Advanced Check
   const [mode, setMode] = useState<'quick' | 'advanced'>('quick');
+
+  // Custom User-Created Games (persisted locally)
+  const [customGames, setCustomGames] = useState<GamePerformanceProfile[]>(() => {
+    try {
+      const saved = localStorage.getItem('gv_custom_pc_games_v1');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  // Modal for adding any PC game on earth
+  const [isCustomGameModalOpen, setIsCustomGameModalOpen] = useState(false);
+  const [modalInitialTitle, setModalInitialTitle] = useState('');
+
+  // Combined games catalog
+  const allAvailableGames = useMemo(() => {
+    const map = new Map<string, GamePerformanceProfile>();
+    for (const g of customGames) {
+      map.set(g.id, g);
+    }
+    for (const g of GAME_PERFORMANCE_PROFILES) {
+      if (!map.has(g.id)) {
+        map.set(g.id, g);
+      }
+    }
+    return Array.from(map.values());
+  }, [customGames]);
 
   // Input states
   const [selectedGameId, setSelectedGameId] = useState<string>(() => {
@@ -180,19 +214,70 @@ export const FpsCalculatorView: React.FC<FpsCalculatorViewProps> = ({
 
   // Selected game object
   const activeGame: GamePerformanceProfile = useMemo(() => {
-    return GAME_PERFORMANCE_PROFILES.find(g => g.id === selectedGameId) || GAME_PERFORMANCE_PROFILES[0];
-  }, [selectedGameId]);
+    return allAvailableGames.find(g => g.id === selectedGameId) || allAvailableGames[0];
+  }, [allAvailableGames, selectedGameId]);
 
   // Filtered games list
   const filteredGames = useMemo(() => {
-    if (!gameSearchQuery.trim()) return GAME_PERFORMANCE_PROFILES;
+    if (!gameSearchQuery.trim()) return allAvailableGames;
     const q = gameSearchQuery.toLowerCase();
-    return GAME_PERFORMANCE_PROFILES.filter(g => 
+    return allAvailableGames.filter(g => 
       g.title.toLowerCase().includes(q) || 
       g.genre.toLowerCase().includes(q) ||
       g.engine.toLowerCase().includes(q)
     );
-  }, [gameSearchQuery]);
+  }, [allAvailableGames, gameSearchQuery]);
+
+  const handleCreateInstantCustomGame = (title: string) => {
+    const newProfile = createUniversalGameProfile(title);
+    const updated = [newProfile, ...customGames.filter(g => g.id !== newProfile.id)];
+    setCustomGames(updated);
+    try {
+      localStorage.setItem('gv_custom_pc_games_v1', JSON.stringify(updated));
+    } catch (e) {
+      console.error(e);
+    }
+    setSelectedGameId(newProfile.id);
+    setIsGameDropdownOpen(false);
+    setGameSearchQuery('');
+    onShowToast?.(`Loaded & benchmarked "${newProfile.title}"`, 'success');
+  };
+
+  const handleSaveCalibratedCustomGame = (profile: GamePerformanceProfile) => {
+    const updated = [profile, ...customGames.filter(g => g.id !== profile.id)];
+    setCustomGames(updated);
+    try {
+      localStorage.setItem('gv_custom_pc_games_v1', JSON.stringify(updated));
+    } catch (e) {
+      console.error(e);
+    }
+    setSelectedGameId(profile.id);
+    setIsCustomGameModalOpen(false);
+    setIsGameDropdownOpen(false);
+    setGameSearchQuery('');
+    onShowToast?.(`Saved & calibrated "${profile.title}" profile`, 'success');
+  };
+
+  const handleDeleteCustomGame = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    const updated = customGames.filter(g => g.id !== id);
+    setCustomGames(updated);
+    try {
+      localStorage.setItem('gv_custom_pc_games_v1', JSON.stringify(updated));
+    } catch (err) {
+      console.error(err);
+    }
+    if (selectedGameId === id) {
+      setSelectedGameId(GAME_PERFORMANCE_PROFILES[0].id);
+    }
+    onShowToast?.('Removed custom game profile', 'info');
+  };
+
+  const openCustomModalWithTitle = (title: string) => {
+    setModalInitialTitle(title);
+    setIsCustomGameModalOpen(true);
+    setIsGameDropdownOpen(false);
+  };
 
   // Filtered GPUs
   const filteredGpus = useMemo(() => {
@@ -587,44 +672,123 @@ Calculate your PC performance at: ${window.location.origin}/fps-performance-calc
 
                   {/* Dropdown Menu */}
                   {isGameDropdownOpen && (
-                    <div className="absolute z-30 top-full left-0 right-0 mt-2 rounded-xl bg-[#121528] border border-purple-500/30 shadow-2xl overflow-hidden max-h-80 flex flex-col">
-                      <div className="p-2 border-b border-white/5 bg-slate-950/80">
+                    <div className="absolute z-30 top-full left-0 right-0 mt-2 rounded-xl bg-[#121528] border border-purple-500/30 shadow-2xl overflow-hidden max-h-96 flex flex-col">
+                      <div className="p-2 border-b border-white/5 bg-slate-950/80 flex items-center gap-2">
                         <input
                           type="text"
-                          placeholder="Search 50+ PC titles (Cyberpunk, Space Marine 2, Valorant...)"
+                          placeholder="Search or type ANY game title (e.g. Subnautica, Civ VII, Crysis...)"
                           value={gameSearchQuery}
                           onChange={(e) => setGameSearchQuery(e.target.value)}
                           className="w-full px-3 py-2 text-xs rounded-lg bg-slate-900 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:border-purple-500"
                           autoFocus
                         />
                       </div>
-                      <div className="overflow-y-auto divide-y divide-white/5">
-                        {filteredGames.map(game => (
-                          <div
-                            key={game.id}
-                            onClick={() => {
-                              setSelectedGameId(game.id);
-                              setIsGameDropdownOpen(false);
-                            }}
-                            className={`p-3 flex items-center gap-3 cursor-pointer transition-colors hover:bg-purple-600/20 ${
-                              game.id === selectedGameId ? 'bg-purple-600/30' : ''
-                            }`}
-                          >
-                            <img 
-                              src={game.coverImage} 
-                              alt={game.title}
-                              referrerPolicy="no-referrer"
-                              className="w-8 h-8 rounded object-cover shrink-0" 
-                            />
-                            <div className="flex-1 truncate">
-                              <div className="text-xs font-bold text-white truncate">{game.title}</div>
-                              <div className="text-[10px] text-slate-400">{game.genre} • {game.releaseYear}</div>
+
+                      {/* Instant Universal Benchmark Prompt for ANY Game */}
+                      {gameSearchQuery.trim().length > 0 && !filteredGames.some(g => g.title.toLowerCase() === gameSearchQuery.trim().toLowerCase()) && (
+                        <div
+                          onClick={() => handleCreateInstantCustomGame(gameSearchQuery.trim())}
+                          className="p-3 bg-gradient-to-r from-purple-950/60 to-indigo-950/60 hover:from-purple-900/80 hover:to-indigo-900/80 border-b border-purple-500/30 cursor-pointer flex items-center justify-between transition-all"
+                        >
+                          <div className="flex items-center gap-2.5 truncate">
+                            <div className="w-8 h-8 rounded-lg bg-purple-600/30 border border-purple-400/30 flex items-center justify-center text-purple-300 shrink-0">
+                              <Sparkles className="w-4 h-4" />
                             </div>
-                            {game.supportsRayTracing && (
-                              <span className="text-[9px] px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-300 font-mono">RT</span>
-                            )}
+                            <div className="truncate text-left">
+                              <div className="text-xs font-bold text-white flex items-center gap-1.5 truncate">
+                                <span>Benchmark &ldquo;{gameSearchQuery.trim()}&rdquo;</span>
+                                <span className="text-[9px] px-1.5 py-0.2 rounded bg-purple-500/30 text-purple-200 border border-purple-400/30 font-mono">
+                                  Universal Engine
+                                </span>
+                              </div>
+                              <div className="text-[10px] text-purple-200/70 truncate">
+                                Click for instant calculation, or calibrate engine specs
+                              </div>
+                            </div>
                           </div>
-                        ))}
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              openCustomModalWithTitle(gameSearchQuery.trim());
+                            }}
+                            className="px-2.5 py-1 rounded-lg bg-purple-600 hover:bg-purple-500 text-white text-[10px] font-bold shrink-0 ml-2 shadow"
+                          >
+                            Calibrate
+                          </button>
+                        </div>
+                      )}
+
+                      <div className="overflow-y-auto divide-y divide-white/5 flex-1">
+                        {filteredGames.map(game => {
+                          const isCustom = customGames.some(cg => cg.id === game.id);
+                          return (
+                            <div
+                              key={game.id}
+                              onClick={() => {
+                                setSelectedGameId(game.id);
+                                setIsGameDropdownOpen(false);
+                              }}
+                              className={`p-3 flex items-center justify-between gap-3 cursor-pointer transition-colors hover:bg-purple-600/20 ${
+                                game.id === selectedGameId ? 'bg-purple-600/30' : ''
+                              }`}
+                            >
+                              <div className="flex items-center gap-3 truncate">
+                                <img 
+                                  src={game.coverImage} 
+                                  alt={game.title}
+                                  referrerPolicy="no-referrer"
+                                  className="w-8 h-8 rounded object-cover shrink-0 border border-white/10" 
+                                />
+                                <div className="truncate text-left">
+                                  <div className="text-xs font-bold text-white truncate flex items-center gap-1.5">
+                                    <span>{game.title}</span>
+                                    {isCustom && (
+                                      <span className="text-[9px] px-1.5 py-0.2 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 font-mono">
+                                        Custom
+                                      </span>
+                                    )}
+                                  </div>
+                                  <div className="text-[10px] text-slate-400 truncate">
+                                    {game.genre} • {game.releaseYear} • Tier {game.demandTier}/5
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div className="flex items-center gap-1.5 shrink-0">
+                                {game.supportsRayTracing && (
+                                  <span className="text-[9px] px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-300 font-mono">RT</span>
+                                )}
+                                {isCustom && (
+                                  <button
+                                    type="button"
+                                    onClick={(e) => handleDeleteCustomGame(game.id, e)}
+                                    title="Delete custom game"
+                                    className="p-1 text-slate-500 hover:text-red-400 transition-colors"
+                                  >
+                                    <Trash2 className="w-3.5 h-3.5" />
+                                  </button>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      {/* Bottom action: Add Any Game */}
+                      <div className="p-2.5 bg-slate-950 border-t border-white/10 flex items-center justify-between text-xs">
+                        <span className="text-slate-400 text-[11px] font-medium flex items-center gap-1">
+                          <Globe className="w-3.5 h-3.5 text-purple-400" />
+                          <span>{allAvailableGames.length} PC Games available</span>
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => openCustomModalWithTitle(gameSearchQuery.trim())}
+                          className="px-2.5 py-1 rounded-lg bg-purple-600/30 hover:bg-purple-600/50 border border-purple-400/40 text-purple-200 text-xs font-semibold flex items-center gap-1 transition-all"
+                        >
+                          <Plus className="w-3.5 h-3.5" />
+                          <span>+ Add Any Game on Earth</span>
+                        </button>
                       </div>
                     </div>
                   )}
@@ -1646,6 +1810,14 @@ Calculate your PC performance at: ${window.location.origin}/fps-performance-calc
         </div>
 
       </div>
+
+      {/* Custom Game Calibration Modal */}
+      <CustomGameCalibrationModal
+        isOpen={isCustomGameModalOpen}
+        onClose={() => setIsCustomGameModalOpen(false)}
+        initialTitle={modalInitialTitle}
+        onSaveGame={handleSaveCalibratedCustomGame}
+      />
     </div>
   );
 };

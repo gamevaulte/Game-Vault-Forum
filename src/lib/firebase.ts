@@ -62,7 +62,29 @@ export async function testConnection(): Promise<void> {
     }
   }
 }
-testConnection();
+
+/**
+ * Detects search engine crawlers, automated URL inspection bots, and synthetic testing agents
+ * to prevent them from unnecessarily initiating persistent real-time streaming listeners.
+ */
+export function isSearchCrawler(): boolean {
+  if (typeof navigator === 'undefined') return false;
+  const ua = (navigator.userAgent || '').toLowerCase();
+  return (
+    ua.includes('googlebot') ||
+    ua.includes('google-inspectiontool') ||
+    ua.includes('mediapartners-google') ||
+    ua.includes('adsbot-google') ||
+    ua.includes('bingbot') ||
+    ua.includes('baiduspider') ||
+    ua.includes('yandex') ||
+    ua.includes('duckduckbot') ||
+    ua.includes('slurp') ||
+    ua.includes('headlesschrome') ||
+    ua.includes('lighthouse') ||
+    ua.includes('chrome-lighthouse')
+  );
+}
 
 // Standard Firestore Error Handling Types & Helper
 export enum OperationType {
@@ -417,6 +439,9 @@ export async function syncLikeToFirestore(itemId: string, count: number, userUid
 export function subscribeToComments(
   onCommentsUpdated: (commentsMap: Record<string, PostComment[]>) => void
 ): () => void {
+  if (isSearchCrawler()) {
+    return () => {};
+  }
   try {
     const commentsCol = collection(db, 'comments');
     return onSnapshot(
@@ -464,6 +489,9 @@ export function subscribeToComments(
 export function subscribeToTopics(
   onTopicsUpdated: (topics: ForumTopic[]) => void
 ): () => void {
+  if (isSearchCrawler()) {
+    return () => {};
+  }
   try {
     const topicsCol = collection(db, 'topics');
     return onSnapshot(
@@ -562,6 +590,9 @@ export async function getUserSavedAvatarsFromFirestore(userId: string): Promise<
 export function subscribeToLikes(
   onLikesUpdated: (likesMap: Record<string, number>) => void
 ): () => void {
+  if (isSearchCrawler()) {
+    return () => {};
+  }
   try {
     const likesCol = collection(db, 'likes');
     return onSnapshot(

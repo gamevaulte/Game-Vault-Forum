@@ -4,6 +4,7 @@ import compression from 'compression';
 import { createServer as createViteServer } from 'vite';
 import { GoogleGenAI } from '@google/genai';
 import dotenv from 'dotenv';
+import { handleSeoPrerender } from './src/server/seoPrerender';
 
 dotenv.config();
 
@@ -462,6 +463,19 @@ IMPORTANT COPYRIGHT & SAFETY RULES:
 
   app.post('/api/vault-ai/chat', handleVaultAiChat);
   app.post('/api/vault-ai', handleVaultAiChat);
+
+  // SEO & Googlebot Pre-Rendering Middleware for Articles & Authors
+  app.use((req, res, next) => {
+    if (req.method === 'GET') {
+      const isProd = process.env.NODE_ENV === 'production';
+      const prerendered = handleSeoPrerender(req.path, isProd);
+      if (prerendered) {
+        res.setHeader('Content-Type', 'text/html; charset=utf-8');
+        return res.send(prerendered);
+      }
+    }
+    next();
+  });
 
   // Vite middleware for development
   if (process.env.NODE_ENV !== 'production') {

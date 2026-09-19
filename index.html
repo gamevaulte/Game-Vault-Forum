@@ -3,77 +3,6 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- Global fetch setter shim and error handler to prevent 'Cannot set property fetch of #<Window> which has only a getter' -->
-    <script>
-      (function() {
-        if (typeof window === 'undefined') return;
-
-        // 1. Register global error suppressors early in head to catch any unhandled getter-only assignment errors from external scripts or iframes
-        try {
-          var isFetchGetterError = function(msg) {
-            return typeof msg === 'string' && msg.indexOf('fetch') !== -1 && msg.indexOf('getter') !== -1;
-          };
-
-          window.addEventListener('error', function(event) {
-            if (event && (isFetchGetterError(event.message) || (event.error && isFetchGetterError(event.error.message)))) {
-              if (event.preventDefault) event.preventDefault();
-              if (event.stopPropagation) event.stopPropagation();
-              if (event.stopImmediatePropagation) event.stopImmediatePropagation();
-              return true;
-            }
-          }, true);
-
-          var prevOnError = window.onerror;
-          window.onerror = function(msg, url, line, col, error) {
-            if (isFetchGetterError(msg) || (error && isFetchGetterError(error.message))) {
-              return true;
-            }
-            if (typeof prevOnError === 'function') {
-              return prevOnError.apply(this, arguments);
-            }
-          };
-        } catch (e) {}
-
-        // 2. Proactively define getter and setter on window and its entire prototype chain
-        try {
-          var activeFetch = window.fetch ? window.fetch.bind(window) : undefined;
-          var getFetch = function() {
-            return activeFetch;
-          };
-          var setFetch = function(fn) {
-            activeFetch = fn;
-          };
-
-          var targets = [window];
-          if (typeof Window !== 'undefined' && Window.prototype) {
-            targets.push(Window.prototype);
-          }
-          var proto = Object.getPrototypeOf(window);
-          while (proto && proto !== Object.prototype) {
-            if (targets.indexOf(proto) === -1) {
-              targets.push(proto);
-            }
-            proto = Object.getPrototypeOf(proto);
-          }
-
-          for (var i = 0; i < targets.length; i++) {
-            var t = targets[i];
-            try {
-              Object.defineProperty(t, 'fetch', {
-                get: getFetch,
-                set: setFetch,
-                configurable: true,
-                enumerable: true
-              });
-            } catch (err) {
-              // Target might be non-configurable; continue
-            }
-          }
-        } catch (e) {
-          // Graceful fallback
-        }
-      })();
-    </script>
     <title>Game Vault Forum | Gaming Videos, Reviews, Guides & Community</title>
     <meta name="description" content="Game Vault Forum is a gaming community and media platform featuring gameplay videos, gaming reviews, guides, articles and discussions for gamers." />
     <meta name="keywords" content="Game Vault Forum, gaming forum, gaming community, gaming videos, gaming reviews, gaming guides, gaming news, gameplay videos, gaming discussions" />
@@ -166,10 +95,7 @@
             "name": "Joel Ayuba"
           },
           "sameAs": [
-            "https://www.youtube.com/@GameVaultForum",
-            "https://youtube.com/@GameVaultForum",
-            "https://discord.com",
-            "https://x.com"
+            "https://www.youtube.com/@GameVaultForum"
           ]
         },
         {
@@ -251,6 +177,18 @@
             Featured Editorial Essays & Game Design Analysis
           </h2>
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px;">
+            <article style="padding: 24px; background: #101322; border: 1px solid #1e243b; border-radius: 16px;">
+              <h3 style="font-size: 20px; margin-bottom: 8px;">
+                <a href="/articles/why-some-games-keep-us-playing-for-years" style="color: #c4b5fd; text-decoration: none;">
+                  Why Some Games Keep Us Playing for Years
+                </a>
+              </h3>
+              <p style="font-size: 12px; color: #94a3b8; margin-bottom: 12px;">By Joel Ayuba • 8 min read • Gaming Culture & Game Longevity</p>
+              <p style="font-size: 14px; color: #cbd5e1;">
+                A game can have relatively simple mechanics and somehow remain enjoyable long after the novelty has disappeared. An in-depth analysis of mastery, competition, routine, and what truly creates video game longevity.
+              </p>
+            </article>
+
             <article style="padding: 24px; background: #101322; border: 1px solid #1e243b; border-radius: 16px;">
               <h3 style="font-size: 20px; margin-bottom: 8px;">
                 <a href="/articles/why-horror-games-are-more-popular-than-ever" style="color: #c4b5fd; text-decoration: none;">
