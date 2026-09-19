@@ -477,6 +477,12 @@ IMPORTANT COPYRIGHT & SAFETY RULES:
     next();
   });
 
+  // 301 Permanent Redirect: Move /fps-performance-calculator under /tools category
+  app.get(['/fps-performance-calculator', '/fps-performance-calculator/*'], (req, res) => {
+    const newUrl = req.originalUrl.replace('/fps-performance-calculator', '/tools/fps-calculator');
+    return res.redirect(301, newUrl);
+  });
+
   // Vite middleware for development
   if (process.env.NODE_ENV !== 'production') {
     const vite = await createViteServer({
@@ -486,10 +492,24 @@ IMPORTANT COPYRIGHT & SAFETY RULES:
     app.use(vite.middlewares);
   } else {
     const distPath = path.join(process.cwd(), 'dist');
+    // High-performance immutable caching for compiled and hashed assets
+    app.use(
+      '/assets',
+      express.static(path.join(distPath, 'assets'), {
+        maxAge: '1y',
+        immutable: true,
+      })
+    );
+    // General static file serving with ETag and clean HTML cache-busting
     app.use(
       express.static(distPath, {
-        maxAge: '7d',
+        maxAge: '1d',
         etag: true,
+        setHeaders: (res, filePath) => {
+          if (filePath.endsWith('.html')) {
+            res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate');
+          }
+        },
       })
     );
     app.get('*', (_req, res) => {
@@ -1010,11 +1030,13 @@ Gaming frame drops and micro-stutters generally result from hardware bottlenecks
 11. **Shader Compilation**: Modern DirectX 12 games require shaders to compile; allow initial shader caching to finish.
 12. **Fan Curves & Airflow**: Clean dust from radiator and GPU heatsink fins.`,
       sources: [
+        { title: 'Game Vault Forum — FPS / Performance Calculator', url: '/tools/fps-calculator' },
         { title: 'Game Vault Forum — PC Game Requirements Checker', url: '/tools/pc-game-requirements-checker' },
         { title: 'Game Vault Forum — Gaming PC Builder', url: '/tools/gaming-pc-builder' },
       ],
       cardIds: { games: ['cyberpunk-2077'], articles: [], videos: [], hardware: ['gpu-4070s'] },
       actions: [
+        { id: 'act-perf-fps', type: 'navigate', label: 'FPS / Bottleneck Calculator', target: '/tools/fps-calculator' },
         { id: 'act-perf-1', type: 'requirements', label: 'Check Game Specs', target: 'cyberpunk-2077' },
         { id: 'act-perf-2', type: 'navigate', label: 'Configure Upgrade in PC Builder', target: '/tools/gaming-pc-builder' },
         { id: 'act-perf-3', type: 'search', label: 'Search Forum: "Micro-Stutter"', target: 'micro stutter' },

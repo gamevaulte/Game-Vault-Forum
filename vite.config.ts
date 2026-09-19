@@ -20,6 +20,9 @@ export default defineConfig(() => {
       rollupOptions: {
         output: {
           manualChunks(id) {
+            if (id.includes('src/data/mockData')) {
+              return 'data-vault';
+            }
             if (id.includes('node_modules')) {
               if (id.includes('firebase/firestore') || id.includes('@firebase/firestore')) {
                 return 'vendor-firestore';

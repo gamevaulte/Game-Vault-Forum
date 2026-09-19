@@ -17,7 +17,8 @@ import {
   Pin,
   Check,
   Filter,
-  Monitor
+  Monitor,
+  Calendar
 } from 'lucide-react';
 import { 
   Video, 
@@ -32,6 +33,7 @@ import {
 } from '../types';
 import { YOUTUBE_CHANNEL } from '../lib/constants';
 import { AdBanner } from '../components/AdBanner';
+import { formatTopicDate } from '../lib/forumUtils';
 
 interface HomeViewProps {
   videos: Video[];
@@ -741,6 +743,15 @@ const HomeViewComponent: React.FC<HomeViewProps> = ({
                     <h3 className="text-sm font-bold font-['Space_Grotesk'] text-white group-hover:text-purple-300 transition-colors mt-1">
                       {topic.title}
                     </h3>
+                    <div className="flex items-center gap-2 mt-1 text-[11px] text-gray-300 flex-wrap">
+                      <span className="text-gray-400 font-normal">By</span>
+                      <span className="text-white font-semibold">{topic.author.name}</span>
+                      <span className="text-gray-600">•</span>
+                      <span className="text-purple-300 flex items-center gap-1 font-mono">
+                        <Calendar className="w-3 h-3 text-purple-400" />
+                        {formatTopicDate(topic)}
+                      </span>
+                    </div>
                   </div>
                 </div>
 

@@ -10,10 +10,12 @@ import {
   Flame, 
   HelpCircle, 
   Compass, 
-  Users 
+  Users,
+  Calendar
 } from 'lucide-react';
 import { ForumTopic, ForumCategory } from '../types';
 import { MOCK_FORUM_CATEGORIES } from '../data/mockData';
+import { formatTopicDate } from '../lib/forumUtils';
 
 interface ForumViewProps {
   topics: ForumTopic[];
@@ -234,7 +236,9 @@ const ForumViewComponent: React.FC<ForumViewProps> = ({
                       {topic.title}
                     </h3>
 
-                    <div className="flex items-center gap-3 text-xs text-gray-400 flex-wrap pt-0.5">
+                    {/* Prominent Author Name & Date pairing for every discussion title */}
+                    <div className="flex items-center gap-2 text-xs text-purple-200/90 flex-wrap pt-0.5">
+                      <span className="text-gray-400 font-normal">By</span>
                       <button
                         type="button"
                         onClick={(e) => {
@@ -246,15 +250,20 @@ const ForumViewComponent: React.FC<ForumViewProps> = ({
                             badge: topic.author.badge
                           });
                         }}
-                        className="text-gray-300 hover:text-purple-300 font-semibold transition-colors cursor-pointer"
+                        className="text-white hover:text-purple-300 font-semibold transition-colors cursor-pointer"
                         title={`View ${topic.author.name}'s profile`}
                       >
                         {topic.author.name}
                       </button>
-                      <span>•</span>
-                      <span>{topic.timestamp}</span>
-                      <span>•</span>
-                      <span className="flex items-center gap-1">
+                      <span className="text-gray-600">•</span>
+                      <span className="text-gray-300 flex items-center gap-1 font-mono text-[11px]">
+                        <Calendar className="w-3 h-3 text-purple-400" />
+                        {formatTopicDate(topic)}
+                      </span>
+                      <span className="text-gray-600">•</span>
+                      <span className="text-gray-400 font-mono text-[11px]">{topic.timestamp}</span>
+                      <span className="text-gray-600">•</span>
+                      <span className="flex items-center gap-1 text-gray-400 text-[11px]">
                         <Tag className="w-3 h-3 text-gray-500" />
                         {topic.tags.slice(0, 2).join(', ')}
                       </span>

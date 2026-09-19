@@ -525,7 +525,7 @@ Hardware: ${currentCalculationInput.cpuName} + ${currentCalculationInput.gpuName
 Settings: ${result.resolutionLabel} • ${result.presetLabel}
 Estimated FPS: ${result.minFps}–${result.maxFps} FPS (${result.status === 'good' ? '🟢 Good' : result.status === 'playable' ? '🟡 Playable' : '🔴 Below Target'})
 1% Low: ${result.onePercentLowFps ? `${result.onePercentLowFps} FPS` : 'N/A'}
-Calculate your PC performance at: ${window.location.origin}/fps-performance-calculator`;
+Calculate your PC performance at: ${window.location.origin}/tools/fps-calculator`;
 
     navigator.clipboard.writeText(shareText);
     setCopiedLink(true);

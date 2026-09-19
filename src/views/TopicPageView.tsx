@@ -13,9 +13,11 @@ import {
   Sparkles, 
   LogIn,
   Tag,
-  CornerDownRight
+  CornerDownRight,
+  Calendar
 } from 'lucide-react';
 import { ForumTopic, UserAccount, PageTab } from '../types';
+import { formatTopicDate } from '../lib/forumUtils';
 
 interface TopicPageViewProps {
   topic: ForumTopic;
@@ -136,6 +138,46 @@ export const TopicPageView: React.FC<TopicPageViewProps> = ({
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-['Space_Grotesk'] font-bold text-white tracking-tight leading-tight">
             {topic.title}
           </h1>
+
+          {/* Prominent Author Name & Date pairing for every discussion title */}
+          <div className="flex flex-wrap items-center gap-2.5 text-xs sm:text-sm pt-1">
+            <span className="text-gray-400 font-normal">Discussion opened by</span>
+            <button
+              type="button"
+              onClick={() => onViewUserProfile?.({
+                name: topic.author.name,
+                avatar: topic.author.avatar,
+                role: topic.author.isStaff ? 'Vault Staff Specialist' : (topic.author.badge || 'Forum Operative'),
+                badge: topic.author.badge
+              })}
+              className="text-white hover:text-purple-300 font-bold transition-colors cursor-pointer flex items-center gap-1.5"
+              title={`View ${topic.author.name}'s profile`}
+            >
+              <img
+                src={topic.author.avatar}
+                alt={topic.author.name}
+                loading="lazy"
+                decoding="async"
+                className="w-5 h-5 rounded-full object-cover border border-purple-400/40"
+              />
+              <span>{topic.author.name}</span>
+            </button>
+            {topic.author.isStaff && (
+              <span className="text-[10px] text-red-300 bg-red-600/20 px-2 py-0.5 rounded-full border border-red-500/30 font-['Rajdhani'] font-bold uppercase">
+                Staff
+              </span>
+            )}
+            {topic.author.badge && (
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-purple-900/40 text-purple-300 border border-purple-700/40">
+                {topic.author.badge}
+              </span>
+            )}
+            <span className="text-gray-600">•</span>
+            <span className="flex items-center gap-1.5 text-gray-300 font-mono text-xs">
+              <Calendar className="w-3.5 h-3.5 text-purple-400" />
+              Posted on {formatTopicDate(topic)}
+            </span>
+          </div>
 
           <div className="flex flex-wrap items-center gap-4 text-xs text-gray-400 border-t border-white/10 pt-4 font-mono">
             <span className="flex items-center gap-1.5">

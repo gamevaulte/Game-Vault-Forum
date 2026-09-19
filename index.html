@@ -125,7 +125,9 @@
     <link rel="dns-prefetch" href="https://fonts.gstatic.com">
     <link rel="dns-prefetch" href="https://www.youtube-nocookie.com">
     <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com">
-    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@600;800&display=swap" rel="stylesheet">
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@600;800&display=swap">
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@600;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@600;800&display=swap" rel="stylesheet"></noscript>
   </head>
   <body class="bg-[#090a0f] text-slate-100 selection:bg-purple-600 selection:text-white antialiased overflow-x-hidden">
     <div id="root">
@@ -357,6 +359,12 @@
             Free, browser-based utilities engineered to help gamers evaluate PC components, test system compatibility, generate distinct gamertags, and solve performance bottlenecks.
           </p>
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px;">
+            <div style="padding: 20px; background: #131627; border-radius: 12px; border: 1px solid #272d47;">
+              <h3 style="font-size: 18px; margin-bottom: 8px;">
+                <a href="/tools/fps-calculator" style="color: #38bdf8; text-decoration: none;">FPS / Performance Calculator</a>
+              </h3>
+              <p style="font-size: 13px; color: #cbd5e1;">Real-world gaming FPS estimator, hardware bottleneck detector, and universal benchmarking across every PC game.</p>
+            </div>
             <div style="padding: 20px; background: #131627; border-radius: 12px; border: 1px solid #272d47;">
               <h3 style="font-size: 18px; margin-bottom: 8px;">
                 <a href="/tools/pc-game-requirements-checker" style="color: #38bdf8; text-decoration: none;">PC Game Requirements Checker</a>

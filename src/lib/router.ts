@@ -230,8 +230,8 @@ export function routeToUrl(route: Route): string {
         : '/tools/pc-game-requirements-checker';
     case 'fps-calculator':
       return route.gameSlug
-        ? `/fps-performance-calculator/${route.gameSlug}`
-        : '/fps-performance-calculator';
+        ? `/tools/fps-calculator/${route.gameSlug}`
+        : '/tools/fps-calculator';
     case 'tools':
       return '/tools';
     case 'game-avatar-generator':

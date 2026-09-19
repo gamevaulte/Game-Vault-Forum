@@ -167,7 +167,7 @@ export const Footer: React.FC<FooterProps> = ({
               </li>
               <li>
                 <a
-                  href="/fps-performance-calculator"
+                  href="/tools/fps-calculator"
                   onClick={(e) => {
                     e.preventDefault();
                     onSelectTab('fps-calculator');

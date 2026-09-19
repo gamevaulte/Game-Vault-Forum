@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { X, Pin, MessageSquare, ThumbsUp, Send, User, Clock, ShieldCheck, Tag } from 'lucide-react';
+import { X, Pin, MessageSquare, ThumbsUp, Send, User, Clock, ShieldCheck, Tag, Calendar } from 'lucide-react';
 import { ForumTopic, UserAccount } from '../types';
+import { formatTopicDate } from '../lib/forumUtils';
 
 interface ForumTopicModalProps {
   topic: ForumTopic | null;
@@ -60,12 +61,20 @@ export const ForumTopicModal: React.FC<ForumTopicModalProps> = ({
             <h1 className="text-xl sm:text-2xl font-['Space_Grotesk'] font-bold text-white leading-snug">
               {topic.title}
             </h1>
-            <div className="flex flex-wrap items-center gap-3 text-xs text-slate-400 mt-2">
-              <span>Opened {topic.timestamp}</span>
-              <span>•</span>
-              <span>{topic.views} Views</span>
-              <span>•</span>
-              <span>
+            <div className="flex flex-wrap items-center gap-2 text-xs text-purple-200 mt-2">
+              <span className="text-slate-400 font-normal">By</span>
+              <span className="text-white font-bold">{topic.author.name}</span>
+              <span className="text-slate-600">•</span>
+              <span className="text-slate-300 flex items-center gap-1 font-mono">
+                <Calendar className="w-3 h-3 text-purple-400" />
+                {formatTopicDate(topic)}
+              </span>
+              <span className="text-slate-600">•</span>
+              <span className="text-slate-400">{topic.timestamp}</span>
+              <span className="text-slate-600">•</span>
+              <span className="text-slate-400">{topic.views} Views</span>
+              <span className="text-slate-600">•</span>
+              <span className="text-slate-400">
                 {(() => {
                   const count = Array.isArray(topic.replies) ? topic.replies.length : 0;
                   return `${count} ${count === 1 ? 'Reply' : 'Replies'}`;

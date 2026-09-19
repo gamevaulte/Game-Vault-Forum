@@ -70,7 +70,7 @@ export const Header: React.FC<HeaderProps> = ({
       id: 'fps-calculator' as PageTab,
       label: 'FPS / Performance Calculator',
       desc: 'Estimate PC gaming FPS & bottlenecks',
-      href: '/fps-performance-calculator',
+      href: '/tools/fps-calculator',
       icon: Gauge,
       badge: 'Featured'
     },

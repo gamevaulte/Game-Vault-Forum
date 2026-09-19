@@ -243,6 +243,8 @@ export interface ForumTopic {
   views: number;
   lastActivity: string;
   timestamp: string;
+  date?: string;
+  createdAt?: string;
   isPinned?: boolean;
   isLocked?: boolean;
   tags: string[];

@@ -144,7 +144,7 @@ export const SitemapView: React.FC<SitemapViewProps> = ({ onNavigate }) => {
       {
         id: 'fps-performance-calculator',
         title: 'FPS / Performance Calculator — PC Gaming Benchmark & Bottleneck Estimator',
-        url: '/fps-performance-calculator',
+        url: '/tools/fps-calculator',
         category: 'tools',
         badge: 'Featured Tool',
         badgeColor: 'bg-purple-500/20 text-purple-300 border-purple-500/30',

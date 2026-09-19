@@ -18,15 +18,15 @@ import { getSeoSlug, findItemBySlugOrId, updatePageSeo } from './lib/seo';
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
 import { Toast, ToastMessage } from './components/Toast';
-import { AuthGate } from './components/AuthGate';
 import { CookieConsentBanner } from './components/CookieConsentBanner';
 import { AdBanner } from './components/AdBanner';
 import { VaultAiFloatingButton } from './components/ai/VaultAiFloatingButton';
 
-// Eager Homepage View (Guarantees sub-second initial paint)
-import { HomeView } from './views/HomeView';
+// Lazy-loaded AuthGate for minimal initial bundle weight
+const AuthGate = lazy(() => import('./components/AuthGate').then(m => ({ default: m.AuthGate })));
 
 // Route-Based Code Splitting for Latency and Performance Optimization
+const HomeView = lazy(() => import('./views/HomeView').then(m => ({ default: m.HomeView })));
 const VideosView = lazy(() => import('./views/VideosView').then(m => ({ default: m.VideosView })));
 const GamesView = lazy(() => import('./views/GamesView').then(m => ({ default: m.GamesView })));
 const ArticlesView = lazy(() => import('./views/ArticlesView').then(m => ({ default: m.ArticlesView })));
@@ -921,6 +921,8 @@ export default function App() {
       views: 1,
       lastActivity: 'Just now',
       timestamp: 'Just now',
+      date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+      createdAt: new Date().toISOString(),
       isPinned: false,
       initialPost: newTopicData.initialPost || '',
       replies: [],
@@ -1169,10 +1171,10 @@ export default function App() {
         updatePageSeo({
           title: '🎮 FPS / Performance Calculator | PC Gaming Benchmark & Bottleneck Estimator | Game Vault Forum',
           description: "Estimate your PC's real-world gaming FPS before playing. Check hardware bottlenecks, optimal resolution and graphics presets, and realistic performance ranges with Game Vault Forum.",
-          canonicalPath: '/fps-performance-calculator',
+          canonicalPath: route.gameSlug ? `/tools/fps-calculator/${route.gameSlug}` : '/tools/fps-calculator',
           breadcrumbs: [
             { name: 'Tools', path: '/tools' },
-            { name: 'FPS / Performance Calculator', path: '/fps-performance-calculator' }
+            { name: 'FPS / Performance Calculator', path: '/tools/fps-calculator' }
           ]
         });
         break;
@@ -1335,13 +1337,22 @@ export default function App() {
   if (route.type === 'login' || route.type === 'register') {
     return (
       <div className="min-h-screen bg-[#050507] text-gray-100 flex flex-col relative selection:bg-purple-600 selection:text-white">
-        <AuthGate
-          initialMode={route.type === 'register' ? 'register' : 'signin'}
-          onSuccess={() => {
-            addToast('Authenticated successfully!', 'success');
-            navigate('/');
-          }}
-        />
+        <Suspense
+          fallback={
+            <div className="min-h-screen flex flex-col items-center justify-center p-8 space-y-3">
+              <div className="w-8 h-8 rounded-full border-2 border-purple-500/20 border-t-purple-500 animate-spin" />
+              <p className="text-xs font-mono uppercase tracking-widest text-zinc-500">Loading Secure Portal...</p>
+            </div>
+          }
+        >
+          <AuthGate
+            initialMode={route.type === 'register' ? 'register' : 'signin'}
+            onSuccess={() => {
+              addToast('Authenticated successfully!', 'success');
+              navigate('/');
+            }}
+          />
+        </Suspense>
         <Toast toasts={toasts} onCloseToast={removeToast} />
       </div>
     );
@@ -1353,7 +1364,7 @@ export default function App() {
     else if (tab === 'vault-ai') navigate('/tools/vault-ai');
     else if (tab === 'game-avatar-generator') navigate('/game-avatar-generator');
     else if (tab === 'pc-requirements') navigate('/tools/pc-game-requirements-checker');
-    else if (tab === 'fps-calculator') navigate('/fps-performance-calculator');
+    else if (tab === 'fps-calculator') navigate('/tools/fps-calculator');
     else if (tab === 'gaming-username-generator') navigate('/tools/gaming-username-generator');
     else if (tab === 'gaming-pc-builder') navigate('/tools/gaming-pc-builder');
     else if (tab === 'game-picker-wheel') navigate('/game-picker-wheel');
@@ -2052,16 +2063,18 @@ export default function App() {
 
       {/* Auth Modal: Prompted when guest attempts to like/comment, or after 60s timed visitor prompt */}
       {isAuthModalOpen && (
-        <AuthGate
-          isModal={true}
-          promptMessage={authPromptMessage}
-          onClose={handleCloseAuthModal}
-          onSuccess={() => {
-            setIsAuthModalOpen(false);
-            sessionStorage.setItem('gv_auth_popup_closed', 'true');
-            addToast('Authentication verified! Welcome to the Vault.', 'success');
-          }}
-        />
+        <Suspense fallback={null}>
+          <AuthGate
+            isModal={true}
+            promptMessage={authPromptMessage}
+            onClose={handleCloseAuthModal}
+            onSuccess={() => {
+              setIsAuthModalOpen(false);
+              sessionStorage.setItem('gv_auth_popup_closed', 'true');
+              addToast('Authentication verified! Welcome to the Vault.', 'success');
+            }}
+          />
+        </Suspense>
       )}
 
       {/* Timed Email Subscription Popup: Displays after ~10 seconds for visitors */}

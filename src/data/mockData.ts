@@ -970,6 +970,7 @@ export const MOCK_FORUM_TOPICS: ForumTopic[] = [
     views: 0,
     lastActivity: 'Just now',
     timestamp: 'Yesterday at 4:15 PM',
+    date: 'Sep 18, 2026',
     isPinned: true,
     tags: ['Announcement', 'YouTube', 'Roadmap'],
     initialPost: `Welcome everyone to the new Game Vault Forum! 
@@ -993,6 +994,7 @@ Share your video requests, talk gaming with civil peers, and let us know what fe
     views: 0,
     lastActivity: '34 min ago',
     timestamp: '2 days ago',
+    date: 'Sep 17, 2026',
     isPinned: false,
     tags: ['Open World', 'Game Design', 'Elden Ring'],
     initialPost: `I find it almost impossible to enjoy traditional map-clearing games anymore with 500 checklist icons. Elden Ring worked because landmark silhouettes drew the eye, and subterranean surprises rewarded genuine curiosity. Why are so few major studios copying this philosophy?`,
@@ -1012,6 +1014,7 @@ Share your video requests, talk gaming with civil peers, and let us know what fe
     views: 0,
     lastActivity: '1 hour ago',
     timestamp: '3 days ago',
+    date: 'Sep 16, 2026',
     tags: ['Hardware', 'GPU', 'OLED', 'Tech'],
     initialPost: `If you are currently on an RTX 3080 / 4070 with an IPS 1440p monitor, do NOT buy a new GPU yet. Buying a 240Hz QD-OLED monitor will transform every single game you own instantly due to infinite contrast and near-instant pixel response times. Thoughts?`,
     replies: []
@@ -1030,6 +1033,7 @@ Share your video requests, talk gaming with civil peers, and let us know what fe
     views: 0,
     lastActivity: '2 hours ago',
     timestamp: '4 days ago',
+    date: 'Sep 15, 2026',
     tags: ['Helldivers 2', 'Co-op', 'Loadouts'],
     initialPost: `Looking to assemble a regular 4-player squad for Automaton level 10 operations. We run staggered EMS mortars, Spear anti-heavy armor, and shield generators. Reply with your Discord handle and preferred playstyle!`,
     replies: []
@@ -1048,6 +1052,7 @@ Share your video requests, talk gaming with civil peers, and let us know what fe
     views: 0,
     lastActivity: '5 hours ago',
     timestamp: '5 days ago',
+    date: 'Sep 14, 2026',
     tags: ['PlayStation', 'State of Play', 'PS5 Pro'],
     initialPost: `Curious to hear everyone's impressions of the latest showcase. The graphical fidelity leaps are impressive, but what gameplay innovation are you most anticipating?`,
     replies: []
