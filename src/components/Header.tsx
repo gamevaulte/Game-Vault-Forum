@@ -115,29 +115,32 @@ export const Header: React.FC<HeaderProps> = ({
     };
   }, []);
 
-  // Primary navigation tabs
-  // Core destinations visible on laptop screens (1024px - 1279px) and desktops
-  const coreNavItems: { id: PageTab; label: string; href: string; badge?: string; icon?: React.ElementType }[] = [
+  // Primary navigation tabs organized into 3 core pillars
+  // Pillar 1: Games & Play
+  const gamesNavItems: { id: PageTab; label: string; href: string; badge?: string; icon?: React.ElementType }[] = [
     { id: 'home', label: 'Home', href: '/' },
-    { id: 'play-games', label: 'Play Games', href: '/play-games', badge: 'Free', icon: Gamepad2 },
-    { id: 'videos', label: 'Videos', href: '/videos' },
     { id: 'games', label: 'Games', href: '/games' },
-    { id: 'forum', label: 'Forum', href: '/forum' }
+    { id: 'play-games', label: 'Play Games', href: '/play-games', badge: 'Free', icon: Gamepad2 }
   ];
 
-  // Editorial tabs: grouped in "More" on 1024px - 1279px, displayed inline on 1280px+ (xl)
+  // Pillar 2: Media & Editorial
+  const videosNavItem = { id: 'videos' as PageTab, label: 'Videos', href: '/videos' };
+
   const editorialNavItems: { id: PageTab; label: string; href: string; desc: string; icon: React.ElementType }[] = [
     { id: 'articles', label: 'Articles', href: '/articles', desc: 'Gaming news, features & editorials', icon: FileText },
     { id: 'reviews', label: 'Reviews', href: '/reviews', desc: 'Hardware & video game review scores', icon: Star },
     { id: 'guides', label: 'Guides', href: '/guides', desc: 'Walkthroughs, tips & PC setup guides', icon: BookOpen }
   ];
 
-  // Full item list for drawer and large displays
+  // Pillar 3: Community
+  const forumNavItem = { id: 'forum' as PageTab, label: 'Forum', href: '/forum' };
+
+  // Full unified order for drawer and site map
   const allNavItems = [
     { id: 'home' as PageTab, label: 'Home', href: '/' },
+    { id: 'games' as PageTab, label: 'Games', href: '/games' },
     { id: 'play-games' as PageTab, label: 'Play Games', href: '/play-games', badge: 'Play Free', icon: Gamepad2 },
     { id: 'videos' as PageTab, label: 'Videos', href: '/videos' },
-    { id: 'games' as PageTab, label: 'Games', href: '/games' },
     { id: 'articles' as PageTab, label: 'Articles', href: '/articles' },
     { id: 'reviews' as PageTab, label: 'Reviews', href: '/reviews' },
     { id: 'guides' as PageTab, label: 'Guides', href: '/guides' },
@@ -217,12 +220,6 @@ export const Header: React.FC<HeaderProps> = ({
     currentTab === 'about' ||
     currentTab === 'contact';
 
-  const activeEditorialLabel = 
-    currentTab === 'articles' ? 'Articles' :
-    currentTab === 'reviews' ? 'Reviews' :
-    currentTab === 'guides' ? 'Guides' :
-    'More';
-
   const handleNavClick = (tab: PageTab) => {
     onSelectTab(tab);
     setMobileMenuOpen(false);
@@ -257,50 +254,16 @@ export const Header: React.FC<HeaderProps> = ({
           <VaultLogo size="md" showTagline={false} />
         </a>
 
-        {/* Desktop Navigation: Organically organized across screen widths so it never overflows */}
+        {/* Desktop & Laptop Navigation: Grouped into 3 logical pillars with clean dividers */}
         <nav 
-          className="hidden lg:flex items-center space-x-1 font-['Rajdhani'] font-semibold tracking-wider text-xs xl:text-[13px] 2xl:text-sm uppercase shrink"
+          className="hidden lg:flex items-center space-x-0.5 xl:space-x-1 font-['Rajdhani'] font-bold tracking-wider text-xs xl:text-[13px] 2xl:text-sm uppercase shrink"
           aria-label="Primary Desktop Navigation"
         >
-          {/* 1. Core items (Home, Play Games, Videos, Games, Forum) */}
-          {coreNavItems.map((item) => {
-            const isActive = currentTab === item.id;
-            const Icon = item.icon;
-            return (
-              <a
-                key={item.id}
-                id={`nav-${item.id}`}
-                href={item.href}
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleNavClick(item.id);
-                }}
-                className={`relative px-2 xl:px-2.5 py-1.5 rounded-lg xl:rounded-xl transition-all duration-150 whitespace-nowrap flex items-center gap-1.5 ${
-                  isActive
-                    ? 'text-white bg-white/10 backdrop-blur-md border border-white/20 shadow-md shadow-purple-900/20'
-                    : 'text-gray-300 hover:text-white hover:bg-white/5'
-                }`}
-              >
-                {Icon && (
-                  <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-cyan-400' : 'text-purple-400'}`} />
-                )}
-                <span>{item.label}</span>
-                {item.badge && (
-                  <span className="hidden xl:inline-block px-1 py-0.2 text-[9px] font-mono font-bold bg-gradient-to-r from-purple-600 to-cyan-500 text-white rounded tracking-normal normal-case">
-                    {item.badge}
-                  </span>
-                )}
-                {isActive && (
-                  <span className="absolute bottom-1 left-2.5 right-2.5 h-0.5 bg-gradient-to-r from-purple-400 via-cyan-400 to-purple-400 rounded-full" />
-                )}
-              </a>
-            );
-          })}
-
-          {/* 2. Editorial items inline on XL+ screens (Articles, Reviews, Guides) */}
-          <div className="hidden xl:flex items-center space-x-1">
-            {editorialNavItems.map((item) => {
+          {/* Pillar 1: Games & Play (Home, Games, Play Games) */}
+          <div className="flex items-center space-x-0.5 xl:space-x-1">
+            {gamesNavItems.map((item) => {
               const isActive = currentTab === item.id;
+              const Icon = item.icon;
               return (
                 <a
                   key={item.id}
@@ -310,13 +273,21 @@ export const Header: React.FC<HeaderProps> = ({
                     e.preventDefault();
                     handleNavClick(item.id);
                   }}
-                  className={`relative px-2 xl:px-2.5 py-1.5 rounded-lg xl:rounded-xl transition-all duration-150 whitespace-nowrap ${
+                  className={`relative px-2 xl:px-2.5 py-1.5 rounded-lg xl:rounded-xl transition-all duration-150 whitespace-nowrap flex items-center gap-1.5 ${
                     isActive
                       ? 'text-white bg-white/10 backdrop-blur-md border border-white/20 shadow-md shadow-purple-900/20'
                       : 'text-gray-300 hover:text-white hover:bg-white/5'
                   }`}
                 >
-                  {item.label}
+                  {Icon && (
+                    <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-cyan-400' : 'text-purple-400'}`} />
+                  )}
+                  <span>{item.label}</span>
+                  {item.badge && (
+                    <span className="hidden xl:inline-block px-1 py-0.2 text-[9px] font-mono font-bold bg-gradient-to-r from-purple-600 to-cyan-500 text-white rounded tracking-normal normal-case">
+                      {item.badge}
+                    </span>
+                  )}
                   {isActive && (
                     <span className="absolute bottom-1 left-2.5 right-2.5 h-0.5 bg-gradient-to-r from-purple-400 via-cyan-400 to-purple-400 rounded-full" />
                   )}
@@ -325,177 +296,258 @@ export const Header: React.FC<HeaderProps> = ({
             })}
           </div>
 
-          {/* 3. "More" Dropdown on Laptop screens (1024px - 1279px) so navigation NEVER touches edges */}
-          <div className="relative xl:hidden" ref={moreMenuRef}>
-            <button
-              type="button"
-              id="nav-more-dropdown"
-              onClick={() => {
-                setMoreDropdownOpen(!moreDropdownOpen);
-                setToolsDropdownOpen(false);
+          {/* Micro-divider between Games and Media */}
+          <div className="h-4 w-px bg-white/15 mx-1 xl:mx-1.5 shrink-0 select-none" aria-hidden="true" />
+
+          {/* Pillar 2: Media & Editorial (Videos, plus inline on XL or Editorial ▾ dropdown on Laptop) */}
+          <div className="flex items-center space-x-0.5 xl:space-x-1">
+            {/* Videos */}
+            <a
+              id={`nav-${videosNavItem.id}`}
+              href={videosNavItem.href}
+              onClick={(e) => {
+                e.preventDefault();
+                handleNavClick(videosNavItem.id);
               }}
-              className={`relative px-2.5 py-1.5 rounded-lg transition-all duration-150 flex items-center gap-1 cursor-pointer whitespace-nowrap ${
-                isEditorialActive
+              className={`relative px-2 xl:px-2.5 py-1.5 rounded-lg xl:rounded-xl transition-all duration-150 whitespace-nowrap ${
+                currentTab === videosNavItem.id
                   ? 'text-white bg-white/10 backdrop-blur-md border border-white/20 shadow-md shadow-purple-900/20'
                   : 'text-gray-300 hover:text-white hover:bg-white/5'
               }`}
-              aria-expanded={moreDropdownOpen}
-              aria-haspopup="true"
             >
-              <span>{activeEditorialLabel}</span>
-              <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${moreDropdownOpen ? 'rotate-180 text-cyan-400' : 'text-gray-400'}`} />
-              {isEditorialActive && (
+              <span>{videosNavItem.label}</span>
+              {currentTab === videosNavItem.id && (
                 <span className="absolute bottom-1 left-2.5 right-2.5 h-0.5 bg-gradient-to-r from-purple-400 via-cyan-400 to-purple-400 rounded-full" />
               )}
-            </button>
+            </a>
 
-            {moreDropdownOpen && (
-              <div className="absolute right-0 mt-2 w-64 rounded-2xl bg-[#0e101d]/98 backdrop-blur-2xl border border-purple-500/30 shadow-2xl p-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
-                <div className="px-3 py-1 text-[10px] font-mono text-purple-400 font-bold uppercase tracking-wider border-b border-white/5 mb-1">
-                  Editorial & Coverage
-                </div>
-                <div className="space-y-1">
-                  {editorialNavItems.map((item) => {
-                    const Icon = item.icon;
-                    const isActive = currentTab === item.id;
-                    return (
-                      <a
-                        key={item.id}
-                        href={item.href}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          handleNavClick(item.id);
-                        }}
-                        className={`flex items-center gap-3 p-2 rounded-xl transition-colors ${
-                          isActive 
-                            ? 'bg-purple-950/60 border border-purple-500/40 text-white' 
-                            : 'hover:bg-purple-950/30 text-slate-300 hover:text-white'
-                        }`}
-                      >
-                        <div className="p-1.5 rounded-lg bg-white/5 text-purple-400">
-                          <Icon className="w-4 h-4" />
-                        </div>
-                        <div className="min-w-0">
-                          <div className="text-xs font-bold font-['Space_Grotesk'] text-white">
-                            {item.label}
-                          </div>
-                          <div className="text-[10px] text-slate-400 truncate">
-                            {item.desc}
-                          </div>
-                        </div>
-                      </a>
-                    );
-                  })}
-                </div>
-                <div className="mt-2 pt-2 border-t border-white/5 grid grid-cols-2 gap-1 text-[11px] font-['Rajdhani'] uppercase font-bold text-center">
+            {/* Desktop (XL+): Articles, Reviews, Guides inline */}
+            <div className="hidden xl:flex items-center space-x-1">
+              {editorialNavItems.map((item) => {
+                const isActive = currentTab === item.id;
+                return (
                   <a
-                    href="/about"
+                    key={item.id}
+                    id={`nav-${item.id}`}
+                    href={item.href}
                     onClick={(e) => {
                       e.preventDefault();
-                      handleNavClick('about');
+                      handleNavClick(item.id);
                     }}
-                    className="p-1.5 rounded-lg hover:bg-white/5 text-slate-400 hover:text-white transition-colors"
+                    className={`relative px-2 xl:px-2.5 py-1.5 rounded-lg xl:rounded-xl transition-all duration-150 whitespace-nowrap ${
+                      isActive
+                        ? 'text-white bg-white/10 backdrop-blur-md border border-white/20 shadow-md shadow-purple-900/20'
+                        : 'text-gray-300 hover:text-white hover:bg-white/5'
+                    }`}
                   >
-                    About Us
+                    <span>{item.label}</span>
+                    {isActive && (
+                      <span className="absolute bottom-1 left-2.5 right-2.5 h-0.5 bg-gradient-to-r from-purple-400 via-cyan-400 to-purple-400 rounded-full" />
+                    )}
                   </a>
-                  <a
-                    href="/contact"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      handleNavClick('contact');
-                    }}
-                    className="p-1.5 rounded-lg hover:bg-white/5 text-slate-400 hover:text-white transition-colors"
-                  >
-                    Contact
-                  </a>
+                );
+              })}
+            </div>
+
+            {/* Laptop (1024px - 1279px): Editorial ▾ Dropdown Menu */}
+            <div className="relative xl:hidden" ref={moreMenuRef}>
+              <button
+                type="button"
+                id="nav-editorial-dropdown"
+                onClick={() => {
+                  setMoreDropdownOpen(!moreDropdownOpen);
+                  setToolsDropdownOpen(false);
+                }}
+                className={`relative px-2.5 py-1.5 rounded-lg transition-all duration-150 flex items-center gap-1 cursor-pointer whitespace-nowrap ${
+                  isEditorialActive
+                    ? 'text-white bg-white/10 backdrop-blur-md border border-white/20 shadow-md shadow-purple-900/20'
+                    : 'text-gray-300 hover:text-white hover:bg-white/5'
+                }`}
+                aria-expanded={moreDropdownOpen}
+                aria-haspopup="true"
+              >
+                <span>Editorial</span>
+                <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${moreDropdownOpen ? 'rotate-180 text-cyan-400' : 'text-gray-400'}`} />
+                {isEditorialActive && (
+                  <span className="absolute bottom-1 left-2.5 right-2.5 h-0.5 bg-gradient-to-r from-purple-400 via-cyan-400 to-purple-400 rounded-full" />
+                )}
+              </button>
+
+              {moreDropdownOpen && (
+                <div className="absolute left-0 mt-2 w-64 rounded-2xl bg-[#0e101d]/98 backdrop-blur-2xl border border-purple-500/30 shadow-2xl p-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+                  <div className="px-3 py-1.5 text-[10px] font-mono text-purple-400 font-bold uppercase tracking-wider border-b border-white/5 mb-1 flex items-center justify-between">
+                    <span>Editorial & Coverage</span>
+                    <span className="text-[9px] text-cyan-400">3 Sections</span>
+                  </div>
+                  <div className="space-y-1">
+                    {editorialNavItems.map((item) => {
+                      const Icon = item.icon;
+                      const isActive = currentTab === item.id;
+                      return (
+                        <a
+                          key={item.id}
+                          href={item.href}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handleNavClick(item.id);
+                          }}
+                          className={`flex items-center gap-3 p-2 rounded-xl transition-colors ${
+                            isActive 
+                              ? 'bg-purple-950/60 border border-purple-500/40 text-white' 
+                              : 'hover:bg-purple-950/30 text-slate-300 hover:text-white'
+                          }`}
+                        >
+                          <div className="p-1.5 rounded-lg bg-white/5 text-purple-400">
+                            <Icon className="w-4 h-4" />
+                          </div>
+                          <div className="min-w-0">
+                            <div className="text-xs font-bold font-['Space_Grotesk'] text-white">
+                              {item.label}
+                            </div>
+                            <div className="text-[10px] text-slate-400 truncate">
+                              {item.desc}
+                            </div>
+                          </div>
+                        </a>
+                      );
+                    })}
+                  </div>
+                  <div className="mt-2 pt-2 border-t border-white/5 grid grid-cols-2 gap-1 text-[11px] font-['Rajdhani'] uppercase font-bold text-center">
+                    <a
+                      href="/about"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleNavClick('about');
+                      }}
+                      className="p-1.5 rounded-lg hover:bg-white/5 text-slate-400 hover:text-white transition-colors"
+                    >
+                      About Us
+                    </a>
+                    <a
+                      href="/contact"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleNavClick('contact');
+                      }}
+                      className="p-1.5 rounded-lg hover:bg-white/5 text-slate-400 hover:text-white transition-colors"
+                    >
+                      Contact
+                    </a>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
 
-          {/* 4. Tools Dropdown Menu */}
-          <div className="relative" ref={toolsMenuRef}>
-            <button
-              type="button"
-              id="nav-tools-dropdown"
-              onClick={() => {
-                setToolsDropdownOpen(!toolsDropdownOpen);
-                setMoreDropdownOpen(false);
+          {/* Micro-divider between Media and Community/Tools */}
+          <div className="h-4 w-px bg-white/15 mx-1 xl:mx-1.5 shrink-0 select-none" aria-hidden="true" />
+
+          {/* Pillar 3: Community & Tools (Forum, Tools ▾) */}
+          <div className="flex items-center space-x-0.5 xl:space-x-1">
+            {/* Forum */}
+            <a
+              id={`nav-${forumNavItem.id}`}
+              href={forumNavItem.href}
+              onClick={(e) => {
+                e.preventDefault();
+                handleNavClick(forumNavItem.id);
               }}
-              className={`relative px-2 xl:px-2.5 py-1.5 rounded-lg xl:rounded-xl transition-all duration-150 flex items-center gap-1 cursor-pointer whitespace-nowrap ${
-                isToolsActive
+              className={`relative px-2 xl:px-2.5 py-1.5 rounded-lg xl:rounded-xl transition-all duration-150 whitespace-nowrap ${
+                currentTab === forumNavItem.id
                   ? 'text-white bg-white/10 backdrop-blur-md border border-white/20 shadow-md shadow-purple-900/20'
                   : 'text-gray-300 hover:text-white hover:bg-white/5'
               }`}
-              aria-expanded={toolsDropdownOpen}
-              aria-haspopup="true"
             >
-              <span>Tools</span>
-              <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${toolsDropdownOpen ? 'rotate-180 text-cyan-400' : 'text-gray-400'}`} />
-              {isToolsActive && (
+              <span>{forumNavItem.label}</span>
+              {currentTab === forumNavItem.id && (
                 <span className="absolute bottom-1 left-2.5 right-2.5 h-0.5 bg-gradient-to-r from-purple-400 via-cyan-400 to-purple-400 rounded-full" />
               )}
-            </button>
+            </a>
 
-            {toolsDropdownOpen && (
-              <div className="absolute right-0 xl:left-0 mt-2 w-72 rounded-2xl bg-[#0e101d]/98 backdrop-blur-2xl border border-purple-500/30 shadow-2xl p-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
-                <div className="px-3 py-1.5 text-[10px] font-mono text-purple-400 font-bold uppercase tracking-wider border-b border-white/5 mb-1 flex items-center justify-between">
-                  <span>Gaming Utilities</span>
-                  <span className="text-[9px] text-cyan-400">7 Tools</span>
-                </div>
-                <div className="space-y-1">
-                  {toolsItems.map((tool) => {
-                    const Icon = tool.icon;
-                    const isActive = currentTab === tool.id;
-                    return (
-                      <a
-                        key={tool.id}
-                        href={tool.href}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          handleNavClick(tool.id);
-                        }}
-                        className={`flex items-start gap-3 p-2 rounded-xl transition-colors group cursor-pointer ${
-                          isActive
-                            ? 'bg-purple-950/60 border border-purple-500/40 text-white'
-                            : 'hover:bg-purple-950/40 text-slate-300 hover:text-white'
-                        }`}
-                      >
-                        <div className="p-2 rounded-lg bg-purple-950/70 border border-purple-500/30 text-purple-400 group-hover:text-cyan-400 shrink-0 mt-0.5">
-                          <Icon className="w-4 h-4" />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <div className="text-xs font-bold font-['Space_Grotesk'] text-white flex items-center justify-between">
-                            <span>{tool.label}</span>
-                            {tool.badge && (
-                              <span className="text-[9px] font-mono px-1 py-0.2 rounded bg-purple-500/20 text-purple-300 border border-purple-400/20">
-                                {tool.badge}
-                              </span>
-                            )}
-                          </div>
-                          <div className="text-[11px] text-slate-400 font-['Inter'] truncate">
-                            {tool.desc}
-                          </div>
-                        </div>
-                      </a>
-                    );
-                  })}
-                </div>
+            {/* Tools Dropdown Menu */}
+            <div className="relative" ref={toolsMenuRef}>
+              <button
+                type="button"
+                id="nav-tools-dropdown"
+                onClick={() => {
+                  setToolsDropdownOpen(!toolsDropdownOpen);
+                  setMoreDropdownOpen(false);
+                }}
+                className={`relative px-2 xl:px-2.5 py-1.5 rounded-lg xl:rounded-xl transition-all duration-150 flex items-center gap-1 cursor-pointer whitespace-nowrap ${
+                  isToolsActive
+                    ? 'text-white bg-white/10 backdrop-blur-md border border-white/20 shadow-md shadow-purple-900/20'
+                    : 'text-gray-300 hover:text-white hover:bg-white/5'
+                }`}
+                aria-expanded={toolsDropdownOpen}
+                aria-haspopup="true"
+              >
+                <span>Tools</span>
+                <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${toolsDropdownOpen ? 'rotate-180 text-cyan-400' : 'text-gray-400'}`} />
+                {isToolsActive && (
+                  <span className="absolute bottom-1 left-2.5 right-2.5 h-0.5 bg-gradient-to-r from-purple-400 via-cyan-400 to-purple-400 rounded-full" />
+                )}
+              </button>
 
-                <div className="mt-2 pt-2 border-t border-white/5">
-                  <a
-                    href="/tools"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      handleNavClick('tools' as any);
-                    }}
-                    className="block text-center py-2 px-3 rounded-lg bg-purple-600/20 hover:bg-purple-600/40 text-purple-300 text-xs font-['Rajdhani'] font-bold uppercase tracking-wider transition-colors cursor-pointer"
-                  >
-                    View All Tools Hub
-                  </a>
+              {toolsDropdownOpen && (
+                <div className="absolute right-0 mt-2 w-72 rounded-2xl bg-[#0e101d]/98 backdrop-blur-2xl border border-purple-500/30 shadow-2xl p-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+                  <div className="px-3 py-1.5 text-[10px] font-mono text-purple-400 font-bold uppercase tracking-wider border-b border-white/5 mb-1 flex items-center justify-between">
+                    <span>Gaming Utilities & AI</span>
+                    <span className="text-[9px] text-cyan-400">7 Tools</span>
+                  </div>
+                  <div className="space-y-1">
+                    {toolsItems.map((tool) => {
+                      const Icon = tool.icon;
+                      const isActive = currentTab === tool.id;
+                      return (
+                        <a
+                          key={tool.id}
+                          href={tool.href}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handleNavClick(tool.id);
+                          }}
+                          className={`flex items-start gap-3 p-2 rounded-xl transition-colors group cursor-pointer ${
+                            isActive
+                              ? 'bg-purple-950/60 border border-purple-500/40 text-white'
+                              : 'hover:bg-purple-950/40 text-slate-300 hover:text-white'
+                          }`}
+                        >
+                          <div className="p-2 rounded-lg bg-purple-950/70 border border-purple-500/30 text-purple-400 group-hover:text-cyan-400 shrink-0 mt-0.5">
+                            <Icon className="w-4 h-4" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <div className="text-xs font-bold font-['Space_Grotesk'] text-white flex items-center justify-between">
+                              <span>{tool.label}</span>
+                              {tool.badge && (
+                                <span className="text-[9px] font-mono px-1 py-0.2 rounded bg-purple-500/20 text-purple-300 border border-purple-400/20">
+                                  {tool.badge}
+                                </span>
+                              )}
+                            </div>
+                            <div className="text-[11px] text-slate-400 font-['Inter'] truncate">
+                              {tool.desc}
+                            </div>
+                          </div>
+                        </a>
+                      );
+                    })}
+                  </div>
+
+                  <div className="mt-2 pt-2 border-t border-white/5">
+                    <a
+                      href="/tools"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleNavClick('tools' as any);
+                      }}
+                      className="block text-center py-2 px-3 rounded-lg bg-purple-600/20 hover:bg-purple-600/40 text-purple-300 text-xs font-['Rajdhani'] font-bold uppercase tracking-wider transition-colors cursor-pointer"
+                    >
+                      View All Tools Hub
+                    </a>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </nav>
 
