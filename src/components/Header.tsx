@@ -1,5 +1,26 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Search, Youtube, User, Menu, X, Bookmark, Sparkles, LogOut, LogIn, ChevronDown, Wrench, Monitor, Bot, Dices, Gauge } from 'lucide-react';
+import { 
+  Search, 
+  Youtube, 
+  Menu, 
+  X, 
+  Sparkles, 
+  LogOut, 
+  LogIn, 
+  ChevronDown, 
+  Wrench, 
+  Monitor, 
+  Bot, 
+  Dices, 
+  Gauge,
+  Gamepad2,
+  FileText,
+  Star,
+  BookOpen,
+  Info,
+  Mail,
+  Flame
+} from 'lucide-react';
 import { PageTab, UserAccount } from '../types';
 import { VaultLogo } from './VaultLogo';
 import { YOUTUBE_CHANNEL } from '../lib/constants';
@@ -27,43 +48,100 @@ export const Header: React.FC<HeaderProps> = ({
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [toolsDropdownOpen, setToolsDropdownOpen] = useState(false);
+  const [moreDropdownOpen, setMoreDropdownOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  
   const toolsMenuRef = useRef<HTMLDivElement>(null);
+  const moreMenuRef = useRef<HTMLDivElement>(null);
 
+  // Scroll detection with cross-browser support (handles window, documentElement, body)
   useEffect(() => {
     const handleScroll = () => {
       const scrollPos = window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;
-      setIsScrolled(scrollPos > 8);
+      setIsScrolled(scrollPos > 6);
     };
+
     window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('touchmove', handleScroll, { passive: true });
     window.addEventListener('resize', handleScroll, { passive: true });
     handleScroll();
+
     return () => {
       window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('touchmove', handleScroll);
       window.removeEventListener('resize', handleScroll);
     };
   }, []);
 
+  // Prevent background scrolling when mobile drawer is open
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+      document.body.style.touchAction = 'none';
+    } else {
+      document.body.style.overflow = '';
+      document.body.style.touchAction = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+      document.body.style.touchAction = '';
+    };
+  }, [mobileMenuOpen]);
+
+  // Click outside and ESC key detection to close dropdown menus
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (toolsMenuRef.current && !toolsMenuRef.current.contains(e.target as Node)) {
         setToolsDropdownOpen(false);
       }
+      if (moreMenuRef.current && !moreMenuRef.current.contains(e.target as Node)) {
+        setMoreDropdownOpen(false);
+      }
     };
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setToolsDropdownOpen(false);
+        setMoreDropdownOpen(false);
+        setMobileMenuOpen(false);
+      }
+    };
+
     document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
   }, []);
 
-  // Primary desktop navigation tabs (About and Contact are cleanly located in the footer and mobile drawer)
-  const navItems: { id: PageTab; label: string; href?: string }[] = [
+  // Primary navigation tabs
+  // Core destinations visible on laptop screens (1024px - 1279px) and desktops
+  const coreNavItems: { id: PageTab; label: string; href: string; badge?: string; icon?: React.ElementType }[] = [
     { id: 'home', label: 'Home', href: '/' },
-    { id: 'play-games', label: 'Play Games', href: '/play-games' },
+    { id: 'play-games', label: 'Play Games', href: '/play-games', badge: 'Free', icon: Gamepad2 },
     { id: 'videos', label: 'Videos', href: '/videos' },
     { id: 'games', label: 'Games', href: '/games' },
-    { id: 'articles', label: 'Articles', href: '/articles' },
-    { id: 'reviews', label: 'Reviews', href: '/reviews' },
-    { id: 'guides', label: 'Guides', href: '/guides' },
     { id: 'forum', label: 'Forum', href: '/forum' }
+  ];
+
+  // Editorial tabs: grouped in "More" on 1024px - 1279px, displayed inline on 1280px+ (xl)
+  const editorialNavItems: { id: PageTab; label: string; href: string; desc: string; icon: React.ElementType }[] = [
+    { id: 'articles', label: 'Articles', href: '/articles', desc: 'Gaming news, features & editorials', icon: FileText },
+    { id: 'reviews', label: 'Reviews', href: '/reviews', desc: 'Hardware & video game review scores', icon: Star },
+    { id: 'guides', label: 'Guides', href: '/guides', desc: 'Walkthroughs, tips & PC setup guides', icon: BookOpen }
+  ];
+
+  // Full item list for drawer and large displays
+  const allNavItems = [
+    { id: 'home' as PageTab, label: 'Home', href: '/' },
+    { id: 'play-games' as PageTab, label: 'Play Games', href: '/play-games', badge: 'Play Free', icon: Gamepad2 },
+    { id: 'videos' as PageTab, label: 'Videos', href: '/videos' },
+    { id: 'games' as PageTab, label: 'Games', href: '/games' },
+    { id: 'articles' as PageTab, label: 'Articles', href: '/articles' },
+    { id: 'reviews' as PageTab, label: 'Reviews', href: '/reviews' },
+    { id: 'guides' as PageTab, label: 'Guides', href: '/guides' },
+    { id: 'forum' as PageTab, label: 'Forum', href: '/forum' }
   ];
 
   const toolsItems = [
@@ -132,90 +210,243 @@ export const Header: React.FC<HeaderProps> = ({
     currentTab === 'pc-requirements' ||
     currentTab === 'game-picker-wheel';
 
+  const isEditorialActive =
+    currentTab === 'articles' ||
+    currentTab === 'reviews' ||
+    currentTab === 'guides' ||
+    currentTab === 'about' ||
+    currentTab === 'contact';
+
+  const activeEditorialLabel = 
+    currentTab === 'articles' ? 'Articles' :
+    currentTab === 'reviews' ? 'Reviews' :
+    currentTab === 'guides' ? 'Guides' :
+    'More';
+
   const handleNavClick = (tab: PageTab) => {
     onSelectTab(tab);
     setMobileMenuOpen(false);
     setToolsDropdownOpen(false);
+    setMoreDropdownOpen(false);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (
     <header 
       id="main-navigation-header"
-      className={`sticky top-0 z-50 w-full transition-all duration-300 ${
+      className={`vault-sticky-header sticky top-0 z-50 w-full transition-all duration-200 pt-[env(safe-area-inset-top,0px)] ${
         isScrolled
-          ? 'bg-[#070913]/92 backdrop-blur-xl border-b border-purple-500/30 shadow-2xl shadow-black/80 supports-[backdrop-filter]:bg-[#070913]/88'
-          : 'bg-[#070913]/80 backdrop-blur-lg border-b border-white/10 shadow-lg shadow-black/40 supports-[backdrop-filter]:bg-[#070913]/70'
+          ? 'bg-[#070913]/95 backdrop-blur-2xl border-b border-purple-500/30 shadow-2xl shadow-black/80 supports-[backdrop-filter]:bg-[#070913]/90'
+          : 'bg-[#070913]/85 backdrop-blur-xl border-b border-white/10 shadow-lg shadow-black/40 supports-[backdrop-filter]:bg-[#070913]/75'
       }`}
+      style={{ position: 'sticky', top: 0 }}
     >
-      <div className="max-w-7xl mx-auto px-2.5 sm:px-4 lg:px-6 h-16 sm:h-18 flex items-center justify-between gap-2 sm:gap-3">
-        {/* Brand Logo */}
+      {/* Container with guaranteed minimum edge margins across all devices */}
+      <div className="w-full max-w-7xl mx-auto px-3.5 sm:px-5 md:px-6 lg:px-8 h-15 sm:h-16 lg:h-18 flex items-center justify-between gap-2 sm:gap-4">
+        
+        {/* Brand Logo - shrink-0 to prevent compression */}
         <a
           href="/"
           onClick={(e) => {
             e.preventDefault();
             handleNavClick('home');
           }}
-          className="cursor-pointer shrink-0"
+          className="cursor-pointer shrink-0 flex items-center focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 rounded-lg"
+          aria-label="Game Vault Forum Home"
         >
-          <VaultLogo size="md" showTagline={true} />
+          <VaultLogo size="md" showTagline={false} />
         </a>
 
-        {/* Desktop Navigation: perfectly fitted without overflow on desktop and laptops */}
-        <nav className="hidden lg:flex items-center space-x-0.5 xl:space-x-1 font-['Rajdhani'] font-semibold tracking-wider text-xs xl:text-sm uppercase shrink">
-          {navItems.map((item) => {
+        {/* Desktop Navigation: Organically organized across screen widths so it never overflows */}
+        <nav 
+          className="hidden lg:flex items-center space-x-1 font-['Rajdhani'] font-semibold tracking-wider text-xs xl:text-[13px] 2xl:text-sm uppercase shrink"
+          aria-label="Primary Desktop Navigation"
+        >
+          {/* 1. Core items (Home, Play Games, Videos, Games, Forum) */}
+          {coreNavItems.map((item) => {
             const isActive = currentTab === item.id;
-            const href = item.href || (item.id === 'home' ? '/' : `/${item.id}`);
+            const Icon = item.icon;
             return (
               <a
                 key={item.id}
                 id={`nav-${item.id}`}
-                href={href}
+                href={item.href}
                 onClick={(e) => {
                   e.preventDefault();
                   handleNavClick(item.id);
                 }}
-                className={`relative px-2 xl:px-2.5 py-1.5 rounded-lg xl:rounded-xl transition-all duration-200 whitespace-nowrap ${
+                className={`relative px-2 xl:px-2.5 py-1.5 rounded-lg xl:rounded-xl transition-all duration-150 whitespace-nowrap flex items-center gap-1.5 ${
                   isActive
-                    ? 'text-white bg-white/10 backdrop-blur-md border border-white/20 shadow-lg shadow-purple-900/10'
-                    : 'text-gray-400 hover:text-white hover:bg-white/5'
+                    ? 'text-white bg-white/10 backdrop-blur-md border border-white/20 shadow-md shadow-purple-900/20'
+                    : 'text-gray-300 hover:text-white hover:bg-white/5'
                 }`}
               >
-                {item.label}
+                {Icon && (
+                  <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-cyan-400' : 'text-purple-400'}`} />
+                )}
+                <span>{item.label}</span>
+                {item.badge && (
+                  <span className="hidden xl:inline-block px-1 py-0.2 text-[9px] font-mono font-bold bg-gradient-to-r from-purple-600 to-cyan-500 text-white rounded tracking-normal normal-case">
+                    {item.badge}
+                  </span>
+                )}
                 {isActive && (
-                  <span className="absolute bottom-1 left-2.5 right-2.5 h-0.5 bg-gradient-to-r from-purple-400 to-cyan-400 rounded-full" />
+                  <span className="absolute bottom-1 left-2.5 right-2.5 h-0.5 bg-gradient-to-r from-purple-400 via-cyan-400 to-purple-400 rounded-full" />
                 )}
               </a>
             );
           })}
 
-          {/* Tools Dropdown Menu */}
+          {/* 2. Editorial items inline on XL+ screens (Articles, Reviews, Guides) */}
+          <div className="hidden xl:flex items-center space-x-1">
+            {editorialNavItems.map((item) => {
+              const isActive = currentTab === item.id;
+              return (
+                <a
+                  key={item.id}
+                  id={`nav-${item.id}`}
+                  href={item.href}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleNavClick(item.id);
+                  }}
+                  className={`relative px-2 xl:px-2.5 py-1.5 rounded-lg xl:rounded-xl transition-all duration-150 whitespace-nowrap ${
+                    isActive
+                      ? 'text-white bg-white/10 backdrop-blur-md border border-white/20 shadow-md shadow-purple-900/20'
+                      : 'text-gray-300 hover:text-white hover:bg-white/5'
+                  }`}
+                >
+                  {item.label}
+                  {isActive && (
+                    <span className="absolute bottom-1 left-2.5 right-2.5 h-0.5 bg-gradient-to-r from-purple-400 via-cyan-400 to-purple-400 rounded-full" />
+                  )}
+                </a>
+              );
+            })}
+          </div>
+
+          {/* 3. "More" Dropdown on Laptop screens (1024px - 1279px) so navigation NEVER touches edges */}
+          <div className="relative xl:hidden" ref={moreMenuRef}>
+            <button
+              type="button"
+              id="nav-more-dropdown"
+              onClick={() => {
+                setMoreDropdownOpen(!moreDropdownOpen);
+                setToolsDropdownOpen(false);
+              }}
+              className={`relative px-2.5 py-1.5 rounded-lg transition-all duration-150 flex items-center gap-1 cursor-pointer whitespace-nowrap ${
+                isEditorialActive
+                  ? 'text-white bg-white/10 backdrop-blur-md border border-white/20 shadow-md shadow-purple-900/20'
+                  : 'text-gray-300 hover:text-white hover:bg-white/5'
+              }`}
+              aria-expanded={moreDropdownOpen}
+              aria-haspopup="true"
+            >
+              <span>{activeEditorialLabel}</span>
+              <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${moreDropdownOpen ? 'rotate-180 text-cyan-400' : 'text-gray-400'}`} />
+              {isEditorialActive && (
+                <span className="absolute bottom-1 left-2.5 right-2.5 h-0.5 bg-gradient-to-r from-purple-400 via-cyan-400 to-purple-400 rounded-full" />
+              )}
+            </button>
+
+            {moreDropdownOpen && (
+              <div className="absolute right-0 mt-2 w-64 rounded-2xl bg-[#0e101d]/98 backdrop-blur-2xl border border-purple-500/30 shadow-2xl p-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+                <div className="px-3 py-1 text-[10px] font-mono text-purple-400 font-bold uppercase tracking-wider border-b border-white/5 mb-1">
+                  Editorial & Coverage
+                </div>
+                <div className="space-y-1">
+                  {editorialNavItems.map((item) => {
+                    const Icon = item.icon;
+                    const isActive = currentTab === item.id;
+                    return (
+                      <a
+                        key={item.id}
+                        href={item.href}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleNavClick(item.id);
+                        }}
+                        className={`flex items-center gap-3 p-2 rounded-xl transition-colors ${
+                          isActive 
+                            ? 'bg-purple-950/60 border border-purple-500/40 text-white' 
+                            : 'hover:bg-purple-950/30 text-slate-300 hover:text-white'
+                        }`}
+                      >
+                        <div className="p-1.5 rounded-lg bg-white/5 text-purple-400">
+                          <Icon className="w-4 h-4" />
+                        </div>
+                        <div className="min-w-0">
+                          <div className="text-xs font-bold font-['Space_Grotesk'] text-white">
+                            {item.label}
+                          </div>
+                          <div className="text-[10px] text-slate-400 truncate">
+                            {item.desc}
+                          </div>
+                        </div>
+                      </a>
+                    );
+                  })}
+                </div>
+                <div className="mt-2 pt-2 border-t border-white/5 grid grid-cols-2 gap-1 text-[11px] font-['Rajdhani'] uppercase font-bold text-center">
+                  <a
+                    href="/about"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleNavClick('about');
+                    }}
+                    className="p-1.5 rounded-lg hover:bg-white/5 text-slate-400 hover:text-white transition-colors"
+                  >
+                    About Us
+                  </a>
+                  <a
+                    href="/contact"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleNavClick('contact');
+                    }}
+                    className="p-1.5 rounded-lg hover:bg-white/5 text-slate-400 hover:text-white transition-colors"
+                  >
+                    Contact
+                  </a>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* 4. Tools Dropdown Menu */}
           <div className="relative" ref={toolsMenuRef}>
             <button
               type="button"
               id="nav-tools-dropdown"
-              onClick={() => setToolsDropdownOpen(!toolsDropdownOpen)}
-              className={`relative px-2 xl:px-2.5 py-1.5 rounded-lg xl:rounded-xl transition-all duration-200 flex items-center gap-1 cursor-pointer whitespace-nowrap ${
+              onClick={() => {
+                setToolsDropdownOpen(!toolsDropdownOpen);
+                setMoreDropdownOpen(false);
+              }}
+              className={`relative px-2 xl:px-2.5 py-1.5 rounded-lg xl:rounded-xl transition-all duration-150 flex items-center gap-1 cursor-pointer whitespace-nowrap ${
                 isToolsActive
-                  ? 'text-white bg-white/10 backdrop-blur-md border border-white/20 shadow-lg shadow-purple-900/10'
-                  : 'text-gray-400 hover:text-white hover:bg-white/5'
+                  ? 'text-white bg-white/10 backdrop-blur-md border border-white/20 shadow-md shadow-purple-900/20'
+                  : 'text-gray-300 hover:text-white hover:bg-white/5'
               }`}
+              aria-expanded={toolsDropdownOpen}
+              aria-haspopup="true"
             >
               <span>Tools</span>
-              <ChevronDown className={`w-3 h-3 transition-transform ${toolsDropdownOpen ? 'rotate-180' : ''}`} />
+              <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${toolsDropdownOpen ? 'rotate-180 text-cyan-400' : 'text-gray-400'}`} />
               {isToolsActive && (
-                <span className="absolute bottom-1 left-2.5 right-2.5 h-0.5 bg-gradient-to-r from-purple-400 to-cyan-400 rounded-full" />
+                <span className="absolute bottom-1 left-2.5 right-2.5 h-0.5 bg-gradient-to-r from-purple-400 via-cyan-400 to-purple-400 rounded-full" />
               )}
             </button>
 
             {toolsDropdownOpen && (
-              <div className="absolute left-0 mt-2 w-72 rounded-2xl bg-[#0e101d]/95 backdrop-blur-2xl border border-purple-500/30 shadow-2xl p-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
-                <div className="px-3 py-1.5 text-[10px] font-mono text-purple-400 font-bold uppercase tracking-wider border-b border-white/5 mb-1">
-                  Gaming Utilities
+              <div className="absolute right-0 xl:left-0 mt-2 w-72 rounded-2xl bg-[#0e101d]/98 backdrop-blur-2xl border border-purple-500/30 shadow-2xl p-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+                <div className="px-3 py-1.5 text-[10px] font-mono text-purple-400 font-bold uppercase tracking-wider border-b border-white/5 mb-1 flex items-center justify-between">
+                  <span>Gaming Utilities</span>
+                  <span className="text-[9px] text-cyan-400">7 Tools</span>
                 </div>
                 <div className="space-y-1">
                   {toolsItems.map((tool) => {
                     const Icon = tool.icon;
+                    const isActive = currentTab === tool.id;
                     return (
                       <a
                         key={tool.id}
@@ -224,14 +455,23 @@ export const Header: React.FC<HeaderProps> = ({
                           e.preventDefault();
                           handleNavClick(tool.id);
                         }}
-                        className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-purple-950/40 text-slate-300 hover:text-white transition-colors group cursor-pointer"
+                        className={`flex items-start gap-3 p-2 rounded-xl transition-colors group cursor-pointer ${
+                          isActive
+                            ? 'bg-purple-950/60 border border-purple-500/40 text-white'
+                            : 'hover:bg-purple-950/40 text-slate-300 hover:text-white'
+                        }`}
                       >
                         <div className="p-2 rounded-lg bg-purple-950/70 border border-purple-500/30 text-purple-400 group-hover:text-cyan-400 shrink-0 mt-0.5">
                           <Icon className="w-4 h-4" />
                         </div>
-                        <div className="min-w-0">
-                          <div className="text-xs font-bold font-['Space_Grotesk'] text-white">
-                            {tool.label}
+                        <div className="min-w-0 flex-1">
+                          <div className="text-xs font-bold font-['Space_Grotesk'] text-white flex items-center justify-between">
+                            <span>{tool.label}</span>
+                            {tool.badge && (
+                              <span className="text-[9px] font-mono px-1 py-0.2 rounded bg-purple-500/20 text-purple-300 border border-purple-400/20">
+                                {tool.badge}
+                              </span>
+                            )}
                           </div>
                           <div className="text-[11px] text-slate-400 font-['Inter'] truncate">
                             {tool.desc}
@@ -249,7 +489,7 @@ export const Header: React.FC<HeaderProps> = ({
                       e.preventDefault();
                       handleNavClick('tools' as any);
                     }}
-                    className="block text-center py-1.5 px-3 rounded-lg bg-purple-600/20 hover:bg-purple-600/40 text-purple-300 text-xs font-['Rajdhani'] font-bold uppercase tracking-wider transition-colors cursor-pointer"
+                    className="block text-center py-2 px-3 rounded-lg bg-purple-600/20 hover:bg-purple-600/40 text-purple-300 text-xs font-['Rajdhani'] font-bold uppercase tracking-wider transition-colors cursor-pointer"
                   >
                     View All Tools Hub
                   </a>
@@ -259,262 +499,308 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
         </nav>
 
-        {/* Right Action Icons: responsive and protected against edge overflowing */}
-        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-          {/* Live Indicator Pill: only on larger viewports */}
-          <div className="hidden xl:flex items-center gap-2 px-2.5 py-1 bg-white/5 border border-white/10 rounded-lg backdrop-blur-md">
-            <div className="w-2 h-2 bg-red-600 rounded-full animate-pulse"></div>
-            <span className="text-[10px] font-bold uppercase tracking-widest text-gray-200">Live</span>
+        {/* Right Action Bar: Responsive, cleanly spaced, zero edge overflow */}
+        <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
+          
+          {/* Live Indicator: Large desktop screens only */}
+          <div className="hidden 2xl:flex items-center gap-1.5 px-2.5 py-1 bg-white/5 border border-white/10 rounded-lg backdrop-blur-md select-none">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-red-600"></span>
+            </span>
+            <span className="text-[10px] font-bold uppercase tracking-widest text-gray-200">Vault Online</span>
           </div>
 
-          {/* Global Search Button */}
+          {/* Global Search Trigger */}
           <button
             id="header-search-btn"
             onClick={onOpenSearch}
-            className="flex items-center gap-1.5 p-2 sm:px-2.5 sm:py-1.5 text-xs text-gray-300 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 rounded-lg hover:text-white backdrop-blur-md transition-all group shrink-0"
+            className="flex items-center gap-1.5 h-9 sm:h-9.5 px-2.5 sm:px-3 text-xs text-gray-300 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 rounded-lg hover:text-white backdrop-blur-md transition-all group shrink-0"
             title="Search the Vault (Ctrl+K)"
             aria-label="Search Game Vault"
           >
             <Search className="w-4 h-4 text-purple-400 group-hover:text-cyan-400 transition-colors shrink-0" />
             <span className="hidden md:inline text-gray-300 font-medium font-['Space_Grotesk']">Search</span>
-            <kbd className="hidden 2xl:inline-block px-1.5 py-0.5 text-[10px] bg-white/10 text-gray-300 rounded border border-white/10">
+            <kbd className="hidden 2xl:inline-block px-1.5 py-0.5 text-[10px] bg-white/10 text-gray-400 rounded border border-white/10 font-mono">
               ⌘K
             </kbd>
           </button>
 
-          {/* YouTube Channel Button */}
+          {/* YouTube Channel CTA - shown on sm: screens and up to prevent mobile overcrowding */}
           <a
             id="header-youtube-btn"
             href={YOUTUBE_CHANNEL.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1.5 p-2 sm:px-2.5 sm:py-1.5 text-xs font-['Rajdhani'] font-bold uppercase tracking-wider text-white bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-500 hover:to-rose-600 rounded-lg shadow-lg shadow-red-950/40 border border-red-500/30 transition-all transform hover:scale-[1.02] shrink-0"
-            title={`Game Vault Forum on YouTube (${YOUTUBE_CHANNEL.handle})`}
-            aria-label="YouTube Channel"
+            className="hidden sm:flex items-center gap-1.5 h-9 sm:h-9.5 px-2.5 sm:px-3 text-xs font-['Rajdhani'] font-bold uppercase tracking-wider text-white bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-500 hover:to-rose-600 rounded-lg shadow-md shadow-red-950/40 border border-red-500/30 transition-all shrink-0"
+            title={`Game Vault on YouTube (${YOUTUBE_CHANNEL.handle})`}
+            aria-label="Game Vault YouTube Channel"
           >
             <Youtube className="w-4 h-4 fill-white shrink-0" />
-            <span className="hidden lg:inline">YouTube</span>
+            <span className="hidden md:inline">YouTube</span>
           </a>
 
           {/* User Account / Profile or Sign In */}
           {isSignedIn ? (
-            <>
+            <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
               <button
                 id="header-profile-btn"
                 onClick={onOpenProfile}
-                className="flex items-center gap-1.5 p-1.5 sm:px-2 sm:py-1.5 text-xs bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 rounded-lg text-gray-200 backdrop-blur-md transition-all cursor-pointer shrink-0"
-                title="Community Profile & Bookmarks"
+                className="flex items-center gap-2 h-9 sm:h-9.5 px-2 sm:px-2.5 text-xs bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 rounded-lg text-gray-200 backdrop-blur-md transition-all cursor-pointer shrink-0"
+                title="Your Vault Profile & Bookmarks"
               >
                 <img
                   src={user.avatar}
                   alt={user.name}
-                  className="w-5 h-5 sm:w-6 sm:h-6 rounded-md object-cover border border-purple-500/50 shrink-0"
+                  className="w-6 h-6 rounded-md object-cover border border-purple-500/50 shrink-0"
                 />
-                <span className="hidden 2xl:inline font-['Space_Grotesk'] font-medium text-gray-300 max-w-[90px] truncate">
+                <span className="hidden 2xl:inline font-['Space_Grotesk'] font-medium text-gray-300 max-w-[85px] truncate">
                   {user.name}
                 </span>
               </button>
 
-              {/* Sign Out Action */}
+              {/* Sign Out (Desktop only, available in mobile drawer) */}
               {onSignOut && (
                 <button
                   id="header-signout-btn"
                   onClick={onSignOut}
-                  className="hidden md:flex items-center gap-1 px-2 py-1.5 text-xs text-gray-400 hover:text-red-300 bg-white/5 hover:bg-red-500/10 border border-white/10 hover:border-red-500/30 rounded-lg backdrop-blur-md transition-all cursor-pointer shrink-0"
+                  className="hidden lg:flex items-center justify-center h-9 sm:h-9.5 w-9 text-gray-400 hover:text-red-300 bg-white/5 hover:bg-red-500/10 border border-white/10 hover:border-red-500/30 rounded-lg backdrop-blur-md transition-all cursor-pointer shrink-0"
                   title="Sign Out of Game Vault"
                 >
                   <LogOut className="w-3.5 h-3.5" />
-                  <span className="hidden xl:inline text-[10px] font-['Rajdhani'] font-bold uppercase tracking-wider">
-                    Exit
-                  </span>
                 </button>
               )}
-            </>
+            </div>
           ) : (
             <button
               id="header-signin-btn"
               onClick={onOpenSignIn}
-              className="flex items-center gap-1 px-2 sm:px-2.5 py-1.5 text-xs font-['Rajdhani'] font-bold uppercase tracking-wider text-white bg-purple-600 hover:bg-purple-500 rounded-lg shadow-md shadow-purple-900/40 border border-purple-400/40 transition-all transform hover:scale-[1.02] cursor-pointer shrink-0"
+              className="flex items-center gap-1.5 h-9 sm:h-9.5 px-2.5 sm:px-3 text-xs font-['Rajdhani'] font-bold uppercase tracking-wider text-white bg-purple-600 hover:bg-purple-500 rounded-lg shadow-md shadow-purple-900/40 border border-purple-400/40 transition-all cursor-pointer shrink-0"
               title="Sign In / Register to Game Vault"
             >
               <LogIn className="w-3.5 h-3.5 shrink-0" />
-              <span className="text-[11px] sm:text-xs">Sign In</span>
+              <span className="whitespace-nowrap">Sign In</span>
             </button>
           )}
 
-          {/* Mobile/Tablet Menu Hamburger */}
+          {/* Mobile/Tablet Menu Hamburger Button */}
           <button
             id="mobile-menu-toggle"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="lg:hidden p-2 text-gray-300 hover:text-white bg-white/5 border border-white/10 rounded-lg backdrop-blur-md transition-colors shrink-0"
+            className="lg:hidden flex items-center justify-center h-9 w-9 text-gray-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg backdrop-blur-md transition-colors shrink-0"
             aria-label="Toggle Navigation Menu"
+            aria-expanded={mobileMenuOpen}
           >
-            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            {mobileMenuOpen ? <X className="w-5 h-5 text-cyan-400" /> : <Menu className="w-5 h-5" />}
           </button>
         </div>
       </div>
 
       {/* Mobile & Tablet Drawer Menu */}
       {mobileMenuOpen && (
-        <div className="lg:hidden border-b border-white/10 bg-[#07080d]/95 backdrop-blur-2xl px-4 py-5 animate-in slide-in-from-top-2 duration-200 max-h-[85vh] overflow-y-auto">
-          <div className="grid grid-cols-2 gap-2 mb-4">
-            {navItems.map((item) => {
-              const isActive = currentTab === item.id;
-              const href = item.href || (item.id === 'home' ? '/' : `/${item.id}`);
-              return (
-                <a
-                  key={item.id}
-                  href={href}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleNavClick(item.id);
-                  }}
-                  className={`px-4 py-2.5 rounded-xl text-left font-['Rajdhani'] font-bold text-sm tracking-wider uppercase transition-all ${
-                    isActive
-                      ? 'bg-white/15 text-white border border-white/25 shadow-lg'
-                      : 'text-gray-400 hover:bg-white/5 hover:text-white'
-                  }`}
-                >
-                  {item.label}
-                </a>
-              );
-            })}
-          </div>
+        <>
+          {/* Backdrop overlay */}
+          <div 
+            className="fixed inset-0 top-[60px] sm:top-[64px] bg-black/75 backdrop-blur-sm z-40 lg:hidden"
+            onClick={() => setMobileMenuOpen(false)}
+            aria-hidden="true"
+          />
 
-          {/* Mobile Tools Section */}
-          <div className="pt-3 border-t border-white/10 mb-4">
-            <div className="text-[11px] font-mono text-purple-400 font-bold uppercase tracking-wider mb-2">
-              Gaming Tools & Utilities
-            </div>
-            <div className="space-y-1.5">
-              {toolsItems.map((tool) => {
-                const Icon = tool.icon;
-                const isSelected = currentTab === tool.id;
-                return (
-                  <a
-                    key={tool.id}
-                    href={tool.href}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      handleNavClick(tool.id);
-                    }}
-                    className={`flex items-center gap-3 p-2.5 rounded-xl border transition-colors ${
-                      isSelected
-                        ? 'bg-purple-950/60 border-purple-500 text-white'
-                        : 'bg-white/5 border-white/5 text-slate-300 hover:text-white'
-                    }`}
-                  >
-                    <Icon className="w-4 h-4 text-purple-400 shrink-0" />
-                    <div className="min-w-0 flex-1">
-                      <div className="text-xs font-bold font-['Space_Grotesk'] text-white">
-                        {tool.label}
-                      </div>
-                      <div className="text-[10px] text-slate-400 truncate">
-                        {tool.desc}
-                      </div>
-                    </div>
-                  </a>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Quick Links: About & Contact Us */}
-          <div className="pt-3 border-t border-white/10 mb-4">
-            <div className="text-[11px] font-mono text-cyan-400 font-bold uppercase tracking-wider mb-2">
-              Information & Desk
-            </div>
-            <div className="grid grid-cols-2 gap-2">
-              <a
-                href="/about"
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleNavClick('about');
-                }}
-                className={`px-3 py-2 rounded-xl text-left font-['Rajdhani'] font-bold text-xs tracking-wider uppercase transition-all ${
-                  currentTab === 'about'
-                    ? 'bg-white/15 text-white border border-white/25'
-                    : 'text-gray-400 bg-white/5 hover:text-white'
-                }`}
-              >
-                About Game Vault
-              </a>
-              <a
-                href="/contact"
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleNavClick('contact');
-                }}
-                className={`px-3 py-2 rounded-xl text-left font-['Rajdhani'] font-bold text-xs tracking-wider uppercase transition-all ${
-                  currentTab === 'contact'
-                    ? 'bg-white/15 text-white border border-white/25'
-                    : 'text-gray-400 bg-white/5 hover:text-white'
-                }`}
-              >
-                Contact Us
-              </a>
-            </div>
-          </div>
-
-          <div className="pt-3 border-t border-white/10 flex flex-col gap-2.5">
-            <button
-              onClick={() => {
-                setMobileMenuOpen(false);
-                onOpenSearch();
-              }}
-              className="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-white/5 text-gray-200 rounded-xl text-sm font-medium border border-white/10 backdrop-blur-md"
-            >
-              <Search className="w-4 h-4 text-purple-400" />
-              Search Vault Database
-            </button>
-            <a
-              href={YOUTUBE_CHANNEL.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-red-600 hover:bg-red-700 text-white rounded-xl text-sm font-bold font-['Rajdhani'] uppercase tracking-wider shadow-md shadow-red-950/50"
-            >
-              <Youtube className="w-4 h-4 fill-white" />
-              Watch @gamevaultforum on YouTube
-            </a>
-            {isSignedIn ? (
-              <>
-                <button
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    onOpenProfile();
-                  }}
-                  className="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-white/5 text-gray-200 rounded-xl text-sm font-medium border border-white/10 backdrop-blur-md cursor-pointer"
-                >
-                  <img src={user.avatar} alt={user.name} className="w-5 h-5 rounded-full object-cover" />
-                  <span>{user.name} (Vault Profile)</span>
-                </button>
-                {onSignOut && (
-                  <button
-                    onClick={() => {
-                      setMobileMenuOpen(false);
-                      onSignOut();
-                    }}
-                    className="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-white/5 hover:bg-red-500/10 text-gray-300 hover:text-red-300 rounded-xl text-sm font-bold font-['Rajdhani'] uppercase tracking-wider border border-white/10 hover:border-red-500/30 transition-colors cursor-pointer"
-                  >
-                    <LogOut className="w-4 h-4 text-red-400" />
-                    Sign Out of Vault
-                  </button>
-                )}
-              </>
-            ) : (
+          {/* Drawer contents */}
+          <div className="fixed top-[60px] sm:top-[64px] left-0 right-0 max-h-[calc(100vh-60px)] sm:max-h-[calc(100vh-64px)] overflow-y-auto bg-[#090b16]/98 border-b border-purple-500/30 backdrop-blur-2xl shadow-2xl z-50 p-4 sm:p-6 pb-[calc(2rem+env(safe-area-inset-bottom,0px))] animate-in slide-in-from-top-2 duration-150 lg:hidden">
+            
+            {/* Quick Action Banner on Mobile */}
+            <div className="flex items-center gap-2 mb-4">
               <button
                 onClick={() => {
                   setMobileMenuOpen(false);
-                  if (onOpenSignIn) onOpenSignIn();
+                  onOpenSearch();
                 }}
-                className="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-purple-600 hover:bg-purple-500 text-white rounded-xl text-sm font-bold font-['Rajdhani'] uppercase tracking-wider shadow-md shadow-purple-950/50 cursor-pointer"
+                className="flex-1 flex items-center justify-center gap-2 py-2 px-3 bg-white/5 hover:bg-white/10 text-gray-200 rounded-xl text-xs font-medium border border-white/10"
               >
-                <LogIn className="w-4 h-4" />
-                Sign In / Register
+                <Search className="w-3.5 h-3.5 text-purple-400" />
+                Search Database
               </button>
-            )}
+              <a
+                href={YOUTUBE_CHANNEL.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 py-2 px-3 bg-red-600/90 hover:bg-red-600 text-white rounded-xl text-xs font-bold font-['Rajdhani'] uppercase tracking-wider shrink-0"
+              >
+                <Youtube className="w-3.5 h-3.5 fill-white" />
+                YouTube
+              </a>
+            </div>
+
+            {/* Section 1: Main Arena & Community */}
+            <div className="mb-4">
+              <div className="px-1 text-[11px] font-mono text-purple-400 font-bold uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                <Flame className="w-3.5 h-3.5 text-cyan-400" />
+                <span>Explore Game Vault</span>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                {allNavItems.map((item) => {
+                  const isActive = currentTab === item.id;
+                  const Icon = item.icon;
+                  const isPlayGames = item.id === 'play-games';
+                  return (
+                    <a
+                      key={item.id}
+                      href={item.href}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleNavClick(item.id);
+                      }}
+                      className={`px-3 py-2.5 rounded-xl font-['Rajdhani'] font-bold text-xs tracking-wider uppercase transition-all flex items-center justify-between ${
+                        isActive
+                          ? 'bg-purple-900/40 text-white border border-purple-500/50 shadow-md shadow-purple-900/30'
+                          : isPlayGames
+                          ? 'bg-purple-950/30 text-purple-300 border border-purple-500/20 hover:bg-purple-950/50 hover:text-white'
+                          : 'text-gray-300 bg-white/5 hover:bg-white/10 hover:text-white border border-transparent'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2 truncate">
+                        {Icon && <Icon className="w-3.5 h-3.5 text-cyan-400 shrink-0" />}
+                        <span className="truncate">{item.label}</span>
+                      </div>
+                      {item.badge && (
+                        <span className="text-[8px] font-mono px-1 py-0.2 rounded bg-purple-500/30 text-purple-200 border border-purple-400/30 shrink-0">
+                          {item.badge}
+                        </span>
+                      )}
+                    </a>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Section 2: Gaming Tools & Utilities */}
+            <div className="pt-3 border-t border-white/10 mb-4">
+              <div className="px-1 text-[11px] font-mono text-cyan-400 font-bold uppercase tracking-wider mb-2 flex items-center justify-between">
+                <span>Gaming Utilities & AI</span>
+                <span className="text-[9px] text-purple-400">7 Tools</span>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {toolsItems.map((tool) => {
+                  const Icon = tool.icon;
+                  const isSelected = currentTab === tool.id;
+                  return (
+                    <a
+                      key={tool.id}
+                      href={tool.href}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleNavClick(tool.id);
+                      }}
+                      className={`flex items-center gap-2.5 p-2 rounded-xl border transition-colors ${
+                        isSelected
+                          ? 'bg-purple-950/60 border-purple-500 text-white'
+                          : 'bg-white/5 border-white/5 text-slate-300 hover:text-white'
+                      }`}
+                    >
+                      <div className="p-1.5 rounded-lg bg-purple-950/70 border border-purple-500/30 text-purple-400 shrink-0">
+                        <Icon className="w-3.5 h-3.5" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="text-xs font-bold font-['Space_Grotesk'] text-white truncate flex items-center justify-between">
+                          <span>{tool.label}</span>
+                          {tool.badge && (
+                            <span className="text-[8px] font-mono px-1 py-0.2 rounded bg-purple-500/30 text-purple-300">
+                              {tool.badge}
+                            </span>
+                          )}
+                        </div>
+                        <div className="text-[10px] text-slate-400 truncate">
+                          {tool.desc}
+                        </div>
+                      </div>
+                    </a>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Section 3: Information & Helpdesk */}
+            <div className="pt-3 border-t border-white/10 mb-4">
+              <div className="px-1 text-[11px] font-mono text-slate-400 font-bold uppercase tracking-wider mb-2">
+                Vault Desk
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <a
+                  href="/about"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleNavClick('about');
+                  }}
+                  className={`flex items-center gap-2 px-3 py-2 rounded-xl text-left font-['Rajdhani'] font-bold text-xs tracking-wider uppercase transition-all ${
+                    currentTab === 'about'
+                      ? 'bg-white/15 text-white border border-white/25'
+                      : 'text-gray-300 bg-white/5 hover:text-white'
+                  }`}
+                >
+                  <Info className="w-3.5 h-3.5 text-purple-400 shrink-0" />
+                  <span>About Vault</span>
+                </a>
+                <a
+                  href="/contact"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleNavClick('contact');
+                  }}
+                  className={`flex items-center gap-2 px-3 py-2 rounded-xl text-left font-['Rajdhani'] font-bold text-xs tracking-wider uppercase transition-all ${
+                    currentTab === 'contact'
+                      ? 'bg-white/15 text-white border border-white/25'
+                      : 'text-gray-300 bg-white/5 hover:text-white'
+                  }`}
+                >
+                  <Mail className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+                  <span>Contact Us</span>
+                </a>
+              </div>
+            </div>
+
+            {/* Section 4: User Profile & Auth */}
+            <div className="pt-3 border-t border-white/10 flex flex-col gap-2">
+              {isSignedIn ? (
+                <>
+                  <button
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      onOpenProfile();
+                    }}
+                    className="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-white/5 text-gray-200 rounded-xl text-xs font-medium border border-white/10 cursor-pointer"
+                  >
+                    <img src={user.avatar} alt={user.name} className="w-5 h-5 rounded-md object-cover border border-purple-500/50" />
+                    <span>{user.name} (Vault Profile)</span>
+                  </button>
+                  {onSignOut && (
+                    <button
+                      onClick={() => {
+                        setMobileMenuOpen(false);
+                        onSignOut();
+                      }}
+                      className="w-full flex items-center justify-center gap-2 py-2 px-4 bg-red-950/20 hover:bg-red-900/30 text-red-300 rounded-xl text-xs font-bold font-['Rajdhani'] uppercase tracking-wider border border-red-500/20 transition-colors cursor-pointer"
+                    >
+                      <LogOut className="w-3.5 h-3.5 text-red-400" />
+                      Sign Out of Vault
+                    </button>
+                  )}
+                </>
+              ) : (
+                <button
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    if (onOpenSignIn) onOpenSignIn();
+                  }}
+                  className="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-purple-600 hover:bg-purple-500 text-white rounded-xl text-xs font-bold font-['Rajdhani'] uppercase tracking-wider shadow-md shadow-purple-950/50 cursor-pointer"
+                >
+                  <LogIn className="w-4 h-4" />
+                  Sign In / Register
+                </button>
+              )}
+            </div>
           </div>
-        </div>
+        </>
       )}
     </header>
   );

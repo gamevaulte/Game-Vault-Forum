@@ -25,18 +25,32 @@
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    overflow-x: clip;
   }
 
   body {
-    overflow-x: clip;
     min-height: 100vh;
+    background-color: #050507;
+    margin: 0;
+    padding: 0;
   }
 
   /* Optimize media and image rendering off the critical path */
   img {
     content-visibility: auto;
   }
+}
+
+/* Universal cross-device sticky header styling */
+.vault-sticky-header {
+  position: -webkit-sticky !important;
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 50 !important;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  will-change: transform, background-color, border-color;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
 }
 
 /* Off-screen rendering containment helper */

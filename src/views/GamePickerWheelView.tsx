@@ -422,7 +422,7 @@ export const GamePickerWheelView: React.FC<GamePickerWheelViewProps> = ({
   return (
     <div className="min-h-screen bg-[#070913] text-slate-100 pb-20">
       {/* 1. Breadcrumb & Utility Top Bar */}
-      <div className="border-b border-white/5 bg-slate-950/60 backdrop-blur-md sticky top-0 z-30">
+      <div className="border-b border-white/5 bg-slate-950/60 backdrop-blur-md sticky top-16 z-30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
           <nav className="flex items-center gap-2 text-xs text-slate-400 font-medium">
             <button
