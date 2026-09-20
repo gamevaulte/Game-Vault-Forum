@@ -19,7 +19,8 @@ import {
   BookOpen,
   Info,
   Mail,
-  Flame
+  Flame,
+  User
 } from 'lucide-react';
 import { PageTab, UserAccount } from '../types';
 import { VaultLogo } from './VaultLogo';
@@ -588,17 +589,19 @@ export const Header: React.FC<HeaderProps> = ({
               <button
                 id="header-profile-btn"
                 onClick={onOpenProfile}
-                className="flex items-center gap-2 h-9 sm:h-9.5 px-2 sm:px-2.5 text-xs bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 rounded-lg text-gray-200 backdrop-blur-md transition-all cursor-pointer shrink-0"
-                title="Your Vault Profile & Bookmarks"
+                className="flex items-center justify-center h-9 sm:h-9.5 w-9 sm:w-9.5 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 rounded-lg text-gray-200 backdrop-blur-md transition-all cursor-pointer shrink-0"
+                title={`Your Vault Profile (${user.name})`}
+                aria-label={`Your Vault Profile (${user.name})`}
               >
-                <img
-                  src={user.avatar}
-                  alt={user.name}
-                  className="w-6 h-6 rounded-md object-cover border border-purple-500/50 shrink-0"
-                />
-                <span className="hidden 2xl:inline font-['Space_Grotesk'] font-medium text-gray-300 max-w-[85px] truncate">
-                  {user.name}
-                </span>
+                {user.avatar ? (
+                  <img
+                    src={user.avatar}
+                    alt={user.name}
+                    className="w-6 h-6 rounded-md object-cover border border-purple-500/50 shrink-0"
+                  />
+                ) : (
+                  <User className="w-4 h-4 text-purple-400 shrink-0" />
+                )}
               </button>
 
               {/* Sign Out (Desktop only, available in mobile drawer) */}
