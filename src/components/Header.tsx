@@ -55,14 +55,15 @@ export const Header: React.FC<HeaderProps> = ({
   }, []);
 
   // Primary desktop navigation tabs (About and Contact are cleanly located in the footer and mobile drawer)
-  const navItems: { id: PageTab; label: string }[] = [
-    { id: 'home', label: 'Home' },
-    { id: 'videos', label: 'Videos' },
-    { id: 'games', label: 'Games' },
-    { id: 'articles', label: 'Articles' },
-    { id: 'reviews', label: 'Reviews' },
-    { id: 'guides', label: 'Guides' },
-    { id: 'forum', label: 'Forum' }
+  const navItems: { id: PageTab; label: string; href?: string }[] = [
+    { id: 'home', label: 'Home', href: '/' },
+    { id: 'play-games', label: 'Play Games', href: '/play-games' },
+    { id: 'videos', label: 'Videos', href: '/videos' },
+    { id: 'games', label: 'Games', href: '/games' },
+    { id: 'articles', label: 'Articles', href: '/articles' },
+    { id: 'reviews', label: 'Reviews', href: '/reviews' },
+    { id: 'guides', label: 'Guides', href: '/guides' },
+    { id: 'forum', label: 'Forum', href: '/forum' }
   ];
 
   const toolsItems = [
@@ -164,7 +165,7 @@ export const Header: React.FC<HeaderProps> = ({
         <nav className="hidden lg:flex items-center space-x-0.5 xl:space-x-1 font-['Rajdhani'] font-semibold tracking-wider text-xs xl:text-sm uppercase shrink">
           {navItems.map((item) => {
             const isActive = currentTab === item.id;
-            const href = item.id === 'home' ? '/' : `/${item.id}`;
+            const href = item.href || (item.id === 'home' ? '/' : `/${item.id}`);
             return (
               <a
                 key={item.id}
@@ -359,7 +360,7 @@ export const Header: React.FC<HeaderProps> = ({
           <div className="grid grid-cols-2 gap-2 mb-4">
             {navItems.map((item) => {
               const isActive = currentTab === item.id;
-              const href = item.id === 'home' ? '/' : `/${item.id}`;
+              const href = item.href || (item.id === 'home' ? '/' : `/${item.id}`);
               return (
                 <a
                   key={item.id}

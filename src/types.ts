@@ -2,6 +2,7 @@ export type PageTab =
   | 'home' 
   | 'videos' 
   | 'games' 
+  | 'play-games'
   | 'articles' 
   | 'reviews' 
   | 'guides' 

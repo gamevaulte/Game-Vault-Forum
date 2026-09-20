@@ -200,6 +200,33 @@
         "createdAt": { "type": "string", "description": "Save timestamp" }
       },
       "required": ["id", "name", "config", "createdAt"]
+    },
+    "GameSession": {
+      "title": "Multiplayer Game Session",
+      "description": "Multiplayer sessions for browser playable games on Game Vault Forum with invite codes, player roles, and real-time state synchronization",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique session ID" },
+        "gameId": { "type": "string", "description": "Game identifier (e.g. connect-four, tic-tac-toe)" },
+        "gameSlug": { "type": "string", "description": "URL slug for the game" },
+        "gameTitle": { "type": "string", "description": "Title of the game" },
+        "inviteCode": { "type": "string", "description": "Unique 6-8 alphanumeric invitation token" },
+        "hostId": { "type": "string", "description": "Firebase Auth UID of the session host" },
+        "host": { "type": "object", "description": "Host profile data (displayName, avatar, username)" },
+        "guestId": { "type": "string", "description": "Firebase Auth UID of accepted guest" },
+        "guest": { "type": "object", "description": "Guest profile data" },
+        "status": { "type": "string", "enum": ["waiting", "accepted", "in_progress", "completed", "cancelled", "expired"], "description": "Session lifecycle state" },
+        "playerRoles": { "type": "object", "description": "Mapping of player roles" },
+        "currentTurn": { "type": "string", "description": "Current turn indicator (host or guest)" },
+        "gameState": { "type": "object", "description": "Game-specific board state and scores" },
+        "winner": { "type": "string", "description": "Winner result or draw" },
+        "moveCount": { "type": "number", "description": "Total moves executed in the session" },
+        "createdAt": { "type": "string", "description": "ISO timestamp of session creation" },
+        "updatedAt": { "type": "string", "description": "ISO timestamp of latest session update" },
+        "expiresAt": { "type": "string", "description": "ISO timestamp when the invitation expires" },
+        "lastActivityAt": { "type": "string", "description": "ISO timestamp of last player activity" }
+      },
+      "required": ["id", "gameId", "inviteCode", "hostId", "status", "createdAt"]
     }
   },
   "firestore": {
@@ -258,6 +285,10 @@
     "/contact_submissions/{submissionId}": {
       "schema": "ContactSubmissions",
       "description": "Reader inquiries, press requests, and messages sent via the Contact Us form"
+    },
+    "/game_sessions/{sessionId}": {
+      "schema": "GameSession",
+      "description": "Real-time multiplayer game sessions with token invitations, player slots, and synchronized turns"
     }
   }
 }

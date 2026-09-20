@@ -34,7 +34,10 @@ export type Route =
   | { type: 'game-picker-wheel'; games?: string[] }
   | { type: 'vault-ai'; initialPrompt?: string }
   | { type: 'author'; slug: string }
-  | { type: 'sitemap' };
+  | { type: 'sitemap' }
+  | { type: 'play-games' }
+  | { type: 'play-games-category'; categorySlug: string }
+  | { type: 'play-game'; categorySlug: string; gameSlug: string; inviteCode?: string };
 
 export function parseRoute(rawPath: string): Route {
   // Extract query params if present
@@ -60,7 +63,41 @@ export function parseRoute(rawPath: string): Route {
     return { type: 'home' };
   }
 
-  const [seg1, seg2, seg3, seg4] = parts;
+  const [seg1, seg2, seg3, seg4, seg5] = parts;
+
+  // Online Browser Gaming Hub (/play-games)
+  if (seg1 === 'play-games' || seg1 === 'play') {
+    if (!seg2) {
+      return { type: 'play-games' };
+    }
+    // Category or direct game route
+    if (!seg3) {
+      return { type: 'play-games-category', categorySlug: seg2 };
+    }
+    // Check invite token path: /play-games/:category/:game/invite/:inviteCode
+    if (seg4 === 'invite' && seg5) {
+      return {
+        type: 'play-game',
+        categorySlug: seg2,
+        gameSlug: seg3,
+        inviteCode: seg5
+      };
+    }
+    // Or /play-games/:category/:game/:inviteCode
+    if (seg4 && seg4 !== 'invite') {
+      return {
+        type: 'play-game',
+        categorySlug: seg2,
+        gameSlug: seg3,
+        inviteCode: seg4
+      };
+    }
+    return {
+      type: 'play-game',
+      categorySlug: seg2,
+      gameSlug: seg3
+    };
+  }
 
   // Gaming Tools Hub & Sub-tools
   if (seg1 === 'tools') {
@@ -248,6 +285,15 @@ export function routeToUrl(route: Route): string {
       return '/game-picker-wheel';
     case 'sitemap':
       return '/sitemap';
+    case 'play-games':
+      return '/play-games';
+    case 'play-games-category':
+      return `/play-games/${route.categorySlug}`;
+    case 'play-game':
+      if (route.inviteCode) {
+        return `/play-games/${route.categorySlug}/${route.gameSlug}/invite/${route.inviteCode}`;
+      }
+      return `/play-games/${route.categorySlug}/${route.gameSlug}`;
   }
 }
 

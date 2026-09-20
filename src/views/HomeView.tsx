@@ -124,6 +124,15 @@ const HomeViewComponent: React.FC<HomeViewProps> = ({
 
           {/* Action CTAs in Frosted Glass styling */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
+            <button
+              id="hero-play-games"
+              onClick={() => onNavigateTab('play-games')}
+              className="w-full sm:w-auto px-7 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-['Rajdhani'] font-bold text-sm tracking-wider uppercase rounded-full shadow-xl shadow-purple-600/30 flex items-center justify-center gap-2.5 transition-all transform hover:-translate-y-0.5"
+            >
+              <Gamepad2 className="w-4 h-4 text-purple-200" />
+              <span>Play Browser Games</span>
+            </button>
+
             <a
               id="hero-watch-youtube"
               href={YOUTUBE_CHANNEL.url}

@@ -49,6 +49,7 @@ export const Footer: React.FC<FooterProps> = ({
 
   const navLinks: { id: PageTab; label: string }[] = [
     { id: 'home', label: 'Home' },
+    { id: 'play-games', label: 'Play Games' },
     { id: 'videos', label: 'Videos' },
     { id: 'games', label: 'Games' },
     { id: 'articles', label: 'Articles' },

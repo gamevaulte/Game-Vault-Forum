@@ -5,6 +5,7 @@ import { createServer as createViteServer } from 'vite';
 import { GoogleGenAI } from '@google/genai';
 import dotenv from 'dotenv';
 import { handleSeoPrerender } from './src/server/seoPrerender';
+import { validateConnectFourMove, validateTicTacToeMove } from './src/server/gameValidation';
 
 dotenv.config();
 
@@ -463,6 +464,33 @@ IMPORTANT COPYRIGHT & SAFETY RULES:
 
   app.post('/api/vault-ai/chat', handleVaultAiChat);
   app.post('/api/vault-ai', handleVaultAiChat);
+
+  // Authoritative Server-Side Move Validation for Multiplayer Games
+  app.post('/api/games/validate-move', (req, res) => {
+    try {
+      const { gameSlug, gameState, playerRole, move } = req.body;
+      if (!gameSlug || !gameState || !playerRole) {
+        return res.status(400).json({ valid: false, error: 'Missing required game validation parameters.' });
+      }
+
+      if (gameSlug === 'connect-four') {
+        const col = typeof move === 'object' ? move.col : Number(move);
+        const result = validateConnectFourMove(gameState, playerRole, col);
+        return res.json(result);
+      }
+
+      if (gameSlug === 'tic-tac-toe') {
+        const cell = typeof move === 'object' ? move.cell : Number(move);
+        const result = validateTicTacToeMove(gameState, playerRole, cell);
+        return res.json(result);
+      }
+
+      return res.json({ valid: true, nextState: gameState });
+    } catch (err: any) {
+      console.error('Game validation error:', err);
+      return res.status(500).json({ valid: false, error: 'Internal validation error.' });
+    }
+  });
 
   // SEO & Googlebot Pre-Rendering Middleware for Articles & Authors
   app.use((req, res, next) => {

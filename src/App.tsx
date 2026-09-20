@@ -58,6 +58,7 @@ const GamePickerWheelView = lazy(() => import('./views/GamePickerWheelView').the
 const VaultAiView = lazy(() => import('./views/VaultAiView').then(m => ({ default: m.VaultAiView })));
 const SitemapView = lazy(() => import('./views/SitemapView').then(m => ({ default: m.SitemapView })));
 const AuthorPageView = lazy(() => import('./views/AuthorPageView').then(m => ({ default: m.AuthorPageView })));
+const GamingSectionView = lazy(() => import('./views/GamingSectionView').then(m => ({ default: m.GamingSectionView })));
 
 // Interactive Secondary Modals
 const GlobalSearchModal = lazy(() => import('./components/GlobalSearchModal').then(m => ({ default: m.GlobalSearchModal })));
@@ -1311,6 +1312,10 @@ export default function App() {
         return 'sitemap';
       case 'about':
         return 'about';
+      case 'play-games':
+      case 'play-games-category':
+      case 'play-game':
+        return 'play-games';
       default:
         return 'home';
     }
@@ -1361,6 +1366,7 @@ export default function App() {
   // Unified tab navigation helper
   const handleNavigateTab = (tab: PageTab) => {
     if (tab === 'home') navigate('/');
+    else if (tab === 'play-games') navigate('/play-games');
     else if (tab === 'vault-ai') navigate('/tools/vault-ai');
     else if (tab === 'game-avatar-generator') navigate('/game-avatar-generator');
     else if (tab === 'pc-requirements') navigate('/tools/pc-game-requirements-checker');
@@ -1714,7 +1720,25 @@ export default function App() {
         );
       }
 
-      // 12. Standard Hub Views with Unique SEO URLs
+      // 13. Online Gaming Section (/play-games, /play-games/:category, /play-games/:category/:game)
+      case 'play-games':
+      case 'play-games-category':
+      case 'play-game':
+        return (
+          <GamingSectionView
+            route={route}
+            onNavigate={navigate}
+            currentUser={firebaseUser}
+            userAccount={user}
+            onOpenSignIn={(promptMessage) => {
+              setAuthPromptMessage(promptMessage || 'Sign in or register to duel players and save gaming stats.');
+              setIsAuthModalOpen(true);
+            }}
+            onShowToast={(msg, type) => addToast(msg, type)}
+          />
+        );
+
+      // 14. Standard Hub Views with Unique SEO URLs
       case 'videos':
         return (
           <VideosView
