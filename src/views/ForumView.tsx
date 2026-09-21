@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { 
   MessageSquare, 
   Pin, 
@@ -23,6 +23,7 @@ interface ForumViewProps {
   onOpenNewTopic: () => void;
   onOpenGuidelines: () => void;
   onViewUserProfile?: (author: { id?: string; name: string; username?: string; avatar: string; role?: string; badge?: string }) => void;
+  initialCategory?: string;
 }
 
 const ForumViewComponent: React.FC<ForumViewProps> = ({
@@ -30,10 +31,26 @@ const ForumViewComponent: React.FC<ForumViewProps> = ({
   onSelectTopic,
   onOpenNewTopic,
   onOpenGuidelines,
-  onViewUserProfile
+  onViewUserProfile,
+  initialCategory
 }) => {
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const normalizeForumCat = (raw?: string) => {
+    if (!raw) return 'all';
+    const clean = raw.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const found = MOCK_FORUM_CATEGORIES.find(
+      (c) => c.id.toLowerCase() === clean || c.name.toLowerCase().replace(/[^a-z0-9]/g, '') === clean
+    );
+    return found ? found.id : 'all';
+  };
+
+  const [selectedCategory, setSelectedCategory] = useState<string>(() => normalizeForumCat(initialCategory));
   const [searchQuery, setSearchQuery] = useState<string>('');
+
+  useEffect(() => {
+    if (initialCategory) {
+      setSelectedCategory(normalizeForumCat(initialCategory));
+    }
+  }, [initialCategory]);
 
   const filteredTopics = useMemo(() => {
     return topics.filter((t) => {

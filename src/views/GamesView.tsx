@@ -1,17 +1,14 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Gamepad2, Search, Filter, Star, Tag, Monitor, Layers } from 'lucide-react';
 import { Game, GameGenre, Platform } from '../types';
 
 interface GamesViewProps {
   games: Game[];
   onSelectGame: (g: Game) => void;
+  initialGenre?: string;
 }
 
-const GamesViewComponent: React.FC<GamesViewProps> = ({ games, onSelectGame }) => {
-  const [selectedGenre, setSelectedGenre] = useState<GameGenre>('All');
-  const [selectedPlatform, setSelectedPlatform] = useState<Platform>('All');
-  const [searchQuery, setSearchQuery] = useState('');
-
+const GamesViewComponent: React.FC<GamesViewProps> = ({ games, onSelectGame, initialGenre }) => {
   const genres: GameGenre[] = [
     'All',
     'Action',
@@ -24,6 +21,23 @@ const GamesViewComponent: React.FC<GamesViewProps> = ({ games, onSelectGame }) =
     'Sports',
     'Racing'
   ];
+
+  const normalizeGenre = (raw?: string): GameGenre => {
+    if (!raw) return 'All';
+    const clean = raw.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const found = genres.find((g) => g.toLowerCase().replace(/[^a-z0-9]/g, '') === clean);
+    return found || 'All';
+  };
+
+  const [selectedGenre, setSelectedGenre] = useState<GameGenre>(() => normalizeGenre(initialGenre));
+  const [selectedPlatform, setSelectedPlatform] = useState<Platform>('All');
+  const [searchQuery, setSearchQuery] = useState('');
+
+  useEffect(() => {
+    if (initialGenre) {
+      setSelectedGenre(normalizeGenre(initialGenre));
+    }
+  }, [initialGenre]);
 
   const platforms: Platform[] = ['All', 'PC', 'PS5', 'Xbox', 'Switch'];
 

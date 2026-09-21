@@ -3,17 +3,17 @@ import { slugify } from './seo';
 
 export type Route =
   | { type: 'home' }
-  | { type: 'videos' }
+  | { type: 'videos'; category?: string }
   | { type: 'video'; id: string; slug?: string }
-  | { type: 'games' }
+  | { type: 'games'; genre?: string }
   | { type: 'game'; id: string; slug?: string }
-  | { type: 'articles' }
+  | { type: 'articles'; category?: string }
   | { type: 'article'; id: string; slug?: string }
   | { type: 'reviews' }
   | { type: 'review'; id: string; slug?: string }
-  | { type: 'guides' }
+  | { type: 'guides'; category?: string }
   | { type: 'guide'; id: string; slug?: string }
-  | { type: 'forum' }
+  | { type: 'forum'; category?: string }
   | { type: 'topic'; id: string; slug?: string }
   | { type: 'new-topic' }
   | { type: 'about' }
@@ -42,6 +42,8 @@ export type Route =
 export function parseRoute(rawPath: string): Route {
   // Extract query params if present
   let sharedGames: string[] | undefined;
+  let queryCategory: string | undefined;
+  let queryGenre: string | undefined;
   if (rawPath.includes('?')) {
     try {
       const q = new URLSearchParams(rawPath.split('?')[1].split('#')[0]);
@@ -49,6 +51,8 @@ export function parseRoute(rawPath: string): Route {
       if (g) {
         sharedGames = g.split(',').map((x) => x.trim()).filter(Boolean);
       }
+      queryCategory = q.get('category') || undefined;
+      queryGenre = q.get('genre') || undefined;
     } catch {}
   }
 
@@ -162,18 +166,21 @@ export function parseRoute(rawPath: string): Route {
   }
 
   if (seg1 === 'videos') {
+    if (seg2 === 'category' && seg3) return { type: 'videos', category: seg3 };
     if (seg2) return { type: 'video', id: seg2, slug: seg2 };
-    return { type: 'videos' };
+    return { type: 'videos', category: queryCategory };
   }
 
   if (seg1 === 'games') {
+    if ((seg2 === 'category' || seg2 === 'genre') && seg3) return { type: 'games', genre: seg3 };
     if (seg2) return { type: 'game', id: seg2, slug: seg2 };
-    return { type: 'games' };
+    return { type: 'games', genre: queryGenre || queryCategory };
   }
 
   if (seg1 === 'articles') {
+    if (seg2 === 'category' && seg3) return { type: 'articles', category: seg3 };
     if (seg2) return { type: 'article', id: seg2, slug: seg2 };
-    return { type: 'articles' };
+    return { type: 'articles', category: queryCategory };
   }
 
   if (seg1 === 'reviews') {
@@ -182,15 +189,17 @@ export function parseRoute(rawPath: string): Route {
   }
 
   if (seg1 === 'guides') {
+    if (seg2 === 'category' && seg3) return { type: 'guides', category: seg3 };
     if (seg2) return { type: 'guide', id: seg2, slug: seg2 };
-    return { type: 'guides' };
+    return { type: 'guides', category: queryCategory };
   }
 
   if (seg1 === 'forum') {
+    if (seg2 === 'category' && seg3) return { type: 'forum', category: seg3 };
     if (seg2 === 'new' || seg2 === 'new-topic') return { type: 'new-topic' };
     if (seg2 === 'topic' && seg3) return { type: 'topic', id: seg3, slug: seg3 };
     if (seg2) return { type: 'topic', id: seg2, slug: seg2 };
-    return { type: 'forum' };
+    return { type: 'forum', category: queryCategory };
   }
 
   if (seg1 === 'author' || seg1 === 'authors') {
@@ -216,15 +225,15 @@ export function routeToUrl(route: Route): string {
     case 'home':
       return '/';
     case 'videos':
-      return '/videos';
+      return route.category ? `/videos/category/${route.category}` : '/videos';
     case 'video':
       return `/videos/${route.slug || route.id}`;
     case 'games':
-      return '/games';
+      return route.genre ? `/games/category/${route.genre}` : '/games';
     case 'game':
       return `/games/${route.slug || route.id}`;
     case 'articles':
-      return '/articles';
+      return route.category ? `/articles/category/${route.category}` : '/articles';
     case 'article':
       return `/articles/${route.slug || route.id}`;
     case 'reviews':
@@ -232,11 +241,11 @@ export function routeToUrl(route: Route): string {
     case 'review':
       return `/reviews/${route.slug || route.id}`;
     case 'guides':
-      return '/guides';
+      return route.category ? `/guides/category/${route.category}` : '/guides';
     case 'guide':
       return `/guides/${route.slug || route.id}`;
     case 'forum':
-      return '/forum';
+      return route.category ? `/forum/category/${route.category}` : '/forum';
     case 'topic':
       return `/forum/${route.slug || route.id}`;
     case 'new-topic':

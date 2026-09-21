@@ -1,15 +1,14 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { BookOpen, Clock, Calendar, User, ArrowRight, Tag } from 'lucide-react';
 import { Article } from '../types';
 
 interface ArticlesViewProps {
   articles: Article[];
   onSelectArticle: (a: Article) => void;
+  initialCategory?: string;
 }
 
-const ArticlesViewComponent: React.FC<ArticlesViewProps> = ({ articles, onSelectArticle }) => {
-  const [selectedCategory, setSelectedCategory] = useState<string>('All');
-
+const ArticlesViewComponent: React.FC<ArticlesViewProps> = ({ articles, onSelectArticle, initialCategory }) => {
   const categories = [
     'All',
     'Hardware Guides',
@@ -22,6 +21,21 @@ const ArticlesViewComponent: React.FC<ArticlesViewProps> = ({ articles, onSelect
     'Industry',
     'Gaming Stories'
   ];
+
+  const normalizeCat = (raw?: string) => {
+    if (!raw) return 'All';
+    const clean = raw.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const found = categories.find((c) => c.toLowerCase().replace(/[^a-z0-9]/g, '') === clean);
+    return found || 'All';
+  };
+
+  const [selectedCategory, setSelectedCategory] = useState<string>(() => normalizeCat(initialCategory));
+
+  useEffect(() => {
+    if (initialCategory) {
+      setSelectedCategory(normalizeCat(initialCategory));
+    }
+  }, [initialCategory]);
 
   const filteredArticles = useMemo(() => {
     return articles.filter((a) => {

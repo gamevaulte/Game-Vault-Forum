@@ -1743,6 +1743,7 @@ export default function App() {
         return (
           <VideosView
             videos={MOCK_VIDEOS}
+            initialCategory={route.category}
             onSelectVideo={(v) => navigate(`/videos/${getSeoSlug(v)}`)}
           />
         );
@@ -1751,6 +1752,7 @@ export default function App() {
         return (
           <GamesView
             games={MOCK_GAMES}
+            initialGenre={route.genre}
             onSelectGame={(g) => navigate(`/games/${getSeoSlug(g)}`)}
           />
         );
@@ -1759,6 +1761,7 @@ export default function App() {
         return (
           <ArticlesView
             articles={MOCK_ARTICLES}
+            initialCategory={route.category}
             onSelectArticle={(a) => navigate(`/articles/${getSeoSlug(a)}`)}
           />
         );
@@ -1775,6 +1778,7 @@ export default function App() {
         return (
           <GuidesView
             guides={MOCK_GUIDES}
+            initialCategory={route.category}
             onSelectGuide={(g) => navigate(`/guides/${getSeoSlug(g)}`)}
           />
         );
@@ -1783,6 +1787,7 @@ export default function App() {
         return (
           <ForumView
             topics={topics}
+            initialCategory={route.category}
             onSelectTopic={(t) => navigate(`/forum/${getSeoSlug(t)}`)}
             onOpenNewTopic={() => navigate('/forum/new')}
             onOpenGuidelines={() => navigate('/guidelines')}

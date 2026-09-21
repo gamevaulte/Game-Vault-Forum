@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Youtube, Play, Eye, Clock, Calendar, Filter, Sparkles, ExternalLink, CheckCircle2 } from 'lucide-react';
 import { Video } from '../types';
 import { YOUTUBE_CHANNEL } from '../lib/constants';
@@ -7,12 +7,26 @@ import { VaultLogo } from '../components/VaultLogo';
 interface VideosViewProps {
   videos: Video[];
   onSelectVideo: (v: Video) => void;
+  initialCategory?: string;
 }
 
-const VideosViewComponent: React.FC<VideosViewProps> = ({ videos, onSelectVideo }) => {
-  const [selectedCategory, setSelectedCategory] = useState<string>('All');
-
+const VideosViewComponent: React.FC<VideosViewProps> = ({ videos, onSelectVideo, initialCategory }) => {
   const categories = ['All', 'Deep Dive', 'Gameplay', 'Review', 'Guide', 'Tech'];
+
+  const normalizeCat = (raw?: string) => {
+    if (!raw) return 'All';
+    const clean = raw.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const found = categories.find((c) => c.toLowerCase().replace(/[^a-z0-9]/g, '') === clean);
+    return found || 'All';
+  };
+
+  const [selectedCategory, setSelectedCategory] = useState<string>(() => normalizeCat(initialCategory));
+
+  useEffect(() => {
+    if (initialCategory) {
+      setSelectedCategory(normalizeCat(initialCategory));
+    }
+  }, [initialCategory]);
 
   const filteredVideos = useMemo(() => {
     return videos.filter((v) => {

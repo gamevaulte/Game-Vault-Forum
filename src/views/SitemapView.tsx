@@ -20,21 +20,32 @@ import {
   Code,
   CheckCircle2
 } from 'lucide-react';
-import { MOCK_GAMES, MOCK_VIDEOS, MOCK_ARTICLES, MOCK_REVIEWS, MOCK_GUIDES, MOCK_FORUM_TOPICS } from '../data/mockData';
+import { 
+  MOCK_GAMES, 
+  MOCK_VIDEOS, 
+  MOCK_ARTICLES, 
+  MOCK_REVIEWS, 
+  MOCK_GUIDES, 
+  MOCK_FORUM_TOPICS, 
+  MOCK_FORUM_CATEGORIES 
+} from '../data/mockData';
 import { INITIAL_GAMES_REQUIREMENTS } from '../data/pcRequirementsData';
+import { GAMING_CATEGORIES, PLAYABLE_GAMES } from '../data/gamingData';
+import { GAME_PERFORMANCE_PROFILES } from '../data/fpsCalculatorData';
 import { getSeoSlug } from '../lib/seo';
 
 interface SitemapItem {
   id: string;
   title: string;
   url: string;
-  category: 'tools' | 'games' | 'articles' | 'reviews' | 'guides' | 'videos' | 'forum' | 'legal';
+  category: 'tools' | 'games' | 'articles' | 'reviews' | 'guides' | 'videos' | 'forum' | 'legal' | 'play';
   badge: string;
   badgeColor: string;
   description: string;
   priority: string;
   changefreq: string;
   isNew?: boolean;
+  isCategory?: boolean;
 }
 
 interface SitemapViewProps {
@@ -127,6 +138,156 @@ export const SitemapView: React.FC<SitemapViewProps> = ({ onNavigate }) => {
         priority: '0.9',
         changefreq: 'Daily'
       },
+      {
+        id: 'play-games-hub',
+        title: 'Play Games Online — Free In-Browser Arcade & Multiplayer Arena',
+        url: '/play-games',
+        category: 'play',
+        badge: 'Gaming Arena',
+        badgeColor: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+        description: 'Play 18 free retro, puzzle, sports, strategy, and multiplayer games directly in your browser with zero downloads, touch controls, and live P2P 1v1 multiplayer.',
+        priority: '0.95',
+        changefreq: 'Daily',
+        isNew: true
+      },
+
+      // 2. Play Games Category Hubs
+      ...GAMING_CATEGORIES.map((cat) => ({
+        id: `cat-play-${cat.slug}`,
+        title: `${cat.title} — Free Online Browser Games`,
+        url: `/play-games/${cat.slug}`,
+        category: 'play' as const,
+        badge: 'Game Category',
+        badgeColor: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30',
+        description: `${cat.description} Instant browser play with desktop keyboard and mobile touch support.`,
+        priority: '0.9',
+        changefreq: 'Weekly',
+        isNew: true,
+        isCategory: true
+      })),
+
+      // 3. Playable Browser Games (All 18 Online Games)
+      ...PLAYABLE_GAMES.map((game) => ({
+        id: `play-${game.slug}`,
+        title: `${game.title} — Free Online Browser Game (${game.categoryName})`,
+        url: `/play-games/${game.categorySlug}/${game.slug}`,
+        category: 'play' as const,
+        badge: game.difficulty || 'Play Now',
+        badgeColor: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30',
+        description: `${game.description} Play instantly in browser with touch and keyboard controls. ${game.supportsMultiplayer ? 'Features live multiplayer & custom room invites!' : ''}`,
+        priority: '0.88',
+        changefreq: 'Weekly',
+        isNew: true
+      })),
+
+      // 4. Articles Category Pages
+      ...[
+        { name: 'Hardware Guides', slug: 'hardware-guides', desc: 'In-depth PC component buyer guides, thermal benchmarks, GPU wattage testing, and hardware maintenance.' },
+        { name: 'Tactical Analysis', slug: 'tactical-analysis', desc: 'Competitive mechanics breakdowns, positional strategy formulations, and esports meta dissections.' },
+        { name: 'Gaming Culture', slug: 'gaming-culture', desc: 'Essays exploring player communities, gaming preservation, virtual economies, and digital history.' },
+        { name: 'Opinions', slug: 'opinions', desc: 'Critical editorial perspectives and candid essays on game design trends, monetization, and industry direction.' },
+        { name: 'Tips', slug: 'tips', desc: 'Practical tips, framerate boosts, controller remapping setups, and essential gamer configurations.' },
+        { name: 'Features', slug: 'features', desc: 'Extensive journalistic features, studio retrospectives, and deep technical hardware investigations.' },
+        { name: 'Gaming News', slug: 'gaming-news', desc: 'Latest announcements, title launch updates, patch breakdowns, and hardware launches.' },
+        { name: 'Industry', slug: 'industry', desc: 'Analysis of gaming studio acquisitions, engine developments, cross-platform technologies, and market shifts.' },
+        { name: 'Gaming Stories', slug: 'gaming-stories', desc: 'Memorable multiplayer anecdotes, legendary community lore, and personal gaming journey narratives.' }
+      ].map((cat) => ({
+        id: `cat-art-${cat.slug}`,
+        title: `${cat.name} — Articles & Analysis Hub`,
+        url: `/articles/category/${cat.slug}`,
+        category: 'articles' as const,
+        badge: 'Editorial Category',
+        badgeColor: 'bg-blue-500/15 text-blue-300 border-blue-500/30',
+        description: cat.desc,
+        priority: '0.85',
+        changefreq: 'Weekly',
+        isNew: true,
+        isCategory: true
+      })),
+
+      // 5. Guides Category Pages
+      ...[
+        { name: 'Beginner Guides', slug: 'beginner-guides', desc: 'Step-by-step introduction manuals, early-game economy routes, and beginner survival strategies.' },
+        { name: 'Strategy', slug: 'strategy', desc: 'Advanced tactical playbooks, fleet deployments, army composition charts, and RTS timing attacks.' },
+        { name: 'Builds', slug: 'builds', desc: 'Optimized character builds, weapon stat distribution, synergy perks, and gear progression trees.' },
+        { name: 'Walkthroughs', slug: 'walkthroughs', desc: 'Comprehensive step-by-step mission walkthroughs, boss battle counter-strategies, and quest objectives.' },
+        { name: 'Tips & Tricks', slug: 'tips-tricks', desc: 'Hidden game mechanics, easter eggs, quick shortcut commands, and efficiency exploits.' },
+        { name: 'Settings', slug: 'settings', desc: 'Optimal graphics settings, competitive resolution configs, DLSS/FSR presets, and low-latency tuning.' },
+        { name: 'Game Mechanics', slug: 'game-mechanics', desc: 'Calculations, damage formulas, armor penetration curves, and server tick-rate technical guides.' }
+      ].map((cat) => ({
+        id: `cat-gd-${cat.slug}`,
+        title: `${cat.name} — Tactical Playbooks & Game Guides`,
+        url: `/guides/category/${cat.slug}`,
+        category: 'guides' as const,
+        badge: 'Guide Category',
+        badgeColor: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30',
+        description: cat.desc,
+        priority: '0.85',
+        changefreq: 'Weekly',
+        isNew: true,
+        isCategory: true
+      })),
+
+      // 6. Forum Category Pages
+      ...MOCK_FORUM_CATEGORIES.map((cat) => ({
+        id: `cat-frm-${cat.id}`,
+        title: `${cat.name} — Community Discussion Board`,
+        url: `/forum/category/${cat.id}`,
+        category: 'forum' as const,
+        badge: 'Forum Category',
+        badgeColor: 'bg-cyan-500/15 text-cyan-300 border-cyan-500/30',
+        description: `${cat.description} Join active debates, share benchmarks, and connect with fellow enthusiasts.`,
+        priority: '0.85',
+        changefreq: 'Daily',
+        isNew: true,
+        isCategory: true
+      })),
+
+      // 7. Games Catalog Genre Categories
+      ...[
+        { name: 'Action', slug: 'action', desc: 'High-octane action, third-person combat, and fast-paced adventure titles.' },
+        { name: 'Adventure', slug: 'adventure', desc: 'Rich narrative exploration, immersive environments, and cinematic open-world games.' },
+        { name: 'RPG', slug: 'rpg', desc: 'Deep character progression, branching storylines, and tactical role-playing epics.' },
+        { name: 'Strategy', slug: 'strategy', desc: 'Grand strategy, turn-based tactics, and real-time empire management titles.' },
+        { name: 'Simulation', slug: 'simulation', desc: 'Realistic flight, naval, military, and vehicular engineering simulations.' },
+        { name: 'Multiplayer', slug: 'multiplayer', desc: 'Competitive esports arenas, cooperative team raids, and multiplayer online games.' },
+        { name: 'FPS', slug: 'fps', desc: 'First-person shooters, tactical gunplay, and competitive precision aim titles.' },
+        { name: 'Sports', slug: 'sports', desc: 'Competitive athletics, soccer, basketball, and extreme sports simulators.' },
+        { name: 'Racing', slug: 'racing', desc: 'High-speed motorsport, track racing, and arcade driving simulations.' }
+      ].map((cat) => ({
+        id: `cat-gm-${cat.slug}`,
+        title: `${cat.name} Games — Catalog & Benchmarks`,
+        url: `/games/category/${cat.slug}`,
+        category: 'games' as const,
+        badge: 'Genre Category',
+        badgeColor: 'bg-purple-500/15 text-purple-300 border-purple-500/30',
+        description: cat.desc,
+        priority: '0.85',
+        changefreq: 'Weekly',
+        isNew: true,
+        isCategory: true
+      })),
+
+      // 8. Videos Category Pages
+      ...[
+        { name: 'Deep Dive', slug: 'deep-dive', desc: 'Exhaustive frame-by-frame mechanical breakdowns and system design analyses.' },
+        { name: 'Gameplay', slug: 'gameplay', desc: 'Unedited 4K 60FPS gameplay sessions, no-commentary runs, and tactical playthroughs.' },
+        { name: 'Review', slug: 'review', desc: 'Video reviews with direct in-game footage, performance charts, and score verdicts.' },
+        { name: 'Guide', slug: 'guide', desc: 'Visual walkthrough tutorials, build demonstrations, and tactical positioning visualizers.' },
+        { name: 'Tech', slug: 'tech', desc: 'Graphics comparisons, frametime benchmark graphs, and PC hardware testing videos.' }
+      ].map((cat) => ({
+        id: `cat-vd-${cat.slug}`,
+        title: `${cat.name} Videos — Game Vault Channel`,
+        url: `/videos/category/${cat.slug}`,
+        category: 'videos' as const,
+        badge: 'Video Category',
+        badgeColor: 'bg-red-500/15 text-red-300 border-red-500/30',
+        description: cat.desc,
+        priority: '0.85',
+        changefreq: 'Weekly',
+        isNew: true,
+        isCategory: true
+      })),
 
       // 2. Gamer Tools & AI Suite (NEW)
       {
@@ -243,6 +404,29 @@ export const SitemapView: React.FC<SitemapViewProps> = ({ onNavigate }) => {
             badgeColor: 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20',
             description: `Direct hardware requirement analysis, minimum & recommended PC specs, and frame-rate estimates for ${req.title}.`,
             priority: '0.8',
+            changefreq: 'Weekly',
+            isNew: true
+          });
+        });
+        return list;
+      })(),
+
+      // 4. Game-Specific FPS Calculator & Bottleneck Benchmarks (All 50 Performance Profiles)
+      ...(() => {
+        const seen = new Set<string>();
+        const list: SitemapItem[] = [];
+        GAME_PERFORMANCE_PROFILES.forEach((profile) => {
+          if (seen.has(profile.slug)) return;
+          seen.add(profile.slug);
+          list.push({
+            id: `fps-calc-${profile.id}`,
+            title: `${profile.title} — FPS & Bottleneck Performance Calculator`,
+            url: `/tools/fps-calculator/${profile.slug}`,
+            category: 'tools' as const,
+            badge: 'FPS Benchmark',
+            badgeColor: 'bg-purple-500/15 text-purple-300 border-purple-500/30',
+            description: `Calculate estimated FPS, GPU/CPU bottleneck percentage, and graphics preset recommendations specifically for ${profile.title}.`,
+            priority: '0.82',
             changefreq: 'Weekly',
             isNew: true
           });
@@ -426,6 +610,64 @@ export const SitemapView: React.FC<SitemapViewProps> = ({ onNavigate }) => {
         description: 'Explanation of essential local storage preferences, session authentication cookies, and analytics handling.',
         priority: '0.4',
         changefreq: 'Monthly'
+      },
+      {
+        id: 'author-joel-ayuba',
+        title: 'Joel Ayuba — Founder, Publisher & Technical Lead',
+        url: '/authors/joel-ayuba',
+        category: 'legal',
+        badge: 'Author Profile',
+        badgeColor: 'bg-blue-500/15 text-blue-300 border-blue-500/30',
+        description: 'Publisher profile, hardware testing methodologies, editorial bio, and published guides by Joel Ayuba, founder of Game Vault Forum.',
+        priority: '0.8',
+        changefreq: 'Weekly',
+        isNew: true
+      },
+      {
+        id: 'forum-new-topic',
+        title: 'Start a New Discussion — Game Vault Forum',
+        url: '/forum/new',
+        category: 'forum',
+        badge: 'Community',
+        badgeColor: 'bg-cyan-500/15 text-cyan-300 border-cyan-500/30',
+        description: 'Create a new discussion thread, ask hardware questions, share tactical playbooks, or report game issues.',
+        priority: '0.7',
+        changefreq: 'Daily',
+        isNew: true
+      },
+      {
+        id: 'user-profile',
+        title: 'User Profile & Saved Rigs — Game Vault Member Area',
+        url: '/profile',
+        category: 'legal',
+        badge: 'Member Area',
+        badgeColor: 'bg-purple-500/15 text-purple-300 border-purple-500/30',
+        description: 'View saved custom PC builds, bookmarked tactical guides, activity history, and gamer credentials.',
+        priority: '0.6',
+        changefreq: 'Weekly',
+        isNew: true
+      },
+      {
+        id: 'user-login',
+        title: 'Member Sign In — Game Vault Forum',
+        url: '/login',
+        category: 'legal',
+        badge: 'Auth',
+        badgeColor: 'bg-zinc-800 text-zinc-300 border-zinc-700',
+        description: 'Log in to your Game Vault account to save PC builds, post forum threads, and bookmark guides.',
+        priority: '0.5',
+        changefreq: 'Monthly'
+      },
+      {
+        id: 'user-register',
+        title: 'Join Game Vault Forum — Create Free Member Account',
+        url: '/register',
+        category: 'legal',
+        badge: 'Register',
+        badgeColor: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30',
+        description: 'Create a free Game Vault account to participate in community discussions, track PC performance, and save custom avatar designs.',
+        priority: '0.6',
+        changefreq: 'Monthly'
       }
     ];
 
@@ -435,7 +677,10 @@ export const SitemapView: React.FC<SitemapViewProps> = ({ onNavigate }) => {
   // Filter items based on active category and search query
   const filteredItems = useMemo(() => {
     return sitemapItems.filter((item) => {
-      const matchesCat = activeCategory === 'all' || item.category === activeCategory;
+      const matchesCat =
+        activeCategory === 'all' ||
+        item.category === activeCategory ||
+        (activeCategory === 'categories' && item.isCategory);
       if (!matchesCat) return false;
 
       if (!searchQuery.trim()) return true;
@@ -453,6 +698,8 @@ export const SitemapView: React.FC<SitemapViewProps> = ({ onNavigate }) => {
   const counts = useMemo(() => {
     return {
       all: sitemapItems.length,
+      categories: sitemapItems.filter(i => i.isCategory).length,
+      play: sitemapItems.filter(i => i.category === 'play').length,
       tools: sitemapItems.filter(i => i.category === 'tools').length,
       games: sitemapItems.filter(i => i.category === 'games').length,
       articles: sitemapItems.filter(i => i.category === 'articles').length,
@@ -486,7 +733,7 @@ export const SitemapView: React.FC<SitemapViewProps> = ({ onNavigate }) => {
                 Website Sitemap
               </h1>
               <p className="mt-3 text-base sm:text-lg text-zinc-400 max-w-3xl leading-relaxed">
-                Complete directory of all {sitemapItems.length} public pages, interactive gamer tools, AI assistant features, game catalog entries, editorial reviews, technical guides, video walkthroughs, and community discussions.
+                Complete directory of all {sitemapItems.length} public pages, category hubs, browser arcade games, interactive gamer tools, AI assistant features, game catalog entries, editorial reviews, technical guides, video walkthroughs, and community discussions.
               </p>
             </div>
 
@@ -515,10 +762,18 @@ export const SitemapView: React.FC<SitemapViewProps> = ({ onNavigate }) => {
           </div>
 
           {/* Quick Metrics Bar */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3 mt-8 pt-8 border-t border-white/5">
+          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3 mt-8 pt-8 border-t border-white/5">
             <div className="p-3 rounded-xl bg-zinc-900/50 border border-white/5">
               <span className="text-xs text-zinc-400 font-medium block">Total Pages</span>
               <span className="text-xl font-bold text-white mt-0.5 block">{sitemapItems.length}</span>
+            </div>
+            <div className="p-3 rounded-xl bg-zinc-900/50 border border-white/5">
+              <span className="text-xs text-emerald-400 font-medium block">Category Hubs</span>
+              <span className="text-xl font-bold text-emerald-300 mt-0.5 block">{counts.categories}</span>
+            </div>
+            <div className="p-3 rounded-xl bg-zinc-900/50 border border-white/5">
+              <span className="text-xs text-teal-400 font-medium block">Play Games</span>
+              <span className="text-xl font-bold text-teal-300 mt-0.5 block">{counts.play}</span>
             </div>
             <div className="p-3 rounded-xl bg-zinc-900/50 border border-white/5">
               <span className="text-xs text-purple-400 font-medium block">Gamer Tools</span>
@@ -537,12 +792,8 @@ export const SitemapView: React.FC<SitemapViewProps> = ({ onNavigate }) => {
               <span className="text-xl font-bold text-blue-300 mt-0.5 block">{counts.articles}</span>
             </div>
             <div className="p-3 rounded-xl bg-zinc-900/50 border border-white/5">
-              <span className="text-xs text-amber-400 font-medium block">Reviews</span>
-              <span className="text-xl font-bold text-amber-300 mt-0.5 block">{counts.reviews}</span>
-            </div>
-            <div className="p-3 rounded-xl bg-zinc-900/50 border border-white/5">
-              <span className="text-xs text-emerald-400 font-medium block">Guides & Forum</span>
-              <span className="text-xl font-bold text-emerald-300 mt-0.5 block">{counts.guides + counts.forum}</span>
+              <span className="text-xs text-amber-400 font-medium block">Guides & Forum</span>
+              <span className="text-xl font-bold text-amber-300 mt-0.5 block">{counts.guides + counts.forum}</span>
             </div>
           </div>
         </div>
@@ -576,6 +827,8 @@ export const SitemapView: React.FC<SitemapViewProps> = ({ onNavigate }) => {
           <div className="flex items-center gap-1.5 overflow-x-auto pb-2 lg:pb-0 scrollbar-none">
             {[
               { id: 'all', label: 'All Pages', count: counts.all },
+              { id: 'categories', label: 'Category Pages', count: counts.categories },
+              { id: 'play', label: 'Play Games', count: counts.play },
               { id: 'tools', label: 'Tools & AI', count: counts.tools },
               { id: 'games', label: 'Games', count: counts.games },
               { id: 'videos', label: 'Videos', count: counts.videos },

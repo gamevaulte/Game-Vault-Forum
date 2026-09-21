@@ -501,6 +501,7 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
           <img
             src={src}
             alt={alt}
+            referrerPolicy="no-referrer"
             loading="lazy"
             decoding="async"
             className="w-full h-full object-cover hover:scale-[1.02] transition-transform duration-500"
@@ -591,6 +592,7 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
             <img
               src={article.author.avatar}
               alt={article.author.name}
+              referrerPolicy="no-referrer"
               className="w-12 h-12 rounded-full object-cover border-2 border-purple-500/50 shadow-md shadow-purple-950/50 group-hover:border-purple-400 transition-colors"
             />
             <div>
@@ -622,6 +624,7 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
         <img
           src={article.featuredImage}
           alt={article.title}
+          referrerPolicy="no-referrer"
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[#050507] via-transparent to-transparent opacity-60" />
@@ -866,6 +869,7 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
                 <img
                   src={relatedArticle.featuredImage}
                   alt={relatedArticle.title}
+                  referrerPolicy="no-referrer"
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                   loading="lazy"
                 />
@@ -901,6 +905,7 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
                     <img
                       src={relatedArticle.author.avatar}
                       alt={relatedArticle.author.name}
+                      referrerPolicy="no-referrer"
                       className="w-5 h-5 rounded-full object-cover border border-purple-500/40"
                     />
                     <span className="text-xs text-gray-300 font-medium">By {relatedArticle.author.name}</span>
@@ -993,6 +998,7 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
               <img
                 src={currentUser.avatar}
                 alt={currentUser.name}
+                referrerPolicy="no-referrer"
                 className="w-8 h-8 rounded-full object-cover border border-purple-500/50"
               />
               <span className="text-xs font-semibold text-white font-['Space_Grotesk']">
@@ -1074,6 +1080,7 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
                       <img
                         src={comment.author.avatar}
                         alt={comment.author.name}
+                        referrerPolicy="no-referrer"
                         className="w-8 h-8 rounded-full object-cover border border-purple-500/40 group-hover:border-purple-400 transition-colors"
                       />
                       <div>

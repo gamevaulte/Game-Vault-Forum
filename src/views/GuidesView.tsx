@@ -1,16 +1,14 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Compass, Clock, Lightbulb, ChevronRight, Gamepad2, Filter } from 'lucide-react';
 import { Guide } from '../types';
 
 interface GuidesViewProps {
   guides: Guide[];
   onSelectGuide: (g: Guide) => void;
+  initialCategory?: string;
 }
 
-const GuidesViewComponent: React.FC<GuidesViewProps> = ({ guides, onSelectGuide }) => {
-  const [selectedCategory, setSelectedCategory] = useState<string>('All');
-  const [selectedDifficulty, setSelectedDifficulty] = useState<string>('All');
-
+const GuidesViewComponent: React.FC<GuidesViewProps> = ({ guides, onSelectGuide, initialCategory }) => {
   const categories = [
     'All',
     'Beginner Guides',
@@ -21,6 +19,22 @@ const GuidesViewComponent: React.FC<GuidesViewProps> = ({ guides, onSelectGuide 
     'Settings',
     'Game Mechanics'
   ];
+
+  const normalizeCat = (raw?: string) => {
+    if (!raw) return 'All';
+    const clean = raw.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const found = categories.find((c) => c.toLowerCase().replace(/[^a-z0-9]/g, '') === clean);
+    return found || 'All';
+  };
+
+  const [selectedCategory, setSelectedCategory] = useState<string>(() => normalizeCat(initialCategory));
+  const [selectedDifficulty, setSelectedDifficulty] = useState<string>('All');
+
+  useEffect(() => {
+    if (initialCategory) {
+      setSelectedCategory(normalizeCat(initialCategory));
+    }
+  }, [initialCategory]);
 
   const difficulties = ['All', 'Beginner', 'Intermediate', 'Advanced'];
 
