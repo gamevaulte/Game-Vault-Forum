@@ -126,26 +126,26 @@ service cloud.firestore {
       allow delete: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
     }
 
-    // Forum Topics collection
+    // Forum Topics collection - readable and interactable by all visitors and members
     match /topics/{topicId} {
       allow read: if true;
-      allow create: if isAuthenticated();
-      allow update: if isAuthenticated();
+      allow create: if true;
+      allow update: if true;
       allow delete: if isAdmin() || (isAuthenticated() && resource.data.author.id == request.auth.uid);
     }
 
-    // Article & Video Comments
+    // Article & Video Comments - readable and interactable by all visitors and members
     match /comments/{commentId} {
       allow read: if true;
-      allow create: if isAuthenticated();
-      allow update: if isAuthenticated();
+      allow create: if true;
+      allow update: if true;
       allow delete: if isAdmin();
     }
 
-    // Likes tracking
+    // Likes tracking - accessible to visitors and members for live upvotes
     match /likes/{likeId} {
       allow read: if true;
-      allow write: if isAuthenticated();
+      allow write: if true;
     }
 
     // Gaming Avatar Presets Database (All Genres)

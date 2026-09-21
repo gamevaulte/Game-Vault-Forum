@@ -1,5 +1,5 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider, updateProfile } from "firebase/auth";
+import { getAuth, GoogleAuthProvider, updateProfile, signInAnonymously } from "firebase/auth";
 import { getAnalytics, isSupported } from "firebase/analytics";
 import { 
   getFirestore, 
@@ -21,6 +21,7 @@ import {
 import firebaseConfig from "../../firebase-applet-config.json";
 import { ForumTopic, PostComment, UserAccount, ContactSubmission, NewsletterSubscriber, ContactSubmissionStatus, PublicUserProfileData } from "../types";
 import { SavedAvatar } from "../types/avatar";
+import { INITIAL_ARTICLE_COMMENTS } from "../data/initialCommunityData";
 
 // Initialize Firebase App
 export { firebaseConfig };
@@ -383,24 +384,49 @@ export async function updateUserInFirestore(uid: string, updates: Partial<Firest
 }
 
 /**
- * Save new forum topic to Firestore
+ * Ensure anonymous guest session for visitors when needed
+ */
+export async function ensureGuestAuth(): Promise<void> {
+  if (auth.currentUser) return;
+  try {
+    await signInAnonymously(auth);
+  } catch (err) {
+    console.debug('Firebase anonymous auth notice:', err);
+  }
+}
+
+/**
+ * Save or update forum topic in Firestore
  */
 export async function saveTopicToFirestore(topic: ForumTopic): Promise<void> {
   try {
-    await setDoc(doc(db, 'topics', topic.id), topic, { merge: true });
+    await ensureGuestAuth();
+    await setDoc(doc(db, 'topics', topic.id), {
+      ...topic,
+      updatedAt: new Date().toISOString()
+    }, { merge: true });
   } catch (err) {
     console.warn('Firestore saveTopic warning:', err);
   }
 }
 
 /**
- * Save new article/video comment to Firestore
+ * Save new article/video comment or reply to Firestore
  */
 export async function saveCommentToFirestore(postId: string, comment: PostComment): Promise<void> {
   try {
+    await ensureGuestAuth();
     await setDoc(doc(db, 'comments', comment.id), {
-      ...comment,
+      id: comment.id,
       postId,
+      author: comment.author,
+      content: comment.content,
+      timestamp: comment.timestamp || 'Just now',
+      likes: typeof comment.likes === 'number' ? comment.likes : 0,
+      replyToAuthor: comment.replyToAuthor || null,
+      replyToId: comment.replyToId || null,
+      parentId: comment.parentId || null,
+      createdAt: comment.createdAt || new Date().toISOString(),
       savedAt: new Date().toISOString()
     }, { merge: true });
   } catch (err) {
@@ -413,6 +439,7 @@ export async function saveCommentToFirestore(postId: string, comment: PostCommen
  */
 export async function syncLikeToFirestore(itemId: string, count: number, userUid?: string, hasLiked?: boolean): Promise<void> {
   try {
+    await ensureGuestAuth();
     await setDoc(doc(db, 'likes', itemId), {
       itemId,
       count,
@@ -434,7 +461,7 @@ export async function syncLikeToFirestore(itemId: string, count: number, userUid
 
 /**
  * Real-time listener for all comments on content across the site.
- * Ensures every visitor and user sees newly posted comments live.
+ * Ensures every visitor and user sees newly posted comments and replies live.
  */
 export function subscribeToComments(
   onCommentsUpdated: (commentsMap: Record<string, PostComment[]>) => void
@@ -447,7 +474,12 @@ export function subscribeToComments(
     return onSnapshot(
       commentsCol,
       (snapshot) => {
+        // Pre-populate with baseline authentic comments
         const map: Record<string, PostComment[]> = {};
+        Object.keys(INITIAL_ARTICLE_COMMENTS).forEach((pid) => {
+          map[pid] = [...INITIAL_ARTICLE_COMMENTS[pid]];
+        });
+
         snapshot.forEach((docSnap) => {
           const data = docSnap.data();
           const postId = data.postId;
@@ -455,20 +487,31 @@ export function subscribeToComments(
           if (!map[postId]) {
             map[postId] = [];
           }
-          map[postId].push({
+          const commentObj: PostComment = {
             id: docSnap.id,
             author: {
               id: data.author?.id || data.authorId || '',
               name: data.author?.name || 'Vault Operative',
               username: data.author?.username || (data.author?.name ? `@${data.author.name.toLowerCase().replace(/\s+/g, '_')}` : '@operative'),
-              avatar: data.author?.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80',
+              avatar: data.author?.avatar || 'https://images.unsplash.com/photo-1566492031773-4f4e44671857?w=150&auto=format&fit=crop&q=80',
               badge: data.author?.badge || 'Recruit Operative',
               role: data.author?.role || data.author?.badge || 'Recruit Operative'
             },
             content: data.content || '',
             timestamp: data.timestamp || (data.savedAt ? new Date(data.savedAt).toLocaleDateString() : 'Recently'),
-            likes: typeof data.likes === 'number' ? data.likes : 0
-          });
+            likes: typeof data.likes === 'number' ? data.likes : 0,
+            replyToAuthor: data.replyToAuthor || undefined,
+            replyToId: data.replyToId || undefined,
+            parentId: data.parentId || undefined,
+            createdAt: data.createdAt || data.savedAt || new Date().toISOString()
+          };
+
+          const existingIdx = map[postId].findIndex((c) => c.id === docSnap.id);
+          if (existingIdx >= 0) {
+            map[postId][existingIdx] = commentObj;
+          } else {
+            map[postId].push(commentObj);
+          }
         });
         onCommentsUpdated(map);
       },
@@ -500,6 +543,25 @@ export function subscribeToTopics(
         const topicsList: ForumTopic[] = [];
         snapshot.forEach((docSnap) => {
           const data = docSnap.data();
+          const rawReplies = Array.isArray(data.replies) ? data.replies : [];
+          const cleanReplies = rawReplies.map((r: any) => ({
+            id: r.id || `reply-${Math.random().toString(36).substring(2, 7)}`,
+            author: {
+              id: r.author?.id || '',
+              name: r.author?.name || 'Vault Operative',
+              username: r.author?.username || '@operative',
+              avatar: r.author?.avatar || 'https://images.unsplash.com/photo-1566492031773-4f4e44671857?w=150&auto=format&fit=crop&q=80',
+              badge: r.author?.badge || 'Recruit Operative',
+              role: r.author?.role || r.author?.badge || 'Recruit Operative',
+              isStaff: Boolean(r.author?.isStaff)
+            },
+            content: r.content || '',
+            timestamp: r.timestamp || 'Recently',
+            likes: typeof r.likes === 'number' ? r.likes : 0,
+            replyToAuthor: r.replyToAuthor || undefined,
+            createdAt: r.createdAt || undefined
+          }));
+
           topicsList.push({
             id: docSnap.id,
             title: data.title || 'Untitled Discussion',
@@ -507,12 +569,12 @@ export function subscribeToTopics(
               id: '',
               name: 'Vault Operative',
               username: '@operative',
-              avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80',
+              avatar: 'https://images.unsplash.com/photo-1566492031773-4f4e44671857?w=150&auto=format&fit=crop&q=80',
               badge: 'Recruit Operative',
               role: 'Recruit Operative'
             },
             category: data.category || 'General Gaming',
-            repliesCount: typeof data.repliesCount === 'number' ? data.repliesCount : (Array.isArray(data.replies) ? data.replies.length : 0),
+            repliesCount: typeof data.repliesCount === 'number' ? data.repliesCount : cleanReplies.length,
             views: typeof data.views === 'number' ? data.views : 1,
             lastActivity: data.lastActivity || 'Recently',
             timestamp: data.timestamp || 'Recently',
@@ -521,7 +583,7 @@ export function subscribeToTopics(
             tags: Array.isArray(data.tags) ? data.tags : ['Discussion'],
             initialPost: data.initialPost || '',
             likes: typeof data.likes === 'number' ? data.likes : 0,
-            replies: Array.isArray(data.replies) ? data.replies : []
+            replies: cleanReplies
           });
         });
         if (topicsList.length > 0) {

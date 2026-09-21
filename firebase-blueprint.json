@@ -87,7 +87,8 @@
         "repliesCount": { "type": "number" },
         "views": { "type": "number" },
         "likes": { "type": "number" },
-        "createdAt": { "type": "string" }
+        "createdAt": { "type": "string" },
+        "replies": { "type": "array", "items": { "type": "object" } }
       },
       "required": ["id", "title"]
     },
@@ -101,7 +102,10 @@
         "author": { "type": "object" },
         "content": { "type": "string" },
         "createdAt": { "type": "string" },
-        "likes": { "type": "number" }
+        "likes": { "type": "number" },
+        "replyToId": { "type": "string" },
+        "replyToAuthor": { "type": "string" },
+        "parentId": { "type": "string" }
       },
       "required": ["id", "postId", "content"]
     },

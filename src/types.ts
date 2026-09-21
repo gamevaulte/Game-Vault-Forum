@@ -163,6 +163,7 @@ export interface PostComment {
   replyToId?: string;
   replyToAuthor?: string;
   parentId?: string;
+  createdAt?: string;
 }
 
 export type ArticleComment = PostComment;
@@ -224,6 +225,7 @@ export interface ForumReply {
   likes: number;
   replyToId?: string;
   replyToAuthor?: string;
+  createdAt?: string;
 }
 
 export interface ForumTopic {

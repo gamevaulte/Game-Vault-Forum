@@ -9,6 +9,7 @@ import {
   MOCK_FORUM_TOPICS,
   DEFAULT_USER
 } from './data/mockData';
+import { INITIAL_ARTICLE_COMMENTS } from './data/initialCommunityData';
 
 // Router
 import { useRouter, routeToUrl, Route } from './lib/router';
@@ -162,20 +163,41 @@ export default function App() {
     return {};
   });
 
-  // Set of post IDs liked by the current user
+  // Set of post IDs liked by the signed-in user
   const [userLikedSet, setUserLikedSet] = useState<Set<string>>(new Set());
 
-  // Comments Map for Articles & Videos: itemId -> PostComment[] (starts empty, only user action comments)
+  // Set of post IDs liked by visitors
+  const [visitorLikedSet, setVisitorLikedSet] = useState<Set<string>>(() => {
+    try {
+      const saved = localStorage.getItem('gv_visitor_likes_v1');
+      if (saved) return new Set(JSON.parse(saved));
+    } catch {}
+    return new Set();
+  });
+
+  // Comments Map for Articles & Videos: pre-seeded with rich discussion so all visitors can see and engage immediately
   const [commentsMap, setCommentsMap] = useState<Record<string, PostComment[]>>(() => {
+    const base: Record<string, PostComment[]> = {};
+    Object.keys(INITIAL_ARTICLE_COMMENTS).forEach((pid) => {
+      base[pid] = [...INITIAL_ARTICLE_COMMENTS[pid]];
+    });
+
     const saved = localStorage.getItem('gv_post_comments_v2');
     if (saved) {
       try {
-        return JSON.parse(saved);
+        const parsed = JSON.parse(saved);
+        Object.keys(parsed).forEach((pid) => {
+          const existing = base[pid] || [];
+          const map = new Map<string, PostComment>();
+          existing.forEach((c) => map.set(c.id, c));
+          (parsed[pid] || []).forEach((c: PostComment) => map.set(c.id, c));
+          base[pid] = Array.from(map.values());
+        });
       } catch (e) {
         console.error('Failed to parse comments map', e);
       }
     }
-    return {};
+    return base;
   });
 
   // Modals & UI States
@@ -603,71 +625,84 @@ export default function App() {
     return defaultBase || 0;
   };
 
-  // Helper to check if current user liked item
+  // Helper to check if current user or visitor liked item
   const isItemLiked = (itemId: string): boolean => {
-    if (!firebaseUser) return false;
-    return userLikedSet.has(itemId);
+    return firebaseUser ? userLikedSet.has(itemId) : visitorLikedSet.has(itemId);
   };
 
-  // Like Toggle Handler: Restricts likes to registered & signed in users only!
+  // Like Toggle Handler: Works seamlessly for both registered operatives and visitors!
   const handleToggleLike = (itemId: string, itemTitle?: string, defaultBase: number = 0) => {
-    if (!firebaseUser) {
-      setAuthPromptMessage('Only registered and signed in users can like content across the website. Sign in or register to join the community!');
-      setIsAuthModalOpen(true);
-      return;
-    }
-
-    const alreadyLiked = userLikedSet.has(itemId);
+    const alreadyLiked = firebaseUser ? userLikedSet.has(itemId) : visitorLikedSet.has(itemId);
     const currentCount = getLikeCount(itemId, defaultBase);
     const newCount = alreadyLiked ? Math.max(0, currentCount - 1) : currentCount + 1;
 
     // Update global like count
     setLikesMap((prev) => {
       const updated = { ...prev, [itemId]: newCount };
-      localStorage.setItem('gv_post_likes_v2', JSON.stringify(updated));
+      try {
+        localStorage.setItem('gv_post_likes_v2', JSON.stringify(updated));
+      } catch {}
       return updated;
     });
 
-    // Update user liked set
-    setUserLikedSet((prev) => {
-      const next = new Set(prev);
-      if (alreadyLiked) {
-        next.delete(itemId);
-      } else {
-        next.add(itemId);
-      }
-      localStorage.setItem(`gv_user_liked_${firebaseUser.uid}`, JSON.stringify(Array.from(next)));
-      return next;
-    });
+    if (firebaseUser) {
+      // Update registered user liked set
+      setUserLikedSet((prev) => {
+        const next = new Set(prev);
+        if (alreadyLiked) {
+          next.delete(itemId);
+        } else {
+          next.add(itemId);
+        }
+        try {
+          localStorage.setItem(`gv_user_liked_${firebaseUser.uid}`, JSON.stringify(Array.from(next)));
+        } catch {}
+        return next;
+      });
 
-    // Update user stats & reputation (zero-based, only increases as user acts)
-    setUser((prev) => {
-      const prevStats = prev.stats || { likesCount: 0, commentsCount: 0, savesCount: 0, topicsCount: 0 };
-      const updatedStats = {
-        ...prevStats,
-        likesCount: Math.max(0, prevStats.likesCount + (alreadyLiked ? -1 : 1))
-      };
-      const updatedReputation = Math.max(0, (prev.reputation || 0) + (alreadyLiked ? -2 : 2));
-      const updatedUser: UserAccount = {
-        ...prev,
-        stats: updatedStats,
-        reputation: updatedReputation,
-        likedIds: alreadyLiked 
-          ? (prev.likedIds || []).filter((id) => id !== itemId)
-          : [...(prev.likedIds || []), itemId]
-      };
-
-      if (firebaseUser) {
+      // Update user stats & reputation (zero-based, only increases as user acts)
+      setUser((prev) => {
+        const prevStats = prev.stats || { likesCount: 0, commentsCount: 0, savesCount: 0, topicsCount: 0 };
+        const updatedStats = {
+          ...prevStats,
+          likesCount: Math.max(0, prevStats.likesCount + (alreadyLiked ? -1 : 1))
+        };
+        const updatedReputation = Math.max(0, (prev.reputation || 0) + (alreadyLiked ? -2 : 2));
+        const updatedUser: UserAccount = {
+          ...prev,
+          stats: updatedStats,
+          reputation: updatedReputation,
+          likedIds: alreadyLiked 
+            ? (prev.likedIds || []).filter((id) => id !== itemId)
+            : [...(prev.likedIds || []), itemId]
+        };
         updateUserInFirestore(firebaseUser.uid, {
           stats: updatedStats,
           reputation: updatedReputation
         });
-      }
-      return updatedUser;
-    });
+        return updatedUser;
+      });
 
-    // Synchronize like to Firebase Firestore backend
-    syncLikeToFirestore(itemId, newCount, firebaseUser.uid, !alreadyLiked);
+      // Synchronize like to Firebase Firestore backend
+      syncLikeToFirestore(itemId, newCount, firebaseUser.uid, !alreadyLiked);
+    } else {
+      // Update visitor liked set
+      setVisitorLikedSet((prev) => {
+        const next = new Set(prev);
+        if (alreadyLiked) {
+          next.delete(itemId);
+        } else {
+          next.add(itemId);
+        }
+        try {
+          localStorage.setItem('gv_visitor_likes_v1', JSON.stringify(Array.from(next)));
+        } catch {}
+        return next;
+      });
+
+      // Synchronize visitor like to Firebase
+      syncLikeToFirestore(itemId, newCount);
+    }
 
     if (alreadyLiked) {
       addToast(itemTitle ? `Unliked "${itemTitle}".` : 'Unliked post.', 'info');
@@ -676,73 +711,86 @@ export default function App() {
     }
   };
 
-  // Comment Handlers for Articles & Videos: Restricts commenting to registered & signed in users!
-  const handleAddPostComment = (postId: string, content: string, postTitle?: string) => {
-    if (!firebaseUser) {
-      setAuthPromptMessage('Only registered and signed in users can comment on content across the website. Sign in or register to join discussions!');
-      setIsAuthModalOpen(true);
-      return;
+  // Comment Handlers for Articles & Videos: Allows all visitors and registered members to participate
+  const handleAddPostComment = (
+    postId: string, 
+    content: string, 
+    options?: { replyToId?: string; replyToAuthor?: string; guestAuthorName?: string; postTitle?: string }
+  ) => {
+    const authorName = firebaseUser 
+      ? user.name 
+      : (options?.guestAuthorName?.trim() || localStorage.getItem('gv_guest_callsign') || 'Guest Operative');
+    const authorAvatar = firebaseUser 
+      ? user.avatar 
+      : 'https://images.unsplash.com/photo-1566492031773-4f4e44671857?w=150&auto=format&fit=crop&q=80';
+    const authorRole = firebaseUser ? (user.role || user.badge || 'Recruit Operative') : 'Guest Operative';
+    const authorBadge = firebaseUser ? user.badge : 'Guest Operative';
+    const authorId = firebaseUser ? firebaseUser.uid : `guest-${Date.now()}`;
+
+    if (!firebaseUser && options?.guestAuthorName) {
+      try {
+        localStorage.setItem('gv_guest_callsign', options.guestAuthorName.trim());
+      } catch {}
     }
 
     const newComment: PostComment = {
       id: `comment-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
       author: {
-        id: firebaseUser.uid,
-        name: user.name,
-        username: user.username,
-        avatar: user.avatar,
-        role: user.role || user.badge || 'Recruit Operative',
-        badge: user.badge
+        id: authorId,
+        name: authorName,
+        username: firebaseUser ? user.username : `@${authorName.toLowerCase().replace(/[^a-z0-9]/g, '_')}`,
+        avatar: authorAvatar,
+        role: authorRole,
+        badge: authorBadge
       },
       content,
       timestamp: 'Just now',
-      likes: 0
+      likes: 0,
+      replyToId: options?.replyToId,
+      replyToAuthor: options?.replyToAuthor,
+      createdAt: new Date().toISOString()
     };
 
     setCommentsMap((prev) => {
       const existing = prev[postId] || [];
       const updated = { ...prev, [postId]: [newComment, ...existing] };
-      localStorage.setItem('gv_post_comments_v2', JSON.stringify(updated));
+      try {
+        localStorage.setItem('gv_post_comments_v2', JSON.stringify(updated));
+      } catch {}
       return updated;
     });
 
-    // Increment user comments stats & reputation
-    setUser((prev) => {
-      const prevStats = prev.stats || { likesCount: 0, commentsCount: 0, savesCount: 0, topicsCount: 0 };
-      const updatedStats = {
-        ...prevStats,
-        commentsCount: prevStats.commentsCount + 1
-      };
-      const updatedReputation = (prev.reputation || 0) + 5;
-      const updatedUser: UserAccount = {
-        ...prev,
-        stats: updatedStats,
-        reputation: updatedReputation
-      };
-
-      if (firebaseUser) {
+    if (firebaseUser) {
+      // Increment user comments stats & reputation
+      setUser((prev) => {
+        const prevStats = prev.stats || { likesCount: 0, commentsCount: 0, savesCount: 0, topicsCount: 0 };
+        const updatedStats = {
+          ...prevStats,
+          commentsCount: prevStats.commentsCount + 1
+        };
+        const updatedReputation = (prev.reputation || 0) + 5;
+        const updatedUser: UserAccount = {
+          ...prev,
+          stats: updatedStats,
+          reputation: updatedReputation
+        };
         updateUserInFirestore(firebaseUser.uid, {
           stats: updatedStats,
           reputation: updatedReputation
         });
-      }
-      return updatedUser;
-    });
+        return updatedUser;
+      });
+    }
 
     // Synchronize comment to Firebase Firestore backend
     saveCommentToFirestore(postId, newComment);
 
-    addToast(postTitle ? `Published comment on "${postTitle}"!` : 'Comment published!', 'success');
+    const postTitle = options?.postTitle;
+    addToast(postTitle ? `Published comment on "${postTitle}"!` : 'Comment published to discussion!', 'success');
   };
 
-  // Comment Like Handler: Restricts comment likes to registered & signed in users!
+  // Comment Like Handler: Works for all visitors & registered users
   const handleToggleCommentLike = (commentId: string) => {
-    if (!firebaseUser) {
-      setAuthPromptMessage('Only registered and signed in users can like comments. Sign in or register to join!');
-      setIsAuthModalOpen(true);
-      return;
-    }
-
     handleToggleLike(commentId, 'Comment', 0);
   };
 
@@ -829,27 +877,44 @@ export default function App() {
     });
   };
 
-  // Forum Reply Handler: Restricts replies to registered & signed in users!
-  const handleAddReply = (topicId: string, replyText: string) => {
-    if (!firebaseUser) {
-      setAuthPromptMessage('Only registered and signed in users can participate in discussions. Sign in or register to join!');
-      setIsAuthModalOpen(true);
-      return;
+  // Forum Reply Handler: Allows all visitors and members to participate in discussions
+  const handleAddReply = (
+    topicId: string, 
+    replyText: string,
+    options?: { replyToAuthor?: string; guestAuthorName?: string }
+  ) => {
+    const authorName = firebaseUser 
+      ? user.name 
+      : (options?.guestAuthorName?.trim() || localStorage.getItem('gv_guest_callsign') || 'Guest Operative');
+    const authorAvatar = firebaseUser 
+      ? user.avatar 
+      : 'https://images.unsplash.com/photo-1566492031773-4f4e44671857?w=150&auto=format&fit=crop&q=80';
+    const authorRole = firebaseUser ? (user.role || user.badge || 'Recruit Operative') : 'Guest Operative';
+    const authorBadge = firebaseUser ? user.badge : 'Guest Operative';
+    const authorId = firebaseUser ? firebaseUser.uid : `guest-${Date.now()}`;
+
+    if (!firebaseUser && options?.guestAuthorName) {
+      try {
+        localStorage.setItem('gv_guest_callsign', options.guestAuthorName.trim());
+      } catch {}
     }
 
     const newReply = {
       id: `reply-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
       author: {
-        id: firebaseUser.uid,
-        name: user.name,
-        username: user.username,
-        avatar: user.avatar,
-        role: user.role || user.badge || 'Recruit Operative',
-        badge: user.badge
+        id: authorId,
+        name: authorName,
+        username: firebaseUser ? user.username : `@${authorName.toLowerCase().replace(/[^a-z0-9]/g, '_')}`,
+        avatar: authorAvatar,
+        role: authorRole,
+        badge: authorBadge,
+        isStaff: false
       },
       content: replyText,
       timestamp: 'Just now',
-      likes: 0
+      likes: 0,
+      replyToAuthor: options?.replyToAuthor,
+      createdAt: new Date().toISOString()
     };
 
     setTopics((prev) =>
@@ -870,38 +935,48 @@ export default function App() {
       })
     );
 
-    // Increment user comments/replies stats & reputation
-    setUser((prev) => {
-      const prevStats = prev.stats || { likesCount: 0, commentsCount: 0, savesCount: 0, topicsCount: 0 };
-      const updatedStats = {
-        ...prevStats,
-        commentsCount: prevStats.commentsCount + 1
-      };
-      const updatedReputation = (prev.reputation || 0) + 5;
-      const updatedUser: UserAccount = {
-        ...prev,
-        stats: updatedStats,
-        reputation: updatedReputation
-      };
+    if (firebaseUser) {
+      // Increment user comments/replies stats & reputation
+      setUser((prev) => {
+        const prevStats = prev.stats || { likesCount: 0, commentsCount: 0, savesCount: 0, topicsCount: 0 };
+        const updatedStats = {
+          ...prevStats,
+          commentsCount: prevStats.commentsCount + 1
+        };
+        const updatedReputation = (prev.reputation || 0) + 5;
+        const updatedUser: UserAccount = {
+          ...prev,
+          stats: updatedStats,
+          reputation: updatedReputation
+        };
 
-      if (firebaseUser) {
         updateUserInFirestore(firebaseUser.uid, {
           stats: updatedStats,
           reputation: updatedReputation
         });
-      }
-      return updatedUser;
-    });
+        return updatedUser;
+      });
+    }
 
     addToast('Your response has been published to the discussion!', 'success');
   };
 
-  // Create Forum Topic: Restricts topic creation to registered & signed in users!
+  // Create Forum Topic: Allows visitors and registered users to initiate tactical discussions
   const handleCreateTopic = (newTopicData: Partial<ForumTopic>) => {
-    if (!firebaseUser) {
-      setAuthPromptMessage('Only registered and signed in users can create discussion topics. Sign in or register to participate!');
-      setIsAuthModalOpen(true);
-      return;
+    const authorName = firebaseUser 
+      ? user.name 
+      : (newTopicData.author?.name?.trim() || localStorage.getItem('gv_guest_callsign') || 'Guest Operative');
+    const authorAvatar = firebaseUser 
+      ? user.avatar 
+      : (newTopicData.author?.avatar || 'https://images.unsplash.com/photo-1566492031773-4f4e44671857?w=150&auto=format&fit=crop&q=80');
+    const authorRole = firebaseUser ? (user.role || user.badge || 'Recruit Operative') : 'Guest Operative';
+    const authorBadge = firebaseUser ? user.badge : 'Guest Operative';
+    const authorId = firebaseUser ? firebaseUser.uid : `guest-${Date.now()}`;
+
+    if (!firebaseUser && newTopicData.author?.name) {
+      try {
+        localStorage.setItem('gv_guest_callsign', newTopicData.author.name.trim());
+      } catch {}
     }
 
     const newId = `topic-${Date.now()}`;
@@ -910,13 +985,14 @@ export default function App() {
       title: newTopicData.title || 'Untitled Discussion',
       category: newTopicData.category || 'General Gaming',
       tags: newTopicData.tags || ['Discussion'],
-      author: newTopicData.author || {
-        id: firebaseUser.uid,
-        name: user.name,
-        username: user.username,
-        avatar: user.avatar,
-        role: user.role || user.badge || 'Recruit Operative',
-        badge: user.badge
+      author: {
+        id: authorId,
+        name: authorName,
+        username: firebaseUser ? user.username : `@${authorName.toLowerCase().replace(/[^a-z0-9]/g, '_')}`,
+        avatar: authorAvatar,
+        role: authorRole,
+        badge: authorBadge,
+        isStaff: false
       },
       repliesCount: 0,
       views: 1,
@@ -934,28 +1010,28 @@ export default function App() {
     // Persist new topic to Firebase Firestore backend
     saveTopicToFirestore(fullTopic);
 
-    // Increment user topics stats & reputation
-    setUser((prev) => {
-      const prevStats = prev.stats || { likesCount: 0, commentsCount: 0, savesCount: 0, topicsCount: 0 };
-      const updatedStats = {
-        ...prevStats,
-        topicsCount: prevStats.topicsCount + 1
-      };
-      const updatedReputation = (prev.reputation || 0) + 10;
-      const updatedUser: UserAccount = {
-        ...prev,
-        stats: updatedStats,
-        reputation: updatedReputation
-      };
+    if (firebaseUser) {
+      // Increment user topics stats & reputation
+      setUser((prev) => {
+        const prevStats = prev.stats || { likesCount: 0, commentsCount: 0, savesCount: 0, topicsCount: 0 };
+        const updatedStats = {
+          ...prevStats,
+          topicsCount: prevStats.topicsCount + 1
+        };
+        const updatedReputation = (prev.reputation || 0) + 10;
+        const updatedUser: UserAccount = {
+          ...prev,
+          stats: updatedStats,
+          reputation: updatedReputation
+        };
 
-      if (firebaseUser) {
         updateUserInFirestore(firebaseUser.uid, {
           stats: updatedStats,
           reputation: updatedReputation
         });
-      }
-      return updatedUser;
-    });
+        return updatedUser;
+      });
+    }
 
     addToast(`Discussion "${fullTopic.title}" opened in ${fullTopic.category}!`, 'success');
     navigate(`/forum/${getSeoSlug(fullTopic)}`);
@@ -1418,7 +1494,7 @@ export default function App() {
             onToggleBookmark={() => handleToggleBookmark('articles', article.id, article.title)}
             onShare={() => handleShare(article.title, `/articles/${articleSlug}`)}
             comments={articleComments}
-            onAddComment={(text) => handleAddPostComment(article.id, text, article.title)}
+            onAddComment={(text, options) => handleAddPostComment(article.id, text, { ...options, postTitle: article.title })}
             onToggleCommentLike={handleToggleCommentLike}
             isCommentLiked={isItemLiked}
             getCommentLikeCount={(cId) => getLikeCount(cId, 0)}
@@ -1469,7 +1545,7 @@ export default function App() {
             onToggleBookmark={() => handleToggleBookmark('videos', video.id, video.title)}
             onShare={() => handleShare(video.title, `/videos/${videoSlug}`)}
             comments={videoComments}
-            onAddComment={(text) => handleAddPostComment(video.id, text, video.title)}
+            onAddComment={(text, options) => handleAddPostComment(video.id, text, { ...options, postTitle: video.title })}
             onToggleCommentLike={handleToggleCommentLike}
             isCommentLiked={isItemLiked}
             getCommentLikeCount={(cId) => getLikeCount(cId, 0)}
@@ -1632,7 +1708,7 @@ export default function App() {
             isReplyLiked={isItemLiked}
             getReplyLikeCount={(replyId) => getLikeCount(replyId, 0)}
             onToggleReplyLike={(replyId) => handleToggleLike(replyId, 'Reply', 0)}
-            onAddReply={(replyText) => handleAddReply(topic.id, replyText)}
+            onAddReply={(replyText, options) => handleAddReply(topic.id, replyText, options)}
             currentUser={user}
             isSignedIn={!!firebaseUser}
             onOpenSignIn={() => {

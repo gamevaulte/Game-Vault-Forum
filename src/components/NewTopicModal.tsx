@@ -7,6 +7,8 @@ interface NewTopicModalProps {
   isOpen: boolean;
   onClose: () => void;
   currentUser: UserAccount;
+  isSignedIn?: boolean;
+  onOpenSignIn?: () => void;
   onCreateTopic: (newTopic: Partial<ForumTopic>) => void;
 }
 
@@ -14,12 +16,17 @@ export const NewTopicModal: React.FC<NewTopicModalProps> = ({
   isOpen,
   onClose,
   currentUser,
+  isSignedIn = false,
+  onOpenSignIn,
   onCreateTopic
 }) => {
   const [category, setCategory] = useState('General Gaming');
   const [title, setTitle] = useState('');
   const [tagsInput, setTagsInput] = useState('');
   const [content, setContent] = useState('');
+  const [guestCallsign, setGuestCallsign] = useState(() => {
+    return localStorage.getItem('gv_guest_callsign') || 'Guest Operative';
+  });
 
   if (!isOpen) return null;
 
@@ -32,15 +39,21 @@ export const NewTopicModal: React.FC<NewTopicModalProps> = ({
       .map((t) => t.trim().replace(/^#/, ''))
       .filter(Boolean);
 
+    const authorName = isSignedIn ? currentUser.name : (guestCallsign.trim() || 'Guest Operative');
+    const authorAvatar = isSignedIn
+      ? currentUser.avatar
+      : 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80';
+    const authorBadge = isSignedIn ? currentUser.badge : 'Guest Operative';
+
     onCreateTopic({
       title: title.trim(),
       category,
       tags: parsedTags.length > 0 ? parsedTags : ['Discussion'],
       initialPost: content.trim(),
       author: {
-        name: currentUser.name,
-        avatar: currentUser.avatar,
-        badge: currentUser.badge,
+        name: authorName,
+        avatar: authorAvatar,
+        badge: authorBadge,
         isStaff: false
       }
     });
@@ -139,12 +152,41 @@ export const NewTopicModal: React.FC<NewTopicModalProps> = ({
           </div>
 
           {/* User info note */}
-          <div className="flex items-center gap-2 p-3 bg-[#131728] border border-[#222944] rounded-xl text-xs text-slate-400">
-            <Sparkles className="w-4 h-4 text-purple-400 shrink-0" />
-            <span>
-              Posting publicly as <strong className="text-white">{currentUser.name}</strong> ({currentUser.badge}). Respect the Game Vault community rules.
-            </span>
-          </div>
+          {isSignedIn ? (
+            <div className="flex items-center gap-2 p-3 bg-[#131728] border border-[#222944] rounded-xl text-xs text-slate-400">
+              <Sparkles className="w-4 h-4 text-purple-400 shrink-0" />
+              <span>
+                Posting publicly as <strong className="text-white">{currentUser.name}</strong> ({currentUser.badge}). Respect the Game Vault community rules.
+              </span>
+            </div>
+          ) : (
+            <div className="flex flex-wrap items-center justify-between gap-2 p-3 bg-[#131728] border border-[#222944] rounded-xl text-xs text-slate-400">
+              <div className="flex items-center gap-2">
+                <span className="text-purple-300 font-bold uppercase tracking-wider font-['Rajdhani']">Callsign:</span>
+                <input
+                  type="text"
+                  value={guestCallsign}
+                  onChange={(e) => {
+                    setGuestCallsign(e.target.value);
+                    try { localStorage.setItem('gv_guest_callsign', e.target.value); } catch {}
+                  }}
+                  className="px-2.5 py-1 bg-black/40 border border-purple-500/30 rounded-lg text-white text-xs font-mono focus:outline-none focus:border-purple-400"
+                />
+              </div>
+              {onOpenSignIn && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    onClose();
+                    onOpenSignIn();
+                  }}
+                  className="text-purple-300 hover:text-white underline cursor-pointer text-[11px]"
+                >
+                  Sign in for Verified Badge
+                </button>
+              )}
+            </div>
+          )}
 
           {/* Actions */}
           <div className="flex items-center justify-end gap-3 pt-2">

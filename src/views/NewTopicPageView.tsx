@@ -31,6 +31,9 @@ export const NewTopicPageView: React.FC<NewTopicPageViewProps> = ({
   const [title, setTitle] = useState('');
   const [tagsInput, setTagsInput] = useState('');
   const [content, setContent] = useState('');
+  const [guestCallsign, setGuestCallsign] = useState(() => {
+    return localStorage.getItem('gv_guest_callsign') || 'Guest Operative';
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,15 +44,21 @@ export const NewTopicPageView: React.FC<NewTopicPageViewProps> = ({
       .map((t) => t.trim().replace(/^#/, ''))
       .filter(Boolean);
 
+    const authorName = isSignedIn ? currentUser.name : (guestCallsign.trim() || 'Guest Operative');
+    const authorAvatar = isSignedIn
+      ? currentUser.avatar
+      : 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80';
+    const authorBadge = isSignedIn ? currentUser.badge : 'Guest Operative';
+
     onCreateTopic({
       title: title.trim(),
       category,
       tags: parsedTags.length > 0 ? parsedTags : ['Discussion'],
       initialPost: content.trim(),
       author: {
-        name: currentUser.name,
-        avatar: currentUser.avatar,
-        badge: currentUser.badge,
+        name: authorName,
+        avatar: authorAvatar,
+        badge: authorBadge,
         isStaff: false
       }
     });
@@ -87,46 +96,67 @@ export const NewTopicPageView: React.FC<NewTopicPageViewProps> = ({
           </p>
         </div>
 
-        {!isSignedIn ? (
-          <div className="p-6 rounded-2xl bg-purple-950/30 border border-purple-500/40 text-center space-y-4">
-            <div className="w-12 h-12 rounded-2xl bg-purple-600/30 border border-purple-500/50 flex items-center justify-center mx-auto text-purple-300">
-              <Sparkles className="w-6 h-6 text-purple-400 animate-pulse" />
+        <form onSubmit={handleSubmit} className="space-y-5">
+          {/* Author Badge & Callsign status */}
+          {isSignedIn ? (
+            <div className="flex items-center gap-3 p-3 bg-white/5 border border-white/10 rounded-xl">
+              <img
+                src={currentUser.avatar}
+                alt={currentUser.name}
+                className="w-8 h-8 rounded-full object-cover border border-purple-500/50"
+              />
+              <div>
+                <span className="text-xs font-semibold text-white font-['Space_Grotesk'] block">
+                  {currentUser.name}
+                </span>
+                <span className="text-[10px] text-purple-300 font-mono">
+                  Verified Operative ({currentUser.badge || 'Recruit'})
+                </span>
+              </div>
             </div>
-            <div className="space-y-1">
-              <h2 className="text-lg font-bold font-['Rajdhani'] uppercase tracking-wider text-white">
-                Registration Required to Post
-              </h2>
-              <p className="text-xs text-gray-300 max-w-md mx-auto">
-                Only registered and signed-in vault operatives can create topics and join civil discussions.
-              </p>
-            </div>
-            <button
-              onClick={onOpenSignIn}
-              className="px-6 py-3 bg-purple-600 hover:bg-purple-500 text-white rounded-xl text-xs font-['Rajdhani'] font-bold uppercase tracking-wider shadow-lg shadow-purple-950/50 border border-purple-400/40 transition-all cursor-pointer inline-flex items-center gap-2"
-            >
-              <LogIn className="w-4 h-4" />
-              <span>Sign In / Create Account</span>
-            </button>
-          </div>
-        ) : (
-          <form onSubmit={handleSubmit} className="space-y-5">
-            {/* Category Select */}
-            <div className="space-y-1.5">
-              <label className="text-xs font-['Rajdhani'] font-bold uppercase tracking-wider text-gray-300">
-                Forum Category
-              </label>
-              <select
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-                className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-xs sm:text-sm text-white focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
+          ) : (
+            <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 rounded-xl bg-purple-950/20 border border-purple-500/30 text-xs">
+              <div className="flex items-center gap-2">
+                <span className="text-purple-300 font-bold font-['Rajdhani'] uppercase tracking-wider text-xs">Operative Callsign:</span>
+                <input
+                  type="text"
+                  value={guestCallsign}
+                  onChange={(e) => {
+                    setGuestCallsign(e.target.value);
+                    try { localStorage.setItem('gv_guest_callsign', e.target.value); } catch {}
+                  }}
+                  placeholder="e.g. Guest Operative"
+                  className="px-2.5 py-1 bg-black/40 border border-purple-500/30 rounded-lg text-white text-xs font-mono focus:outline-none focus:border-purple-400"
+                />
+              </div>
+              <button
+                type="button"
+                onClick={onOpenSignIn}
+                className="text-[11px] text-purple-300 hover:text-white underline underline-offset-2 flex items-center gap-1 cursor-pointer"
               >
-                {MOCK_FORUM_CATEGORIES.map((cat) => (
-                  <option key={cat.id} value={cat.name} className="bg-[#0e101a] text-white">
-                    {cat.name}
-                  </option>
-                ))}
-              </select>
+                <LogIn className="w-3 h-3" />
+                <span>Sign in for Verified Badge</span>
+              </button>
             </div>
+          )}
+
+          {/* Category Select */}
+          <div className="space-y-1.5">
+            <label className="text-xs font-['Rajdhani'] font-bold uppercase tracking-wider text-gray-300">
+              Forum Category
+            </label>
+            <select
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-xs sm:text-sm text-white focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
+            >
+              {MOCK_FORUM_CATEGORIES.map((cat) => (
+                <option key={cat.id} value={cat.name} className="bg-[#0e101a] text-white">
+                  {cat.name}
+                </option>
+              ))}
+            </select>
+          </div>
 
             {/* Topic Title */}
             <div className="space-y-1.5">
@@ -199,7 +229,6 @@ export const NewTopicPageView: React.FC<NewTopicPageViewProps> = ({
               </button>
             </div>
           </form>
-        )}
       </div>
     </div>
   );

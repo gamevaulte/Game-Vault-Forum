@@ -957,18 +957,20 @@ export const MOCK_FORUM_CATEGORIES: ForumCategory[] = [
 export const MOCK_FORUM_TOPICS: ForumTopic[] = [
   {
     id: 'topic-1',
-    likes: 0,
+    likes: 18,
     title: 'Game Vault Forum Official Announcement: YouTube Channel Road Map & 2026 Schedule',
     author: {
+      id: 'usr_joel_ayuba',
       name: 'Joel Ayuba',
+      username: '@joel_ayuba',
       avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80',
       badge: 'Founder',
       isStaff: true
     },
     category: 'Game Vault Forum Community',
-    repliesCount: 0,
-    views: 0,
-    lastActivity: 'Just now',
+    repliesCount: 3,
+    views: 142,
+    lastActivity: '35 mins ago',
     timestamp: 'Yesterday at 4:15 PM',
     date: 'Sep 18, 2026',
     isPinned: true,
@@ -978,78 +980,191 @@ export const MOCK_FORUM_TOPICS: ForumTopic[] = [
 Our YouTube channel is scaling up production with dedicated deep dive essays, tactical game analyses, and honest hardware comparisons. This forum is built to give our community a home away from the chaos of generic social platforms. 
 
 Share your video requests, talk gaming with civil peers, and let us know what features you want next in the Vault!`,
-    replies: []
+    replies: [
+      {
+        id: 'reply-top1-1',
+        author: {
+          id: 'usr_nordic_blade',
+          name: 'NordicBlade',
+          username: '@nordic_blade',
+          avatar: 'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=120&auto=format&fit=crop&q=80',
+          badge: 'Veteran',
+          role: 'Community Strategist'
+        },
+        content: 'Super excited for the 2026 schedule! The tactical video breakdown on World of Warships ballistics was one of the clearest explanations of armor angling on YouTube. Would love to see a deep dive on Monster Hunter Wilds weapon motion values next!',
+        timestamp: 'Yesterday at 5:30 PM',
+        likes: 7
+      },
+      {
+        id: 'reply-top1-2',
+        author: {
+          id: 'usr_joel_ayuba',
+          name: 'Joel Ayuba',
+          username: '@joel_ayuba',
+          avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80',
+          badge: 'Founder',
+          isStaff: true,
+          role: 'Vault Overseer'
+        },
+        content: '@NordicBlade Glad you enjoyed the ballistics analysis! Monster Hunter Wilds motion values and the new Focus Strike system are already on our production slate for next week. Keep an eye on the dispatch feed.',
+        timestamp: 'Yesterday at 6:15 PM',
+        likes: 11,
+        replyToAuthor: 'NordicBlade'
+      },
+      {
+        id: 'reply-top1-3',
+        author: {
+          id: 'usr_tactical_guest',
+          name: 'Operative_Apex',
+          username: '@operative_apex',
+          avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&auto=format&fit=crop&q=80',
+          badge: 'Tactical Analyst',
+          role: 'Forum Contributor'
+        },
+        content: 'Really appreciate having a clean, dedicated forum space for long-form discussion without algorithm feed noise. The community guides are already top tier.',
+        timestamp: '4 hours ago',
+        likes: 4
+      }
+    ]
   },
   {
     id: 'topic-2',
-    likes: 0,
+    likes: 24,
     title: 'Why do modern open-world games struggle with meaningful exploration after Elden Ring?',
     author: {
+      id: 'usr_nordic_blade',
       name: 'NordicBlade',
+      username: '@nordic_blade',
       avatar: 'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=120&auto=format&fit=crop&q=80',
       badge: 'Veteran'
     },
     category: 'General Gaming',
-    repliesCount: 0,
-    views: 0,
-    lastActivity: '34 min ago',
+    repliesCount: 2,
+    views: 189,
+    lastActivity: '18 hours ago',
     timestamp: '2 days ago',
     date: 'Sep 17, 2026',
     isPinned: false,
     tags: ['Open World', 'Game Design', 'Elden Ring'],
     initialPost: `I find it almost impossible to enjoy traditional map-clearing games anymore with 500 checklist icons. Elden Ring worked because landmark silhouettes drew the eye, and subterranean surprises rewarded genuine curiosity. Why are so few major studios copying this philosophy?`,
-    replies: []
+    replies: [
+      {
+        id: 'reply-top2-1',
+        author: {
+          id: 'usr_shadow_walker',
+          name: 'ChromaRanger',
+          username: '@chroma_ranger',
+          avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=120&auto=format&fit=crop&q=80',
+          badge: 'Lore Scholar',
+          role: 'Explorer'
+        },
+        content: 'You hit the nail on the head. Most open-world games design the map as a menu screen disguised as terrain — you look at the compass bar or mini-map 80% of the time. In Elden Ring, sightlines dictate travel. When you see a coliseum on a distant crag, you navigate by land geometry.',
+        timestamp: '1 day ago',
+        likes: 15
+      },
+      {
+        id: 'reply-top2-2',
+        author: {
+          id: 'usr_nordic_blade',
+          name: 'NordicBlade',
+          username: '@nordic_blade',
+          avatar: 'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=120&auto=format&fit=crop&q=80',
+          badge: 'Veteran',
+          role: 'Community Strategist'
+        },
+        content: 'Exactly @ChromaRanger. And studios are terrified players will miss content if they don\'t put a yellow waypoint marker over it. But finding a secret elevator down to Siofra River organically is 100x more memorable precisely because it wasn\'t promised on a checklist.',
+        timestamp: '18 hours ago',
+        likes: 12,
+        replyToAuthor: 'ChromaRanger'
+      }
+    ]
   },
   {
     id: 'topic-3',
-    likes: 0,
+    likes: 19,
     title: 'RTX 5000 Series vs OLED Gaming Monitors: Where should you spend your upgrade budget first?',
     author: {
+      id: 'usr_frame_pacer',
       name: 'FramePacer',
+      username: '@frame_pacer',
       avatar: 'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=120&auto=format&fit=crop&q=80',
       badge: 'Hardware Sage'
     },
     category: 'PC Gaming',
-    repliesCount: 0,
-    views: 0,
+    repliesCount: 1,
+    views: 115,
     lastActivity: '1 hour ago',
     timestamp: '3 days ago',
     date: 'Sep 16, 2026',
     tags: ['Hardware', 'GPU', 'OLED', 'Tech'],
     initialPost: `If you are currently on an RTX 3080 / 4070 with an IPS 1440p monitor, do NOT buy a new GPU yet. Buying a 240Hz QD-OLED monitor will transform every single game you own instantly due to infinite contrast and near-instant pixel response times. Thoughts?`,
-    replies: []
+    replies: [
+      {
+        id: 'reply-top3-1',
+        author: {
+          id: 'usr_oled_fan',
+          name: 'PhotonPixel',
+          username: '@photon_pixel',
+          avatar: 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=120&auto=format&fit=crop&q=80',
+          badge: 'Display Guru',
+          role: 'Hardware Analyst'
+        },
+        content: 'Always OLED first! A 240Hz QD-OLED display improves every single frame your existing GPU produces. Perfect black levels and instantaneous 0.03ms pixel response times elevate games even running on an RTX 3070 more than a 5080 on a dull IPS panel.',
+        timestamp: '2 days ago',
+        likes: 16
+      }
+    ]
   },
   {
     id: 'topic-4',
-    likes: 0,
+    likes: 14,
     title: 'Helldivers 2 Super Helldive Squad Coordination Tactics & Stratagem loadouts',
     author: {
+      id: 'usr_major_vanguard',
       name: 'MajorVanguard',
+      username: '@major_vanguard',
       avatar: 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=120&auto=format&fit=crop&q=80',
       badge: 'Super Citizen'
     },
     category: 'Multiplayer',
-    repliesCount: 0,
-    views: 0,
+    repliesCount: 1,
+    views: 94,
     lastActivity: '2 hours ago',
     timestamp: '4 days ago',
     date: 'Sep 15, 2026',
     tags: ['Helldivers 2', 'Co-op', 'Loadouts'],
     initialPost: `Looking to assemble a regular 4-player squad for Automaton level 10 operations. We run staggered EMS mortars, Spear anti-heavy armor, and shield generators. Reply with your Discord handle and preferred playstyle!`,
-    replies: []
+    replies: [
+      {
+        id: 'reply-top4-1',
+        author: {
+          id: 'usr_dps_diver',
+          name: 'SuperDestroyer_One',
+          username: '@super_destroyer_one',
+          avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=120&auto=format&fit=crop&q=80',
+          badge: 'Hellpod Specialist',
+          role: 'Heavy Weapons'
+        },
+        content: 'I run dedicated Spear + Supply Pack for continuous heavy armor stripping against Factory Striders. Count me in for Friday evening Super Helldives.',
+        timestamp: '3 hours ago',
+        likes: 5
+      }
+    ]
   },
   {
     id: 'topic-5',
-    likes: 0,
+    likes: 8,
     title: 'PlayStation State of Play reactions: What are you most excited for in 2026/2027?',
     author: {
+      id: 'usr_sony_sentry',
       name: 'SonySentry',
+      username: '@sony_sentry',
       avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80',
       badge: 'Member'
     },
     category: 'PlayStation',
     repliesCount: 0,
-    views: 0,
+    views: 78,
     lastActivity: '5 hours ago',
     timestamp: '5 days ago',
     date: 'Sep 14, 2026',
