@@ -37,6 +37,8 @@ import { UserAccount, PageTab } from '../types';
 
 interface UsernameGeneratorViewProps {
   currentUser?: UserAccount | null;
+  isSignedIn?: boolean;
+  onOpenSignIn?: () => void;
   onNavigateTab: (tab: PageTab) => void;
   onShowToast?: (msg: string, type?: 'success' | 'info') => void;
 }
@@ -82,6 +84,8 @@ const STORAGE_FAVORITES_KEY = 'gvf_saved_fav_usernames_v1';
 
 export const UsernameGeneratorView: React.FC<UsernameGeneratorViewProps> = ({
   currentUser,
+  isSignedIn,
+  onOpenSignIn,
   onNavigateTab,
   onShowToast
 }) => {
@@ -181,6 +185,14 @@ export const UsernameGeneratorView: React.FC<UsernameGeneratorViewProps> = ({
   };
 
   const handleToggleFavorite = (username: GeneratedUsername) => {
+    if (!isSignedIn) {
+      if (onOpenSignIn) {
+        onOpenSignIn();
+      } else {
+        toast('Sign in or register to save usernames to your favorites collection.', 'info');
+      }
+      return;
+    }
     setFavorites(prev => {
       const exists = prev.some(f => f.name === username.name);
       let updated: GeneratedUsername[];

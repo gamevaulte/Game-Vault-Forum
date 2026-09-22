@@ -630,9 +630,15 @@ export default function App() {
     return firebaseUser ? userLikedSet.has(itemId) : visitorLikedSet.has(itemId);
   };
 
-  // Like Toggle Handler: Works seamlessly for both registered operatives and visitors!
+  // Like Toggle Handler: Gated to registered and signed-in members
   const handleToggleLike = (itemId: string, itemTitle?: string, defaultBase: number = 0) => {
-    const alreadyLiked = firebaseUser ? userLikedSet.has(itemId) : visitorLikedSet.has(itemId);
+    if (!firebaseUser) {
+      setAuthPromptMessage('Please sign in or create an account to like posts, comments, and discussions across Game Vault.');
+      setIsAuthModalOpen(true);
+      return;
+    }
+
+    const alreadyLiked = userLikedSet.has(itemId);
     const currentCount = getLikeCount(itemId, defaultBase);
     const newCount = alreadyLiked ? Math.max(0, currentCount - 1) : currentCount + 1;
 
@@ -645,64 +651,45 @@ export default function App() {
       return updated;
     });
 
-    if (firebaseUser) {
-      // Update registered user liked set
-      setUserLikedSet((prev) => {
-        const next = new Set(prev);
-        if (alreadyLiked) {
-          next.delete(itemId);
-        } else {
-          next.add(itemId);
-        }
-        try {
-          localStorage.setItem(`gv_user_liked_${firebaseUser.uid}`, JSON.stringify(Array.from(next)));
-        } catch {}
-        return next;
-      });
+    // Update registered user liked set
+    setUserLikedSet((prev) => {
+      const next = new Set(prev);
+      if (alreadyLiked) {
+        next.delete(itemId);
+      } else {
+        next.add(itemId);
+      }
+      try {
+        localStorage.setItem(`gv_user_liked_${firebaseUser.uid}`, JSON.stringify(Array.from(next)));
+      } catch {}
+      return next;
+    });
 
-      // Update user stats & reputation (zero-based, only increases as user acts)
-      setUser((prev) => {
-        const prevStats = prev.stats || { likesCount: 0, commentsCount: 0, savesCount: 0, topicsCount: 0 };
-        const updatedStats = {
-          ...prevStats,
-          likesCount: Math.max(0, prevStats.likesCount + (alreadyLiked ? -1 : 1))
-        };
-        const updatedReputation = Math.max(0, (prev.reputation || 0) + (alreadyLiked ? -2 : 2));
-        const updatedUser: UserAccount = {
-          ...prev,
-          stats: updatedStats,
-          reputation: updatedReputation,
-          likedIds: alreadyLiked 
-            ? (prev.likedIds || []).filter((id) => id !== itemId)
-            : [...(prev.likedIds || []), itemId]
-        };
-        updateUserInFirestore(firebaseUser.uid, {
-          stats: updatedStats,
-          reputation: updatedReputation
-        });
-        return updatedUser;
+    // Update user stats & reputation (zero-based, only increases as user acts)
+    setUser((prev) => {
+      const prevStats = prev.stats || { likesCount: 0, commentsCount: 0, savesCount: 0, topicsCount: 0 };
+      const updatedStats = {
+        ...prevStats,
+        likesCount: Math.max(0, prevStats.likesCount + (alreadyLiked ? -1 : 1))
+      };
+      const updatedReputation = Math.max(0, (prev.reputation || 0) + (alreadyLiked ? -2 : 2));
+      const updatedUser: UserAccount = {
+        ...prev,
+        stats: updatedStats,
+        reputation: updatedReputation,
+        likedIds: alreadyLiked 
+          ? (prev.likedIds || []).filter((id) => id !== itemId)
+          : [...(prev.likedIds || []), itemId]
+      };
+      updateUserInFirestore(firebaseUser.uid, {
+        stats: updatedStats,
+        reputation: updatedReputation
       });
+      return updatedUser;
+    });
 
-      // Synchronize like to Firebase Firestore backend
-      syncLikeToFirestore(itemId, newCount, firebaseUser.uid, !alreadyLiked);
-    } else {
-      // Update visitor liked set
-      setVisitorLikedSet((prev) => {
-        const next = new Set(prev);
-        if (alreadyLiked) {
-          next.delete(itemId);
-        } else {
-          next.add(itemId);
-        }
-        try {
-          localStorage.setItem('gv_visitor_likes_v1', JSON.stringify(Array.from(next)));
-        } catch {}
-        return next;
-      });
-
-      // Synchronize visitor like to Firebase
-      syncLikeToFirestore(itemId, newCount);
-    }
+    // Synchronize like to Firebase Firestore backend
+    syncLikeToFirestore(itemId, newCount, firebaseUser.uid, !alreadyLiked);
 
     if (alreadyLiked) {
       addToast(itemTitle ? `Unliked "${itemTitle}".` : 'Unliked post.', 'info');
@@ -711,34 +698,30 @@ export default function App() {
     }
   };
 
-  // Comment Handlers for Articles & Videos: Allows all visitors and registered members to participate
+  // Comment Handlers for Articles & Videos: Gated to registered and signed-in members
   const handleAddPostComment = (
     postId: string, 
     content: string, 
     options?: { replyToId?: string; replyToAuthor?: string; guestAuthorName?: string; postTitle?: string }
   ) => {
-    const authorName = firebaseUser 
-      ? user.name 
-      : (options?.guestAuthorName?.trim() || localStorage.getItem('gv_guest_callsign') || 'Guest Operative');
-    const authorAvatar = firebaseUser 
-      ? user.avatar 
-      : 'https://images.unsplash.com/photo-1566492031773-4f4e44671857?w=150&auto=format&fit=crop&q=80';
-    const authorRole = firebaseUser ? (user.role || user.badge || 'Recruit Operative') : 'Guest Operative';
-    const authorBadge = firebaseUser ? user.badge : 'Guest Operative';
-    const authorId = firebaseUser ? firebaseUser.uid : `guest-${Date.now()}`;
-
-    if (!firebaseUser && options?.guestAuthorName) {
-      try {
-        localStorage.setItem('gv_guest_callsign', options.guestAuthorName.trim());
-      } catch {}
+    if (!firebaseUser) {
+      setAuthPromptMessage('Please sign in or create an account to post comments and join the community discussion.');
+      setIsAuthModalOpen(true);
+      return;
     }
+
+    const authorName = user.name;
+    const authorAvatar = user.avatar;
+    const authorRole = user.role || user.badge || 'Recruit Operative';
+    const authorBadge = user.badge;
+    const authorId = firebaseUser.uid;
 
     const newComment: PostComment = {
       id: `comment-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
       author: {
         id: authorId,
         name: authorName,
-        username: firebaseUser ? user.username : `@${authorName.toLowerCase().replace(/[^a-z0-9]/g, '_')}`,
+        username: user.username,
         avatar: authorAvatar,
         role: authorRole,
         badge: authorBadge
@@ -753,34 +736,33 @@ export default function App() {
 
     setCommentsMap((prev) => {
       const existing = prev[postId] || [];
-      const updated = { ...prev, [postId]: [newComment, ...existing] };
+      // Appended in chronological order of time and date posted
+      const updated = { ...prev, [postId]: [...existing, newComment] };
       try {
         localStorage.setItem('gv_post_comments_v2', JSON.stringify(updated));
       } catch {}
       return updated;
     });
 
-    if (firebaseUser) {
-      // Increment user comments stats & reputation
-      setUser((prev) => {
-        const prevStats = prev.stats || { likesCount: 0, commentsCount: 0, savesCount: 0, topicsCount: 0 };
-        const updatedStats = {
-          ...prevStats,
-          commentsCount: prevStats.commentsCount + 1
-        };
-        const updatedReputation = (prev.reputation || 0) + 5;
-        const updatedUser: UserAccount = {
-          ...prev,
-          stats: updatedStats,
-          reputation: updatedReputation
-        };
-        updateUserInFirestore(firebaseUser.uid, {
-          stats: updatedStats,
-          reputation: updatedReputation
-        });
-        return updatedUser;
+    // Increment user comments stats & reputation
+    setUser((prev) => {
+      const prevStats = prev.stats || { likesCount: 0, commentsCount: 0, savesCount: 0, topicsCount: 0 };
+      const updatedStats = {
+        ...prevStats,
+        commentsCount: prevStats.commentsCount + 1
+      };
+      const updatedReputation = (prev.reputation || 0) + 5;
+      const updatedUser: UserAccount = {
+        ...prev,
+        stats: updatedStats,
+        reputation: updatedReputation
+      };
+      updateUserInFirestore(firebaseUser.uid, {
+        stats: updatedStats,
+        reputation: updatedReputation
       });
-    }
+      return updatedUser;
+    });
 
     // Synchronize comment to Firebase Firestore backend
     saveCommentToFirestore(postId, newComment);
@@ -877,34 +859,30 @@ export default function App() {
     });
   };
 
-  // Forum Reply Handler: Allows all visitors and members to participate in discussions
+  // Forum Reply Handler: Gated to registered and signed-in members
   const handleAddReply = (
     topicId: string, 
     replyText: string,
     options?: { replyToAuthor?: string; guestAuthorName?: string }
   ) => {
-    const authorName = firebaseUser 
-      ? user.name 
-      : (options?.guestAuthorName?.trim() || localStorage.getItem('gv_guest_callsign') || 'Guest Operative');
-    const authorAvatar = firebaseUser 
-      ? user.avatar 
-      : 'https://images.unsplash.com/photo-1566492031773-4f4e44671857?w=150&auto=format&fit=crop&q=80';
-    const authorRole = firebaseUser ? (user.role || user.badge || 'Recruit Operative') : 'Guest Operative';
-    const authorBadge = firebaseUser ? user.badge : 'Guest Operative';
-    const authorId = firebaseUser ? firebaseUser.uid : `guest-${Date.now()}`;
-
-    if (!firebaseUser && options?.guestAuthorName) {
-      try {
-        localStorage.setItem('gv_guest_callsign', options.guestAuthorName.trim());
-      } catch {}
+    if (!firebaseUser) {
+      setAuthPromptMessage('Please sign in or create an account to reply to forum discussions.');
+      setIsAuthModalOpen(true);
+      return;
     }
+
+    const authorName = user.name;
+    const authorAvatar = user.avatar;
+    const authorRole = user.role || user.badge || 'Recruit Operative';
+    const authorBadge = user.badge;
+    const authorId = firebaseUser.uid;
 
     const newReply = {
       id: `reply-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
       author: {
         id: authorId,
         name: authorName,
-        username: firebaseUser ? user.username : `@${authorName.toLowerCase().replace(/[^a-z0-9]/g, '_')}`,
+        username: user.username,
         avatar: authorAvatar,
         role: authorRole,
         badge: authorBadge,
@@ -935,49 +913,43 @@ export default function App() {
       })
     );
 
-    if (firebaseUser) {
-      // Increment user comments/replies stats & reputation
-      setUser((prev) => {
-        const prevStats = prev.stats || { likesCount: 0, commentsCount: 0, savesCount: 0, topicsCount: 0 };
-        const updatedStats = {
-          ...prevStats,
-          commentsCount: prevStats.commentsCount + 1
-        };
-        const updatedReputation = (prev.reputation || 0) + 5;
-        const updatedUser: UserAccount = {
-          ...prev,
-          stats: updatedStats,
-          reputation: updatedReputation
-        };
+    // Increment user comments/replies stats & reputation
+    setUser((prev) => {
+      const prevStats = prev.stats || { likesCount: 0, commentsCount: 0, savesCount: 0, topicsCount: 0 };
+      const updatedStats = {
+        ...prevStats,
+        commentsCount: prevStats.commentsCount + 1
+      };
+      const updatedReputation = (prev.reputation || 0) + 5;
+      const updatedUser: UserAccount = {
+        ...prev,
+        stats: updatedStats,
+        reputation: updatedReputation
+      };
 
-        updateUserInFirestore(firebaseUser.uid, {
-          stats: updatedStats,
-          reputation: updatedReputation
-        });
-        return updatedUser;
+      updateUserInFirestore(firebaseUser.uid, {
+        stats: updatedStats,
+        reputation: updatedReputation
       });
-    }
+      return updatedUser;
+    });
 
     addToast('Your response has been published to the discussion!', 'success');
   };
 
-  // Create Forum Topic: Allows visitors and registered users to initiate tactical discussions
+  // Create Forum Topic: Gated to registered and signed-in members
   const handleCreateTopic = (newTopicData: Partial<ForumTopic>) => {
-    const authorName = firebaseUser 
-      ? user.name 
-      : (newTopicData.author?.name?.trim() || localStorage.getItem('gv_guest_callsign') || 'Guest Operative');
-    const authorAvatar = firebaseUser 
-      ? user.avatar 
-      : (newTopicData.author?.avatar || 'https://images.unsplash.com/photo-1566492031773-4f4e44671857?w=150&auto=format&fit=crop&q=80');
-    const authorRole = firebaseUser ? (user.role || user.badge || 'Recruit Operative') : 'Guest Operative';
-    const authorBadge = firebaseUser ? user.badge : 'Guest Operative';
-    const authorId = firebaseUser ? firebaseUser.uid : `guest-${Date.now()}`;
-
-    if (!firebaseUser && newTopicData.author?.name) {
-      try {
-        localStorage.setItem('gv_guest_callsign', newTopicData.author.name.trim());
-      } catch {}
+    if (!firebaseUser) {
+      setAuthPromptMessage('Please sign in or create an account to start a new forum discussion topic.');
+      setIsAuthModalOpen(true);
+      return;
     }
+
+    const authorName = user.name;
+    const authorAvatar = user.avatar;
+    const authorRole = user.role || user.badge || 'Recruit Operative';
+    const authorBadge = user.badge;
+    const authorId = firebaseUser.uid;
 
     const newId = `topic-${Date.now()}`;
     const fullTopic: ForumTopic = {
@@ -988,7 +960,7 @@ export default function App() {
       author: {
         id: authorId,
         name: authorName,
-        username: firebaseUser ? user.username : `@${authorName.toLowerCase().replace(/[^a-z0-9]/g, '_')}`,
+        username: user.username,
         avatar: authorAvatar,
         role: authorRole,
         badge: authorBadge,
@@ -1010,28 +982,26 @@ export default function App() {
     // Persist new topic to Firebase Firestore backend
     saveTopicToFirestore(fullTopic);
 
-    if (firebaseUser) {
-      // Increment user topics stats & reputation
-      setUser((prev) => {
-        const prevStats = prev.stats || { likesCount: 0, commentsCount: 0, savesCount: 0, topicsCount: 0 };
-        const updatedStats = {
-          ...prevStats,
-          topicsCount: prevStats.topicsCount + 1
-        };
-        const updatedReputation = (prev.reputation || 0) + 10;
-        const updatedUser: UserAccount = {
-          ...prev,
-          stats: updatedStats,
-          reputation: updatedReputation
-        };
+    // Increment user topics stats & reputation
+    setUser((prev) => {
+      const prevStats = prev.stats || { likesCount: 0, commentsCount: 0, savesCount: 0, topicsCount: 0 };
+      const updatedStats = {
+        ...prevStats,
+        topicsCount: prevStats.topicsCount + 1
+      };
+      const updatedReputation = (prev.reputation || 0) + 10;
+      const updatedUser: UserAccount = {
+        ...prev,
+        stats: updatedStats,
+        reputation: updatedReputation
+      };
 
-        updateUserInFirestore(firebaseUser.uid, {
-          stats: updatedStats,
-          reputation: updatedReputation
-        });
-        return updatedUser;
+      updateUserInFirestore(firebaseUser.uid, {
+        stats: updatedStats,
+        reputation: updatedReputation
       });
-    }
+      return updatedUser;
+    });
 
     addToast(`Discussion "${fullTopic.title}" opened in ${fullTopic.category}!`, 'success');
     navigate(`/forum/${getSeoSlug(fullTopic)}`);
@@ -1952,6 +1922,11 @@ export default function App() {
         return (
           <UsernameGeneratorView
             currentUser={user}
+            isSignedIn={Boolean(firebaseUser)}
+            onOpenSignIn={() => {
+              setAuthPromptMessage('Only registered and signed in members can save usernames to their favorites collection. Sign in or register below!');
+              setIsAuthModalOpen(true);
+            }}
             onNavigateTab={handleNavigateTab}
             onShowToast={(msg, type) => addToast(msg, type)}
           />

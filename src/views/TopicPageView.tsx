@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { getSeoSlug, updatePageSeo } from '../lib/seo';
 import { 
   ArrowLeft, 
@@ -61,12 +61,24 @@ export const TopicPageView: React.FC<TopicPageViewProps> = ({
   const [replyingTo, setReplyingTo] = useState<{ id: string; authorName: string } | null>(null);
   const [subReplyText, setSubReplyText] = useState('');
 
+  // Chronological sorting by time and date posted (ascending order)
+  const sortedReplies = useMemo(() => {
+    if (!topic.replies || !Array.isArray(topic.replies)) return [];
+    return [...topic.replies].sort((a, b) => {
+      const timeA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const timeB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      return timeA - timeB;
+    });
+  }, [topic.replies]);
+
   const handleSubmitReply = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isSignedIn) {
+      onOpenSignIn();
+      return;
+    }
     if (!replyText.trim()) return;
-    onAddReply(replyText.trim(), {
-      guestAuthorName: guestCallsign.trim() || 'Guest Operative'
-    });
+    onAddReply(replyText.trim());
     setReplyText('');
   };
 
@@ -277,7 +289,7 @@ export const TopicPageView: React.FC<TopicPageViewProps> = ({
           <div className="flex items-center justify-between pt-4 border-t border-white/10">
             <button
               id={`like-topic-${topic.id}`}
-              onClick={onToggleTopicLike}
+              onClick={isSignedIn ? onToggleTopicLike : onOpenSignIn}
               className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-['Rajdhani'] font-bold uppercase tracking-wider border transition-all cursor-pointer ${
                 isTopicLiked
                   ? 'bg-purple-600 text-white border-purple-400 shadow-lg shadow-purple-900/50'
@@ -302,7 +314,7 @@ export const TopicPageView: React.FC<TopicPageViewProps> = ({
           <div className="flex items-center gap-2.5">
             <MessageSquare className="w-5 h-5 text-purple-400" />
             <h3 className="text-xl font-bold font-['Rajdhani'] uppercase tracking-wider text-white">
-              Discussion Replies ({Array.isArray(topic.replies) ? topic.replies.length : 0})
+              Discussion Replies ({sortedReplies.length})
             </h3>
           </div>
           <span className="text-xs text-gray-400 font-mono">
@@ -310,9 +322,32 @@ export const TopicPageView: React.FC<TopicPageViewProps> = ({
           </span>
         </div>
 
-        {/* Reply Box for all visitors & members */}
-        <form onSubmit={handleSubmitReply} className="space-y-3">
-          {isSignedIn ? (
+        {/* Auth prompt for non-authenticated visitors */}
+        {!isSignedIn ? (
+          <div className="p-5 sm:p-6 rounded-2xl bg-gradient-to-r from-purple-950/40 via-purple-900/20 to-black border border-purple-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xl">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <ShieldCheck className="w-5 h-5 text-purple-400 shrink-0" />
+                <h4 className="text-sm sm:text-base font-bold font-['Space_Grotesk'] text-white">
+                  Member Sign In & Registration Required
+                </h4>
+              </div>
+              <p className="text-xs sm:text-sm text-gray-300 leading-relaxed">
+                Visitors can interact with forum topics, replies, and community discussions only when registered and signed in. Sign in or register your operative profile to participate.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={onOpenSignIn}
+              className="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-['Rajdhani'] font-bold text-xs uppercase tracking-wider flex items-center gap-2 shadow-lg shadow-purple-950/60 transition-all cursor-pointer whitespace-nowrap shrink-0"
+            >
+              <LogIn className="w-4 h-4" />
+              <span>Sign In / Register</span>
+            </button>
+          </div>
+        ) : (
+          /* Reply Box for signed-in members */
+          <form onSubmit={handleSubmitReply} className="space-y-3">
             <div className="flex items-center gap-3">
               <img
                 src={currentUser.avatar}
@@ -326,54 +361,30 @@ export const TopicPageView: React.FC<TopicPageViewProps> = ({
                 Verified Operative
               </span>
             </div>
-          ) : (
-            <div className="flex flex-wrap items-center justify-between gap-2 p-2.5 rounded-xl bg-purple-950/20 border border-purple-500/20 text-xs">
-              <div className="flex items-center gap-2">
-                <span className="text-purple-300 font-bold font-['Rajdhani'] uppercase tracking-wider text-xs">Operative Callsign:</span>
-                <input
-                  type="text"
-                  value={guestCallsign}
-                  onChange={(e) => {
-                    setGuestCallsign(e.target.value);
-                    try { localStorage.setItem('gv_guest_callsign', e.target.value); } catch {}
-                  }}
-                  placeholder="e.g. Guest Operative"
-                  className="px-2.5 py-1 bg-black/40 border border-purple-500/30 rounded-lg text-white text-xs font-mono focus:outline-none focus:border-purple-400"
-                />
-              </div>
+
+            <textarea
+              value={replyText}
+              onChange={(e) => setReplyText(e.target.value)}
+              placeholder="Contribute to this discussion with civil, tactical insight..."
+              rows={3}
+              className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-2xl text-sm text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 resize-none font-['Inter']"
+            />
+            <div className="flex justify-end">
               <button
-                type="button"
-                onClick={onOpenSignIn}
-                className="text-[11px] text-purple-300 hover:text-white underline underline-offset-2 flex items-center gap-1 cursor-pointer"
+                type="submit"
+                disabled={!replyText.trim()}
+                className="flex items-center gap-2 px-5 py-2.5 bg-purple-600 hover:bg-purple-500 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl text-xs font-['Rajdhani'] font-bold uppercase tracking-wider shadow-lg shadow-purple-950/50 transition-all cursor-pointer"
               >
-                <LogIn className="w-3 h-3" />
-                <span>Sign in for Verified Badge</span>
+                <Send className="w-3.5 h-3.5" />
+                <span>Publish Reply</span>
               </button>
             </div>
-          )}
+          </form>
+        )}
 
-          <textarea
-            value={replyText}
-            onChange={(e) => setReplyText(e.target.value)}
-            placeholder="Contribute to this discussion with civil, tactical insight..."
-            rows={3}
-            className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-2xl text-sm text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 resize-none font-['Inter']"
-          />
-          <div className="flex justify-end">
-            <button
-              type="submit"
-              disabled={!replyText.trim()}
-              className="flex items-center gap-2 px-5 py-2.5 bg-purple-600 hover:bg-purple-500 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl text-xs font-['Rajdhani'] font-bold uppercase tracking-wider shadow-lg shadow-purple-950/50 transition-all cursor-pointer"
-            >
-              <Send className="w-3.5 h-3.5" />
-              <span>Publish Reply</span>
-            </button>
-          </div>
-        </form>
-
-        {/* Replies List */}
+        {/* Replies List: Chronologically Ordered */}
         <div className="space-y-4 pt-4 border-t border-white/10">
-          {(!topic.replies || topic.replies.length === 0) ? (
+          {sortedReplies.length === 0 ? (
             <div className="text-center py-10 px-4 bg-white/[0.02] border border-dashed border-white/10 rounded-2xl space-y-2">
               <MessageSquare className="w-8 h-8 text-gray-600 mx-auto" />
               <p className="text-sm font-bold font-['Space_Grotesk'] text-gray-300">No replies recorded yet</p>
@@ -382,7 +393,7 @@ export const TopicPageView: React.FC<TopicPageViewProps> = ({
               </p>
             </div>
           ) : (
-            topic.replies.map((reply) => {
+            sortedReplies.map((reply) => {
               const userHasLiked = isReplyLiked(reply.id);
               const rLikes = getReplyLikeCount(reply.id);
               return (
@@ -439,7 +450,13 @@ export const TopicPageView: React.FC<TopicPageViewProps> = ({
                   <div className="flex items-center gap-4 pl-11 pt-1">
                     <button
                       type="button"
-                      onClick={() => onToggleReplyLike(reply.id)}
+                      onClick={() => {
+                        if (!isSignedIn) {
+                          onOpenSignIn();
+                          return;
+                        }
+                        onToggleReplyLike(reply.id);
+                      }}
                       className={`flex items-center gap-1.5 text-xs transition-colors cursor-pointer ${
                         userHasLiked
                           ? 'text-purple-400 font-bold'
@@ -454,6 +471,10 @@ export const TopicPageView: React.FC<TopicPageViewProps> = ({
                     <button
                       type="button"
                       onClick={() => {
+                        if (!isSignedIn) {
+                          onOpenSignIn();
+                          return;
+                        }
                         if (replyingTo?.id === reply.id) {
                           setReplyingTo(null);
                           setSubReplyText('');
@@ -475,10 +496,13 @@ export const TopicPageView: React.FC<TopicPageViewProps> = ({
                     <form
                       onSubmit={(e) => {
                         e.preventDefault();
+                        if (!isSignedIn) {
+                          onOpenSignIn();
+                          return;
+                        }
                         if (!subReplyText.trim()) return;
                         onAddReply(subReplyText.trim(), {
-                          replyToAuthor: reply.author.name,
-                          guestAuthorName: guestCallsign.trim() || 'Guest Operative'
+                          replyToAuthor: reply.author.name
                         });
                         setSubReplyText('');
                         setReplyingTo(null);

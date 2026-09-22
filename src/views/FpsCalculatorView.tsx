@@ -244,6 +244,10 @@ export const FpsCalculatorView: React.FC<FpsCalculatorViewProps> = ({
   };
 
   const handleSaveCalibratedCustomGame = (profile: GamePerformanceProfile) => {
+    if (!isSignedIn) {
+      onOpenSignIn?.();
+      return;
+    }
     const updated = [profile, ...customGames.filter(g => g.id !== profile.id)];
     setCustomGames(updated);
     try {
@@ -398,6 +402,11 @@ export const FpsCalculatorView: React.FC<FpsCalculatorViewProps> = ({
 
   // Save "My PC"
   const handleSaveMyPc = () => {
+    if (!isSignedIn) {
+      onOpenSignIn?.();
+      return;
+    }
+
     const gpu = ALL_CALCULATOR_GPUS.find(g => g.id === selectedGpuId);
     const cpu = ALL_CALCULATOR_CPUS.find(c => c.id === selectedCpuId);
 

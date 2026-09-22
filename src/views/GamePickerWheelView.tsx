@@ -355,8 +355,13 @@ export const GamePickerWheelView: React.FC<GamePickerWheelViewProps> = ({
     onShowToast(`Loaded "${preset.title}" with ${preset.games.length} games!`, 'success');
   };
 
-  // Saved Wheels Handlers
+  // Saved Wheels Handlers: Gated to authenticated members
   const handleSaveCurrentWheel = (name: string) => {
+    if (!isSignedIn) {
+      onOpenSignIn();
+      return;
+    }
+
     const newWheel: SavedWheel = {
       id: `wheel-${Date.now()}`,
       name,
@@ -498,7 +503,13 @@ export const GamePickerWheelView: React.FC<GamePickerWheelViewProps> = ({
             {/* Save Wheel */}
             <button
               type="button"
-              onClick={() => setIsSaveModalOpen(true)}
+              onClick={() => {
+                if (!isSignedIn) {
+                  onOpenSignIn();
+                  return;
+                }
+                setIsSaveModalOpen(true);
+              }}
               className="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-white/5 text-slate-300 hover:text-white transition-colors"
               title="Save or Load Wheels"
               aria-label="Save or Load Wheels"

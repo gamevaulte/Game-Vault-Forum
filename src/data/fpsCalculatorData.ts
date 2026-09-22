@@ -626,4 +626,4 @@ export const UPSCALING_DEFINITIONS: Record<string, { label: string; tech: 'dlss'
 export const TARGET_FPS_OPTIONS = [30, 60, 75, 90, 120, 144, 165, 240];
 export const REFRESH_RATE_OPTIONS = [60, 75, 120, 144, 165, 240, 360];
 export const RAM_CAPACITY_OPTIONS = [4, 8, 16, 32, 64, 128];
-export const VRAM_OPTIONS_CALCULATOR = [2, 4, 6, 8, 10, 12, 16, 20, 24];
+export const VRAM_OPTIONS_CALCULATOR = [2, 4, 6, 8, 10, 12, 16, 20, 24, 32];

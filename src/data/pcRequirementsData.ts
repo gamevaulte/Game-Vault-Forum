@@ -721,13 +721,25 @@ export const INITIAL_GAMES_REQUIREMENTS: PcGameRequirements[] = [
 // SEARCHABLE CPU SPECIFICATIONS DATABASE
 // ==========================================
 export const CPU_DATABASE: CpuSpec[] = [
-  // AMD Ryzen 9000 & 7000 Series (Tier 9-10)
+  // AMD Ryzen 9000 Series (Zen 5 Flagships - Tier 9-10)
+  { id: 'cpu-r7-9800x3d', name: 'AMD Ryzen 7 9800X3D', brand: 'AMD', tier: 10, cores: 8, threads: 16, family: 'Ryzen 7' },
+  { id: 'cpu-r9-9950x', name: 'AMD Ryzen 9 9950X', brand: 'AMD', tier: 10, cores: 16, threads: 32, family: 'Ryzen 9' },
+  { id: 'cpu-r9-9900x', name: 'AMD Ryzen 9 9900X', brand: 'AMD', tier: 10, cores: 12, threads: 24, family: 'Ryzen 9' },
+  { id: 'cpu-r7-9700x', name: 'AMD Ryzen 7 9700X', brand: 'AMD', tier: 9, cores: 8, threads: 16, family: 'Ryzen 7' },
+  { id: 'cpu-r5-9600x', name: 'AMD Ryzen 5 9600X', brand: 'AMD', tier: 9, cores: 6, threads: 12, family: 'Ryzen 5' },
+
+  // AMD Ryzen 7000 Series (Tier 8-10)
   { id: 'cpu-r7-7800x3d', name: 'AMD Ryzen 7 7800X3D', brand: 'AMD', tier: 10, cores: 8, threads: 16, family: 'Ryzen 7' },
   { id: 'cpu-r9-7950x3d', name: 'AMD Ryzen 9 7950X3D', brand: 'AMD', tier: 10, cores: 16, threads: 32, family: 'Ryzen 9' },
   { id: 'cpu-r9-7900x', name: 'AMD Ryzen 9 7900X', brand: 'AMD', tier: 9, cores: 12, threads: 24, family: 'Ryzen 9' },
   { id: 'cpu-r7-7700x', name: 'AMD Ryzen 7 7700X', brand: 'AMD', tier: 9, cores: 8, threads: 16, family: 'Ryzen 7' },
   { id: 'cpu-r5-7600x', name: 'AMD Ryzen 5 7600X', brand: 'AMD', tier: 8, cores: 6, threads: 12, family: 'Ryzen 5' },
   { id: 'cpu-r5-7600', name: 'AMD Ryzen 5 7600', brand: 'AMD', tier: 8, cores: 6, threads: 12, family: 'Ryzen 5' },
+
+  // Intel Core Ultra 200 Series (Arrow Lake - Tier 8-10)
+  { id: 'cpu-ultra-9-285k', name: 'Intel Core Ultra 9 285K', brand: 'Intel', tier: 10, cores: 24, threads: 24, family: 'Core Ultra 9' },
+  { id: 'cpu-ultra-7-265k', name: 'Intel Core Ultra 7 265K', brand: 'Intel', tier: 9, cores: 20, threads: 20, family: 'Core Ultra 7' },
+  { id: 'cpu-ultra-5-245k', name: 'Intel Core Ultra 5 245K', brand: 'Intel', tier: 8, cores: 14, threads: 14, family: 'Core Ultra 5' },
 
   // AMD Ryzen 5000 Series (Tier 7-9)
   { id: 'cpu-r7-5800x3d', name: 'AMD Ryzen 7 5800X3D', brand: 'AMD', tier: 9, cores: 8, threads: 16, family: 'Ryzen 7' },
@@ -784,6 +796,12 @@ export const CPU_DATABASE: CpuSpec[] = [
 // SEARCHABLE GPU SPECIFICATIONS DATABASE
 // ==========================================
 export const GPU_DATABASE: GpuSpec[] = [
+  // NVIDIA RTX 50 Series (Blackwell Architecture - Tier 9-10)
+  { id: 'gpu-rtx-5090', name: 'NVIDIA GeForce RTX 5090', brand: 'NVIDIA', vramGb: 32, tier: 10, series: 'RTX 50 Series' },
+  { id: 'gpu-rtx-5080', name: 'NVIDIA GeForce RTX 5080', brand: 'NVIDIA', vramGb: 16, tier: 10, series: 'RTX 50 Series' },
+  { id: 'gpu-rtx-5070-ti', name: 'NVIDIA GeForce RTX 5070 Ti', brand: 'NVIDIA', vramGb: 16, tier: 9, series: 'RTX 50 Series' },
+  { id: 'gpu-rtx-5070', name: 'NVIDIA GeForce RTX 5070', brand: 'NVIDIA', vramGb: 12, tier: 9, series: 'RTX 50 Series' },
+
   // NVIDIA RTX 40 Series (Tier 8-10)
   { id: 'gpu-rtx-4090', name: 'NVIDIA GeForce RTX 4090', brand: 'NVIDIA', vramGb: 24, tier: 10, series: 'RTX 40 Series' },
   { id: 'gpu-rtx-4080-super', name: 'NVIDIA GeForce RTX 4080 Super', brand: 'NVIDIA', vramGb: 16, tier: 10, series: 'RTX 40 Series' },
@@ -829,6 +847,7 @@ export const GPU_DATABASE: GpuSpec[] = [
   // AMD Radeon RX 7000 Series (Tier 7-10)
   { id: 'gpu-rx-7900-xtx', name: 'AMD Radeon RX 7900 XTX', brand: 'AMD', vramGb: 24, tier: 10, series: 'Radeon RX 7000' },
   { id: 'gpu-rx-7900-xt', name: 'AMD Radeon RX 7900 XT', brand: 'AMD', vramGb: 20, tier: 9, series: 'Radeon RX 7000' },
+  { id: 'gpu-rx-7900-gre', name: 'AMD Radeon RX 7900 GRE 16GB', brand: 'AMD', vramGb: 16, tier: 9, series: 'Radeon RX 7000' },
   { id: 'gpu-rx-7800-xt', name: 'AMD Radeon RX 7800 XT', brand: 'AMD', vramGb: 16, tier: 9, series: 'Radeon RX 7000' },
   { id: 'gpu-rx-7700-xt', name: 'AMD Radeon RX 7700 XT', brand: 'AMD', vramGb: 12, tier: 8, series: 'Radeon RX 7000' },
   { id: 'gpu-rx-7600-xt', name: 'AMD Radeon RX 7600 XT', brand: 'AMD', vramGb: 16, tier: 7, series: 'Radeon RX 7000' },
@@ -851,7 +870,9 @@ export const GPU_DATABASE: GpuSpec[] = [
   { id: 'gpu-rx-580', name: 'AMD Radeon RX 580 8GB', brand: 'AMD', vramGb: 8, tier: 5, series: 'Radeon RX 500' },
   { id: 'gpu-rx-570', name: 'AMD Radeon RX 570 4GB', brand: 'AMD', vramGb: 4, tier: 4, series: 'Radeon RX 500' },
 
-  // Intel Arc Series (Tier 5-7)
+  // Intel Arc Series (Alchemist & Battlemage - Tier 4-7)
+  { id: 'gpu-arc-b580', name: 'Intel Arc Battlemage B580 12GB', brand: 'Intel', vramGb: 12, tier: 7, series: 'Intel Arc' },
+  { id: 'gpu-arc-b570', name: 'Intel Arc Battlemage B570 10GB', brand: 'Intel', vramGb: 10, tier: 6, series: 'Intel Arc' },
   { id: 'gpu-arc-a770-16', name: 'Intel Arc A770 16GB', brand: 'Intel', vramGb: 16, tier: 7, series: 'Intel Arc' },
   { id: 'gpu-arc-a770-8', name: 'Intel Arc A770 8GB', brand: 'Intel', vramGb: 8, tier: 7, series: 'Intel Arc' },
   { id: 'gpu-arc-a750', name: 'Intel Arc A750 8GB', brand: 'Intel', vramGb: 8, tier: 6, series: 'Intel Arc' },
@@ -860,7 +881,7 @@ export const GPU_DATABASE: GpuSpec[] = [
 ];
 
 export const RAM_OPTIONS = [4, 8, 12, 16, 24, 32, 48, 64, 128];
-export const VRAM_OPTIONS = [1, 2, 3, 4, 6, 8, 10, 12, 16, 20, 24];
+export const VRAM_OPTIONS = [1, 2, 3, 4, 6, 8, 10, 12, 16, 20, 24, 32];
 export const OS_OPTIONS = [
   'Windows 11 64-bit',
   'Windows 10 64-bit',

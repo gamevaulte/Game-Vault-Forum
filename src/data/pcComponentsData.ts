@@ -153,6 +153,38 @@ export const INITIAL_COMPONENTS: PcComponent[] = [
     tierScore: 9,
     whySelected: 'Tremendous all-around power for 4K gaming, rendering, and workstation multitasking.'
   },
+  {
+    id: 'cpu-r7-9800x3d',
+    category: 'cpu',
+    manufacturer: 'AMD',
+    model: 'Ryzen 7 9800X3D',
+    specifications: '8 Cores, 16 Threads • 2nd Gen 3D V-Cache (104MB Total Cache) • Up to 5.2 GHz • Socket AM5',
+    socketOrInterface: 'AM5',
+    powerRequirementWatts: 120,
+    priceUsd: 479,
+    currency: 'USD',
+    retailer: 'Amazon / Newegg',
+    dateUpdated: 'Latest Spec',
+    isAvailable: true,
+    tierScore: 10,
+    whySelected: 'Next-generation Zen 5 3D V-Cache processor delivering unprecedented gaming frame rates and thermal stability.'
+  },
+  {
+    id: 'cpu-ultra-7-265k',
+    category: 'cpu',
+    manufacturer: 'Intel',
+    model: 'Core Ultra 7 265K',
+    specifications: '20 Cores (8P + 12E), 20 Threads • Up to 5.5 GHz Turbo • 36MB Cache • Socket LGA1851 • NPU AI Boost',
+    socketOrInterface: 'LGA1851',
+    powerRequirementWatts: 125,
+    priceUsd: 399,
+    currency: 'USD',
+    retailer: 'Amazon / Best Buy',
+    dateUpdated: 'Latest Spec',
+    isAvailable: true,
+    tierScore: 9,
+    whySelected: 'Modern Arrow Lake architecture with dedicated NPU AI acceleration and power efficiency.'
+  },
 
   // ================= GPU =================
   {
@@ -241,6 +273,23 @@ export const INITIAL_COMPONENTS: PcComponent[] = [
     whySelected: 'Massive 20GB VRAM headroom to effortlessly conquer 4K high-resolution textures.'
   },
   {
+    id: 'gpu-rx-7800xt',
+    category: 'gpu',
+    manufacturer: 'AMD',
+    model: 'Radeon RX 7800 XT 16GB',
+    specifications: '16GB GDDR6 • 256-bit Memory Bus • 3840 Stream Processors • 263W TDP',
+    socketOrInterface: 'PCIe 4.0 x16',
+    powerRequirementWatts: 263,
+    dimensions: { lengthMm: 280 },
+    priceUsd: 489,
+    currency: 'USD',
+    retailer: 'Newegg / Amazon',
+    dateUpdated: 'Latest Spec',
+    isAvailable: true,
+    tierScore: 8,
+    whySelected: 'Outstanding 1440p value offering 16GB VRAM and strong raster performance.'
+  },
+  {
     id: 'gpu-rtx-4080-super',
     category: 'gpu',
     manufacturer: 'NVIDIA',
@@ -256,6 +305,23 @@ export const INITIAL_COMPONENTS: PcComponent[] = [
     isAvailable: true,
     tierScore: 10,
     whySelected: 'Tier-one 4K gaming powerhouse with class-leading ray tracing fidelity.'
+  },
+  {
+    id: 'gpu-rtx-4090',
+    category: 'gpu',
+    manufacturer: 'NVIDIA',
+    model: 'GeForce RTX 4090 24GB',
+    specifications: '24GB GDDR6X • 16384 CUDA Cores • Dual Ada Optical Flow • 450W TDP',
+    socketOrInterface: 'PCIe 4.0 x16',
+    powerRequirementWatts: 450,
+    dimensions: { lengthMm: 336 },
+    priceUsd: 1799,
+    currency: 'USD',
+    retailer: 'Best Buy / B&H',
+    dateUpdated: 'Latest Spec',
+    isAvailable: true,
+    tierScore: 10,
+    whySelected: 'The ultimate GPU on earth for uncompromised native 4K max ray tracing and generative AI.'
   },
 
   // ================= MOTHERBOARD =================
