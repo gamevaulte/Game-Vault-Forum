@@ -13,6 +13,24 @@
     <!-- Site Verification -->
     <meta name='impact-site-verification' value='7316c180-fb8d-489d-8d11-45f388a94314'>
 
+    <!-- Global Early Error Suppression for iframe/extension/third-party getter quirks -->
+    <script>
+      (function() {
+        var isSuppressed = function(m) {
+          if (!m || typeof m !== 'string') return false;
+          return m.indexOf('fetch') !== -1 && m.indexOf('getter') !== -1;
+        };
+        window.addEventListener('error', function(e) {
+          if (e && (isSuppressed(e.message) || (e.error && isSuppressed(e.error.message)))) {
+            if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+            if (e.stopPropagation) e.stopPropagation();
+            if (e.preventDefault) e.preventDefault();
+            return true;
+          }
+        }, true);
+      })();
+    </script>
+
     <!-- Google AdSense Verification & Auto Ads -->
     <meta name="google-adsense-account" content="ca-pub-6121667798720008" />
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6121667798720008"

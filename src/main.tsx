@@ -4,7 +4,7 @@ import { SpeedInsights } from '@vercel/speed-insights/react';
 import App from './App.tsx';
 import './index.css';
 
-// Ensure window.fetch has both getter and setter in all browser/iframe contexts
+// Ensure window.fetch has both getter and setter in all browser/iframe contexts without throwing
 if (typeof window !== 'undefined') {
   try {
     const isFetchGetterError = (msg: unknown) =>
@@ -13,6 +13,7 @@ if (typeof window !== 'undefined') {
     const isHarmlessThirdPartyNoise = (msg: unknown) => {
       if (typeof msg !== 'string') return false;
       return (
+        isFetchGetterError(msg) ||
         msg.includes('adsbygoogle') ||
         msg.includes('ResizeObserver') ||
         msg.includes('Non-Error promise rejection') ||
@@ -61,34 +62,25 @@ if (typeof window !== 'undefined') {
       originalConsoleError.apply(console, args);
     };
 
-    let activeFetch: typeof window.fetch | undefined = window.fetch ? window.fetch.bind(window) : undefined;
-    const getFetch = () => activeFetch;
-    const setFetch = (fn: any) => {
-      activeFetch = fn;
-    };
+    // Safely check if window.fetch already has a setter or is non-writable
+    let activeFetch = window.fetch ? window.fetch.bind(window) : undefined;
+    const currentDescriptor = Object.getOwnPropertyDescriptor(window, 'fetch') ||
+      (typeof Window !== 'undefined' ? Object.getOwnPropertyDescriptor(Window.prototype, 'fetch') : null);
 
-    const targets: any[] = [window];
-    if (typeof Window !== 'undefined' && Window.prototype) {
-      targets.push(Window.prototype);
-    }
-    let proto = Object.getPrototypeOf(window);
-    while (proto && proto !== Object.prototype) {
-      if (!targets.includes(proto)) {
-        targets.push(proto);
-      }
-      proto = Object.getPrototypeOf(proto);
-    }
-
-    for (const t of targets) {
+    if (currentDescriptor && currentDescriptor.get && !currentDescriptor.set && currentDescriptor.configurable) {
       try {
-        Object.defineProperty(t, 'fetch', {
-          get: getFetch,
-          set: setFetch,
+        Object.defineProperty(window, 'fetch', {
+          get() {
+            return activeFetch;
+          },
+          set(fn: any) {
+            activeFetch = fn;
+          },
           configurable: true,
-          enumerable: true,
+          enumerable: true
         });
       } catch {
-        // Target may be non-configurable, continue to next target
+        // Continue safely if host environment restricts definition
       }
     }
   } catch {

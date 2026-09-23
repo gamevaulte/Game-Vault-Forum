@@ -98,6 +98,7 @@ export const ALL_CALCULATOR_GPUS: ExtendedGpuSpec[] = deduplicateById(
   SUPPLEMENTAL_GPUS,
   GPU_DATABASE.map(g => {
     const isNvidia = g.brand === 'NVIDIA';
+    const isRtx50 = g.series?.includes('RTX 50');
     const isRtx40 = g.series?.includes('RTX 40');
     const isRtx30 = g.series?.includes('RTX 30');
     const isRtx20 = g.series?.includes('RTX 20');
@@ -108,11 +109,11 @@ export const ALL_CALCULATOR_GPUS: ExtendedGpuSpec[] = deduplicateById(
     return {
       ...g,
       isLaptop: false,
-      supportsDlss: isRtx40 || isRtx30 || isRtx20,
-      supportsDlssFrameGen: isRtx40,
+      supportsDlss: isRtx50 || isRtx40 || isRtx30 || isRtx20,
+      supportsDlssFrameGen: isRtx50 || isRtx40,
       supportsFsr: true,
       supportsXeSS: true,
-      rayTracingTier: isRtx40 ? g.tier : isRtx30 ? Math.max(1, g.tier - 1) : isRtx20 ? Math.max(1, g.tier - 2) : isRadeon7000 ? Math.max(1, g.tier - 2) : isRadeon6000 ? Math.max(1, g.tier - 3) : isArc ? Math.max(1, g.tier - 1) : 0
+      rayTracingTier: isRtx50 ? 10 : isRtx40 ? g.tier : isRtx30 ? Math.max(1, g.tier - 1) : isRtx20 ? Math.max(1, g.tier - 2) : isRadeon7000 ? Math.max(1, g.tier - 2) : isRadeon6000 ? Math.max(1, g.tier - 3) : isArc ? Math.max(1, g.tier - 1) : 0
     };
   })
 );

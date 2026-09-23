@@ -323,6 +323,57 @@ export const INITIAL_COMPONENTS: PcComponent[] = [
     tierScore: 10,
     whySelected: 'The ultimate GPU on earth for uncompromised native 4K max ray tracing and generative AI.'
   },
+  {
+    id: 'gpu-rtx-5080',
+    category: 'gpu',
+    manufacturer: 'NVIDIA',
+    model: 'GeForce RTX 5080 16GB',
+    specifications: '16GB GDDR7 • Blackwell Architecture • DLSS 4 / Neural Rendering • PCIe 5.0 • 400W TDP',
+    socketOrInterface: 'PCIe 4.0 x16',
+    powerRequirementWatts: 400,
+    dimensions: { lengthMm: 315 },
+    priceUsd: 1199,
+    currency: 'USD',
+    retailer: 'Best Buy / Newegg',
+    dateUpdated: '2025 Spec',
+    isAvailable: true,
+    tierScore: 10,
+    whySelected: 'Next-generation Blackwell flagship with ultra-fast GDDR7 memory and class-leading path tracing.'
+  },
+  {
+    id: 'gpu-rtx-5070',
+    category: 'gpu',
+    manufacturer: 'NVIDIA',
+    model: 'GeForce RTX 5070 12GB',
+    specifications: '12GB GDDR7 • Blackwell Architecture • DLSS 4 Neural Rendering • 250W TDP',
+    socketOrInterface: 'PCIe 4.0 x16',
+    powerRequirementWatts: 250,
+    dimensions: { lengthMm: 275 },
+    priceUsd: 649,
+    currency: 'USD',
+    retailer: 'Best Buy / Amazon',
+    dateUpdated: '2025 Spec',
+    isAvailable: true,
+    tierScore: 9,
+    whySelected: 'Top tier 1440p and entry 4K next-gen graphics with groundbreaking DLSS acceleration.'
+  },
+  {
+    id: 'gpu-arc-b580',
+    category: 'gpu',
+    manufacturer: 'Intel',
+    model: 'Arc Battlemage B580 12GB',
+    specifications: '12GB GDDR6 • Battlemage Xe2 Architecture • 190W TDP • XeSS AI Upscaling',
+    socketOrInterface: 'PCIe 4.0 x16',
+    powerRequirementWatts: 190,
+    dimensions: { lengthMm: 250 },
+    priceUsd: 249,
+    currency: 'USD',
+    retailer: 'Amazon / Newegg',
+    dateUpdated: '2025 Spec',
+    isAvailable: true,
+    tierScore: 6,
+    whySelected: 'Sub-$260 performance champion with a generous 12GB VRAM buffer and modern Xe2 architecture.'
+  },
 
   // ================= MOTHERBOARD =================
   {

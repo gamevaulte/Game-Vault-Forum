@@ -55,9 +55,6 @@ export const TopicPageView: React.FC<TopicPageViewProps> = ({
   onViewUserProfile
 }) => {
   const [replyText, setReplyText] = useState('');
-  const [guestCallsign, setGuestCallsign] = useState(() => {
-    return localStorage.getItem('gv_guest_callsign') || 'Guest Operative';
-  });
   const [replyingTo, setReplyingTo] = useState<{ id: string; authorName: string } | null>(null);
   const [subReplyText, setSubReplyText] = useState('');
 

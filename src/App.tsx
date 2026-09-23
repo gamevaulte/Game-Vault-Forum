@@ -360,8 +360,8 @@ export default function App() {
             existing.forEach((c) => map.set(c.id, c));
             incoming.forEach((c) => map.set(c.id, c));
             next[contentId] = Array.from(map.values()).sort((a, b) => {
-              const timeA = (a as any).createdAt?.seconds || 0;
-              const timeB = (b as any).createdAt?.seconds || 0;
+              const timeA = a.createdAt ? new Date(a.createdAt).getTime() : ((a as any).createdAt?.seconds ? (a as any).createdAt.seconds * 1000 : 0);
+              const timeB = b.createdAt ? new Date(b.createdAt).getTime() : ((b as any).createdAt?.seconds ? (b as any).createdAt.seconds * 1000 : 0);
               return timeA - timeB;
             });
           });
@@ -1835,7 +1835,14 @@ export default function App() {
             topics={topics}
             initialCategory={route.category}
             onSelectTopic={(t) => navigate(`/forum/${getSeoSlug(t)}`)}
-            onOpenNewTopic={() => navigate('/forum/new')}
+            onOpenNewTopic={() => {
+              if (!firebaseUser) {
+                setAuthPromptMessage('Sign in or register to start a new forum discussion.');
+                setIsAuthModalOpen(true);
+                return;
+              }
+              navigate('/forum/new');
+            }}
             onOpenGuidelines={() => navigate('/guidelines')}
             onViewUserProfile={handleViewUserProfile}
           />
