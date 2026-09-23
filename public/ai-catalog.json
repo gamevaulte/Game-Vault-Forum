@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json.schemastore.org/ai-catalog.json",
+  "name": "Game Vault Forum",
+  "version": "1.0.0",
+  "description": "Premier independent gaming journalism, deep mechanical analysis, PC hardware benchmarks, tactical guides, scored reviews, and civil community forum.",
+  "url": "https://www.gamevault.forum",
+  "provider": {
+    "name": "Game Vault Forum",
+    "url": "https://www.gamevault.forum",
+    "founder": "Joel Ayuba",
+    "contactEmail": "contact@gamevault.forum"
+  },
+  "documentation": "https://www.gamevault.forum/llms.txt",
+  "categories": [
+    "gaming",
+    "game-reviews",
+    "hardware-benchmarks",
+    "gameplay-guides",
+    "community-forum"
+  ],
+  "contentEndpoints": [
+    {
+      "name": "Articles and Essays",
+      "path": "/articles",
+      "description": "Long-form analytical articles, gaming culture essays, and hardware buying guides."
+    },
+    {
+      "name": "Scored Reviews",
+      "path": "/reviews",
+      "description": "Data-driven, scored evaluations of video games and gaming hardware."
+    },
+    {
+      "name": "Tactical Guides",
+      "path": "/guides",
+      "description": "Step-by-step game mechanics breakdowns and tactical optimization guides."
+    },
+    {
+      "name": "Video Hub",
+      "path": "/videos",
+      "description": "High-definition tactical analysis, mechanical breakdowns, and gameplay videos."
+    },
+    {
+      "name": "Community Forum",
+      "path": "/forum",
+      "description": "Community discussions, game debates, and hardware advice."
+    },
+    {
+      "name": "Web Arcade",
+      "path": "/play-games",
+      "description": "Free-to-play responsive browser games."
+    }
+  ],
+  "interactiveTools": [
+    {
+      "name": "Gaming PC Builder",
+      "path": "/gaming-pc-builder",
+      "description": "Interactive PC hardware configuration and bottleneck analyzer."
+    },
+    {
+      "name": "FPS Calculator",
+      "path": "/fps-calculator",
+      "description": "Frame rate estimator based on GPU, CPU, and game resolution."
+    },
+    {
+      "name": "PC Requirements Checker",
+      "path": "/pc-requirements",
+      "description": "Hardware compatibility check against modern PC game specifications."
+    },
+    {
+      "name": "Vault AI Assistant",
+      "path": "/vault-ai",
+      "description": "Gaming assistant for tactical questions, game recommendations, and build advice."
+    },
+    {
+      "name": "Game Avatar Generator",
+      "path": "/game-avatar-generator",
+      "description": "Gaming profile avatar design tool."
+    },
+    {
+      "name": "Gaming Username Generator",
+      "path": "/gaming-username-generator",
+      "description": "Algorithmic gamer tag creator."
+    },
+    {
+      "name": "Game Picker Wheel",
+      "path": "/game-picker-wheel",
+      "description": "Interactive wheel for choosing which game to play next."
+    }
+  ]
+}

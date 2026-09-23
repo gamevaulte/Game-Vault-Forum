@@ -1,0 +1,53 @@
+# Game Vault Forum
+> Premier independent gaming journalism, deep mechanical analysis, PC hardware benchmarks, and civil community forum. Founded by Lead Publisher Joel Ayuba.
+
+Official Website: https://www.gamevault.forum
+Official YouTube: https://www.youtube.com/@GameVaultForum
+Publisher: Joel Ayuba (contact@gamevault.forum)
+
+## Primary Sections & URLs
+- Homepage: https://www.gamevault.forum/
+- Tactical Video Analyses & Gameplay Hub: https://www.gamevault.forum/videos
+- Long-Form Editorial Magazine & Essays: https://www.gamevault.forum/articles
+- Hardware & Game Scored Reviews: https://www.gamevault.forum/reviews
+- Strategic Walkthroughs & Guides: https://www.gamevault.forum/guides
+- Tactical Game Vault Catalog & Specs: https://www.gamevault.forum/games
+- Civil Community Gaming Forum: https://www.gamevault.forum/forum
+- Free Web Arcade & Browser Games: https://www.gamevault.forum/play-games
+- Interactive Gaming PC Builder: https://www.gamevault.forum/gaming-pc-builder
+- Hardware FPS Calculator: https://www.gamevault.forum/fps-calculator
+- PC System Requirements Checker: https://www.gamevault.forum/pc-requirements
+- AI Tactical Gaming Assistant: https://www.gamevault.forum/vault-ai
+- Gaming Username Generator: https://www.gamevault.forum/gaming-username-generator
+- Game Avatar Generator: https://www.gamevault.forum/game-avatar-generator
+- Game Decision Picker Wheel: https://www.gamevault.forum/game-picker-wheel
+- About Editorial Standards & Masthead: https://www.gamevault.forum/about
+- Contact & Inquiries: https://www.gamevault.forum/contact
+
+## Featured Long-Form Editorial Articles
+- Helldivers 2 Illuminate Super Helldive Loadout: https://www.gamevault.forum/articles/helldivers-2-illuminate-super-helldive-loadout-by-enemy-type
+- Why Horror Games Are More Popular Than Ever: https://www.gamevault.forum/articles/why-horror-games-are-more-popular-than-ever
+- Gaming PC vs Cloud Gaming in 2026: https://www.gamevault.forum/articles/gaming-pc-vs-cloud-gaming-2026
+- What Internet Speed Do I Need for Cloud Gaming: https://www.gamevault.forum/articles/what-internet-speed-do-i-need-for-cloud-gaming-2026
+- How Strategy Games Challenge the Brain: https://www.gamevault.forum/articles/how-strategy-games-challenge-the-brain-planning-problem-solving-and-decision-making
+- How Gaming Has Changed From the 1990s to Today: https://www.gamevault.forum/articles/how-gaming-has-changed-from-the-1990s-to-today-from-cartridges-to-connected-worlds
+- World of Warships and Mental Wellbeing: https://www.gamevault.forum/articles/world-of-warships-and-mental-wellbeing-what-ive-personally-noticed
+- How to Choose the Right Video Game for You: https://www.gamevault.forum/articles/how-to-choose-the-right-video-game-for-you-a-simple-guide-to-finding-your-next-game
+- How to Know If a Video Game Is Worth Your Time and Money: https://www.gamevault.forum/articles/how-to-know-if-a-video-game-is-worth-your-time-and-money
+- Why World of Warships Is More Interesting Than I Expected: https://www.gamevault.forum/articles/why-world-of-warships-is-more-interesting-than-i-expected-a-tactical-analysis
+- Why Some Games Keep Us Playing for Years: https://www.gamevault.forum/articles/why-some-games-keep-us-playing-for-years
+- 5 Things Every New Gamer Should Know: https://www.gamevault.forum/articles/5-things-every-new-gamer-should-know
+- The Games That Defined a Generation: https://www.gamevault.forum/articles/the-games-that-defined-a-generation-the-video-games-we-still-remember
+- How to Choose the Best Gaming PC for Your Budget: https://www.gamevault.forum/articles/how-to-choose-the-best-gaming-pc-for-your-budget-a-beginners-buying-guide
+- The Best Gaming PCs in 2026: https://www.gamevault.forum/articles/best-gaming-pcs-2026
+
+## Scored Critical Game Reviews
+- Elden Ring Shadow of the Erdtree Review (10/10): https://www.gamevault.forum/reviews/elden-ring-shadow-of-the-erdtree-review
+- Cyberpunk 2077 Phantom Liberty Review (9/10): https://www.gamevault.forum/reviews/cyberpunk-2077-phantom-liberty-review
+- Helldivers 2 Technical Review (9/10): https://www.gamevault.forum/reviews/helldivers-2-review
+- Baldur's Gate 3 Masterpiece Review (10/10): https://www.gamevault.forum/reviews/baldurs-gate-3-review
+- Black Myth Wukong Review (8.5/10): https://www.gamevault.forum/reviews/black-myth-wukong-review
+- Warhammer 40K Space Marine 2 Review (8.5/10): https://www.gamevault.forum/reviews/warhammer-40000-space-marine-2-review
+
+## Author Information
+- Joel Ayuba (Founder & Lead Publisher): https://www.gamevault.forum/authors/joel-ayuba

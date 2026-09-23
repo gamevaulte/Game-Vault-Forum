@@ -183,6 +183,8 @@ const HomeViewComponent: React.FC<HomeViewProps> = ({
                   <img
                     src={featuredVideo.thumbnail}
                     alt={featuredVideo.title}
+                    width={1280}
+                    height={720}
                     fetchPriority="high"
                     decoding="async"
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
@@ -312,6 +314,8 @@ const HomeViewComponent: React.FC<HomeViewProps> = ({
                 <img
                   src={vid.thumbnail}
                   alt={vid.title}
+                  width={640}
+                  height={360}
                   loading="lazy"
                   decoding="async"
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
@@ -524,6 +528,8 @@ const HomeViewComponent: React.FC<HomeViewProps> = ({
                 <img
                   src={art.featuredImage}
                   alt={art.title}
+                  width={600}
+                  height={350}
                   loading="lazy"
                   decoding="async"
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"

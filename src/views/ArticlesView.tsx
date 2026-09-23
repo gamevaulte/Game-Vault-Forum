@@ -73,6 +73,9 @@ const ArticlesViewComponent: React.FC<ArticlesViewProps> = ({ articles, onSelect
               <img
                 src={leadArticle.featuredImage}
                 alt={leadArticle.title}
+                width={1200}
+                height={675}
+                fetchPriority="high"
                 decoding="async"
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               />
@@ -153,6 +156,8 @@ const ArticlesViewComponent: React.FC<ArticlesViewProps> = ({ articles, onSelect
               <img
                 src={art.featuredImage}
                 alt={art.title}
+                width={600}
+                height={350}
                 loading="lazy"
                 decoding="async"
                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"

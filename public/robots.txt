@@ -52,3 +52,32 @@ Allow: /
 Sitemap: https://www.gamevault.forum/sitemap.xml
 Host: https://www.gamevault.forum
 
+# AI Crawler & LLM Agents
+User-agent: GPTBot
+Allow: /
+Disallow: /profile
+Disallow: /login
+Disallow: /register
+Disallow: /forum/new
+
+User-agent: ClaudeBot
+Allow: /
+Disallow: /profile
+Disallow: /login
+Disallow: /register
+Disallow: /forum/new
+
+User-agent: PerplexityBot
+Allow: /
+Disallow: /profile
+Disallow: /login
+Disallow: /register
+Disallow: /forum/new
+
+User-agent: Google-Extended
+Allow: /
+Disallow: /profile
+Disallow: /login
+Disallow: /register
+Disallow: /forum/new
+

@@ -23,10 +23,13 @@ export function handleSeoPrerender(reqPath: string, isProd: boolean): string | n
       if (!fs.existsSync(htmlPath)) return null;
       let html = fs.readFileSync(htmlPath, 'utf8');
 
-      const title = `${article.title} | Game Vault Forum`;
-      const description = article.excerpt;
+      const title = article.seoTitle || `${article.title} | Game Vault Forum`;
+      const description = article.metaDescription || article.excerpt;
       const canonicalUrl = `https://www.gamevault.forum/articles/${getSeoSlug(article)}`;
-      const imageUrl = article.featuredImage || article.image || 'https://www.gamevault.forum/favicon.ico';
+      const rawImage = article.featuredImage || article.image || 'https://www.gamevault.forum/favicon.png';
+      const imageUrl = rawImage.startsWith('http')
+        ? rawImage
+        : `https://www.gamevault.forum${rawImage.startsWith('/') ? rawImage : `/${rawImage}`}`;
       const authorName = article.author?.name || 'Joel Ayuba';
       const authorUrl = `https://www.gamevault.forum/authors/${authorName.toLowerCase().replace(/\s+/g, '-')}`;
 
@@ -36,23 +39,24 @@ export function handleSeoPrerender(reqPath: string, isProd: boolean): string | n
       html = html.replace(/<link rel="canonical" href=".*?" \/>/, `<link rel="canonical" href="${canonicalUrl}" />`);
       html = html.replace(/<meta name="author" content=".*?" \/>/, `<meta name="author" content="${escapeHtml(authorName)}" />`);
 
-      // OpenGraph & Twitter
-      const ogTags = `
-    <!-- Dynamic Article SEO Tags -->
-    <meta property="og:title" content="${escapeHtml(title)}" />
-    <meta property="og:description" content="${escapeHtml(description)}" />
-    <meta property="og:url" content="${canonicalUrl}" />
-    <meta property="og:type" content="article" />
-    <meta property="og:image" content="${imageUrl}" />
-    <meta property="article:published_time" content="2026-09-02T00:00:00Z" />
+      // Replace existing Open Graph & Twitter image/title tags so crawler sees the exact hero image first
+      html = html.replace(/<meta property="og:title" content=".*?" \/>/, `<meta property="og:title" content="${escapeHtml(title)}" />`);
+      html = html.replace(/<meta property="og:description" content=".*?" \/>/, `<meta property="og:description" content="${escapeHtml(description)}" />`);
+      html = html.replace(/<meta property="og:url" content=".*?" \/>/, `<meta property="og:url" content="${canonicalUrl}" />`);
+      html = html.replace(/<meta property="og:type" content=".*?" \/>/, `<meta property="og:type" content="article" />`);
+      html = html.replace(/<meta property="og:image" content=".*?" \/>/, `<meta property="og:image" content="${imageUrl}" />`);
+      html = html.replace(/<meta name="twitter:title" content=".*?" \/>/, `<meta name="twitter:title" content="${escapeHtml(title)}" />`);
+      html = html.replace(/<meta name="twitter:description" content=".*?" \/>/, `<meta name="twitter:description" content="${escapeHtml(description)}" />`);
+      html = html.replace(/<meta name="twitter:image" content=".*?" \/>/, `<meta name="twitter:image" content="${imageUrl}" />`);
+
+      // OpenGraph & Twitter specific article extensions
+      const ogArticleTags = `
+    <!-- Dynamic Article Specific Tags -->
+    <meta property="article:published_time" content="${article.publicationDate ? '2026-09-02T00:00:00Z' : '2026-09-02T00:00:00Z'}" />
     <meta property="article:author" content="${escapeHtml(authorName)}" />
     <meta property="article:section" content="${escapeHtml(article.category)}" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="${escapeHtml(title)}" />
-    <meta name="twitter:description" content="${escapeHtml(description)}" />
-    <meta name="twitter:image" content="${imageUrl}" />
       `;
-      html = html.replace('</head>', `${ogTags}\n  </head>`);
+      html = html.replace('</head>', `${ogArticleTags}\n  </head>`);
 
       // JSON-LD Article Schema
       const articleJsonLd = {

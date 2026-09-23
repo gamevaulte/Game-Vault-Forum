@@ -108,6 +108,51 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
 
   const articleSlug = getSeoSlug(article);
 
+  // Dynamic Open Graph & Meta SEO configuration - Ensures Open Graph image is always the article's hero image
+  useEffect(() => {
+    const heroImage = article.featuredImage || article.image || 'https://www.gamevault.forum/favicon.png';
+    const absoluteHeroImage = heroImage.startsWith('http')
+      ? heroImage
+      : `https://www.gamevault.forum${heroImage.startsWith('/') ? heroImage : `/${heroImage}`}`;
+
+    const authorName = article.author?.name || 'Joel Ayuba';
+    const authorUrl = `https://www.gamevault.forum/authors/${authorName.toLowerCase().replace(/\s+/g, '-')}`;
+
+    updatePageSeo({
+      title: article.seoTitle || `${article.title} | Game Vault Forum`,
+      description: article.metaDescription || article.excerpt,
+      canonicalPath: `/articles/${articleSlug}`,
+      ogType: 'article',
+      imageUrl: absoluteHeroImage,
+      breadcrumbs: [
+        { name: 'Articles', path: '/articles' },
+        { name: article.title, path: `/articles/${articleSlug}` }
+      ],
+      schemaType: 'Article',
+      schemaData: {
+        headline: article.title,
+        description: article.excerpt,
+        image: [absoluteHeroImage],
+        datePublished: article.publicationDate || '2026-09-02T00:00:00Z',
+        author: {
+          '@type': 'Person',
+          name: authorName,
+          jobTitle: article.author?.role || 'Founder & Lead Publisher',
+          url: authorUrl
+        },
+        publisher: {
+          '@type': 'Organization',
+          name: 'Game Vault Forum',
+          url: 'https://www.gamevault.forum',
+          logo: {
+            '@type': 'ImageObject',
+            url: 'https://www.gamevault.forum/favicon.png'
+          }
+        }
+      }
+    });
+  }, [article, articleSlug]);
+
   // Resolve closely related article for internal linking structure
   const relatedArticle = (articles && article.relatedArticleId
     ? articles.find((a) => a.id === article.relatedArticleId)
@@ -632,10 +677,14 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
       </header>
 
       {/* Featured Cover Image */}
-      <div className="w-full h-72 sm:h-96 lg:h-[440px] rounded-3xl overflow-hidden border border-white/10 shadow-2xl shadow-purple-950/30 relative">
+      <div className="w-full h-72 sm:h-96 lg:h-[440px] rounded-3xl overflow-hidden border border-white/10 shadow-2xl shadow-purple-950/30 relative bg-[#070913]">
         <img
           src={article.featuredImage}
           alt={article.title}
+          width={1200}
+          height={630}
+          fetchPriority="high"
+          decoding="async"
           referrerPolicy="no-referrer"
           className="w-full h-full object-cover"
         />

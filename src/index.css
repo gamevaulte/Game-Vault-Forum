@@ -30,8 +30,18 @@
   body {
     min-height: 100vh;
     background-color: #050507;
+    color: #e2e8f0;
     margin: 0;
     padding: 0;
+  }
+
+  /* Accessible contrast enhancements for muted and secondary copy on dark backgrounds */
+  .text-gray-500, .text-slate-500 {
+    color: #94a3b8 !important; /* WCAG AAA / AA compliance on #050507 (7.2+:1 contrast ratio) */
+  }
+
+  .text-gray-400, .text-slate-400 {
+    color: #cbd5e1 !important; /* High contrast readability */
   }
 
   /* Optimize media and image rendering off the critical path */
