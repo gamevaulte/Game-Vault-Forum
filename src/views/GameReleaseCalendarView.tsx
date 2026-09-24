@@ -133,35 +133,31 @@ export const GameReleaseCalendarView: React.FC<GameReleaseCalendarViewProps> = (
 
   // Sync Watchlist to localStorage
   const handleToggleWatchlist = (release: GameRelease) => {
-    setWatchlistIds((prev) => {
-      const exists = prev.includes(release.id);
-      const next = exists ? prev.filter(id => id !== release.id) : [...prev, release.id];
-      try {
-        localStorage.setItem('gv_release_watchlist', JSON.stringify(next));
-      } catch {}
-      if (onShowToast) {
-        onShowToast(
-          exists ? `Removed ${release.title} from watchlist.` : `Added ${release.title} to your release watchlist!`,
-          exists ? 'info' : 'success'
-        );
-      }
-      return next;
-    });
+    const exists = watchlistIds.includes(release.id);
+    const next = exists ? watchlistIds.filter(id => id !== release.id) : [...watchlistIds, release.id];
+    setWatchlistIds(next);
+    try {
+      localStorage.setItem('gv_release_watchlist', JSON.stringify(next));
+    } catch {}
+    if (onShowToast) {
+      onShowToast(
+        exists ? `Removed ${release.title} from watchlist.` : `Added ${release.title} to your release watchlist!`,
+        exists ? 'info' : 'success'
+      );
+    }
   };
 
   // Set Reminder handler
   const handleSetReminder = (release: GameRelease, type: 'day_of' | 'day_before' | 'week_before') => {
-    setReminderMap((prev) => {
-      const next = { ...prev, [release.id]: type };
-      try {
-        localStorage.setItem('gv_release_reminders', JSON.stringify(next));
-      } catch {}
-      const label = type === 'day_of' ? 'on release day' : type === 'day_before' ? '1 day before launch' : '1 week before launch';
-      if (onShowToast) {
-        onShowToast(`Reminder set for ${release.title} (${label})!`, 'success');
-      }
-      return next;
-    });
+    const next = { ...reminderMap, [release.id]: type };
+    setReminderMap(next);
+    try {
+      localStorage.setItem('gv_release_reminders', JSON.stringify(next));
+    } catch {}
+    const label = type === 'day_of' ? 'on release day' : type === 'day_before' ? '1 day before launch' : '1 week before launch';
+    if (onShowToast) {
+      onShowToast(`Reminder set for ${release.title} (${label})!`, 'success');
+    }
   };
 
   // Share handler
@@ -170,10 +166,21 @@ export const GameReleaseCalendarView: React.FC<GameReleaseCalendarViewProps> = (
     const url = `${window.location.origin}/game-release-calendar?game=${release.slug}`;
     if (navigator.share) {
       navigator.share({ title: release.title, text, url }).catch(() => {});
+    } else if (navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(`${text}\n${url}`)
+        .then(() => {
+          if (onShowToast) {
+            onShowToast(`Copied release details and link for ${release.title}!`, 'success');
+          }
+        })
+        .catch(() => {
+          if (onShowToast) {
+            onShowToast(`Share link: ${url}`, 'info');
+          }
+        });
     } else {
-      navigator.clipboard.writeText(`${text}\n${url}`);
       if (onShowToast) {
-        onShowToast(`Copied release details and link for ${release.title}!`, 'success');
+        onShowToast(`Share link: ${url}`, 'info');
       }
     }
   };

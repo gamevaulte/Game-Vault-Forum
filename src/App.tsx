@@ -597,7 +597,9 @@ export default function App() {
   // Toast Helpers
   const addToast = (text: string, type: 'success' | 'info' | 'error' = 'info') => {
     const id = Date.now().toString() + Math.random().toString(36).substring(2, 6);
-    setToasts((prev) => [...prev, { id, text, type }]);
+    setTimeout(() => {
+      setToasts((prev) => [...prev, { id, text, type }]);
+    }, 0);
   };
 
   const removeToast = (id: string) => {

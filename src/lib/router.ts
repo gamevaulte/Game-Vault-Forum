@@ -45,6 +45,7 @@ export function parseRoute(rawPath: string): Route {
   let sharedGames: string[] | undefined;
   let queryCategory: string | undefined;
   let queryGenre: string | undefined;
+  let queryGame: string | undefined;
   if (rawPath.includes('?')) {
     try {
       const q = new URLSearchParams(rawPath.split('?')[1].split('#')[0]);
@@ -54,6 +55,7 @@ export function parseRoute(rawPath: string): Route {
       }
       queryCategory = q.get('category') || undefined;
       queryGenre = q.get('genre') || undefined;
+      queryGame = q.get('game') || undefined;
     } catch {}
   }
 
@@ -135,14 +137,14 @@ export function parseRoute(rawPath: string): Route {
       return { type: 'fps-calculator', gameSlug: seg3 };
     }
     if (seg2 === 'game-release-calendar' || seg2 === 'release-calendar' || seg2 === 'calendar') {
-      return { type: 'game-release-calendar', gameSlug: seg3 };
+      return { type: 'game-release-calendar', gameSlug: seg3 || queryGame };
     }
     return { type: 'tools' };
   }
 
   // Direct root tool paths
   if (seg1 === 'game-release-calendar' || seg1 === 'release-calendar' || seg1 === 'calendar' || seg1 === 'game-releases') {
-    return { type: 'game-release-calendar', gameSlug: seg2 };
+    return { type: 'game-release-calendar', gameSlug: seg2 || queryGame };
   }
   if (seg1 === 'fps-performance-calculator' || seg1 === 'fps-calculator' || seg1 === 'performance-calculator') {
     return { type: 'fps-calculator', gameSlug: seg2 };
