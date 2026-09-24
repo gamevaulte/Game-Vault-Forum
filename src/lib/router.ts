@@ -32,6 +32,7 @@ export type Route =
   | { type: 'gaming-username-generator' }
   | { type: 'gaming-pc-builder'; buildId?: string }
   | { type: 'game-picker-wheel'; games?: string[] }
+  | { type: 'game-release-calendar'; gameSlug?: string }
   | { type: 'vault-ai'; initialPrompt?: string }
   | { type: 'author'; slug: string }
   | { type: 'sitemap' }
@@ -133,10 +134,16 @@ export function parseRoute(rawPath: string): Route {
     if (seg2 === 'fps-performance-calculator' || seg2 === 'fps-calculator' || seg2 === 'performance-calculator') {
       return { type: 'fps-calculator', gameSlug: seg3 };
     }
+    if (seg2 === 'game-release-calendar' || seg2 === 'release-calendar' || seg2 === 'calendar') {
+      return { type: 'game-release-calendar', gameSlug: seg3 };
+    }
     return { type: 'tools' };
   }
 
   // Direct root tool paths
+  if (seg1 === 'game-release-calendar' || seg1 === 'release-calendar' || seg1 === 'calendar' || seg1 === 'game-releases') {
+    return { type: 'game-release-calendar', gameSlug: seg2 };
+  }
   if (seg1 === 'fps-performance-calculator' || seg1 === 'fps-calculator' || seg1 === 'performance-calculator') {
     return { type: 'fps-calculator', gameSlug: seg2 };
   }
@@ -292,6 +299,10 @@ export function routeToUrl(route: Route): string {
       return '/tools/vault-ai';
     case 'game-picker-wheel':
       return '/game-picker-wheel';
+    case 'game-release-calendar':
+      return route.gameSlug
+        ? `/tools/game-release-calendar/${route.gameSlug}`
+        : '/tools/game-release-calendar';
     case 'sitemap':
       return '/sitemap';
     case 'play-games':

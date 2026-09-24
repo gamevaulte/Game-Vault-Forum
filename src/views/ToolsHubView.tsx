@@ -6,7 +6,8 @@ import {
   ShieldCheck,
   Bot,
   Dices,
-  Gauge
+  Gauge,
+  Calendar
 } from 'lucide-react';
 import { ToolHeader } from '../components/tools/ToolHeader';
 import { ToolCard } from '../components/tools/ToolCard';
@@ -29,6 +30,17 @@ export const ToolsHubView: React.FC<ToolsHubViewProps> = ({ onNavigateTab }) => 
 
       {/* Featured Primary Tools Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+        <ToolCard
+          title="Game Release Calendar"
+          subtitle="Discover upcoming video game releases"
+          description="Interactive calendar and release database. Track release dates, official launch countdowns, delay notices, TBA announcements, and system specs across PC, PlayStation, Xbox, and Nintendo."
+          badge="New Release Hub"
+          icon={<Calendar className="w-6 h-6 text-purple-400" />}
+          actionText="Open Calendar"
+          onClick={() => onNavigateTab('game-release-calendar')}
+          featured={true}
+        />
+
         <ToolCard
           title="FPS / Performance Calculator"
           subtitle="Check your PC's estimated gaming performance"

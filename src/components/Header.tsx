@@ -20,7 +20,8 @@ import {
   Info,
   Mail,
   Flame,
-  User
+  User,
+  Calendar
 } from 'lucide-react';
 import { PageTab, UserAccount } from '../types';
 import { VaultLogo } from './VaultLogo';
@@ -150,6 +151,14 @@ export const Header: React.FC<HeaderProps> = ({
 
   const toolsItems = [
     {
+      id: 'game-release-calendar' as PageTab,
+      label: 'Game Release Calendar',
+      desc: 'Track launch dates, countdowns & delays',
+      href: '/tools/game-release-calendar',
+      icon: Calendar,
+      badge: 'New'
+    },
+    {
       id: 'fps-calculator' as PageTab,
       label: 'FPS / Performance Calculator',
       desc: 'Estimate PC gaming FPS & bottlenecks',
@@ -212,7 +221,8 @@ export const Header: React.FC<HeaderProps> = ({
     currentTab === 'gaming-username-generator' ||
     currentTab === 'gaming-pc-builder' ||
     currentTab === 'pc-requirements' ||
-    currentTab === 'game-picker-wheel';
+    currentTab === 'game-picker-wheel' ||
+    currentTab === 'game-release-calendar';
 
   const isEditorialActive =
     currentTab === 'articles' ||
@@ -493,7 +503,7 @@ export const Header: React.FC<HeaderProps> = ({
                 <div className="absolute right-0 mt-2 w-72 rounded-2xl bg-[#0e101d]/98 backdrop-blur-2xl border border-purple-500/30 shadow-2xl p-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
                   <div className="px-3 py-1.5 text-[10px] font-mono text-purple-400 font-bold uppercase tracking-wider border-b border-white/5 mb-1 flex items-center justify-between">
                     <span>Gaming Utilities & AI</span>
-                    <span className="text-[9px] text-cyan-400">7 Tools</span>
+                    <span className="text-[9px] text-cyan-400">8 Tools</span>
                   </div>
                   <div className="space-y-1">
                     {toolsItems.map((tool) => {

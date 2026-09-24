@@ -57,6 +57,7 @@ const ToolsHubView = lazy(() => import('./views/ToolsHubView').then(m => ({ defa
 const AvatarGeneratorView = lazy(() => import('./views/AvatarGeneratorView').then(m => ({ default: m.AvatarGeneratorView })));
 const GamePickerWheelView = lazy(() => import('./views/GamePickerWheelView').then(m => ({ default: m.GamePickerWheelView })));
 const VaultAiView = lazy(() => import('./views/VaultAiView').then(m => ({ default: m.VaultAiView })));
+const GameReleaseCalendarView = lazy(() => import('./views/GameReleaseCalendarView').then(m => ({ default: m.GameReleaseCalendarView })));
 const SitemapView = lazy(() => import('./views/SitemapView').then(m => ({ default: m.SitemapView })));
 const AuthorPageView = lazy(() => import('./views/AuthorPageView').then(m => ({ default: m.AuthorPageView })));
 const GamingSectionView = lazy(() => import('./views/GamingSectionView').then(m => ({ default: m.GamingSectionView })));
@@ -1300,6 +1301,17 @@ export default function App() {
           ]
         });
         break;
+      case 'game-release-calendar':
+        updatePageSeo({
+          title: 'Game Release Calendar | Upcoming Video Game Releases & Dates',
+          description: 'Discover upcoming video game releases by date, platform, genre, and more across PC, PlayStation, Xbox, and Nintendo on Game Vault Forum.',
+          canonicalPath: '/tools/game-release-calendar',
+          breadcrumbs: [
+            { name: 'Gaming Tools', path: '/tools' },
+            { name: 'Game Release Calendar', path: '/tools/game-release-calendar' }
+          ]
+        });
+        break;
       case 'login':
       case 'register':
       case 'profile':
@@ -1350,6 +1362,8 @@ export default function App() {
         return 'gaming-pc-builder';
       case 'game-picker-wheel':
         return 'game-picker-wheel';
+      case 'game-release-calendar':
+        return 'game-release-calendar';
       case 'vault-ai':
         return 'vault-ai';
       case 'tools':
@@ -1420,6 +1434,7 @@ export default function App() {
     else if (tab === 'gaming-username-generator') navigate('/tools/gaming-username-generator');
     else if (tab === 'gaming-pc-builder') navigate('/tools/gaming-pc-builder');
     else if (tab === 'game-picker-wheel') navigate('/game-picker-wheel');
+    else if (tab === 'game-release-calendar') navigate('/tools/game-release-calendar');
     else if (tab === 'tools') navigate('/tools');
     else if (tab === 'sitemap') navigate('/sitemap');
     else navigate(`/${tab}`);
@@ -1981,6 +1996,33 @@ export default function App() {
             onNavigateTab={handleNavigateTab}
             onShowToast={(msg, type) => addToast(msg, type === 'error' ? 'info' : type)}
             initialSharedGames={route.type === 'game-picker-wheel' ? route.games : undefined}
+          />
+        );
+
+      case 'game-release-calendar':
+        return (
+          <GameReleaseCalendarView
+            onNavigateTab={handleNavigateTab}
+            currentUser={user}
+            isSignedIn={Boolean(firebaseUser)}
+            onOpenSignIn={() => {
+              setAuthPromptMessage('Sign in or register to sync your game release watchlist and custom reminders across devices.');
+              setIsAuthModalOpen(true);
+            }}
+            onShowToast={(msg, type) => addToast(msg, type === 'alert' ? 'error' : type)}
+            onCheckPcSpecs={(gameTitle) => {
+              navigate(`/tools/pc-game-requirements-checker?game=${encodeURIComponent(gameTitle)}`);
+            }}
+            onCalculateFps={(gameTitle) => {
+              navigate(`/tools/fps-calculator?game=${encodeURIComponent(gameTitle)}`);
+            }}
+            onAddToWheel={(gameTitle) => {
+              navigate(`/game-picker-wheel?games=${encodeURIComponent(gameTitle)}`);
+            }}
+            onAskVaultAi={(gameTitle) => {
+              navigate(`/tools/vault-ai?prompt=${encodeURIComponent(`Tell me about the upcoming release of ${gameTitle}, its gameplay features, target platforms, and expected system requirements.`)}`);
+            }}
+            initialGameSlug={route.type === 'game-release-calendar' ? route.gameSlug : undefined}
           />
         );
 

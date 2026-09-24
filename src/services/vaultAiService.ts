@@ -116,10 +116,91 @@ export function createNewConversation(title = 'New Conversation'): VaultAiConver
   return newConv;
 }
 
+export type VaultAiRole = 
+  | 'general' 
+  | 'hardware_architect' 
+  | 'fps_troubleshooter' 
+  | 'tactical_coach' 
+  | 'lore_stylist';
+
+export interface ModelOption {
+  id: string;
+  name: string;
+  badge: string;
+  description: string;
+  recommendedFor: string;
+}
+
+export const GEMINI_MODEL_OPTIONS: ModelOption[] = [
+  {
+    id: 'gemini-3.8-flash',
+    name: 'Vault AI Core',
+    badge: 'Gemini 3.8 Flash',
+    description: 'High-speed flagship multimodal gaming intelligence.',
+    recommendedFor: 'Default Standard'
+  },
+  {
+    id: 'gemini-3.5-flash',
+    name: 'Tactical General',
+    badge: 'Gemini 3.5 Flash',
+    description: 'Balanced deep gaming guides, walkthroughs & forum advice.',
+    recommendedFor: 'General Tasks'
+  },
+  {
+    id: 'gemini-3.1-flash-lite',
+    name: 'Turbo Fast',
+    badge: 'Gemini 3.1 Flash Lite',
+    description: 'Ultra-low latency instant gaming responses & quick tips.',
+    recommendedFor: 'Fast Tasks'
+  },
+  {
+    id: 'gemini-3.1-pro-preview',
+    name: 'Pro Diagnostics',
+    badge: 'Gemini 3.1 Pro',
+    description: 'Complex PC architecture, intricate thermal & socket math.',
+    recommendedFor: 'Complex Tasks'
+  }
+];
+
+export const ASSISTANT_ROLES = [
+  {
+    id: 'general' as VaultAiRole,
+    title: 'Gaming & Site Copilot',
+    icon: '🎮',
+    tagline: 'All-around gaming companion & site navigator'
+  },
+  {
+    id: 'hardware_architect' as VaultAiRole,
+    title: 'PC Hardware Architect',
+    icon: '🖥️',
+    tagline: 'Custom rig builds, socket compatibility & PSU headroom'
+  },
+  {
+    id: 'fps_troubleshooter' as VaultAiRole,
+    title: 'FPS Troubleshooter',
+    icon: '🔧',
+    tagline: '12-point low FPS diagnosis, stutters & bottleneck fixes'
+  },
+  {
+    id: 'tactical_coach' as VaultAiRole,
+    title: 'Tactical Combat Coach',
+    icon: '⚔️',
+    tagline: 'Helldivers 2 Super Helldive & World of Warships masterclasses'
+  },
+  {
+    id: 'lore_stylist' as VaultAiRole,
+    title: 'Gamertag & Lore Stylist',
+    icon: '🏷️',
+    tagline: 'Cyberpunk gamertags, cool avatars & creative gaming lore'
+  }
+];
+
 export async function sendVaultAiMessage(params: {
   message: string;
   history?: Array<{ role: 'user' | 'assistant'; content: string }>;
   context?: VaultAiContext;
+  model?: string;
+  role?: VaultAiRole;
 }): Promise<{
   reply: string;
   sources: Array<{ title: string; url: string; category?: string }>;
@@ -131,6 +212,7 @@ export async function sendVaultAiMessage(params: {
   };
   actions?: VaultAiAction[];
   modelUsed?: string;
+  roleUsed?: string;
 }> {
   try {
     const res = await fetch('/api/vault-ai/chat', {
@@ -142,6 +224,8 @@ export async function sendVaultAiMessage(params: {
         message: params.message,
         history: params.history || [],
         context: params.context || {},
+        model: params.model,
+        role: params.role || 'general',
       }),
     });
 
@@ -156,6 +240,7 @@ export async function sendVaultAiMessage(params: {
       cardIds: data.cardIds || { games: [], articles: [], videos: [], hardware: [] },
       actions: data.actions || [],
       modelUsed: data.modelUsed,
+      roleUsed: data.roleUsed,
     };
   } catch (err) {
     console.warn('Vault AI API request failed, using local fallback:', err);
@@ -180,6 +265,7 @@ Vault AI is currently operating in offline resilience mode.
         { id: 'act-fall-3', type: 'navigate', label: 'Generate Gamer Tag', target: '/tools/gaming-username-generator' }
       ],
       modelUsed: 'client-offline-fallback',
+      roleUsed: params.role || 'general',
     };
   }
 }

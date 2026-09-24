@@ -16,6 +16,7 @@ export type PageTab =
   | 'gaming-username-generator'
   | 'gaming-pc-builder'
   | 'game-picker-wheel'
+  | 'game-release-calendar'
   | 'vault-ai'
   | 'sitemap'
   | 'new-topic'
@@ -292,6 +293,7 @@ export interface UserAccount {
   badge: string;
   level?: number | string;
   role?: string;
+  isStaff?: boolean;
   reputation: number;
   joinDate: string;
   createdAt?: string;

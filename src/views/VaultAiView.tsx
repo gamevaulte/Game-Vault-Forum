@@ -33,7 +33,10 @@ import {
   getGuestDailyUsage,
   incrementGuestDailyUsage,
   GUEST_DAILY_LIMIT,
-  SMART_SUGGESTION_PROMPTS
+  SMART_SUGGESTION_PROMPTS,
+  GEMINI_MODEL_OPTIONS,
+  ASSISTANT_ROLES,
+  VaultAiRole
 } from '../services/vaultAiService';
 import { VaultAiMessageBubble } from '../components/ai/VaultAiMessageBubble';
 import { ToolHeader } from '../components/tools/ToolHeader';
@@ -65,6 +68,10 @@ export const VaultAiView: React.FC<VaultAiViewProps> = ({
   const [showAdminModal, setShowAdminModal] = useState(false);
   const [adminStatus, setAdminStatus] = useState<any>(null);
   const [dailyUsage, setDailyUsage] = useState(getGuestDailyUsage());
+
+  // Model and Role state
+  const [selectedModel, setSelectedModel] = useState<string>('gemini-3.8-flash');
+  const [selectedRole, setSelectedRole] = useState<VaultAiRole>('general');
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -236,7 +243,7 @@ Create a free member account or sign in to unlock **unlimited Vault AI queries**
 
     try {
       const activeOne = withUserMsg.find(c => c.id === targetConvId);
-      const history = (activeOne?.messages || []).slice(-6).map(m => ({
+      const history = (activeOne?.messages || []).slice(-12).map(m => ({
         role: m.role,
         content: m.content,
       }));
@@ -244,6 +251,8 @@ Create a free member account or sign in to unlock **unlimited Vault AI queries**
       const res = await sendVaultAiMessage({
         message: text,
         history,
+        model: selectedModel,
+        role: selectedRole,
         context: {
           currentPage: 'vault-ai',
           isGuest,
@@ -672,7 +681,7 @@ Create a free member account or sign in to unlock **unlimited Vault AI queries**
         {/* Main Chat Interface */}
         <div className="lg:col-span-9 flex flex-col rounded-2xl bg-[#0b0e1a]/95 border border-white/10 shadow-2xl backdrop-blur-xl overflow-hidden min-h-[640px]">
           {/* Chat Header */}
-          <div className="p-4 bg-zinc-900/80 border-b border-white/10 flex items-center justify-between">
+          <div className="p-4 bg-zinc-900/80 border-b border-white/10 flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-600 to-indigo-600 p-[1px]">
                 <div className="w-full h-full rounded-[11px] bg-[#0c0f1d] flex items-center justify-center text-purple-300">
@@ -684,17 +693,33 @@ Create a free member account or sign in to unlock **unlimited Vault AI queries**
                   <h2 className="text-base font-bold text-white">
                     {activeConversation?.title || 'Vault AI Chat'}
                   </h2>
-                  <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                  <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
                     Online
                   </span>
                 </div>
                 <p className="text-xs text-zinc-400">
-                  Powered by Gemini 3.8 Flash & Game Vault Verified RAG
+                  Multimodal Gaming Copilot & Grounded RAG Knowledge Base
                 </p>
               </div>
             </div>
 
+            {/* Model & Header Actions */}
             <div className="flex items-center gap-2">
+              <div className="relative">
+                <select
+                  value={selectedModel}
+                  onChange={e => setSelectedModel(e.target.value)}
+                  className="bg-black/60 hover:bg-black/80 text-purple-200 border border-purple-500/30 rounded-xl px-2.5 py-1.5 text-xs font-medium outline-none cursor-pointer transition-colors"
+                  title="Select AI Model"
+                >
+                  {GEMINI_MODEL_OPTIONS.map(m => (
+                    <option key={m.id} value={m.id} className="bg-zinc-900 text-zinc-200">
+                      {m.badge} ({m.recommendedFor})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
               <button
                 onClick={() => {
                   if (activeConversation) {
@@ -708,9 +733,35 @@ Create a free member account or sign in to unlock **unlimited Vault AI queries**
                 className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-zinc-400 hover:text-zinc-200 text-xs transition-colors"
                 title="Clear current messages"
               >
-                Clear Messages
+                Clear
               </button>
             </div>
+          </div>
+
+          {/* Assistant Specialist Role Selector */}
+          <div className="px-4 py-2 bg-purple-950/20 border-b border-purple-500/20 flex items-center gap-1.5 overflow-x-auto scrollbar-none">
+            <span className="text-[11px] font-semibold text-purple-300 uppercase tracking-wider flex items-center gap-1 flex-shrink-0 mr-1">
+              <Sparkles className="w-3 h-3 text-purple-400" />
+              <span>Role:</span>
+            </span>
+            {ASSISTANT_ROLES.map(role => {
+              const isSelected = selectedRole === role.id;
+              return (
+                <button
+                  key={role.id}
+                  onClick={() => setSelectedRole(role.id)}
+                  className={`px-2.5 py-1 rounded-lg text-xs font-medium flex items-center gap-1.5 whitespace-nowrap transition-all ${
+                    isSelected
+                      ? 'bg-purple-600 text-white shadow-sm shadow-purple-900/50'
+                      : 'bg-black/40 hover:bg-white/5 text-zinc-400 hover:text-zinc-200 border border-white/5'
+                  }`}
+                  title={role.tagline}
+                >
+                  <span>{role.icon}</span>
+                  <span>{role.title}</span>
+                </button>
+              );
+            })}
           </div>
 
           {/* Messages Scroll Area */}
