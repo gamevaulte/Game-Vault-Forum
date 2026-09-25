@@ -27,6 +27,23 @@ import { PageTab, UserAccount } from '../types';
 import { VaultLogo } from './VaultLogo';
 import { YOUTUBE_CHANNEL } from '../lib/constants';
 
+// Authentic Official YouTube Icon: Red container (#FF0000) with crisp white play triangle (#FFFFFF)
+export const OfficialYouTubeIcon: React.FC<{ className?: string }> = ({ className = "w-5 h-5" }) => (
+  <svg
+    viewBox="0 0 24 24"
+    className={className}
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    aria-hidden="true"
+  >
+    <path
+      d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814z"
+      fill="#FF0000"
+    />
+    <path d="M9.545 15.568V8.432L15.818 12l-6.273 3.568z" fill="#FFFFFF" />
+  </svg>
+);
+
 interface HeaderProps {
   currentTab: PageTab;
   onSelectTab: (tab: PageTab) => void;
@@ -332,6 +349,19 @@ export const Header: React.FC<HeaderProps> = ({
               )}
             </a>
 
+            {/* Desktop & Laptop Navigation YouTube Icon Link: Renders solely as the YouTube icon button without text label "YouTube" */}
+            <a
+              id="nav-youtube-link"
+              href={YOUTUBE_CHANNEL.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="relative px-2 py-1.5 rounded-lg xl:rounded-xl text-gray-300 hover:text-white hover:bg-white/10 transition-all duration-150 flex items-center justify-center shrink-0 group focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400"
+              title={`Game Vault on YouTube (${YOUTUBE_CHANNEL.handle})`}
+              aria-label="YouTube Channel"
+            >
+              <OfficialYouTubeIcon className="w-4.5 h-4.5 group-hover:scale-110 transition-transform shrink-0" />
+            </a>
+
             {/* Desktop (XL+): Articles, Reviews, Guides inline */}
             <div className="hidden xl:flex items-center space-x-1">
               {editorialNavItems.map((item) => {
@@ -585,11 +615,11 @@ export const Header: React.FC<HeaderProps> = ({
             href={YOUTUBE_CHANNEL.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center justify-center w-9 sm:w-9.5 h-9 sm:h-9.5 text-white bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-500 hover:to-rose-600 rounded-lg shadow-md shadow-red-950/40 border border-red-500/30 transition-all duration-150 shrink-0 hover:scale-105 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#070913]"
-            title={`Game Vault on YouTube (${YOUTUBE_CHANNEL.handle})`}
-            aria-label={`Game Vault on YouTube (${YOUTUBE_CHANNEL.handle})`}
+            className="flex items-center justify-center w-9 sm:w-9.5 h-9 sm:h-9.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 hover:border-red-500/40 shadow-sm transition-all duration-150 shrink-0 hover:scale-105 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#070913]"
+            title={`Game Vault Official YouTube Channel (${YOUTUBE_CHANNEL.handle})`}
+            aria-label="Game Vault Official YouTube Channel"
           >
-            <Youtube className="w-4 h-4 sm:w-4.5 sm:h-4.5 fill-white shrink-0" aria-hidden="true" />
+            <OfficialYouTubeIcon className="w-5 h-5 shrink-0" />
             <span className="sr-only">Game Vault on YouTube</span>
           </a>
 
@@ -677,13 +707,16 @@ export const Header: React.FC<HeaderProps> = ({
                 Search Database
               </button>
               <a
+                id="mobile-youtube-btn"
                 href={YOUTUBE_CHANNEL.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-1.5 py-2 px-3 bg-red-600/90 hover:bg-red-600 text-white rounded-xl text-xs font-bold font-['Rajdhani'] uppercase tracking-wider shrink-0"
+                className="flex items-center justify-center w-10 h-10 bg-white/5 hover:bg-white/10 text-white rounded-xl border border-white/10 hover:border-red-500/40 transition-all shrink-0 hover:scale-105 active:scale-95"
+                title={`Game Vault on YouTube (${YOUTUBE_CHANNEL.handle})`}
+                aria-label="Game Vault Official YouTube Channel"
               >
-                <Youtube className="w-3.5 h-3.5 fill-white" />
-                YouTube
+                <OfficialYouTubeIcon className="w-5 h-5 shrink-0" />
+                <span className="sr-only">YouTube</span>
               </a>
             </div>
 
