@@ -17,7 +17,7 @@ import {
   Calendar
 } from 'lucide-react';
 import { ForumTopic, UserAccount, PageTab } from '../types';
-import { formatTopicDate } from '../lib/forumUtils';
+import { formatTopicDate, formatCommentDateTime, getTimestampMs } from '../lib/forumUtils';
 
 interface TopicPageViewProps {
   topic: ForumTopic;
@@ -62,8 +62,8 @@ export const TopicPageView: React.FC<TopicPageViewProps> = ({
   const sortedReplies = useMemo(() => {
     if (!topic.replies || !Array.isArray(topic.replies)) return [];
     return [...topic.replies].sort((a, b) => {
-      const timeA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
-      const timeB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      const timeA = getTimestampMs(a.createdAt, a.timestamp);
+      const timeB = getTimestampMs(b.createdAt, b.timestamp);
       return timeA - timeB;
     });
   }, [topic.replies]);
@@ -415,6 +415,7 @@ export const TopicPageView: React.FC<TopicPageViewProps> = ({
                       <img
                         src={reply.author.avatar}
                         alt={reply.author.name}
+                        referrerPolicy="no-referrer"
                         className="w-8 h-8 rounded-full object-cover border border-purple-500/40 group-hover:border-purple-400 transition-colors"
                       />
                       <div>
@@ -428,7 +429,10 @@ export const TopicPageView: React.FC<TopicPageViewProps> = ({
                         )}
                       </div>
                     </button>
-                    <span className="text-[11px] text-gray-500 font-mono">{reply.timestamp}</span>
+                    <span className="flex items-center gap-1.5 text-[11px] text-gray-400 font-mono">
+                      <Clock className="w-3 h-3 text-purple-400 shrink-0" />
+                      <span>{formatCommentDateTime(reply.createdAt, reply.timestamp)}</span>
+                    </span>
                   </div>
 
                   {reply.replyToAuthor && (

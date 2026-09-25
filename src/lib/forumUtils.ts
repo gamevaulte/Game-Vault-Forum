@@ -44,3 +44,78 @@ export function formatTopicDate(topic?: Partial<ForumTopic> | null): string {
 
   return 'Sep 19, 2026';
 }
+
+/**
+ * Returns accurate millisecond timestamp from createdAt or timestamp string for chronological sorting
+ */
+export function getTimestampMs(createdAt?: any, fallbackTimestamp?: string): number {
+  if (createdAt) {
+    if (typeof createdAt === 'number') return createdAt;
+    if (typeof createdAt === 'string') {
+      const parsed = Date.parse(createdAt);
+      if (!isNaN(parsed)) return parsed;
+    }
+    if (typeof createdAt === 'object' && createdAt !== null && 'seconds' in createdAt) {
+      return createdAt.seconds * 1000;
+    }
+  }
+
+  if (fallbackTimestamp) {
+    const ts = fallbackTimestamp.trim().toLowerCase();
+    const now = Date.now();
+    if (ts === 'just now') return now;
+    if (ts.includes('min ago') || ts.includes('mins ago')) {
+      const mins = parseInt(ts) || 1;
+      return now - mins * 60 * 1000;
+    }
+    if (ts.includes('hour ago') || ts.includes('hours ago')) {
+      const hours = parseInt(ts) || 1;
+      return now - hours * 60 * 60 * 1000;
+    }
+    if (ts.includes('yesterday')) {
+      return now - 24 * 60 * 60 * 1000;
+    }
+    const parsed = Date.parse(fallbackTimestamp);
+    if (!isNaN(parsed)) return parsed;
+  }
+
+  return 0;
+}
+
+/**
+ * Consistently returns formatted time and date for comments and replies
+ * Displays both date and time (e.g. "Sep 24, 2026 • 10:15 AM")
+ */
+export function formatCommentDateTime(createdAt?: any, fallbackTimestamp?: string): string {
+  if (createdAt) {
+    let d: Date | null = null;
+    if (typeof createdAt === 'string') {
+      const parsed = new Date(createdAt);
+      if (!isNaN(parsed.getTime())) d = parsed;
+    } else if (typeof createdAt === 'number') {
+      d = new Date(createdAt);
+    } else if (typeof createdAt === 'object' && createdAt !== null && 'seconds' in createdAt) {
+      d = new Date(createdAt.seconds * 1000);
+    }
+
+    if (d && !isNaN(d.getTime())) {
+      const datePart = d.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+      });
+      const timePart = d.toLocaleTimeString('en-US', {
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true
+      });
+      return `${datePart} • ${timePart}`;
+    }
+  }
+
+  if (fallbackTimestamp) {
+    return fallbackTimestamp;
+  }
+
+  return 'Just now';
+}

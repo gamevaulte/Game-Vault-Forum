@@ -579,18 +579,17 @@ export const Header: React.FC<HeaderProps> = ({
             </kbd>
           </button>
 
-          {/* YouTube Channel CTA - shown on sm: screens and up to prevent mobile overcrowding */}
+          {/* YouTube Channel CTA - Icon only in desktop/laptop menu bar */}
           <a
             id="header-youtube-btn"
             href={YOUTUBE_CHANNEL.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="hidden sm:flex items-center gap-1.5 h-9 sm:h-9.5 px-2.5 sm:px-3 text-xs font-['Rajdhani'] font-bold uppercase tracking-wider text-white bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-500 hover:to-rose-600 rounded-lg shadow-md shadow-red-950/40 border border-red-500/30 transition-all shrink-0"
+            className="hidden sm:flex items-center justify-center w-9 sm:w-9.5 h-9 sm:h-9.5 text-white bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-500 hover:to-rose-600 rounded-lg shadow-md shadow-red-950/40 border border-red-500/30 transition-all shrink-0 hover:scale-105"
             title={`Game Vault on YouTube (${YOUTUBE_CHANNEL.handle})`}
             aria-label="Game Vault YouTube Channel"
           >
             <Youtube className="w-4 h-4 fill-white shrink-0" />
-            <span className="hidden md:inline">YouTube</span>
           </a>
 
           {/* User Account / Profile or Sign In */}

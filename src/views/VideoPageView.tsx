@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import { Video, PostComment, UserAccount, PageTab } from '../types';
 import { YOUTUBE_CHANNEL } from '../lib/constants';
+import { formatCommentDateTime, getTimestampMs } from '../lib/forumUtils';
 
 interface VideoPageViewProps {
   video: Video;
@@ -72,14 +73,52 @@ export const VideoPageView: React.FC<VideoPageViewProps> = ({
   const [replyingTo, setReplyingTo] = useState<{ id: string; authorName: string } | null>(null);
   const [subReplyText, setSubReplyText] = useState('');
 
-  // Chronological sorting by time and date posted (ascending order)
-  const sortedComments = useMemo(() => {
+  // Chronological grouping and sorting by time and date posted (ascending order)
+  const threadedComments = useMemo(() => {
     if (!comments || !Array.isArray(comments)) return [];
-    return [...comments].sort((a, b) => {
-      const timeA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
-      const timeB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+
+    const sortedAll = [...comments].sort((a, b) => {
+      const timeA = getTimestampMs(a.createdAt, a.timestamp);
+      const timeB = getTimestampMs(b.createdAt, b.timestamp);
       return timeA - timeB;
     });
+
+    const commentMap = new Map<string, PostComment>();
+    sortedAll.forEach((c) => commentMap.set(c.id, c));
+
+    // Find root parent for replies
+    const getRootId = (targetId: string, visited = new Set<string>()): string => {
+      if (visited.has(targetId)) return targetId;
+      visited.add(targetId);
+      const item = commentMap.get(targetId);
+      if (item && item.replyToId && commentMap.has(item.replyToId)) {
+        return getRootId(item.replyToId, visited);
+      }
+      return targetId;
+    };
+
+    const threadReplies = new Map<string, PostComment[]>();
+    const roots: PostComment[] = [];
+
+    sortedAll.forEach((c) => {
+      if (c.replyToId && commentMap.has(c.replyToId)) {
+        const rootId = getRootId(c.replyToId);
+        const list = threadReplies.get(rootId) || [];
+        list.push(c);
+        threadReplies.set(rootId, list);
+      } else {
+        roots.push(c);
+      }
+    });
+
+    return roots.map((root) => ({
+      root,
+      replies: (threadReplies.get(root.id) || []).sort((a, b) => {
+        const timeA = getTimestampMs(a.createdAt, a.timestamp);
+        const timeB = getTimestampMs(b.createdAt, b.timestamp);
+        return timeA - timeB;
+      })
+    }));
   }, [comments]);
 
   const handleSubmitComment = (e: React.FormEvent) => {
@@ -357,7 +396,7 @@ export const VideoPageView: React.FC<VideoPageViewProps> = ({
           <div className="flex items-center gap-2.5">
             <MessageSquare className="w-5 h-5 text-purple-400" />
             <h3 className="text-xl font-bold font-['Rajdhani'] uppercase tracking-wider text-white">
-              Video Discussion ({sortedComments.length})
+              Video Discussion ({comments.length})
             </h3>
           </div>
           <span className="text-xs text-gray-400 font-mono">
@@ -395,6 +434,7 @@ export const VideoPageView: React.FC<VideoPageViewProps> = ({
               <img
                 src={currentUser.avatar}
                 alt={currentUser.name}
+                referrerPolicy="no-referrer"
                 className="w-8 h-8 rounded-full object-cover border border-purple-500/50"
               />
               <span className="text-xs font-semibold text-white font-['Space_Grotesk']">
@@ -425,162 +465,320 @@ export const VideoPageView: React.FC<VideoPageViewProps> = ({
           </form>
         )}
 
-        {/* Comments List: Chronologically Ordered */}
-        <div className="space-y-4 pt-4 border-t border-white/10">
-          {sortedComments.length === 0 ? (
+        {/* Comments List: Chronologically Ordered Threads & Replies */}
+        <div className="space-y-6 pt-4 border-t border-white/10">
+          {threadedComments.length === 0 ? (
             <div className="text-center py-8 text-gray-500 text-xs font-mono">
               No comments yet on this video briefing. Be the first to share your thoughts!
             </div>
           ) : (
-            sortedComments.map((comment) => {
+            threadedComments.map(({ root: comment, replies }) => {
               const userHasLiked = isCommentLiked(comment.id);
               const cLikes = getCommentLikeCount(comment.id);
               return (
-                <div
-                  key={comment.id}
-                  className="p-4 sm:p-5 rounded-2xl bg-white/[0.02] border border-white/5 space-y-2.5 transition-colors hover:border-white/10"
-                >
-                  <div className="flex items-center justify-between">
-                    <button
-                      type="button"
-                      onClick={() => onViewUserProfile?.({
-                        id: comment.author.id,
-                        name: comment.author.name,
-                        username: comment.author.username,
-                        avatar: comment.author.avatar,
-                        role: comment.author.role || comment.author.badge || 'Recruit Operative',
-                        badge: comment.author.badge
-                      })}
-                      className="flex items-center gap-3 text-left group cursor-pointer hover:opacity-90 transition-opacity"
-                      title={`View ${comment.author.name}'s profile`}
-                    >
-                      <img
-                        src={comment.author.avatar}
-                        alt={comment.author.name}
-                        className="w-8 h-8 rounded-full object-cover border border-purple-500/40 group-hover:border-purple-400 transition-colors"
-                      />
-                      <div>
-                        <span className="text-xs font-bold text-white font-['Space_Grotesk'] block group-hover:text-purple-300 transition-colors">
-                          {comment.author.name}
-                        </span>
-                        {comment.author.badge && (
-                          <span className="text-[10px] text-purple-300 font-mono">
-                            {comment.author.badge}
+                <div key={comment.id} className="space-y-3">
+                  {/* Root Comment Card */}
+                  <div className="p-4 sm:p-5 rounded-2xl bg-white/[0.02] border border-white/5 space-y-2.5 transition-colors hover:border-white/10">
+                    <div className="flex items-center justify-between">
+                      <button
+                        type="button"
+                        onClick={() => onViewUserProfile?.({
+                          id: comment.author.id,
+                          name: comment.author.name,
+                          username: comment.author.username,
+                          avatar: comment.author.avatar,
+                          role: comment.author.role || comment.author.badge || 'Recruit Operative',
+                          badge: comment.author.badge
+                        })}
+                        className="flex items-center gap-3 text-left group cursor-pointer hover:opacity-90 transition-opacity"
+                        title={`View ${comment.author.name}'s profile`}
+                      >
+                        <img
+                          src={comment.author.avatar}
+                          alt={comment.author.name}
+                          referrerPolicy="no-referrer"
+                          className="w-8 h-8 rounded-full object-cover border border-purple-500/40 group-hover:border-purple-400 transition-colors"
+                        />
+                        <div>
+                          <span className="text-xs font-bold text-white font-['Space_Grotesk'] block group-hover:text-purple-300 transition-colors">
+                            {comment.author.name}
                           </span>
-                        )}
-                      </div>
-                    </button>
-                    <span className="text-[11px] text-gray-500 font-mono">{comment.timestamp}</span>
-                  </div>
-
-                  {comment.replyToAuthor && (
-                    <div className="pl-11">
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-purple-500/10 border border-purple-500/20 text-[10px] font-mono text-purple-300">
-                        <CornerDownRight className="w-2.5 h-2.5" />
-                        <span>Replying to @{comment.replyToAuthor}</span>
+                          {comment.author.badge && (
+                            <span className="text-[10px] text-purple-300 font-mono">
+                              {comment.author.badge}
+                            </span>
+                          )}
+                        </div>
+                      </button>
+                      <span className="flex items-center gap-1.5 text-[11px] text-gray-400 font-mono">
+                        <Clock className="w-3 h-3 text-purple-400 shrink-0" />
+                        <span>{formatCommentDateTime(comment.createdAt, comment.timestamp)}</span>
                       </span>
                     </div>
-                  )}
 
-                  <p className="text-sm text-gray-300 leading-relaxed font-['Inter'] pl-11">
-                    {comment.content}
-                  </p>
+                    <p className="text-sm text-gray-300 leading-relaxed font-['Inter'] pl-11">
+                      {comment.content}
+                    </p>
 
-                  <div className="flex items-center gap-4 pl-11 pt-1">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (!isSignedIn) {
-                          onOpenSignIn();
-                          return;
-                        }
-                        onToggleCommentLike(comment.id);
-                      }}
-                      className={`flex items-center gap-1.5 text-xs transition-colors cursor-pointer ${
-                        userHasLiked
-                          ? 'text-purple-400 font-bold'
-                          : 'text-gray-400 hover:text-white'
-                      }`}
-                      title={userHasLiked ? 'Unlike comment' : 'Like comment'}
-                    >
-                      <ThumbsUp className={`w-3.5 h-3.5 ${userHasLiked ? 'fill-current' : ''}`} />
-                      <span>{cLikes}</span>
-                    </button>
+                    <div className="flex items-center gap-4 pl-11 pt-1">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (!isSignedIn) {
+                            onOpenSignIn();
+                            return;
+                          }
+                          onToggleCommentLike(comment.id);
+                        }}
+                        className={`flex items-center gap-1.5 text-xs transition-colors cursor-pointer ${
+                          userHasLiked
+                            ? 'text-purple-400 font-bold'
+                            : 'text-gray-400 hover:text-white'
+                        }`}
+                        title={userHasLiked ? 'Unlike comment' : 'Like comment'}
+                      >
+                        <ThumbsUp className={`w-3.5 h-3.5 ${userHasLiked ? 'fill-current' : ''}`} />
+                        <span>{cLikes}</span>
+                      </button>
 
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (!isSignedIn) {
-                          onOpenSignIn();
-                          return;
-                        }
-                        if (replyingTo?.id === comment.id) {
-                          setReplyingTo(null);
-                          setSubReplyText('');
-                        } else {
-                          setReplyingTo({ id: comment.id, authorName: comment.author.name });
-                          setSubReplyText(`@${comment.author.name} `);
-                        }
-                      }}
-                      className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-purple-300 transition-colors cursor-pointer"
-                      title="Reply to this operative"
-                    >
-                      <CornerDownRight className="w-3.5 h-3.5 text-purple-400" />
-                      <span>Reply</span>
-                    </button>
-                  </div>
-
-                  {/* Inline Reply-to-Comment Form */}
-                  {replyingTo?.id === comment.id && (
-                    <form
-                      onSubmit={(e) => {
-                        e.preventDefault();
-                        if (!isSignedIn) {
-                          onOpenSignIn();
-                          return;
-                        }
-                        if (!subReplyText.trim()) return;
-                        onAddComment(subReplyText.trim(), {
-                          replyToId: comment.id,
-                          replyToAuthor: comment.author.name
-                        });
-                        setSubReplyText('');
-                        setReplyingTo(null);
-                      }}
-                      className="mt-3 pl-11 space-y-2 animate-in fade-in duration-150"
-                    >
-                      <div className="flex items-center justify-between text-[11px] text-purple-300 font-mono">
-                        <span>Replying to <span className="font-bold">@{replyingTo.authorName}</span>:</span>
-                        <button
-                          type="button"
-                          onClick={() => {
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (!isSignedIn) {
+                            onOpenSignIn();
+                            return;
+                          }
+                          if (replyingTo?.id === comment.id) {
                             setReplyingTo(null);
                             setSubReplyText('');
-                          }}
-                          className="text-gray-400 hover:text-white cursor-pointer"
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                      <div className="flex gap-2">
-                        <input
-                          type="text"
-                          value={subReplyText}
-                          onChange={(e) => setSubReplyText(e.target.value)}
-                          placeholder={`Reply to ${comment.author.name}...`}
-                          className="flex-1 px-3 py-2 bg-black/40 border border-purple-500/40 rounded-xl text-xs text-white placeholder-gray-500 focus:outline-none focus:border-purple-400"
-                          autoFocus
-                        />
-                        <button
-                          type="submit"
-                          disabled={!subReplyText.trim()}
-                          className="px-4 py-2 bg-purple-600 hover:bg-purple-500 disabled:opacity-40 text-white rounded-xl text-xs font-bold font-['Rajdhani'] uppercase tracking-wider flex items-center gap-1.5 cursor-pointer transition-all shadow-md shadow-purple-900/40"
-                        >
-                          <Send className="w-3 h-3" />
-                          <span>Reply</span>
-                        </button>
-                      </div>
-                    </form>
+                          } else {
+                            setReplyingTo({ id: comment.id, authorName: comment.author.name });
+                            setSubReplyText(`@${comment.author.name} `);
+                          }
+                        }}
+                        className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-purple-300 transition-colors cursor-pointer"
+                        title="Reply to this operative"
+                      >
+                        <CornerDownRight className="w-3.5 h-3.5 text-purple-400" />
+                        <span>Reply</span>
+                      </button>
+                    </div>
+
+                    {/* Inline Reply-to-Comment Form */}
+                    {replyingTo?.id === comment.id && (
+                      <form
+                        onSubmit={(e) => {
+                          e.preventDefault();
+                          if (!isSignedIn) {
+                            onOpenSignIn();
+                            return;
+                          }
+                          if (!subReplyText.trim()) return;
+                          onAddComment(subReplyText.trim(), {
+                            replyToId: comment.id,
+                            replyToAuthor: comment.author.name
+                          });
+                          setSubReplyText('');
+                          setReplyingTo(null);
+                        }}
+                        className="mt-3 pl-11 space-y-2 animate-in fade-in duration-150"
+                      >
+                        <div className="flex items-center justify-between text-[11px] text-purple-300 font-mono">
+                          <span>Replying to <span className="font-bold">@{replyingTo.authorName}</span>:</span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setReplyingTo(null);
+                              setSubReplyText('');
+                            }}
+                            className="text-gray-400 hover:text-white cursor-pointer"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            value={subReplyText}
+                            onChange={(e) => setSubReplyText(e.target.value)}
+                            placeholder={`Reply to ${comment.author.name}...`}
+                            className="flex-1 px-3 py-2 bg-black/40 border border-purple-500/40 rounded-xl text-xs text-white placeholder-gray-500 focus:outline-none focus:border-purple-400"
+                            autoFocus
+                          />
+                          <button
+                            type="submit"
+                            disabled={!subReplyText.trim()}
+                            className="px-4 py-2 bg-purple-600 hover:bg-purple-500 disabled:opacity-40 text-white rounded-xl text-xs font-bold font-['Rajdhani'] uppercase tracking-wider flex items-center gap-1.5 cursor-pointer transition-all shadow-md shadow-purple-900/40"
+                          >
+                            <Send className="w-3 h-3" />
+                            <span>Reply</span>
+                          </button>
+                        </div>
+                      </form>
+                    )}
+                  </div>
+
+                  {/* Threaded Nested Replies */}
+                  {replies.length > 0 && (
+                    <div className="ml-4 sm:ml-8 pl-3 sm:pl-4 border-l-2 border-purple-500/30 space-y-3">
+                      {replies.map((reply) => {
+                        const replyLiked = isCommentLiked(reply.id);
+                        const rLikes = getCommentLikeCount(reply.id);
+                        return (
+                          <div
+                            key={reply.id}
+                            className="p-3.5 sm:p-4 rounded-xl bg-purple-950/10 border border-purple-500/10 space-y-2 hover:border-purple-500/20 transition-colors"
+                          >
+                            <div className="flex items-center justify-between">
+                              <button
+                                type="button"
+                                onClick={() => onViewUserProfile?.({
+                                  id: reply.author.id,
+                                  name: reply.author.name,
+                                  username: reply.author.username,
+                                  avatar: reply.author.avatar,
+                                  role: reply.author.role || reply.author.badge || 'Recruit Operative',
+                                  badge: reply.author.badge
+                                })}
+                                className="flex items-center gap-2.5 text-left group cursor-pointer hover:opacity-90 transition-opacity"
+                                title={`View ${reply.author.name}'s profile`}
+                              >
+                                <img
+                                  src={reply.author.avatar}
+                                  alt={reply.author.name}
+                                  referrerPolicy="no-referrer"
+                                  className="w-7 h-7 rounded-full object-cover border border-purple-500/40 group-hover:border-purple-400 transition-colors"
+                                />
+                                <div>
+                                  <span className="text-xs font-bold text-white font-['Space_Grotesk'] block group-hover:text-purple-300 transition-colors">
+                                    {reply.author.name}
+                                  </span>
+                                  {reply.author.badge && (
+                                    <span className="text-[10px] text-purple-300 font-mono">
+                                      {reply.author.badge}
+                                    </span>
+                                  )}
+                                </div>
+                              </button>
+                              <span className="flex items-center gap-1.5 text-[11px] text-gray-400 font-mono">
+                                <Clock className="w-3 h-3 text-purple-400 shrink-0" />
+                                <span>{formatCommentDateTime(reply.createdAt, reply.timestamp)}</span>
+                              </span>
+                            </div>
+
+                            {reply.replyToAuthor && (
+                              <div className="pl-9">
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-purple-500/10 border border-purple-500/20 text-[10px] font-mono text-purple-300">
+                                  <CornerDownRight className="w-2.5 h-2.5" />
+                                  <span>Replying to @{reply.replyToAuthor}</span>
+                                </span>
+                              </div>
+                            )}
+
+                            <p className="text-sm text-gray-300 leading-relaxed font-['Inter'] pl-9">
+                              {reply.content}
+                            </p>
+
+                            <div className="flex items-center gap-4 pl-9 pt-1">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  if (!isSignedIn) {
+                                    onOpenSignIn();
+                                    return;
+                                  }
+                                  onToggleCommentLike(reply.id);
+                                }}
+                                className={`flex items-center gap-1.5 text-xs transition-colors cursor-pointer ${
+                                  replyLiked
+                                    ? 'text-purple-400 font-bold'
+                                    : 'text-gray-400 hover:text-white'
+                                }`}
+                                title={replyLiked ? 'Unlike reply' : 'Like reply'}
+                              >
+                                <ThumbsUp className={`w-3.5 h-3.5 ${replyLiked ? 'fill-current' : ''}`} />
+                                <span>{rLikes}</span>
+                              </button>
+
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  if (!isSignedIn) {
+                                    onOpenSignIn();
+                                    return;
+                                  }
+                                  if (replyingTo?.id === reply.id) {
+                                    setReplyingTo(null);
+                                    setSubReplyText('');
+                                  } else {
+                                    setReplyingTo({ id: reply.id, authorName: reply.author.name });
+                                    setSubReplyText(`@${reply.author.name} `);
+                                  }
+                                }}
+                                className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-purple-300 transition-colors cursor-pointer"
+                                title="Reply to this response"
+                              >
+                                <CornerDownRight className="w-3.5 h-3.5 text-purple-400" />
+                                <span>Reply</span>
+                              </button>
+                            </div>
+
+                            {/* Inline Reply-to-Nested-Reply Form */}
+                            {replyingTo?.id === reply.id && (
+                              <form
+                                onSubmit={(e) => {
+                                  e.preventDefault();
+                                  if (!isSignedIn) {
+                                    onOpenSignIn();
+                                    return;
+                                  }
+                                  if (!subReplyText.trim()) return;
+                                  onAddComment(subReplyText.trim(), {
+                                    replyToId: reply.id,
+                                    replyToAuthor: reply.author.name
+                                  });
+                                  setSubReplyText('');
+                                  setReplyingTo(null);
+                                }}
+                                className="mt-3 pl-9 space-y-2 animate-in fade-in duration-150"
+                              >
+                                <div className="flex items-center justify-between text-[11px] text-purple-300 font-mono">
+                                  <span>Replying to <span className="font-bold">@{replyingTo.authorName}</span>:</span>
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setReplyingTo(null);
+                                      setSubReplyText('');
+                                    }}
+                                    className="text-gray-400 hover:text-white cursor-pointer"
+                                  >
+                                    Cancel
+                                  </button>
+                                </div>
+                                <div className="flex gap-2">
+                                  <input
+                                    type="text"
+                                    value={subReplyText}
+                                    onChange={(e) => setSubReplyText(e.target.value)}
+                                    placeholder={`Reply to ${reply.author.name}...`}
+                                    className="flex-1 px-3 py-2 bg-black/40 border border-purple-500/40 rounded-xl text-xs text-white placeholder-gray-500 focus:outline-none focus:border-purple-400"
+                                    autoFocus
+                                  />
+                                  <button
+                                    type="submit"
+                                    disabled={!subReplyText.trim()}
+                                    className="px-4 py-2 bg-purple-600 hover:bg-purple-500 disabled:opacity-40 text-white rounded-xl text-xs font-bold font-['Rajdhani'] uppercase tracking-wider flex items-center gap-1.5 cursor-pointer transition-all shadow-md shadow-purple-900/40"
+                                  >
+                                    <Send className="w-3 h-3" />
+                                    <span>Reply</span>
+                                  </button>
+                                </div>
+                              </form>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
                   )}
                 </div>
               );
