@@ -349,19 +349,6 @@ export const Header: React.FC<HeaderProps> = ({
               )}
             </a>
 
-            {/* Desktop & Laptop Navigation YouTube Icon Link: Renders solely as the YouTube icon button without text label "YouTube" */}
-            <a
-              id="nav-youtube-link"
-              href={YOUTUBE_CHANNEL.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="relative px-2 py-1.5 rounded-lg xl:rounded-xl text-gray-300 hover:text-white hover:bg-white/10 transition-all duration-150 flex items-center justify-center shrink-0 group focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400"
-              title={`Game Vault on YouTube (${YOUTUBE_CHANNEL.handle})`}
-              aria-label="YouTube Channel"
-            >
-              <OfficialYouTubeIcon className="w-4.5 h-4.5 group-hover:scale-110 transition-transform shrink-0" />
-            </a>
-
             {/* Desktop (XL+): Articles, Reviews, Guides inline */}
             <div className="hidden xl:flex items-center space-x-1">
               {editorialNavItems.map((item) => {
@@ -620,7 +607,6 @@ export const Header: React.FC<HeaderProps> = ({
             aria-label="Game Vault Official YouTube Channel"
           >
             <OfficialYouTubeIcon className="w-5 h-5 shrink-0" />
-            <span className="sr-only">Game Vault on YouTube</span>
           </a>
 
           {/* User Account / Profile or Sign In */}
@@ -716,7 +702,6 @@ export const Header: React.FC<HeaderProps> = ({
                 aria-label="Game Vault Official YouTube Channel"
               >
                 <OfficialYouTubeIcon className="w-5 h-5 shrink-0" />
-                <span className="sr-only">YouTube</span>
               </a>
             </div>
 
