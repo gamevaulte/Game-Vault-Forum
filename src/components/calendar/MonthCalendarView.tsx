@@ -51,7 +51,9 @@ export const MonthCalendarView: React.FC<MonthCalendarViewProps> = ({
     }
   });
 
-  const todayStr = '2026-09-24';
+  const now = new Date();
+  const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+  const todayFormatted = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 
   // Days array
   const calendarCells = [];
@@ -83,7 +85,7 @@ export const MonthCalendarView: React.FC<MonthCalendarViewProps> = ({
             onClick={onToday}
             className="px-2.5 py-1 rounded-lg text-xs font-['Rajdhani'] font-bold uppercase tracking-wider bg-purple-600/30 hover:bg-purple-600/50 border border-purple-500/40 text-purple-200 transition-colors cursor-pointer"
           >
-            Today (Sep 24)
+            Today ({todayFormatted})
           </button>
         </div>
 

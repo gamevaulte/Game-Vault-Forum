@@ -86,9 +86,17 @@ export const GameReleaseCalendarView: React.FC<GameReleaseCalendarViewProps> = (
   // Navigation & View Type
   const [viewType, setViewType] = useState<CalendarViewType>('grid');
 
-  // Calendar Month State (Current anchor: September 2026)
-  const [currentYear, setCurrentYear] = useState<number>(2026);
-  const [currentMonth, setCurrentMonth] = useState<number>(9); // 1-12 (9 = September)
+  // Dynamic Calendar Month State based on real calendar date and verified releases
+  const [currentYear, setCurrentYear] = useState<number>(() => {
+    const now = new Date();
+    const y = now.getFullYear();
+    // Default to active release calendar year (2025 or current year)
+    return y >= 2024 && y <= 2026 ? y : 2025;
+  });
+  const [currentMonth, setCurrentMonth] = useState<number>(() => {
+    const now = new Date();
+    return now.getMonth() + 1; // 1-12
+  });
   const [selectedCalendarDate, setSelectedCalendarDate] = useState<string | null>(null);
 
   // Active Selected Release Modal
@@ -329,21 +337,41 @@ export const GameReleaseCalendarView: React.FC<GameReleaseCalendarViewProps> = (
       result = result.filter(r => r.releaseDate === selectedCalendarDate);
     }
 
-    // 7. Date Presets (Based on Sep 24, 2026 anchor)
+    // 7. Date Presets (Dynamic relative to real calendar date)
+    const now = new Date();
+    const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+    const thisMonthPrefix = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+    const nextMonthObj = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+    const nextMonthPrefix = `${nextMonthObj.getFullYear()}-${String(nextMonthObj.getMonth() + 1).padStart(2, '0')}`;
+    const next90Obj = new Date(now.getTime() + 90 * 24 * 60 * 60 * 1000);
+    const next90Str = next90Obj.toISOString().split('T')[0];
+
     if (datePreset === 'today') {
-      result = result.filter(r => r.releaseDate === '2026-09-24');
+      result = result.filter(r => r.releaseDate === todayStr);
     } else if (datePreset === 'this_week') {
-      result = result.filter(r => r.releaseDate >= '2026-09-21' && r.releaseDate <= '2026-09-27');
+      const dayOfWeek = now.getDay();
+      const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+      const monday = new Date(now);
+      monday.setDate(now.getDate() + mondayOffset);
+      const sunday = new Date(monday);
+      sunday.setDate(monday.getDate() + 6);
+      const startStr = monday.toISOString().split('T')[0];
+      const endStr = sunday.toISOString().split('T')[0];
+      result = result.filter(r => r.releaseDate >= startStr && r.releaseDate <= endStr);
     } else if (datePreset === 'this_month') {
-      result = result.filter(r => r.releaseDate.startsWith('2026-09'));
+      result = result.filter(r => r.releaseDate.startsWith(thisMonthPrefix));
     } else if (datePreset === 'next_month') {
-      result = result.filter(r => r.releaseDate.startsWith('2026-10'));
+      result = result.filter(r => r.releaseDate.startsWith(nextMonthPrefix));
     } else if (datePreset === 'next_3_months') {
-      result = result.filter(r => r.releaseDate >= '2026-09-24' && r.releaseDate <= '2026-12-31');
-    } else if (datePreset === 'next_6_months') {
-      result = result.filter(r => r.releaseDate >= '2026-09-24' && r.releaseDate <= '2027-03-31');
-    } else if (datePreset === 'this_year') {
-      result = result.filter(r => r.releaseDate.startsWith('2026'));
+      result = result.filter(r => r.releaseDate >= todayStr && r.releaseDate <= next90Str);
+    } else if (datePreset === 'upcoming') {
+      result = result.filter(r => r.status === 'Upcoming' || (r.status === 'TBA' && r.releaseDate >= todayStr));
+    } else if (datePreset === 'year_2025') {
+      result = result.filter(r => r.releaseDate.startsWith('2025'));
+    } else if (datePreset === 'year_2024') {
+      result = result.filter(r => r.releaseDate.startsWith('2024'));
+    } else if (datePreset === 'released') {
+      result = result.filter(r => r.status === 'Released');
     } else if (datePreset === 'delayed') {
       result = result.filter(r => r.status === 'Delayed');
     } else if (datePreset === 'tba') {
@@ -388,19 +416,39 @@ export const GameReleaseCalendarView: React.FC<GameReleaseCalendarViewProps> = (
   // This Week's Releases
   const releasesThisWeek = useMemo(() => getReleasesThisWeek(), []);
 
+  // Dynamic Current Week Label (e.g. Feb 24 – Mar 2)
+  const currentWeekLabel = useMemo(() => {
+    const now = new Date();
+    const dayOfWeek = now.getDay();
+    const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+    const monday = new Date(now);
+    monday.setDate(now.getDate() + mondayOffset);
+    const sunday = new Date(monday);
+    sunday.setDate(monday.getDate() + 6);
+    return `${monday.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} – ${sunday.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+  }, []);
+
   // Month's Top Highlights
+  const currentMonthStr = `${currentYear}-${String(currentMonth).padStart(2, '0')}`;
   const monthlyHighlights = useMemo(() => {
-    return GAME_RELEASES_DATABASE
-      .filter(r => r.releaseDate.startsWith('2026-09') || r.isMajorHighlight)
+    const inMonth = GAME_RELEASES_DATABASE.filter(r => r.releaseDate.startsWith(currentMonthStr));
+    if (inMonth.length > 0) {
+      return inMonth.sort((a, b) => (b.hypeScore || 0) - (a.hypeScore || 0)).slice(0, 4);
+    }
+    return GAME_RELEASES_DATABASE.filter(r => r.isMajorHighlight)
       .sort((a, b) => (b.hypeScore || 0) - (a.hypeScore || 0))
       .slice(0, 4);
-  }, []);
+  }, [currentMonthStr]);
 
   // Next Upcoming Countdowns
   const upcomingNext = useMemo(() => {
-    return GAME_RELEASES_DATABASE
-      .filter(r => r.releaseDate > '2026-09-24' && r.releaseDate !== 'TBA')
-      .sort((a, b) => a.releaseDate.localeCompare(b.releaseDate))
+    const todayIso = new Date().toISOString().split('T')[0];
+    const upcoming = GAME_RELEASES_DATABASE.filter(r => r.status === 'Upcoming' && r.releaseDate >= todayIso);
+    if (upcoming.length > 0) {
+      return upcoming.sort((a, b) => a.releaseDate.localeCompare(b.releaseDate)).slice(0, 4);
+    }
+    return GAME_RELEASES_DATABASE.filter(r => r.status === 'Upcoming' || r.status === 'TBA')
+      .sort((a, b) => (b.hypeScore || 0) - (a.hypeScore || 0))
       .slice(0, 4);
   }, []);
 
@@ -426,9 +474,10 @@ export const GameReleaseCalendarView: React.FC<GameReleaseCalendarViewProps> = (
   };
 
   const handleTodayMonth = () => {
-    setCurrentYear(2026);
-    setCurrentMonth(9);
-    setSelectedCalendarDate('2026-09-24');
+    const now = new Date();
+    setCurrentYear(now.getFullYear());
+    setCurrentMonth(now.getMonth() + 1);
+    setSelectedCalendarDate(`${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`);
   };
 
   return (
@@ -479,7 +528,7 @@ export const GameReleaseCalendarView: React.FC<GameReleaseCalendarViewProps> = (
           </button>
         </div>
 
-        {/* Section 1: RELEASING TODAY (September 24, 2026) */}
+        {/* Section 1: RELEASING TODAY */}
         <section className="mb-10" aria-labelledby="today-heading">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
@@ -488,7 +537,7 @@ export const GameReleaseCalendarView: React.FC<GameReleaseCalendarViewProps> = (
                 Releasing Today
               </h2>
               <span className="text-xs font-mono font-bold text-emerald-400 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30">
-                September 24, 2026
+                {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
               </span>
             </div>
             <span className="text-xs text-slate-400 hidden sm:inline">
@@ -514,8 +563,30 @@ export const GameReleaseCalendarView: React.FC<GameReleaseCalendarViewProps> = (
               ))}
             </div>
           ) : (
-            <div className="p-6 rounded-2xl bg-[#0c0e1b] border border-white/5 text-slate-400 text-sm">
-              No major releases are currently scheduled for today in the Game Vault database.
+            <div className="p-6 rounded-2xl bg-[#0c0e1b] border border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-lg">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400 shrink-0">
+                  <CheckCircle2 className="w-5 h-5" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-bold text-white font-['Space_Grotesk']">
+                    No Major AAA Video Games Launching Today
+                  </h4>
+                  <p className="text-xs text-slate-400 mt-0.5">
+                    Explore confirmed 2025 blockbusters (Monster Hunter Wilds, Civilization VII, Kingdom Come Deliverance II, Avowed) or browse recent launches.
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setDatePreset('upcoming');
+                  setViewType('grid');
+                }}
+                className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-['Rajdhani'] font-bold uppercase tracking-wider transition-colors shrink-0 cursor-pointer shadow-md shadow-purple-900/30"
+              >
+                View Confirmed Upcoming
+              </button>
             </div>
           )}
         </section>
@@ -531,43 +602,59 @@ export const GameReleaseCalendarView: React.FC<GameReleaseCalendarViewProps> = (
                   This Week's Game Releases
                 </h3>
               </div>
-              <span className="text-xs text-slate-400">Sep 21 – Sep 27</span>
+              <span className="text-xs text-slate-400 font-medium">{currentWeekLabel}</span>
             </div>
 
-            <div className="space-y-3">
-              {releasesThisWeek.map((rel) => (
-                <div
-                  key={rel.id}
-                  onClick={() => setSelectedRelease(rel)}
-                  className="group p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 hover:border-purple-500/30 transition-all flex items-center justify-between gap-3 cursor-pointer"
-                >
-                  <div className="flex items-center gap-3 min-w-0">
-                    <img
-                      src={rel.cover}
-                      alt={rel.title}
-                      className="w-12 h-12 rounded-lg object-cover shrink-0"
-                    />
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-2 text-xs">
-                        <span className="font-semibold text-purple-400">{rel.releaseDateDisplay}</span>
-                        <span className="text-slate-500">•</span>
-                        <span className="text-slate-400 truncate">{rel.genre}</span>
+            {releasesThisWeek.length > 0 ? (
+              <div className="space-y-3">
+                {releasesThisWeek.map((rel) => (
+                  <div
+                    key={rel.id}
+                    onClick={() => setSelectedRelease(rel)}
+                    className="group p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 hover:border-purple-500/30 transition-all flex items-center justify-between gap-3 cursor-pointer"
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <img
+                        src={rel.cover}
+                        alt={rel.title}
+                        className="w-12 h-12 rounded-lg object-cover shrink-0"
+                      />
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2 text-xs">
+                          <span className="font-semibold text-purple-400">{rel.releaseDateDisplay}</span>
+                          <span className="text-slate-500">•</span>
+                          <span className="text-slate-400 truncate">{rel.genre}</span>
+                        </div>
+                        <h4 className="text-sm font-bold text-white group-hover:text-purple-300 truncate font-['Space_Grotesk']">
+                          {rel.title}
+                        </h4>
+                        <p className="text-[11px] text-slate-400 truncate">
+                          {rel.platforms.join(' • ')}
+                        </p>
                       </div>
-                      <h4 className="text-sm font-bold text-white group-hover:text-purple-300 truncate font-['Space_Grotesk']">
-                        {rel.title}
-                      </h4>
-                      <p className="text-[11px] text-slate-400 truncate">
-                        {rel.platforms.join(' • ')}
-                      </p>
                     </div>
-                  </div>
 
-                  <span className="shrink-0 text-xs px-2.5 py-1 rounded-lg bg-purple-600/30 group-hover:bg-purple-600 text-white font-['Rajdhani'] font-bold uppercase tracking-wider transition-colors">
-                    View
-                  </span>
-                </div>
-              ))}
-            </div>
+                    <span className="shrink-0 text-xs px-2.5 py-1 rounded-lg bg-purple-600/30 group-hover:bg-purple-600 text-white font-['Rajdhani'] font-bold uppercase tracking-wider transition-colors">
+                      View
+                    </span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="p-6 text-center rounded-xl bg-white/5 border border-white/5">
+                <p className="text-xs text-slate-400 font-medium">No major games launching this calendar week.</p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setDatePreset('upcoming');
+                    setViewType('grid');
+                  }}
+                  className="mt-2 text-xs text-purple-400 hover:text-purple-300 font-bold font-['Rajdhani'] uppercase tracking-wider transition-colors cursor-pointer"
+                >
+                  Browse Confirmed 2025 Schedule →
+                </button>
+              </div>
+            )}
           </div>
 
           {/* What's Coming Next Countdown (1 Col) */}
@@ -582,9 +669,11 @@ export const GameReleaseCalendarView: React.FC<GameReleaseCalendarViewProps> = (
 
               <div className="space-y-3">
                 {upcomingNext.map((rel) => {
-                  const today = new Date('2026-09-24T00:00:00Z').getTime();
-                  const target = new Date(`${rel.releaseDate}T00:00:00Z`).getTime();
-                  const days = Math.max(1, Math.round((target - today) / (1000 * 60 * 60 * 24)));
+                  const now = new Date();
+                  const todayTime = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate())).getTime();
+                  const targetTime = new Date(`${rel.releaseDate}T00:00:00Z`).getTime();
+                  const diffDays = Math.round((targetTime - todayTime) / (1000 * 60 * 60 * 24));
+                  const isFuture = diffDays > 0;
 
                   return (
                     <div
@@ -594,7 +683,11 @@ export const GameReleaseCalendarView: React.FC<GameReleaseCalendarViewProps> = (
                     >
                       <div className="flex items-center justify-between text-xs mb-1">
                         <span className="text-amber-400 font-bold font-mono">
-                          Releases in {days} {days === 1 ? 'day' : 'days'}
+                          {rel.status === 'TBA' 
+                            ? 'Window TBA' 
+                            : isFuture 
+                            ? `In ${diffDays} ${diffDays === 1 ? 'day' : 'days'}` 
+                            : 'Available Now'}
                         </span>
                         <span className="text-slate-400">{rel.releaseDateDisplay}</span>
                       </div>
@@ -753,15 +846,14 @@ export const GameReleaseCalendarView: React.FC<GameReleaseCalendarViewProps> = (
               Timeframe:
             </span>
             {[
-              { id: 'all', label: 'All Dates' },
-              { id: 'today', label: 'Today' },
-              { id: 'this_week', label: 'This Week' },
+              { id: 'all', label: 'All Verified Releases' },
+              { id: 'upcoming', label: 'Confirmed Upcoming' },
+              { id: 'year_2025', label: '2025 Roadmap' },
+              { id: 'year_2024', label: '2024 Blockbusters' },
               { id: 'this_month', label: 'This Month' },
-              { id: 'next_month', label: 'Next Month' },
               { id: 'next_3_months', label: 'Next 90 Days' },
-              { id: 'this_year', label: '2026 Releases' },
-              { id: 'delayed', label: 'Delayed Games' },
-              { id: 'tba', label: 'TBA' }
+              { id: 'tba', label: 'TBA / In Development' },
+              { id: 'released', label: 'Released Archive' }
             ].map((preset) => (
               <button
                 key={preset.id}
