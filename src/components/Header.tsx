@@ -579,17 +579,18 @@ export const Header: React.FC<HeaderProps> = ({
             </kbd>
           </button>
 
-          {/* YouTube Channel CTA - Icon only in desktop/laptop menu bar */}
+          {/* YouTube Channel CTA - Solely renders as an icon button without text label across all desktop & laptop devices */}
           <a
             id="header-youtube-btn"
             href={YOUTUBE_CHANNEL.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="hidden sm:flex items-center justify-center w-9 sm:w-9.5 h-9 sm:h-9.5 text-white bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-500 hover:to-rose-600 rounded-lg shadow-md shadow-red-950/40 border border-red-500/30 transition-all shrink-0 hover:scale-105"
+            className="flex items-center justify-center w-9 sm:w-9.5 h-9 sm:h-9.5 text-white bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-500 hover:to-rose-600 rounded-lg shadow-md shadow-red-950/40 border border-red-500/30 transition-all duration-150 shrink-0 hover:scale-105 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#070913]"
             title={`Game Vault on YouTube (${YOUTUBE_CHANNEL.handle})`}
-            aria-label="Game Vault YouTube Channel"
+            aria-label={`Game Vault on YouTube (${YOUTUBE_CHANNEL.handle})`}
           >
-            <Youtube className="w-4 h-4 fill-white shrink-0" />
+            <Youtube className="w-4 h-4 sm:w-4.5 sm:h-4.5 fill-white shrink-0" aria-hidden="true" />
+            <span className="sr-only">Game Vault on YouTube</span>
           </a>
 
           {/* User Account / Profile or Sign In */}
