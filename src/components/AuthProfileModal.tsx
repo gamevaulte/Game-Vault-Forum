@@ -27,9 +27,23 @@ import {
   Upload,
   Check,
   AlertCircle,
-  Sparkles
+  Sparkles,
+  Bell,
+  Calendar as CalendarIcon,
+  Trash2,
+  CheckCircle2,
+  BookmarkCheck,
+  Play,
+  BellRing
 } from 'lucide-react';
 import { UserAccount, Video, Game, Article, Review, Guide, ContactSubmission, NewsletterSubscriber, ContactSubmissionStatus } from '../types';
+import { GameRelease } from '../types/releaseCalendar';
+import { GAME_RELEASES_DATABASE } from '../data/gameReleasesData';
+import { 
+  triggerTestDeviceNotification, 
+  getReminderTimingLabel, 
+  getNotificationPermission 
+} from '../utils/notificationService';
 import { SavedAvatar } from '../types/avatar';
 import { 
   getContactSubmissionsFromFirestore, 
@@ -67,6 +81,10 @@ interface AuthProfileModalProps {
   onUpdateProfile?: (updated: { name: string; username: string; avatar: string; bio?: string }) => Promise<void>;
   initialTab?: 'profile' | 'guidelines' | 'admin';
   onNavigateToAvatarGenerator?: () => void;
+  onNavigateToCalendar?: (gameSlug?: string) => void;
+  onRemoveFromWatchlist?: (releaseId: string) => void;
+  onRemoveReminder?: (releaseId: string) => void;
+  onShowToast?: (message: string, type?: 'info' | 'success' | 'alert') => void;
 }
 
 export const AuthProfileModal: React.FC<AuthProfileModalProps> = ({
@@ -86,7 +104,11 @@ export const AuthProfileModal: React.FC<AuthProfileModalProps> = ({
   onSignOut,
   onUpdateProfile,
   initialTab = 'profile',
-  onNavigateToAvatarGenerator
+  onNavigateToAvatarGenerator,
+  onNavigateToCalendar,
+  onRemoveFromWatchlist,
+  onRemoveReminder,
+  onShowToast
 }) => {
   const [activeTab, setActiveTab] = useState<'profile' | 'guidelines' | 'admin'>(initialTab);
   const isAdmin = user.email === 'contact@gamevault.forum' || user.email === 'joelotis40@gmail.com' || user.role === 'admin';
@@ -283,6 +305,39 @@ export const AuthProfileModal: React.FC<AuthProfileModalProps> = ({
   const userSaves = user.stats?.savesCount ?? totalSaved;
   const userTopics = user.stats?.topicsCount ?? 0;
   const userRep = user.reputation ?? 0;
+
+  // Release Watchlist & Reminders
+  const watchlistedIds = user.releaseWatchlist || [];
+  const watchlistedGames = GAME_RELEASES_DATABASE.filter((r) => watchlistedIds.includes(r.id));
+
+  const reminderMap = user.releaseReminders || {};
+  const remindedEntries = Object.entries(reminderMap).map(([id, timing]) => {
+    const game = GAME_RELEASES_DATABASE.find((r) => r.id === id);
+    return {
+      id,
+      timing: timing as 'day_of' | 'day_before' | 'week_before',
+      game
+    };
+  }).filter((e): e is { id: string; timing: 'day_of' | 'day_before' | 'week_before'; game: GameRelease } => e.game != null);
+
+  const totalReleasesTracked = watchlistedGames.length + remindedEntries.length;
+
+  const [testingNotificationId, setTestingNotificationId] = useState<string | null>(null);
+
+  const handleTestNotification = (release: GameRelease, timing: 'day_of' | 'day_before' | 'week_before') => {
+    setTestingNotificationId(release.id);
+    const success = triggerTestDeviceNotification(release, timing);
+    if (success) {
+      if (onShowToast) {
+        onShowToast(`Dispatched test device notification for ${release.title}!`, 'success');
+      }
+    } else {
+      if (onShowToast) {
+        onShowToast('Device notifications are not granted or blocked in browser settings.', 'alert');
+      }
+    }
+    setTimeout(() => setTestingNotificationId(null), 1200);
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
@@ -694,13 +749,13 @@ export const AuthProfileModal: React.FC<AuthProfileModalProps> = ({
                   <span className="text-[11px] font-mono text-slate-500">Live User Counters</span>
                 </div>
 
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
                   <div className="p-3 bg-[#131625] border border-[#232942] rounded-xl text-center space-y-1">
                     <div className="flex items-center justify-center text-rose-400 gap-1.5 text-xs font-semibold">
                       <Heart className="w-3.5 h-3.5" />
                       <span>Likes</span>
                     </div>
-                    <p className="text-2xl font-bold font-mono text-white">{userLikes}</p>
+                    <p className="text-xl sm:text-2xl font-bold font-mono text-white">{userLikes}</p>
                     <p className="text-[10px] text-slate-400">Posts Liked</p>
                   </div>
 
@@ -709,8 +764,8 @@ export const AuthProfileModal: React.FC<AuthProfileModalProps> = ({
                       <MessageSquare className="w-3.5 h-3.5" />
                       <span>Comments</span>
                     </div>
-                    <p className="text-2xl font-bold font-mono text-white">{userComments}</p>
-                    <p className="text-[10px] text-slate-400">Replies & Comments</p>
+                    <p className="text-xl sm:text-2xl font-bold font-mono text-white">{userComments}</p>
+                    <p className="text-[10px] text-slate-400">Replies & Posts</p>
                   </div>
 
                   <div className="p-3 bg-[#131625] border border-[#232942] rounded-xl text-center space-y-1">
@@ -718,17 +773,26 @@ export const AuthProfileModal: React.FC<AuthProfileModalProps> = ({
                       <Bookmark className="w-3.5 h-3.5" />
                       <span>Saves</span>
                     </div>
-                    <p className="text-2xl font-bold font-mono text-white">{userSaves}</p>
-                    <p className="text-[10px] text-slate-400">Bookmarked Items</p>
+                    <p className="text-xl sm:text-2xl font-bold font-mono text-white">{userSaves}</p>
+                    <p className="text-[10px] text-slate-400">Vault Entries</p>
                   </div>
 
                   <div className="p-3 bg-[#131625] border border-[#232942] rounded-xl text-center space-y-1">
                     <div className="flex items-center justify-center text-purple-400 gap-1.5 text-xs font-semibold">
                       <PenSquare className="w-3.5 h-3.5" />
-                      <span>Discussions</span>
+                      <span>Topics</span>
                     </div>
-                    <p className="text-2xl font-bold font-mono text-white">{userTopics}</p>
-                    <p className="text-[10px] text-slate-400">Topics Started</p>
+                    <p className="text-xl sm:text-2xl font-bold font-mono text-white">{userTopics}</p>
+                    <p className="text-[10px] text-slate-400">Discussions</p>
+                  </div>
+
+                  <div className="p-3 bg-[#131625] border border-amber-500/30 rounded-xl text-center space-y-1 col-span-2 sm:col-span-1 bg-gradient-to-b from-amber-500/5 to-transparent">
+                    <div className="flex items-center justify-center text-amber-400 gap-1.5 text-xs font-semibold">
+                      <Bell className="w-3.5 h-3.5" />
+                      <span>Launches</span>
+                    </div>
+                    <p className="text-xl sm:text-2xl font-bold font-mono text-amber-300">{totalReleasesTracked}</p>
+                    <p className="text-[10px] text-slate-400">Tracked Games</p>
                   </div>
                 </div>
               </div>
@@ -842,6 +906,210 @@ export const AuthProfileModal: React.FC<AuthProfileModalProps> = ({
                     ))}
                   </div>
                 )}
+              </div>
+
+              {/* Release Watchlist & Device Launch Reminders Section */}
+              <div className="space-y-4 pt-2 border-t border-[#1f2438]">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <h3 className="text-sm font-['Rajdhani'] font-bold uppercase tracking-wider text-amber-400 flex items-center gap-2">
+                    <Bell className="w-4 h-4 text-amber-400" />
+                    <span>Release Watchlist & Launch Reminders ({totalReleasesTracked})</span>
+                  </h3>
+                  
+                  {/* Browser Notification Status Indicator */}
+                  <div className="flex items-center gap-1.5 text-[11px] font-mono">
+                    {getNotificationPermission() === 'granted' ? (
+                      <span className="flex items-center gap-1 text-emerald-400 bg-emerald-950/40 border border-emerald-500/30 px-2.5 py-0.5 rounded-full">
+                        <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+                        <span>Device Notifications Active</span>
+                      </span>
+                    ) : (
+                      <span className="flex items-center gap-1 text-amber-400 bg-amber-950/40 border border-amber-500/30 px-2.5 py-0.5 rounded-full">
+                        <AlertCircle className="w-3 h-3 text-amber-400" />
+                        <span>Browser Notifications Inactive</span>
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Sub-Section 1: Active Scheduled Device Reminders */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-xs font-['Rajdhani'] font-bold uppercase tracking-wider text-slate-300">
+                    <span className="flex items-center gap-1.5">
+                      <BellRing className="w-3.5 h-3.5 text-amber-400" />
+                      Scheduled Device Launch Alerts ({remindedEntries.length})
+                    </span>
+                    {onNavigateToCalendar && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          onClose();
+                          onNavigateToCalendar();
+                        }}
+                        className="text-[11px] text-purple-400 hover:text-purple-300 underline font-semibold lowercase cursor-pointer"
+                      >
+                        open release calendar →
+                      </button>
+                    )}
+                  </div>
+
+                  {remindedEntries.length === 0 ? (
+                    <div className="p-3.5 bg-[#111422] rounded-xl border border-[#1f2438] text-slate-500 text-xs">
+                      No game launch reminders scheduled. Click the "Remind" bell icon on any game in the Release Calendar to receive device browser notifications!
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      {remindedEntries.map(({ id, timing, game }) => (
+                        <div
+                          key={id}
+                          className="flex flex-col sm:flex-row sm:items-center justify-between p-3 bg-[#141725] hover:bg-[#181d2e] border border-amber-500/20 rounded-xl gap-3 transition-all"
+                        >
+                          <div className="flex items-center gap-3 min-w-0">
+                            <img
+                              src={game.cover}
+                              alt={game.title}
+                              className="w-12 h-12 rounded-lg object-cover shrink-0 border border-white/10"
+                            />
+                            <div className="min-w-0">
+                              <h4 className="text-xs font-bold font-['Space_Grotesk'] text-white truncate">
+                                {game.title}
+                              </h4>
+                              <p className="text-[11px] text-slate-400 flex items-center gap-1.5 flex-wrap">
+                                <span className="text-purple-300 font-medium">{game.releaseDateDisplay}</span>
+                                {game.releaseTime && (
+                                  <span className="text-slate-500">({game.releaseTime})</span>
+                                )}
+                              </p>
+                              <div className="mt-1 flex items-center gap-2">
+                                <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                                  🔔 {getReminderTimingLabel(timing)}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-2 shrink-0 self-end sm:self-center">
+                            {/* Live Notification Test Button */}
+                            <button
+                              type="button"
+                              onClick={() => handleTestNotification(game, timing)}
+                              disabled={testingNotificationId === game.id}
+                              className="px-2.5 py-1.5 rounded-lg bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-300 hover:text-amber-200 text-xs font-['Rajdhani'] font-bold uppercase tracking-wider flex items-center gap-1 transition-colors cursor-pointer disabled:opacity-50"
+                              title="Test sending a browser notification to your device now"
+                            >
+                              <Bell className="w-3 h-3" />
+                              <span>{testingNotificationId === game.id ? 'Testing...' : 'Test Alert'}</span>
+                            </button>
+
+                            {/* View in Calendar */}
+                            {onNavigateToCalendar && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  onClose();
+                                  onNavigateToCalendar(game.slug);
+                                }}
+                                className="px-2.5 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 hover:text-white text-xs font-['Rajdhani'] font-bold uppercase tracking-wider flex items-center gap-1 transition-colors cursor-pointer"
+                                title="View in Release Calendar"
+                              >
+                                <ExternalLink className="w-3 h-3" />
+                                <span>Details</span>
+                              </button>
+                            )}
+
+                            {/* Remove Reminder */}
+                            {onRemoveReminder && (
+                              <button
+                                type="button"
+                                onClick={() => onRemoveReminder(id)}
+                                className="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 border border-transparent hover:border-rose-500/20 transition-colors cursor-pointer"
+                                title="Cancel launch reminder"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Sub-Section 2: Release Watchlist */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-xs font-['Rajdhani'] font-bold uppercase tracking-wider text-slate-300">
+                    <span className="flex items-center gap-1.5">
+                      <BookmarkCheck className="w-3.5 h-3.5 text-purple-400" />
+                      Game Release Watchlist ({watchlistedGames.length})
+                    </span>
+                  </div>
+
+                  {watchlistedGames.length === 0 ? (
+                    <div className="p-3.5 bg-[#111422] rounded-xl border border-[#1f2438] text-slate-500 text-xs">
+                      Your release watchlist is empty. Bookmark upcoming releases in the Game Release Calendar to track launch dates here!
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      {watchlistedGames.map((game) => (
+                        <div
+                          key={game.id}
+                          className="flex flex-col sm:flex-row sm:items-center justify-between p-3 bg-[#141725] hover:bg-[#181d2e] border border-[#232840] rounded-xl gap-3 transition-all"
+                        >
+                          <div className="flex items-center gap-3 min-w-0">
+                            <img
+                              src={game.cover}
+                              alt={game.title}
+                              className="w-12 h-12 rounded-lg object-cover shrink-0 border border-white/10"
+                            />
+                            <div className="min-w-0">
+                              <h4 className="text-xs font-bold font-['Space_Grotesk'] text-white truncate">
+                                {game.title}
+                              </h4>
+                              <p className="text-[11px] text-slate-400 flex items-center gap-2">
+                                <span className="text-purple-300 font-medium">{game.releaseDateDisplay}</span>
+                                <span>•</span>
+                                <span className="text-slate-500">{game.platforms.slice(0, 3).join(', ')}</span>
+                              </p>
+                              <div className="mt-1 flex items-center gap-2">
+                                <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-600/20 text-purple-300 border border-purple-500/30">
+                                  {game.status}
+                                </span>
+                                <span className="text-[10px] text-slate-500">{game.genre}</span>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-2 shrink-0 self-end sm:self-center">
+                            {onNavigateToCalendar && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  onClose();
+                                  onNavigateToCalendar(game.slug);
+                                }}
+                                className="px-2.5 py-1.5 rounded-lg bg-purple-600/20 hover:bg-purple-600/40 text-purple-300 border border-purple-500/30 text-xs font-['Rajdhani'] font-bold uppercase tracking-wider flex items-center gap-1 transition-colors cursor-pointer"
+                              >
+                                <ExternalLink className="w-3 h-3" />
+                                <span>View Calendar</span>
+                              </button>
+                            )}
+
+                            {onRemoveFromWatchlist && (
+                              <button
+                                type="button"
+                                onClick={() => onRemoveFromWatchlist(game.id)}
+                                className="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 border border-transparent hover:border-rose-500/20 transition-colors cursor-pointer"
+                                title="Remove from watchlist"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
             </>
           ) : activeTab === 'guidelines' ? (

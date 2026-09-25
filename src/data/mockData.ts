@@ -19,6 +19,8 @@ export const INITIAL_USER: UserAccount = {
     guides: [],
     topics: []
   },
+  releaseWatchlist: [],
+  releaseReminders: {},
   likedIds: [],
   stats: {
     likesCount: 0,

@@ -167,6 +167,8 @@ export interface FirestoreUserRecord {
     guides: string[];
     topics?: string[];
   };
+  releaseWatchlist?: string[];
+  releaseReminders?: Record<string, string>;
   stats?: {
     likesCount: number;
     commentsCount: number;
@@ -238,6 +240,8 @@ export async function addRegisteredUserToFirestore(userData: {
         updatedAt: nowIso,
         lastLoginAt: nowIso,
         bookmarks: existingBookmarks,
+        releaseWatchlist: existingData.releaseWatchlist || [],
+        releaseReminders: existingData.releaseReminders || {},
         stats: {
           likesCount: existingData.stats?.likesCount ?? 0,
           commentsCount: existingData.stats?.commentsCount ?? 0,
@@ -279,6 +283,8 @@ export async function addRegisteredUserToFirestore(userData: {
           guides: [],
           topics: []
         },
+        releaseWatchlist: [],
+        releaseReminders: {},
         stats: {
           likesCount: 0,
           commentsCount: 0,

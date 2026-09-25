@@ -62,6 +62,15 @@
         "lastLoginAt": {
           "type": "string",
           "description": "Timestamp of most recent operative sign-in"
+        },
+        "releaseWatchlist": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "List of game release IDs added to personal watchlist"
+        },
+        "releaseReminders": {
+          "type": "object",
+          "description": "Map of game release IDs to notification timing preference"
         }
       },
       "required": [

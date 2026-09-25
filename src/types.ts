@@ -305,6 +305,8 @@ export interface UserAccount {
     guides: string[];
     topics?: string[];
   };
+  releaseWatchlist?: string[];
+  releaseReminders?: Record<string, string>;
   likedIds: string[];
   stats: UserStats;
 }

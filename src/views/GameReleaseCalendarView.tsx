@@ -40,6 +40,13 @@ import {
   getReleasesToday, 
   getReleasesThisWeek 
 } from '../data/gameReleasesData';
+import { 
+  requestDeviceNotificationPermission, 
+  saveScheduledReminder, 
+  triggerTestDeviceNotification, 
+  checkAndDispatchPendingReminders,
+  getReminderTimingLabel 
+} from '../utils/notificationService';
 import { ReleaseCard } from '../components/calendar/ReleaseCard';
 import { MonthCalendarView } from '../components/calendar/MonthCalendarView';
 import { ReleaseListView } from '../components/calendar/ReleaseListView';
@@ -58,6 +65,8 @@ interface GameReleaseCalendarViewProps {
   onAddToWheel?: (gameTitle: string) => void;
   onAskVaultAi?: (gameTitle: string) => void;
   initialGameSlug?: string;
+  onUpdateWatchlist?: (updated: string[]) => void;
+  onUpdateReminders?: (updated: Record<string, string>) => void;
 }
 
 export const GameReleaseCalendarView: React.FC<GameReleaseCalendarViewProps> = ({
@@ -70,7 +79,9 @@ export const GameReleaseCalendarView: React.FC<GameReleaseCalendarViewProps> = (
   onCalculateFps,
   onAddToWheel,
   onAskVaultAi,
-  initialGameSlug
+  initialGameSlug,
+  onUpdateWatchlist,
+  onUpdateReminders
 }) => {
   // Navigation & View Type
   const [viewType, setViewType] = useState<CalendarViewType>('grid');
@@ -86,8 +97,11 @@ export const GameReleaseCalendarView: React.FC<GameReleaseCalendarViewProps> = (
   // AI Assistant Modal State
   const [isAiAssistantOpen, setIsAiAssistantOpen] = useState(false);
 
-  // User Watchlist State (loaded from localStorage)
+  // User Watchlist State (loaded from currentUser or localStorage)
   const [watchlistIds, setWatchlistIds] = useState<string[]>(() => {
+    if (currentUser?.releaseWatchlist && Array.isArray(currentUser.releaseWatchlist)) {
+      return currentUser.releaseWatchlist;
+    }
     try {
       const saved = localStorage.getItem('gv_release_watchlist');
       return saved ? JSON.parse(saved) : [];
@@ -96,8 +110,11 @@ export const GameReleaseCalendarView: React.FC<GameReleaseCalendarViewProps> = (
     }
   });
 
-  // User Reminders State
+  // User Reminders State (loaded from currentUser or localStorage)
   const [reminderMap, setReminderMap] = useState<Record<string, string>>(() => {
+    if (currentUser?.releaseReminders && typeof currentUser.releaseReminders === 'object') {
+      return currentUser.releaseReminders;
+    }
     try {
       const saved = localStorage.getItem('gv_release_reminders');
       return saved ? JSON.parse(saved) : {};
@@ -105,6 +122,28 @@ export const GameReleaseCalendarView: React.FC<GameReleaseCalendarViewProps> = (
       return {};
     }
   });
+
+  // Keep state synced with currentUser updates
+  useEffect(() => {
+    if (currentUser?.releaseWatchlist) {
+      setWatchlistIds(currentUser.releaseWatchlist);
+    }
+  }, [currentUser?.releaseWatchlist]);
+
+  useEffect(() => {
+    if (currentUser?.releaseReminders) {
+      setReminderMap(currentUser.releaseReminders);
+    }
+  }, [currentUser?.releaseReminders]);
+
+  // Periodic device reminder checker
+  useEffect(() => {
+    checkAndDispatchPendingReminders(GAME_RELEASES_DATABASE);
+    const interval = setInterval(() => {
+      checkAndDispatchPendingReminders(GAME_RELEASES_DATABASE);
+    }, 60000);
+    return () => clearInterval(interval);
+  }, []);
 
   // Search & Filters State
   const [searchQuery, setSearchQuery] = useState('');
@@ -131,14 +170,27 @@ export const GameReleaseCalendarView: React.FC<GameReleaseCalendarViewProps> = (
     }
   }, [initialGameSlug]);
 
-  // Sync Watchlist to localStorage
+  // Sync Watchlist handler: strict authentication check
   const handleToggleWatchlist = (release: GameRelease) => {
+    if (!isSignedIn) {
+      if (onOpenSignIn) onOpenSignIn();
+      if (onShowToast) {
+        onShowToast('Sign in or register to add games to your release watchlist and sync across devices.', 'alert');
+      }
+      return;
+    }
+
     const exists = watchlistIds.includes(release.id);
     const next = exists ? watchlistIds.filter(id => id !== release.id) : [...watchlistIds, release.id];
     setWatchlistIds(next);
     try {
       localStorage.setItem('gv_release_watchlist', JSON.stringify(next));
     } catch {}
+
+    if (onUpdateWatchlist) {
+      onUpdateWatchlist(next);
+    }
+
     if (onShowToast) {
       onShowToast(
         exists ? `Removed ${release.title} from watchlist.` : `Added ${release.title} to your release watchlist!`,
@@ -147,16 +199,46 @@ export const GameReleaseCalendarView: React.FC<GameReleaseCalendarViewProps> = (
     }
   };
 
-  // Set Reminder handler
-  const handleSetReminder = (release: GameRelease, type: 'day_of' | 'day_before' | 'week_before') => {
+  // Set Reminder handler: strict authentication check + device notification permission request
+  const handleSetReminder = async (release: GameRelease, type: 'day_of' | 'day_before' | 'week_before') => {
+    if (!isSignedIn) {
+      if (onOpenSignIn) onOpenSignIn();
+      if (onShowToast) {
+        onShowToast('Sign in or register to set launch reminders on your device.', 'alert');
+      }
+      return;
+    }
+
+    // Prompt user to give device permissions to send notifications to their devices
+    const perm = await requestDeviceNotificationPermission();
+
     const next = { ...reminderMap, [release.id]: type };
     setReminderMap(next);
     try {
       localStorage.setItem('gv_release_reminders', JSON.stringify(next));
     } catch {}
-    const label = type === 'day_of' ? 'on release day' : type === 'day_before' ? '1 day before launch' : '1 week before launch';
-    if (onShowToast) {
-      onShowToast(`Reminder set for ${release.title} (${label})!`, 'success');
+
+    saveScheduledReminder(release, type);
+
+    if (onUpdateReminders) {
+      onUpdateReminders(next);
+    }
+
+    const label = getReminderTimingLabel(type);
+
+    if (perm === 'granted') {
+      triggerTestDeviceNotification(release, type);
+      if (onShowToast) {
+        onShowToast(`Launch reminder set! Device notifications enabled for ${release.title} (${label}).`, 'success');
+      }
+    } else if (perm === 'denied') {
+      if (onShowToast) {
+        onShowToast(`Reminder saved in your profile for ${release.title} (${label}). Note: Browser notifications are currently blocked in your browser settings.`, 'alert');
+      }
+    } else {
+      if (onShowToast) {
+        onShowToast(`Reminder saved in your profile for ${release.title} (${label}).`, 'success');
+      }
     }
   };
 

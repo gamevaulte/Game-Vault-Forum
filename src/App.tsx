@@ -22,6 +22,8 @@ import { Toast, ToastMessage } from './components/Toast';
 import { CookieConsentBanner } from './components/CookieConsentBanner';
 import { AdBanner } from './components/AdBanner';
 import { VaultAiFloatingButton } from './components/ai/VaultAiFloatingButton';
+import { GAME_RELEASES_DATABASE } from './data/gameReleasesData';
+import { checkAndDispatchPendingReminders, removeScheduledReminder } from './utils/notificationService';
 
 // Lazy-loaded AuthGate for minimal initial bundle weight
 const AuthGate = lazy(() => import('./components/AuthGate').then(m => ({ default: m.AuthGate })));
@@ -265,6 +267,8 @@ export default function App() {
                   guides: [],
                   topics: []
                 },
+                releaseWatchlist: firestoreRecord.releaseWatchlist || [],
+                releaseReminders: firestoreRecord.releaseReminders || {},
                 stats: firestoreRecord.stats || {
                   likesCount: 0,
                   commentsCount: 0,
@@ -292,7 +296,9 @@ export default function App() {
                     bio: createdRecord.bio || prev.bio,
                     badge: createdRecord.badge || prev.badge,
                     level: createdRecord.level || prev.level,
-                    reputation: createdRecord.reputation ?? 0
+                    reputation: createdRecord.reputation ?? 0,
+                    releaseWatchlist: createdRecord.releaseWatchlist || [],
+                    releaseReminders: createdRecord.releaseReminders || {}
                   }));
                 }
               });
@@ -841,6 +847,69 @@ export default function App() {
       };
     });
   };
+
+  // Release Watchlist Handler - Syncs to state, localStorage, and Firestore
+  const handleUpdateWatchlist = (updatedList: string[]) => {
+    setUser((prev) => {
+      const updatedUser: UserAccount = {
+        ...prev,
+        releaseWatchlist: updatedList
+      };
+      if (firebaseUser) {
+        updateUserInFirestore(firebaseUser.uid, {
+          releaseWatchlist: updatedList
+        });
+      }
+      return updatedUser;
+    });
+    try {
+      localStorage.setItem('gv_release_watchlist', JSON.stringify(updatedList));
+    } catch {}
+  };
+
+  // Release Reminders Handler - Syncs to state, localStorage, and Firestore
+  const handleUpdateReminders = (updatedReminders: Record<string, string>) => {
+    setUser((prev) => {
+      const updatedUser: UserAccount = {
+        ...prev,
+        releaseReminders: updatedReminders
+      };
+      if (firebaseUser) {
+        updateUserInFirestore(firebaseUser.uid, {
+          releaseReminders: updatedReminders
+        });
+      }
+      return updatedUser;
+    });
+    try {
+      localStorage.setItem('gv_release_reminders', JSON.stringify(updatedReminders));
+    } catch {}
+  };
+
+  const handleRemoveFromWatchlist = (releaseId: string) => {
+    const current = user.releaseWatchlist || [];
+    const next = current.filter(id => id !== releaseId);
+    handleUpdateWatchlist(next);
+    addToast('Removed game from your release watchlist.', 'info');
+  };
+
+  const handleRemoveReminder = (releaseId: string) => {
+    const current = user.releaseReminders || {};
+    const next = { ...current };
+    delete next[releaseId];
+    removeScheduledReminder(releaseId);
+    handleUpdateReminders(next);
+    addToast('Launch reminder cancelled.', 'info');
+  };
+
+  // Background reminder checker on mount and interval
+  useEffect(() => {
+    checkAndDispatchPendingReminders(GAME_RELEASES_DATABASE);
+    const reminderInterval = setInterval(() => {
+      checkAndDispatchPendingReminders(GAME_RELEASES_DATABASE);
+    }, 60000);
+    return () => clearInterval(reminderInterval);
+  }, []);
 
   // Share Handler (opens standard social sharing & copy link modal)
   const handleShare = (title: string, customPath?: string, description?: string) => {
@@ -2025,6 +2094,8 @@ export default function App() {
               navigate(`/tools/vault-ai?prompt=${encodeURIComponent(`Tell me about the upcoming release of ${gameTitle}, its gameplay features, target platforms, and expected system requirements.`)}`);
             }}
             initialGameSlug={route.type === 'game-release-calendar' ? route.gameSlug : undefined}
+            onUpdateWatchlist={handleUpdateWatchlist}
+            onUpdateReminders={handleUpdateReminders}
           />
         );
 
@@ -2191,6 +2262,13 @@ export default function App() {
             setIsProfileOpen(false);
             navigate('/game-avatar-generator');
           }}
+          onNavigateToCalendar={(gameSlug) => {
+            setIsProfileOpen(false);
+            navigate(gameSlug ? `/game-release-calendar?game=${encodeURIComponent(gameSlug)}` : '/game-release-calendar');
+          }}
+          onRemoveFromWatchlist={handleRemoveFromWatchlist}
+          onRemoveReminder={handleRemoveReminder}
+          onShowToast={(msg, type) => addToast(msg, type === 'alert' ? 'error' : type)}
         />
       </Suspense>
 
