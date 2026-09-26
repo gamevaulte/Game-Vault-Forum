@@ -40,16 +40,21 @@ export const MonthCalendarView: React.FC<MonthCalendarViewProps> = ({
   // Adjust so Monday is 0
   const startOffset = (firstDayIndex + 6) % 7;
 
-  // Build release map by day string "YYYY-MM-DD"
+  // Build release map by day string "YYYY-MM-DD" strictly for confirmed exact dates
   const releasesByDate: Record<string, GameRelease[]> = {};
   releases.forEach((r) => {
-    if (r.releaseDate && r.releaseDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
+    if (r.isConfirmed && r.releaseDate && r.releaseDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
       if (!releasesByDate[r.releaseDate]) {
         releasesByDate[r.releaseDate] = [];
       }
       releasesByDate[r.releaseDate].push(r);
     }
   });
+
+  // Collect announced window releases for this year where exact day is TBA
+  const windowReleasesThisYear = releases.filter(
+    (r) => (!r.isConfirmed || r.releaseDate === 'TBA') && r.releaseDateDisplay.includes(String(currentYear))
+  );
 
   const now = new Date();
   const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
@@ -254,6 +259,44 @@ export const MonthCalendarView: React.FC<MonthCalendarViewProps> = ({
               No releases scheduled in the Game Vault database for this date.
             </p>
           )}
+        </div>
+      )}
+      {/* Announced Window Releases for this Year (Exact Day TBA) */}
+      {windowReleasesThisYear.length > 0 && (
+        <div className="mt-6 pt-5 border-t border-white/10">
+          <div className="flex items-center justify-between mb-3">
+            <h4 className="text-xs font-['Rajdhani'] font-bold uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
+              <CalendarIcon className="w-3.5 h-3.5 text-amber-400" />
+              <span>Announced for {currentYear} (Official Window — Exact Day TBA by Studio)</span>
+            </h4>
+            <span className="text-[11px] text-slate-400 font-mono">
+              {windowReleasesThisYear.length} {windowReleasesThisYear.length === 1 ? 'title' : 'titles'}
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
+            {windowReleasesThisYear.map((rel) => (
+              <div
+                key={rel.id}
+                onClick={() => onOpenRelease(rel)}
+                className="p-2.5 rounded-xl bg-amber-950/10 hover:bg-amber-950/20 border border-amber-500/20 hover:border-amber-500/40 transition-colors flex items-center gap-2.5 cursor-pointer"
+              >
+                <img
+                  src={rel.cover}
+                  alt={rel.title}
+                  className="w-10 h-10 rounded-lg object-cover shrink-0"
+                />
+                <div className="min-w-0 flex-1">
+                  <h5 className="text-xs font-bold text-white truncate font-['Space_Grotesk']">
+                    {rel.title}
+                  </h5>
+                  <p className="text-[10px] text-amber-300 font-mono truncate">
+                    {rel.releaseDateDisplay}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </div>

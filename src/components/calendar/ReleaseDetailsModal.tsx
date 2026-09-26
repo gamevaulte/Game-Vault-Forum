@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { GameRelease } from '../../types/releaseCalendar';
 import { downloadIcsFile, getGoogleCalendarUrl, getOutlookCalendarUrl } from '../../utils/calendarExport';
+import { validateGameRelease } from '../../utils/factCheck';
 
 interface ReleaseDetailsModalProps {
   release: GameRelease | null;
@@ -56,6 +57,7 @@ export const ReleaseDetailsModal: React.FC<ReleaseDetailsModalProps> = ({
 
   // Detect local timezone
   const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+  const factCheck = validateGameRelease(release);
 
   const handleShareClick = () => {
     if (onShare) {
@@ -134,20 +136,37 @@ export const ReleaseDetailsModal: React.FC<ReleaseDetailsModalProps> = ({
 
         {/* Modal Body Content */}
         <div className="p-5 sm:p-7 space-y-6 max-h-[calc(85vh-200px)] overflow-y-auto">
-          {/* Release Date & Time Card */}
+          {/* Release Date & Time Card with Factual Integrity */}
           <div className="p-4 rounded-xl bg-purple-950/20 border border-purple-500/30 flex flex-wrap items-center justify-between gap-4">
             <div>
-              <span className="text-[11px] font-['Rajdhani'] uppercase tracking-wider text-purple-400 font-bold block mb-1">
-                Confirmed Release Schedule
-              </span>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-[11px] font-['Rajdhani'] uppercase tracking-wider text-purple-400 font-bold block">
+                  {factCheck.dateClassification === 'exact_day_confirmed'
+                    ? 'Confirmed Official Launch Date'
+                    : factCheck.dateClassification === 'window_announced'
+                    ? 'Official Announced Release Window'
+                    : 'Active Development — Release Date TBA'}
+                </span>
+                <span className={`px-2 py-0.2 rounded-full text-[10px] font-mono font-bold border ${
+                  factCheck.dateClassification === 'exact_day_confirmed'
+                    ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300'
+                    : factCheck.dateClassification === 'window_announced'
+                    ? 'bg-amber-500/20 border-amber-500/40 text-amber-300'
+                    : 'bg-slate-500/20 border-slate-500/40 text-slate-300'
+                }`}>
+                  {factCheck.dateClassification === 'exact_day_confirmed' ? '✓ Verified Exact Day' : 'Window / TBA Only'}
+                </span>
+              </div>
               <div className="flex items-center gap-2 text-base sm:text-lg font-bold font-['Space_Grotesk'] text-white">
                 <CalendarIcon className="w-5 h-5 text-purple-400" />
-                <span>{release.releaseDateDisplay}</span>
+                <span>{factCheck.verifiedReleaseDisplay}</span>
               </div>
               <div className="text-xs text-slate-400 flex items-center gap-1.5 mt-1">
                 <Clock className="w-3.5 h-3.5 text-slate-500" />
                 <span>
-                  {release.releaseTime ? `${release.releaseTime} (${userTimezone})` : 'Exact launch hour TBA'}
+                  {factCheck.dateClassification === 'exact_day_confirmed' && release.releaseTime
+                    ? `${release.releaseTime} (${userTimezone})`
+                    : 'Exact launch hour not scheduled / TBA'}
                 </span>
               </div>
             </div>
@@ -177,6 +196,31 @@ export const ReleaseDetailsModal: React.FC<ReleaseDetailsModalProps> = ({
                 <Share2 className="w-4 h-4" />
                 <span>{copiedLink ? 'Link Copied!' : 'Share'}</span>
               </button>
+            </div>
+          </div>
+
+          {/* Factual Integrity & Source Verification Box */}
+          <div className="p-3.5 rounded-xl bg-[#090c1a] border border-white/10 flex items-start gap-3">
+            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+            <div className="text-xs space-y-1 text-slate-300 font-['Inter']">
+              <div className="flex items-center gap-2 flex-wrap font-semibold text-white">
+                <span>Verified Source:</span>
+                <span className="text-purple-300">{factCheck.officialSource}</span>
+                {factCheck.officialSourceUrl && (
+                  <a
+                    href={factCheck.officialSourceUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-cyan-400 hover:underline flex items-center gap-0.5 text-[11px]"
+                  >
+                    <span>View Official Reference</span>
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
+                )}
+              </div>
+              <p className="text-slate-400 text-[11px] leading-relaxed">
+                {factCheck.verificationNotes}
+              </p>
             </div>
           </div>
 

@@ -166,8 +166,8 @@ export function triggerTestDeviceNotification(release: GameRelease, reminderType
 }
 
 /**
- * Background checker to evaluate pending game reminders against current date
- * Anchor date: September 24, 2026 (or live date if past)
+ * Background checker to evaluate pending game reminders against current real date
+ * Evaluates dynamically based on the client device's calendar date
  */
 export function checkAndDispatchPendingReminders(releases: GameRelease[]): void {
   if (getNotificationPermission() !== 'granted') return;
@@ -175,31 +175,35 @@ export function checkAndDispatchPendingReminders(releases: GameRelease[]): void 
   const reminders = getScheduledReminders();
   if (reminders.length === 0) return;
 
-  // Reference calendar anchor is 2026-09-24
-  const currentDateStr = '2026-09-24';
+  const now = new Date();
+  const todayTime = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate())).getTime();
   let hasChanges = false;
 
   const updated = reminders.map(r => {
     if (r.notified) return r;
 
     const matchedRelease = releases.find(rel => rel.id === r.gameId);
-    const releaseDate = matchedRelease ? matchedRelease.releaseDate : r.releaseDate;
+    if (!matchedRelease || !matchedRelease.isConfirmed || matchedRelease.releaseDate === 'TBA' || !matchedRelease.releaseDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
+      return r;
+    }
 
+    const releaseTime = new Date(`${matchedRelease.releaseDate}T00:00:00Z`).getTime();
+    if (isNaN(releaseTime)) return r;
+
+    const diffDays = Math.round((releaseTime - todayTime) / (1000 * 60 * 60 * 24));
     let shouldTrigger = false;
 
-    if (r.reminderType === 'day_of' && releaseDate === currentDateStr) {
+    if (r.reminderType === 'day_of' && diffDays === 0) {
       shouldTrigger = true;
-    } else if (r.reminderType === 'day_before') {
-      // 1 day before: if release is 2026-09-25, then on 2026-09-24 it triggers
-      if (releaseDate === '2026-09-25') shouldTrigger = true;
-    } else if (r.reminderType === 'week_before') {
-      // 1 week before: if release is 2026-10-01, then on 2026-09-24 it triggers
-      if (releaseDate === '2026-10-01') shouldTrigger = true;
+    } else if (r.reminderType === 'day_before' && diffDays === 1) {
+      shouldTrigger = true;
+    } else if (r.reminderType === 'week_before' && diffDays === 7) {
+      shouldTrigger = true;
     }
 
     if (shouldTrigger) {
       sendDeviceNotification(`Launch Day Alert: ${r.gameTitle}!`, {
-        body: `${r.gameTitle} launches ${r.releaseDateDisplay}${r.releaseTime ? ` at ${r.releaseTime}` : ''}! Check out system requirements and discussion on Game Vault.`,
+        body: `${r.gameTitle} launches ${matchedRelease.releaseDateDisplay}${matchedRelease.releaseTime ? ` at ${matchedRelease.releaseTime}` : ''}! Check out system requirements and discussion on Game Vault.`,
         tag: `vault-launch-${r.gameId}`
       });
       hasChanges = true;

@@ -37,6 +37,10 @@ function getNextDayForIcs(dateStr: string): string {
 
 export function downloadIcsFile(release: GameRelease) {
   if (typeof window === 'undefined') return;
+  if (!release.isConfirmed || release.releaseDate === 'TBA' || !release.releaseDate.match(/^(\d{4})-(\d{2})-(\d{2})$/)) {
+    console.warn('Cannot export unconfirmed or TBA release to calendar.');
+    return;
+  }
 
   const startDate = formatDateForIcs(release.releaseDate);
   const endDate = getNextDayForIcs(release.releaseDate);
@@ -78,6 +82,9 @@ export function downloadIcsFile(release: GameRelease) {
 }
 
 export function getGoogleCalendarUrl(release: GameRelease): string {
+  if (!release.isConfirmed || release.releaseDate === 'TBA' || !release.releaseDate.match(/^(\d{4})-(\d{2})-(\d{2})$/)) {
+    return '#';
+  }
   const startDate = formatDateForIcs(release.releaseDate);
   const endDate = getNextDayForIcs(release.releaseDate);
   const platformsStr = release.platforms.join(', ');
@@ -92,6 +99,9 @@ export function getGoogleCalendarUrl(release: GameRelease): string {
 }
 
 export function getOutlookCalendarUrl(release: GameRelease): string {
+  if (!release.isConfirmed || release.releaseDate === 'TBA' || !release.releaseDate.match(/^(\d{4})-(\d{2})-(\d{2})$/)) {
+    return '#';
+  }
   const startDate = formatDateForIcs(release.releaseDate);
   const endDate = getNextDayForIcs(release.releaseDate);
   const platformsStr = release.platforms.join(', ');

@@ -352,13 +352,15 @@ export const GAME_RELEASES_DATABASE: GameRelease[] = [
   },
 
   // =========================================================================
+  // =========================================================================
   // SECTION 2: CONFIRMED 2025 RELEASE WINDOWS (EXACT DAY TBA BY PUBLISHER)
+  // Strict Factual Integrity: NO invented days. Window explicitly stated.
   // =========================================================================
   {
     id: 'rel-grand-theft-auto-vi',
     title: 'Grand Theft Auto VI',
     slug: 'grand-theft-auto-vi',
-    releaseDate: '2025-10-31',
+    releaseDate: 'TBA',
     releaseDateDisplay: 'Fall 2025 (Official Window - Exact Day TBA)',
     releaseRegion: 'Worldwide',
     platforms: ['PlayStation 5', 'Xbox Series X/S'],
@@ -385,7 +387,7 @@ export const GAME_RELEASES_DATABASE: GameRelease[] = [
     id: 'rel-doom-the-dark-ages',
     title: 'Doom: The Dark Ages',
     slug: 'doom-the-dark-ages',
-    releaseDate: '2025-11-30',
+    releaseDate: 'TBA',
     releaseDateDisplay: '2025 (Official Window - Exact Day TBA)',
     platforms: ['PC', 'PlayStation 5', 'Xbox Series X/S'],
     genre: 'Shooter',
@@ -407,13 +409,13 @@ export const GAME_RELEASES_DATABASE: GameRelease[] = [
     id: 'rel-ghost-of-yotei',
     title: 'Ghost of Yōtei',
     slug: 'ghost-of-yotei',
-    releaseDate: '2025-10-15',
+    releaseDate: 'TBA',
     releaseDateDisplay: '2025 (Official Window - Exact Day TBA)',
     platforms: ['PlayStation 5'],
     genre: 'Action',
     developer: 'Sucker Punch Productions',
     publisher: 'Sony Interactive Entertainment',
-    cover: 'https://images.unsplash.com/photo-1528164344705-475426879c0d?w=1200&auto=format&fit=crop&q=80',
+    cover: 'https://images.unsplash.com/photo-1528164344705-475647b2a1e5?w=1200&auto=format&fit=crop&q=80',
     shortDescription: 'Set in 1603 in the rugged wilderness surrounding Mount Yōtei in Ezo (Hokkaido). Step into the boots of a new masked warrior named Atsu.',
     fullDescription: 'Following the global acclaim of Ghost of Tsushima, Sucker Punch takes the Ghost universe 300 years into the future to Mount Yōtei. Experience uncharted grasslands, snowy tundras, dual-wielded katanas, matchlock firearms, and cinematic Japanese samurai cinema action built from the ground up for PlayStation 5.',
     status: 'TBA',
@@ -428,7 +430,7 @@ export const GAME_RELEASES_DATABASE: GameRelease[] = [
     id: 'rel-death-stranding-2',
     title: 'Death Stranding 2: On the Beach',
     slug: 'death-stranding-2-on-the-beach',
-    releaseDate: '2025-09-30',
+    releaseDate: 'TBA',
     releaseDateDisplay: '2025 (Official Window - Exact Day TBA)',
     platforms: ['PlayStation 5'],
     genre: 'Adventure',
@@ -448,7 +450,7 @@ export const GAME_RELEASES_DATABASE: GameRelease[] = [
     id: 'rel-borderlands-4',
     title: 'Borderlands 4',
     slug: 'borderlands-4',
-    releaseDate: '2025-09-15',
+    releaseDate: 'TBA',
     releaseDateDisplay: '2025 (Official Window - Exact Day TBA)',
     platforms: ['PC', 'PlayStation 5', 'Xbox Series X/S'],
     genre: 'Shooter',
@@ -468,7 +470,7 @@ export const GAME_RELEASES_DATABASE: GameRelease[] = [
     id: 'rel-mafia-the-old-country',
     title: 'Mafia: The Old Country',
     slug: 'mafia-the-old-country',
-    releaseDate: '2025-08-30',
+    releaseDate: 'TBA',
     releaseDateDisplay: '2025 (Official Window - Exact Day TBA)',
     platforms: ['PC', 'PlayStation 5', 'Xbox Series X/S'],
     genre: 'Action',
@@ -488,7 +490,7 @@ export const GAME_RELEASES_DATABASE: GameRelease[] = [
     id: 'rel-metroid-prime-4',
     title: 'Metroid Prime 4: Beyond',
     slug: 'metroid-prime-4-beyond',
-    releaseDate: '2025-11-15',
+    releaseDate: 'TBA',
     releaseDateDisplay: '2025 (Official Window - Exact Day TBA)',
     platforms: ['Nintendo Switch'],
     genre: 'Adventure',
@@ -509,7 +511,7 @@ export const GAME_RELEASES_DATABASE: GameRelease[] = [
     id: 'rel-clair-obscur-expedition-33',
     title: 'Clair Obscur: Expedition 33',
     slug: 'clair-obscur-expedition-33',
-    releaseDate: '2025-05-30',
+    releaseDate: 'TBA',
     releaseDateDisplay: 'Spring 2025 (Official Window - Exact Day TBA)',
     platforms: ['PC', 'PlayStation 5', 'Xbox Series X/S'],
     genre: 'RPG',
@@ -518,7 +520,7 @@ export const GAME_RELEASES_DATABASE: GameRelease[] = [
     cover: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=1200&auto=format&fit=crop&q=80',
     shortDescription: 'A reactive turn-based RPG set in a Belle Époque fantasy world. Lead Expedition 33 to stop the mysterious Paintress before she paints the number of death.',
     fullDescription: 'Once a year, the Paintress wakes up and paints an age upon her monolith, instantly turning anyone of that age to ash. Lead Gustave and his expedition members across surreal French-inspired landscapes in turn-based combat enriched with real-time parries and dodges.',
-    status: 'Upcoming',
+    status: 'TBA',
     isConfirmed: false,
     isEstimated: true,
     hypeScore: 92,
@@ -528,14 +530,14 @@ export const GAME_RELEASES_DATABASE: GameRelease[] = [
 
   // =========================================================================
   // SECTION 3: IN ACTIVE DEVELOPMENT / TBA (OFFICIAL ANNOUNCEMENTS ONLY)
-  // Note: NO fictitious days assigned. Explicitly flagged as TBA in development.
+  // Strict Factual Integrity: NO invented days. Explicitly flagged as TBA.
   // =========================================================================
   {
     id: 'rel-marvels-wolverine',
     title: "Marvel's Wolverine",
     slug: 'marvels-wolverine',
-    releaseDate: '2026-12-31',
-    releaseDateDisplay: 'TBA (In Active Development)',
+    releaseDate: 'TBA',
+    releaseDateDisplay: 'Release Date Not Confirmed (TBA)',
     platforms: ['PlayStation 5'],
     genre: 'Action',
     developer: 'Insomniac Games',
@@ -554,8 +556,8 @@ export const GAME_RELEASES_DATABASE: GameRelease[] = [
     id: 'rel-gears-of-war-e-day',
     title: 'Gears of War: E-Day',
     slug: 'gears-of-war-e-day',
-    releaseDate: '2026-12-31',
-    releaseDateDisplay: 'TBA (In Active Development)',
+    releaseDate: 'TBA',
+    releaseDateDisplay: 'Release Date Not Confirmed (TBA)',
     platforms: ['PC', 'Xbox Series X/S'],
     genre: 'Shooter',
     developer: 'The Coalition',
@@ -574,8 +576,8 @@ export const GAME_RELEASES_DATABASE: GameRelease[] = [
     id: 'rel-hollow-knight-silksong',
     title: 'Hollow Knight: Silksong',
     slug: 'hollow-knight-silksong',
-    releaseDate: '2026-12-31',
-    releaseDateDisplay: 'TBA (In Active Development)',
+    releaseDate: 'TBA',
+    releaseDateDisplay: 'Release Date Not Confirmed (TBA)',
     platforms: ['PC', 'PlayStation 5', 'PlayStation 4', 'Xbox Series X/S', 'Xbox One', 'Nintendo Switch'],
     genre: 'Platformer',
     developer: 'Team Cherry',
@@ -594,8 +596,8 @@ export const GAME_RELEASES_DATABASE: GameRelease[] = [
     id: 'rel-the-witcher-4',
     title: 'The Witcher 4 (Project Polaris)',
     slug: 'the-witcher-4-polaris',
-    releaseDate: '2026-12-31',
-    releaseDateDisplay: 'TBA (In Full Production)',
+    releaseDate: 'TBA',
+    releaseDateDisplay: 'Release Date Not Confirmed (TBA)',
     platforms: ['PC', 'PlayStation 5', 'Xbox Series X/S'],
     genre: 'RPG',
     developer: 'CD Projekt RED',
@@ -613,8 +615,8 @@ export const GAME_RELEASES_DATABASE: GameRelease[] = [
     id: 'rel-judas',
     title: 'Judas',
     slug: 'judas',
-    releaseDate: '2026-12-31',
-    releaseDateDisplay: 'TBA (In Active Development)',
+    releaseDate: 'TBA',
+    releaseDateDisplay: 'Release Date Not Confirmed (TBA)',
     platforms: ['PC', 'PlayStation 5', 'Xbox Series X/S'],
     genre: 'Shooter',
     developer: 'Ghost Story Games',
@@ -632,8 +634,8 @@ export const GAME_RELEASES_DATABASE: GameRelease[] = [
     id: 'rel-silent-hill-townfall',
     title: 'Silent Hill: Townfall',
     slug: 'silent-hill-townfall',
-    releaseDate: '2026-12-31',
-    releaseDateDisplay: 'TBA (In Active Development)',
+    releaseDate: 'TBA',
+    releaseDateDisplay: 'Release Date Not Confirmed (TBA)',
     platforms: ['PC', 'PlayStation 5'],
     genre: 'Horror',
     developer: 'No Code',
@@ -839,15 +841,17 @@ export function getTbaReleases(): GameRelease[] {
 
 /**
  * Returns releases launching specifically today based on the client device's date.
+ * Strictly checks isConfirmed to eliminate any chance of fictitious or placeholder dates matching.
  */
 export function getReleasesToday(): GameRelease[] {
   const now = new Date();
   const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
-  return GAME_RELEASES_DATABASE.filter(r => r.releaseDate === todayStr);
+  return GAME_RELEASES_DATABASE.filter(r => r.isConfirmed && r.releaseDate === todayStr);
 }
 
 /**
  * Returns releases launching in the current calendar week (Monday to Sunday) based on client device date.
+ * Strictly filters by isConfirmed.
  */
 export function getReleasesThisWeek(): GameRelease[] {
   const now = new Date();
@@ -862,6 +866,6 @@ export function getReleasesThisWeek(): GameRelease[] {
   const endStr = sunday.toISOString().split('T')[0];
 
   return GAME_RELEASES_DATABASE.filter(r => {
-    return r.releaseDate >= startStr && r.releaseDate <= endStr;
+    return r.isConfirmed && r.releaseDate >= startStr && r.releaseDate <= endStr;
   }).sort((a, b) => a.releaseDate.localeCompare(b.releaseDate));
 }

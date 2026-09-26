@@ -92,9 +92,11 @@ export const ReleaseCard: React.FC<ReleaseCardProps> = ({
 
   const statusInfo = getStatusBadge(release.status);
 
-  // Calculate days relative to current date
+  // Calculate days relative to current date strictly for confirmed releases
   const getRelativeDaysText = () => {
-    if (release.status === 'TBA') return 'Date TBA';
+    if (release.status === 'TBA' || !release.isConfirmed || release.releaseDate === 'TBA' || !release.releaseDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
+      return 'Date TBA';
+    }
     
     const now = new Date();
     const today = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate())).getTime();
