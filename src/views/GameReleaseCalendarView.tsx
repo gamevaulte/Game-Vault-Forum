@@ -95,9 +95,7 @@ export const GameReleaseCalendarView: React.FC<GameReleaseCalendarViewProps> = (
   // Dynamic Calendar Month State based on real calendar date and verified releases
   const [currentYear, setCurrentYear] = useState<number>(() => {
     const now = new Date();
-    const y = now.getFullYear();
-    // Default to active release calendar year (2025 or current year)
-    return y >= 2024 && y <= 2026 ? y : 2025;
+    return now.getFullYear();
   });
   const [currentMonth, setCurrentMonth] = useState<number>(() => {
     const now = new Date();
@@ -375,13 +373,26 @@ export const GameReleaseCalendarView: React.FC<GameReleaseCalendarViewProps> = (
     } else if (datePreset === 'next_3_months') {
       result = result.filter(r => r.isConfirmed && r.releaseDate >= todayStr && r.releaseDate <= next90Str);
     } else if (datePreset === 'upcoming') {
-      result = result.filter(r => (r.status === 'Upcoming' && r.isConfirmed && r.releaseDate >= todayStr) || r.status === 'TBA');
+      result = result.filter(r => {
+        if (r.isConfirmed && r.releaseDate && /^\d{4}-\d{2}-\d{2}$/.test(r.releaseDate)) {
+          return r.releaseDate >= todayStr;
+        }
+        if (r.status === 'TBA') {
+          // Never include past year windows in upcoming
+          return !r.releaseDateDisplay.match(/\b(202[0-5])\b/);
+        }
+        return false;
+      });
+    } else if (datePreset === 'year_2026') {
+      result = result.filter(r => r.releaseDate.startsWith('2026') || r.releaseDateDisplay.includes('2026'));
+    } else if (datePreset === 'year_2027') {
+      result = result.filter(r => r.releaseDate.startsWith('2027') || r.releaseDateDisplay.includes('2027'));
     } else if (datePreset === 'year_2025') {
       result = result.filter(r => r.releaseDate.startsWith('2025') || r.releaseDateDisplay.includes('2025'));
     } else if (datePreset === 'year_2024') {
       result = result.filter(r => r.releaseDate.startsWith('2024') || r.releaseDateDisplay.includes('2024'));
     } else if (datePreset === 'released') {
-      result = result.filter(r => r.status === 'Released');
+      result = result.filter(r => r.status === 'Released' || (r.isConfirmed && r.releaseDate < todayStr));
     } else if (datePreset === 'delayed') {
       result = result.filter(r => r.status === 'Delayed');
     } else if (datePreset === 'tba') {
@@ -445,19 +456,28 @@ export const GameReleaseCalendarView: React.FC<GameReleaseCalendarViewProps> = (
     if (inMonth.length > 0) {
       return inMonth.sort((a, b) => (b.hypeScore || 0) - (a.hypeScore || 0)).slice(0, 4);
     }
+    const todayIso = new Date().toISOString().split('T')[0];
+    const futureHighlights = GAME_RELEASES_DATABASE.filter(
+      r => r.isMajorHighlight && ((r.isConfirmed && r.releaseDate >= todayIso) || (r.status === 'TBA' && !r.releaseDateDisplay.match(/\b(202[0-5])\b/)))
+    );
+    if (futureHighlights.length > 0) {
+      return futureHighlights.sort((a, b) => (b.hypeScore || 0) - (a.hypeScore || 0)).slice(0, 4);
+    }
     return GAME_RELEASES_DATABASE.filter(r => r.isMajorHighlight)
       .sort((a, b) => (b.hypeScore || 0) - (a.hypeScore || 0))
       .slice(0, 4);
   }, [currentMonthStr]);
 
-  // Next Upcoming Countdowns
+  // Next Upcoming Countdowns (Strictly future releases relative to today's date)
   const upcomingNext = useMemo(() => {
     const todayIso = new Date().toISOString().split('T')[0];
-    const upcoming = GAME_RELEASES_DATABASE.filter(r => r.status === 'Upcoming' && r.releaseDate >= todayIso);
+    const upcoming = GAME_RELEASES_DATABASE.filter(
+      r => r.isConfirmed && r.releaseDate >= todayIso && r.releaseDate !== 'TBA'
+    );
     if (upcoming.length > 0) {
       return upcoming.sort((a, b) => a.releaseDate.localeCompare(b.releaseDate)).slice(0, 4);
     }
-    return GAME_RELEASES_DATABASE.filter(r => r.status === 'Upcoming' || r.status === 'TBA')
+    return GAME_RELEASES_DATABASE.filter(r => r.status === 'TBA' && !r.releaseDateDisplay.match(/\b(202[0-5])\b/))
       .sort((a, b) => (b.hypeScore || 0) - (a.hypeScore || 0))
       .slice(0, 4);
   }, []);
@@ -613,7 +633,7 @@ export const GameReleaseCalendarView: React.FC<GameReleaseCalendarViewProps> = (
                     No Major AAA Video Games Launching Today
                   </h4>
                   <p className="text-xs text-slate-400 mt-0.5">
-                    Explore confirmed 2025 blockbusters (Monster Hunter Wilds, Civilization VII, Kingdom Come Deliverance II, Avowed) or browse recent launches.
+                    Explore confirmed Q4 2026 blockbusters (Call of Duty: Modern Warfare 4, Grand Theft Auto VI, Gears of War: E-Day, Crimson Desert) or browse recent launches.
                   </p>
                 </div>
               </div>
@@ -691,7 +711,7 @@ export const GameReleaseCalendarView: React.FC<GameReleaseCalendarViewProps> = (
                   }}
                   className="mt-2 text-xs text-purple-400 hover:text-purple-300 font-bold font-['Rajdhani'] uppercase tracking-wider transition-colors cursor-pointer"
                 >
-                  Browse Confirmed 2025 Schedule →
+                  Browse Confirmed 2026 Schedule →
                 </button>
               </div>
             )}
@@ -891,12 +911,14 @@ export const GameReleaseCalendarView: React.FC<GameReleaseCalendarViewProps> = (
             {[
               { id: 'all', label: 'All Verified Releases' },
               { id: 'upcoming', label: 'Confirmed Upcoming' },
-              { id: 'year_2025', label: '2025 Roadmap' },
-              { id: 'year_2024', label: '2024 Blockbusters' },
               { id: 'this_month', label: 'This Month' },
               { id: 'next_3_months', label: 'Next 90 Days' },
+              { id: 'year_2026', label: '2026 Schedule' },
+              { id: 'year_2027', label: '2027 Pipeline' },
               { id: 'tba', label: 'TBA / In Development' },
-              { id: 'released', label: 'Released Archive' }
+              { id: 'year_2025', label: '2025 Archive' },
+              { id: 'year_2024', label: '2024 Archive' },
+              { id: 'released', label: 'All Released' }
             ].map((preset) => (
               <button
                 key={preset.id}
