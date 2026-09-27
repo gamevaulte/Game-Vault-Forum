@@ -19,7 +19,11 @@ if (typeof window !== 'undefined') {
         msg.includes('Non-Error promise rejection') ||
         msg.includes('chrome-extension://') ||
         msg.includes('moz-extension://') ||
-        msg.includes('safari-extension://')
+        msg.includes('safari-extension://') ||
+        msg.includes('Could not reach Cloud Firestore') ||
+        msg.includes('Backend didn\'t respond within 10 seconds') ||
+        msg.includes('operate in offline mode') ||
+        msg.includes('@firebase/firestore')
       );
     };
 

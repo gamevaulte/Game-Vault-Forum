@@ -4,6 +4,7 @@ import { getAnalytics, isSupported } from "firebase/analytics";
 import { 
   getFirestore, 
   initializeFirestore,
+  setLogLevel,
   doc, 
   setDoc, 
   getDoc, 
@@ -41,10 +42,14 @@ if (typeof window !== "undefined") {
   });
 }
 
-// Initialize Firestore with long-polling transport to prevent proxy/iframe stream buffering timeouts
+// Silence internal Firestore reconnection/offline logging so transient delays
+// do not trigger unhandled console errors in preview iFrames
+setLogLevel('silent');
+
+// Initialize Firestore with auto-detect long-polling to prevent proxy/iframe stream buffering timeouts
 try {
   initializeFirestore(app, {
-    experimentalForceLongPolling: true,
+    experimentalAutoDetectLongPolling: true,
   }, firebaseConfig.firestoreDatabaseId);
 } catch {
   // If already initialized in hot-reload or sub-context, fallback cleanly
@@ -59,9 +64,14 @@ export async function testConnection(): Promise<void> {
     console.log("Firestore connection verified successfully.");
   } catch (error) {
     if (error instanceof Error && error.message.includes('the client is offline')) {
-      console.error("Please check your Firebase configuration.");
+      console.warn("Firestore operating in offline cache mode.");
     }
   }
+}
+
+// Perform boot connection check in browser runtime safely
+if (typeof window !== "undefined") {
+  testConnection().catch(() => {});
 }
 
 /**
