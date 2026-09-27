@@ -5,6 +5,57 @@ import { PostComment } from '../types';
  * Enables immediate discovery, engagement, and reply chains for every user and visitor.
  */
 export const INITIAL_ARTICLE_COMMENTS: Record<string, PostComment[]> = {
+  // High FPS But Still Stuttering
+  'high-fps-still-stuttering-frametime-0-1-lows': [
+    {
+      id: 'comm-fps-1',
+      author: {
+        id: 'usr_frametime_king',
+        name: 'ApexOverclocker',
+        username: '@apex_overclocker',
+        avatar: 'https://images.unsplash.com/photo-1566492031773-4f4e44671857?w=120&auto=format&fit=crop&q=80',
+        badge: 'Benchmarking Lead',
+        role: 'Hardware Analyst'
+      },
+      content: 'Capping at 141 FPS on my 144Hz Alienware with driver V-Sync ON was literally night and day. I had been leaving FPS completely uncapped at 200+ and wondering why Warzone and Cyberpunk felt jittery whenever turning corners. That 0.1% low jump from 32 FPS to 125 FPS is real.',
+      timestamp: '3 hours ago',
+      likes: 21,
+      createdAt: new Date(Date.now() - 10800000).toISOString()
+    },
+    {
+      id: 'comm-fps-2',
+      author: {
+        id: 'usr_rig_builder',
+        name: 'SiliconSamurai',
+        username: '@silicon_samurai',
+        avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=120&auto=format&fit=crop&q=80',
+        badge: 'Hardware Veteran',
+        role: 'System Builder'
+      },
+      content: 'Can confirm the 10GB shader cache tweak! Nvidia default 1GB cache was causing Hogwarts Legacy and Black Myth to re-compile every single weekend. Changing the global setting to 10GB stopped the periodic 200ms shader stalls completely.',
+      timestamp: '2 hours ago',
+      likes: 15,
+      replyToId: 'comm-fps-1',
+      replyToAuthor: 'ApexOverclocker',
+      createdAt: new Date(Date.now() - 7200000).toISOString()
+    },
+    {
+      id: 'comm-fps-3',
+      author: {
+        id: 'usr_mouse_nerd',
+        name: 'KovaaksAimer',
+        username: '@kovaaks_aimer',
+        avatar: 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=120&auto=format&fit=crop&q=80',
+        badge: 'Aim Specialist',
+        role: 'Esports Competitor'
+      },
+      content: 'Glad you called out 8000Hz mouse polling rates. I switched my Razer Viper from 8K to 1K polling and immediately recovered 18 FPS in my 0.1% lows in Valorant and Finals. People do not realize how heavily USB interrupts hit Core 0.',
+      timestamp: '45 mins ago',
+      likes: 8,
+      createdAt: new Date(Date.now() - 2700000).toISOString()
+    }
+  ],
+
   // Helldivers 2 Illuminate Super Helldive Loadout
   'helldivers-2-illuminate-super-helldive-loadout-by-enemy-type': [
     {

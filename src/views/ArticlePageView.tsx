@@ -199,10 +199,41 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
     : null) || articles?.find((a) => a.id !== article.id);
   const relatedArticleSlug = relatedArticle ? getSeoSlug(relatedArticle) : '';
 
-  const renderBoldText = (text: string, keyPrefix: string) => {
-    // Strip all asterisks around words and phrases
-    const cleanText = text.replace(/\*+([^*]+)\*+/g, '$1').replace(/\*/g, '');
-    return [cleanText];
+  const renderBoldText = (text: string, keyPrefix: string): React.ReactNode[] => {
+    // Parse **bold** and *italic*
+    const parts: React.ReactNode[] = [];
+    const regex = /(\*\*([^*]+)\*\*|\*([^*]+)\*)/g;
+    let lastIndex = 0;
+    let match: RegExpExecArray | null;
+
+    while ((match = regex.exec(text)) !== null) {
+      const matchIndex = match.index;
+      if (matchIndex > lastIndex) {
+        parts.push(text.substring(lastIndex, matchIndex));
+      }
+      if (match[2]) {
+        // **bold**
+        parts.push(
+          <strong key={`${keyPrefix}-b-${matchIndex}`} className="font-bold text-white">
+            {match[2]}
+          </strong>
+        );
+      } else if (match[3]) {
+        // *italic*
+        parts.push(
+          <em key={`${keyPrefix}-i-${matchIndex}`} className="italic text-slate-200">
+            {match[3]}
+          </em>
+        );
+      }
+      lastIndex = matchIndex + match[0].length;
+    }
+
+    if (lastIndex < text.length) {
+      parts.push(text.substring(lastIndex));
+    }
+
+    return parts.length > 0 ? parts : [text];
   };
 
   const renderFormattedText = (text: string) => {
@@ -839,8 +870,24 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
           }
 
           // Check if block has intro text followed by numbered points
-          const firstNumIdx = blockLines.findIndex(l => /^\d+\.\s+/.test(l.trim()));
-          if (firstNumIdx > 0 && blockLines.slice(firstNumIdx).every(l => /^\d+\.\s+/.test(l.trim()) || !l.trim())) {
+          const isNumLine = (line: string) =>
+            /^\d+\.\s+/.test(line.trim()) ||
+            /^\*\*\d+\.\*\*\s+/.test(line.trim()) ||
+            /^\*\*\d+\.\s*[^*]+\*\*/.test(line.trim());
+
+          const parseNumLine = (line: string, fallbackIdx: number) => {
+            const t = line.trim();
+            const direct = t.match(/^(\d+)\.\s+(.*)$/);
+            if (direct) return { num: direct[1], body: direct[2] };
+            const boldPrefix = t.match(/^\*\*(\d+)\.\s*([^*]+)\*\*\s*:?\s*(.*)$/);
+            if (boldPrefix) return { num: boldPrefix[1], body: `**${boldPrefix[2]}:** ${boldPrefix[3]}` };
+            const boldNum = t.match(/^\*\*(\d+)\.\*\*\s+(.*)$/);
+            if (boldNum) return { num: boldNum[1], body: boldNum[2] };
+            return { num: `${fallbackIdx + 1}`, body: t };
+          };
+
+          const firstNumIdx = blockLines.findIndex(isNumLine);
+          if (firstNumIdx > 0 && blockLines.slice(firstNumIdx).every(l => isNumLine(l) || !l.trim())) {
             const intro = blockLines.slice(0, firstNumIdx).join('\n').trim();
             const nums = blockLines.slice(firstNumIdx).filter(l => l.trim());
             return (
@@ -848,9 +895,7 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
                 {intro && <p className="leading-relaxed text-gray-300">{renderFormattedText(intro)}</p>}
                 <ol className="space-y-3 pl-1">
                   {nums.map((nLine, nIdx) => {
-                    const match = nLine.trim().match(/^(\d+)\.\s+(.*)$/);
-                    const num = match ? match[1] : `${nIdx + 1}`;
-                    const body = match ? match[2] : nLine.trim();
+                    const { num, body } = parseNumLine(nLine, nIdx);
                     return (
                       <li key={nIdx} className="flex items-start gap-3 text-gray-300">
                         <span className="w-5 h-5 rounded-full bg-white/10 border border-white/20 text-[11px] font-bold text-slate-200 flex items-center justify-center shrink-0 mt-0.5 shadow-sm">
@@ -865,13 +910,11 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
             );
           }
 
-          if (trimmed.split('\n').every((line) => /^\d+\.\s+/.test(line.trim()))) {
+          if (trimmed.split('\n').every(isNumLine)) {
             return (
               <ol key={idx} className="space-y-3 my-4 pl-1">
                 {trimmed.split('\n').map((line, lIdx) => {
-                  const match = line.trim().match(/^(\d+)\.\s+(.*)$/);
-                  const num = match ? match[1] : `${lIdx + 1}`;
-                  const body = match ? match[2] : line.trim();
+                  const { num, body } = parseNumLine(line, lIdx);
                   return (
                     <li key={lIdx} className="flex items-start gap-3 text-gray-300">
                       <span className="w-5 h-5 rounded-full bg-white/10 border border-white/20 text-[11px] font-bold text-slate-200 flex items-center justify-center shrink-0 mt-0.5 shadow-sm">

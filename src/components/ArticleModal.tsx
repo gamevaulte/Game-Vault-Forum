@@ -12,6 +12,40 @@ interface ArticleModalProps {
   onShare: (title: string) => void;
 }
 
+const renderInlineMarkdown = (text: string, keyPrefix: string = 'm'): React.ReactNode[] => {
+  const parts: React.ReactNode[] = [];
+  const regex = /(\*\*([^*]+)\*\*|\*([^*]+)\*)/g;
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+
+  while ((match = regex.exec(text)) !== null) {
+    const matchIndex = match.index;
+    if (matchIndex > lastIndex) {
+      parts.push(text.substring(lastIndex, matchIndex));
+    }
+    if (match[2]) {
+      parts.push(
+        <strong key={`${keyPrefix}-b-${matchIndex}`} className="font-bold text-white">
+          {match[2]}
+        </strong>
+      );
+    } else if (match[3]) {
+      parts.push(
+        <em key={`${keyPrefix}-i-${matchIndex}`} className="italic text-slate-200">
+          {match[3]}
+        </em>
+      );
+    }
+    lastIndex = matchIndex + match[0].length;
+  }
+
+  if (lastIndex < text.length) {
+    parts.push(text.substring(lastIndex));
+  }
+
+  return parts.length > 0 ? parts : [text];
+};
+
 export const ArticleModal: React.FC<ArticleModalProps> = ({
   article,
   onClose,
@@ -148,11 +182,11 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
                           return (
                             <div key={bi} className="flex items-start gap-2.5">
                               <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 mt-1.5 shrink-0" />
-                              <span>{t.replace(/^[•\-*]\s*/, '')}</span>
+                              <span>{renderInlineMarkdown(t.replace(/^[•\-*]\s*/, ''), `cd-${bi}`)}</span>
                             </div>
                           );
                         }
-                        return <p key={bi} className="leading-relaxed">{t}</p>;
+                        return <p key={bi} className="leading-relaxed">{renderInlineMarkdown(t, `cp-${bi}`)}</p>;
                       })}
                     </div>
                   </div>
@@ -172,7 +206,7 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
                     .replace(/^\|/, '')
                     .replace(/\|$/, '')
                     .split('|')
-                    .map((c) => c.replace(/\*+([^*]+)\*+/g, '$1').replace(/\*/g, '').trim());
+                    .map((c) => c.trim());
                 const header = parse(lines[0]);
                 const rows = lines.slice(1).filter(l => !/^\|?\s*:?-+:?\s*(\|?\s*:?-+:?\s*)*\|?$/.test(l)).map(parse);
                 return (
@@ -181,7 +215,9 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
                       <thead>
                         <tr className="bg-white/5 border-b border-[#252a42] text-slate-200">
                           {header.map((h, hi) => (
-                            <th key={hi} className="p-2.5 font-bold font-['Space_Grotesk'] text-slate-200">{h}</th>
+                            <th key={hi} className="p-2.5 font-bold font-['Space_Grotesk'] text-slate-200">
+                              {renderInlineMarkdown(h, `th-${hi}`)}
+                            </th>
                           ))}
                         </tr>
                       </thead>
@@ -189,7 +225,9 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
                         {rows.map((row, ri) => (
                           <tr key={ri} className="hover:bg-white/[0.02]">
                             {row.map((cell, ci) => (
-                              <td key={ci} className="p-2.5 text-slate-300">{cell}</td>
+                              <td key={ci} className="p-2.5 text-slate-300">
+                                {renderInlineMarkdown(cell, `td-${ri}-${ci}`)}
+                              </td>
                             ))}
                           </tr>
                         ))}
@@ -211,7 +249,7 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
                     </h2>
                     {extraLines && (
                       <p className="text-slate-300 leading-relaxed text-sm sm:text-base">
-                        {extraLines.replace(/\*+([^*]+)\*+/g, '$1').replace(/\*/g, '')}
+                        {renderInlineMarkdown(extraLines, `h2-${idx}`)}
                       </p>
                     )}
                   </div>
@@ -229,7 +267,7 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
                     </h3>
                     {extraLines && (
                       <p className="text-slate-300 leading-relaxed text-sm sm:text-base">
-                        {extraLines.replace(/\*+([^*]+)\*+/g, '$1').replace(/\*/g, '')}
+                        {renderInlineMarkdown(extraLines, `h3-${idx}`)}
                       </p>
                     )}
                   </div>
@@ -242,7 +280,7 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
                     key={idx}
                     className="my-4 pl-3.5 py-2 border-l-2 border-cyan-500/70 bg-white/[0.03] rounded-r-lg italic text-slate-200 text-sm sm:text-base font-['Inter']"
                   >
-                    {trimmed.replace(/^>\s*/, '').replace(/\*+([^*]+)\*+/g, '$1').replace(/\*/g, '')}
+                    {renderInlineMarkdown(trimmed.replace(/^>\s*/, ''), `bq-${idx}`)}
                   </blockquote>
                 );
               }
@@ -257,14 +295,14 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
                   <div key={idx} className="space-y-2.5 my-3">
                     {intro && (
                       <p className="text-slate-300 leading-relaxed text-sm sm:text-base">
-                        {intro.replace(/\*+([^*]+)\*+/g, '$1').replace(/\*/g, '')}
+                        {renderInlineMarkdown(intro, `in-${idx}`)}
                       </p>
                     )}
                     <ul className="space-y-2 pl-2">
                       {bullets.map((bLine, bIdx) => (
                         <li key={bIdx} className="flex items-start gap-2.5 text-xs sm:text-sm text-slate-300">
                           <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 mt-1.5 shrink-0" />
-                          <span>{bLine.trim().replace(/^[•\-]\s*/, '').replace(/\*+([^*]+)\*+/g, '$1').replace(/\*/g, '')}</span>
+                          <span>{renderInlineMarkdown(bLine.trim().replace(/^[•\-]\s*/, ''), `bi-${idx}-${bIdx}`)}</span>
                         </li>
                       ))}
                     </ul>
@@ -281,7 +319,7 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
                   <div key={idx} className="space-y-2.5 my-3">
                     {intro && (
                       <p className="text-slate-300 leading-relaxed text-sm sm:text-base">
-                        {intro.replace(/\*+([^*]+)\*+/g, '$1').replace(/\*/g, '')}
+                        {renderInlineMarkdown(intro, `in-num-${idx}`)}
                       </p>
                     )}
                     <ol className="space-y-2 pl-1">
@@ -294,7 +332,7 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
                             <span className="w-4 h-4 rounded-full bg-white/10 border border-white/20 text-[10px] font-bold text-slate-200 flex items-center justify-center shrink-0 mt-0.5">
                               {num}
                             </span>
-                            <span>{body.replace(/\*+([^*]+)\*+/g, '$1').replace(/\*/g, '')}</span>
+                            <span>{renderInlineMarkdown(body, `nb-${idx}-${nIdx}`)}</span>
                           </li>
                         );
                       })}
@@ -315,7 +353,7 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
                           <span className="w-4 h-4 rounded-full bg-white/10 border border-white/20 text-[10px] font-bold text-slate-200 flex items-center justify-center shrink-0 mt-0.5">
                             {num}
                           </span>
-                          <span>{body.replace(/\*+([^*]+)\*+/g, '$1').replace(/\*/g, '')}</span>
+                          <span>{renderInlineMarkdown(body, `ol-${idx}-${lIdx}`)}</span>
                         </li>
                       );
                     })}
@@ -329,17 +367,16 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
                     {trimmed.split('\n').map((line, lIdx) => (
                       <li key={lIdx} className="flex items-start gap-2.5 text-xs sm:text-sm text-slate-300">
                         <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 mt-1.5 shrink-0" />
-                        <span>{line.trim().replace(/^[•\-]\s*/, '').replace(/\*+([^*]+)\*+/g, '$1').replace(/\*/g, '')}</span>
+                        <span>{renderInlineMarkdown(line.trim().replace(/^[•\-]\s*/, ''), `ul-${idx}-${lIdx}`)}</span>
                       </li>
                     ))}
                   </ul>
                 );
               }
 
-              const cleanText = trimmed.replace(/\*+([^*]+)\*+/g, '$1').replace(/\*/g, '');
               return (
                 <p key={idx} className="text-slate-300 leading-relaxed whitespace-pre-line text-sm sm:text-base">
-                  {cleanText}
+                  {renderInlineMarkdown(trimmed, `p-${idx}`)}
                 </p>
               );
             })}
