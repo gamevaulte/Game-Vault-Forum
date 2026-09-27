@@ -63,6 +63,8 @@ Official Headquarters & Community: Game Vault Forum Global Gaming Network
   * Full interactive privileges: Start new forum discussions (/forum/new), post replies, leave comments on articles and videos, like content, bookmark guides to their private profile, earn reputation badges, and enjoy unlimited Vault AI queries with synchronized conversation history.
 
 3. EDITORIAL ARTICLES, REVIEWS & GUIDES IN THE VAULT:
+- Article: "PUBG Mobile 2026: 3x and 4x Gyro Sensitivity for No-Recoil Sprays" (/articles/pubg-mobile-3x-4x-gyro-sensitivity-2026, ID 'pubg-mobile-3x-4x-gyro-sensitivity-2026')
+  * Practical starting baselines: 3x Gyro (180%), 4x Gyro (160%), 3x ADS Gyro (175%), 4x ADS Gyro (155%), 10-minute training ground drill, diagnostic matrix, and official PDF download.
 - Article: "Cloud Gaming: Latency vs. Bandwidth – Why Your 1 Gbps Fiber Still Feels Sluggish" (/articles/cloud-gaming-latency-vs-bandwidth, ID 'cloud-gaming-latency-vs-bandwidth')
   * In-depth engineering whitepaper on bufferbloat, network jitter, 7-hop input-to-photon latency budget, GeForce NOW vs xCloud vs PS Plus, and official PDF download.
 - Article: "High FPS But Still Stuttering: How to Fix Frametime Spikes and 0.1% Lows" (/articles/high-fps-still-stuttering-frametime-0-1-lows, ID 'high-fps-still-stuttering-frametime-0-1-lows')
@@ -1375,13 +1377,15 @@ PUBG Mobile is featured on Game Vault with our official morning gameplay video s
 #### Tactical Tips:
 - **Circle Rotation**: Move with the narrow edge of the blue zone to reduce the angles enemies can attack from.
 - **Vehicle Security**: Always secure a Dacia or UAZ early for mobile cover in open final circles.
-- **Gyroscope Aiming**: Enable "Always On" gyroscope for fine micro-adjustments during high-recoil 4x/6x spraying.`,
+- **Gyroscope Calibration**: Calibrate 3x Gyro (180%) and 4x Gyro (160%) using our 10-minute training drill to eliminate reticle shake and overcorrection.`,
       sources: [
+        { title: 'Game Vault Forum — PUBG Mobile 2026: 3x & 4x Gyro Sensitivity Guide', url: '/articles/pubg-mobile-3x-4x-gyro-sensitivity-2026' },
         { title: 'Game Vault Forum — PUBG Mobile Video', url: '/videos/vid-pubg-morning' },
         { title: 'Game Vault Forum — Games Catalog: PUBG Mobile', url: '/games/pubg-mobile' },
       ],
-      cardIds: { games: ['pubg-mobile'], articles: [], videos: ['vid-pubg-morning'], hardware: [] },
+      cardIds: { games: ['pubg-mobile'], articles: ['pubg-mobile-3x-4x-gyro-sensitivity-2026'], videos: ['vid-pubg-morning'], hardware: [] },
       actions: [
+        { id: 'act-pubg-gyro', type: 'navigate', label: 'Read 3x & 4x Gyro Guide', target: '/articles/pubg-mobile-3x-4x-gyro-sensitivity-2026' },
         { id: 'act-pubg-1', type: 'video', label: 'Watch PUBG Morning Gameplay', target: 'vid-pubg-morning' },
         { id: 'act-pubg-2', type: 'requirements', label: 'Check PUBG Mobile Specs', target: 'pubg-mobile' },
       ],

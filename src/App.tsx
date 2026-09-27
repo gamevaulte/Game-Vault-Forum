@@ -1700,6 +1700,43 @@ export default function App() {
       case 'guide': {
         const guide = findItemBySlugOrId(MOCK_GUIDES, route.id);
         if (!guide) {
+          const matchedArticle = findItemBySlugOrId(MOCK_ARTICLES, route.id);
+          if (matchedArticle) {
+            const articleSlug = getSeoSlug(matchedArticle);
+            const isLiked = isItemLiked(matchedArticle.id);
+            const likeCount = getLikeCount(matchedArticle.id, 0);
+            const isBookmarked = user.bookmarks.articles.includes(matchedArticle.id);
+            const articleComments = commentsMap[matchedArticle.id] || [];
+
+            return (
+              <ArticlePageView
+                article={matchedArticle}
+                articles={MOCK_ARTICLES}
+                onSelectArticle={(a) => navigate(`/articles/${getSeoSlug(a)}`)}
+                isLiked={isLiked}
+                likeCount={likeCount}
+                isBookmarked={isBookmarked}
+                onToggleLike={() => handleToggleLike(matchedArticle.id, matchedArticle.title, 0)}
+                onToggleBookmark={() => handleToggleBookmark('articles', matchedArticle.id, matchedArticle.title)}
+                onShare={() => handleShare(matchedArticle.title, `/articles/${articleSlug}`)}
+                comments={articleComments}
+                onAddComment={(text, options) => handleAddPostComment(matchedArticle.id, text, { ...options, postTitle: matchedArticle.title })}
+                onToggleCommentLike={handleToggleCommentLike}
+                isCommentLiked={isItemLiked}
+                getCommentLikeCount={(cId) => getLikeCount(cId, 0)}
+                currentUser={user}
+                isSignedIn={!!firebaseUser}
+                onOpenSignIn={() => {
+                  setAuthPromptMessage('Sign in or register to like and comment on Game Vault articles.');
+                  setIsAuthModalOpen(true);
+                }}
+                onBack={() => navigate('/guides')}
+                onNavigateTab={(t) => navigate(t === 'home' ? '/' : `/${t}`)}
+                onViewUserProfile={handleViewUserProfile}
+              />
+            );
+          }
+
           return (
             <div className="max-w-4xl mx-auto px-4 py-20 text-center space-y-4">
               <h2 className="text-2xl font-bold font-['Space_Grotesk'] text-white">Guide Not Found</h2>

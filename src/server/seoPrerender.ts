@@ -7,9 +7,10 @@ export function handleSeoPrerender(reqPath: string, isProd: boolean): string | n
   try {
     const cleanPath = reqPath.split('?')[0].replace(/\/+$/, '');
     
-    // Check if path is an article
-    if (cleanPath.startsWith('/articles/')) {
-      const slug = cleanPath.replace('/articles/', '');
+    // Check if path is an article or guide
+    if (cleanPath.startsWith('/articles/') || cleanPath.startsWith('/guides/')) {
+      const isGuidePath = cleanPath.startsWith('/guides/');
+      const slug = cleanPath.replace(/^\/(articles|guides)\//, '');
       const article = MOCK_ARTICLES.find(
         (a) => getSeoSlug(a) === slug || a.id === slug
       );
@@ -25,7 +26,7 @@ export function handleSeoPrerender(reqPath: string, isProd: boolean): string | n
 
       const title = article.seoTitle || `${article.title} | Game Vault Forum`;
       const description = article.metaDescription || article.excerpt;
-      const canonicalUrl = `https://www.gamevault.forum/articles/${getSeoSlug(article)}`;
+      const canonicalUrl = `https://www.gamevault.forum/${isGuidePath ? 'guides' : 'articles'}/${getSeoSlug(article)}`;
       const rawImage = article.featuredImage || article.image || 'https://www.gamevault.forum/favicon.png';
       const imageUrl = rawImage.startsWith('http')
         ? rawImage
