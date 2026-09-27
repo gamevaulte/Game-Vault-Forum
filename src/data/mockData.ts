@@ -838,7 +838,7 @@ export const MOCK_GUIDES: Guide[] = [
     estimatedReadingTime: '12 min',
     shortDescription: 'How to conquer single-save Honor Mode: mitigating boss Legendary Actions, optimizing initiative, and establishing emergency retreat protocols.',
     category: 'Walkthroughs',
-    image: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800&auto=format&fit=crop&q=80',
+    image: '/images/articles/gamevault-bg3-honour-mode-hero.jpg',
     sections: [
       {
         heading: '1. The Golden Rule: Initiative Priority & The Alert Feat',

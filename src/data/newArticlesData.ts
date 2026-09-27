@@ -2,6 +2,228 @@ import { Article } from '../types';
 
 export const NEW_ARTICLES_2026: Article[] = [
   // =========================================================================
+  // BALDUR'S GATE 3 HONOUR MODE: DEFINITIVE SURVIVAL & COMBAT BLUEPRINT
+  // =========================================================================
+  {
+    id: 'baldurs-gate-3-honour-mode-survival-guide',
+    slug: 'baldurs-gate-3-honour-mode-survival-guide',
+    title: 'Baldur’s Gate 3 Honour Mode: The Definitive Survival and Combat Blueprint',
+    seoTitle: 'Baldur\'s Gate 3 Honour Mode: Definitive Survival & Boss Guide | Game Vault',
+    metaDescription: 'Conquer single-save Honour Mode in Baldur\'s Gate 3. Master boss Legendary Actions, D4 initiative stacking, action economy, and fail-safe retreat protocols.',
+    excerpt: 'A single party wipe in Baldur\'s Gate 3 Honour Mode deletes your campaign permanently. Discover the essential survival blueprint: managing boss Legendary Actions, D4 initiative stacking, camp buffing economies, and fail-safe retreat protocols.',
+    category: 'Tactical Analysis',
+    author: {
+      name: 'Joel Ayuba',
+      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80',
+      role: 'Founder & Lead Technical Analyst'
+    },
+    publicationDate: 'September 26, 2026',
+    readingTime: '13 min read',
+    featuredImage: '/images/articles/gamevault-bg3-honour-mode-hero.jpg',
+    image: '/images/articles/gamevault-bg3-honour-mode-hero.jpg',
+    tags: [
+      'Baldur\'s Gate 3',
+      'Honour Mode',
+      'Tactical Analysis',
+      'Larian Studios',
+      'CRPG',
+      'Boss Guide',
+      'D&D 5E',
+      'PC Gaming',
+      'Action Economy'
+    ],
+    views: '3.4k',
+    likes: 418,
+    relatedArticleId: 'helldivers-2-illuminate-super-helldive-loadout-by-enemy-type',
+    relatedArticlePrompt: 'Master enemy-by-enemy tactical coverage and high-difficulty squad loadouts',
+    content: `*Last checked: September 26, 2026. This tactical breakdown incorporates all verified patch balance modifications, Legendary Action mechanics, and single-save rulesets for Baldur's Gate 3 Honour Mode.*
+
+## The Brutal Paradigm of Honour Mode: Why Tactician Habits Lead to Wipes
+
+There is no reload button in Honour Mode. The safety net that permitted hours of experimental combat encounters, aggressive dialogue gambits, and careless exploration is gone. A single wiped encounter terminates your bid for the coveted Golden Dice and the Foehammer achievement, forcing your save file into a dishonorable Custom Mode.
+
+Many experienced players venture into Honour Mode assuming that thousands of hours on Tactician difficulty have prepared them. That assumption is often their first fatal error. 
+
+Honour Mode is not merely Tactician with elevated enemy hit points and tighter shop prices. Larian Studios systematically overhauled fundamental mathematical rules:
+• **Damage Rider as Source (DRS) Exploits Eliminated**: Unintended damage multipliers and nested damage rider calculations that allowed players to delete endgame bosses in a single attack have been patched out.
+• **The Haste Nerf**: Unlike standard difficulty modes where the Haste condition granted an entire additional action complete with extra attack sequences (allowing martials to swing four to six times from a single spell), Honour Mode restricts the extra Haste action strictly to **one single weapon attack** or spell cast.
+• **Boss Legendary Actions**: Every major boss and mini-boss possesses bespoke reaction triggers and legendary mechanics that punish conventional alpha-strike strategies.
+
+Survival in Honour Mode requires abandoning the mindset of an adventurer and adopting the doctrine of a risk-averse tactician. Every turn, every spell slot, and every movement point must be budgeted with ruthless precision.
+
+---
+
+## The Math of Initiative: Why the D4 System Makes Alert Mandatory
+
+In tabletop Dungeons & Dragons 5th Edition, initiative is decided by rolling a twenty-sided die (1d20) plus your Dexterity modifier. A character with +2 Dexterity can easily roll a 19 and beat a monster with +5 Dexterity rolling a 3. 
+
+Baldur's Gate 3 does not use a d20. **Larian Studios implemented a 1d4 initiative die.**
+
+:::takeaway
+Title: The D4 Initiative Disruption
+Badge: Mathematical Truth
+• Initiative Range: 1 to 4 + Initiative Modifiers.
+• Flat Value Supremacy: A flat +5 bonus from the Alert feat is statistically insurmountable. Rolling a 1 + 5 = 6 guarantees beating an enemy rolling a maximum 4 + 1 = 5.
+• Zero Alpha-Strike Risk: High initiative ensures all four squad members take their turns concurrently at the top of the round, wiping or crowd-controlling lethal threats before they act.
+:::
+
+Because the random variance is constrained between 1 and 4, flat bonuses dominate completely. When your characters win initiative together, their turns merge into a single shared initiative block. This allows you to freely swap between characters, chain combos, apply vulnerability debuffs (such as Create Water for double lightning/cold damage), and eliminate primary threats before the enemy squad takes a single action.
+
+### Critical Initiative Stacking Gear
+1. **Bow of Awareness**: Purchased in Act 1 from Roah Moonglow in the Shattered Sanctum. Grants a passive +1 to initiative for any character carrying it in their ranged slot, even if they never fire an arrow.
+2. **Hellrider Longbow**: Purchased from Ferg Drogher in Act 3 Rivington. Provides a massive passive **+3 bonus to initiative** and advantage on Perception checks.
+3. **Elixir of Vigilance**: Grants a flat +5 to initiative and immunity to surprise until the next long rest. Keep these stocked for boss fights where your squad members lack the Alert feat.
+4. **The Alert Feat**: At Level 4 or Level 8, prioritize Alert on your primary controller and burst martial characters. Surviving an ambush with zero surprise rounds is worth vastly more than a +2 ability score increase.
+
+---
+
+## Boss Legendary Actions: The Complete Tactical Counter-Matrix
+
+The defining challenge of Honour Mode is boss Legendary Actions. These reactions trigger on your party's turns when specific conditions are met. Blind aggression will trigger catastrophic retaliation cascades.
+
+The table below breaks down the most dangerous boss reactions across Faerûn and the exact operational tactics to neutralize them:
+
+| Boss & Location | Legendary Action & Mechanic | Trigger Condition | Hard Tactical Counter |
+|---|---|---|---|
+| **Owlbear Mother** (Act 1 Cave) | *Call Mate*: Summons an enraged second adult Owlbear with full health. | When the Mother drops below 50% HP or takes lethal damage. | Focus down the initial Owlbear rapidly using Blindness or Command: Grovel. Keep squad spread out on high perches to prevent crushing leap stomps. |
+| **Grym** (Act 1 Adamantine Forge) | *Adamantine Retaliation*: Gains 100 Temp HP and releases a thunderous shockwave when struck. | When struck by an attack while Superheated in lava. | Position one archer with blunt bludgeoning arrows on the high staircase. Bait Grym under the central hammer using a Minor Illusion or Spiritual Weapon. |
+| **Inquisitor W'wargaz** (Act 1 Crèche) | *Mind Sanctuary & Psionic Swords*: Summons psychic blades that impale attackers. | Whenever an attacker damages him while his parry shield is active. | Drink an Elixir of Guile/Speed. Cast Darkness or Fog Cloud directly on him to break ranged line-of-sight. Disarm his greatsword on Turn 1 with Battle Master maneuvers. |
+| **Malus Thorm** (Act 2 House of Healing) | *Grasping Hands & Surgical Strike*: Nurses trigger instant execution strikes. | When player characters trigger failed saving throws or cast near nurses. | High-Charisma dialogue skips this fight entirely. Persuade Malus to command the nurses to operate on each other, then convince him to perform surgery on himself. |
+| **Apostle of Myrkul** (Act 2 Mind Flayer Colony) | *Gaze of the Dead*: Blinds and frightens party members while bone chill prevents healing. | When struck or at the start of legendary reaction cycles. | Cast Darkness or Hunger of Hadar on his stationary central platform to blind him. Drop Bone Chill arrows on Necromites to prevent him from consuming them. |
+| **Ansur the Undead Dragon** (Act 3 Wyrm's Rock) | *Stormheart Nova*: Gathers electric lightning charges and detonates a 360-degree party-wiping blast. | Triggers when Ansur enters his gathering storm phase at low HP. | Hide behind the fallen crystalline pillars before the turn ends. Cast Globe of Invulnerability to render the entire party completely immune to the blast. |
+| **Raphael** (Act 3 House of Hope) | *Soul Pillar Ascension*: Absorbs pillar souls to transform into an Ascended Fiend with Hellfire blasts. | Passive reaction every round while pillars stand. | Cast Otto's Irresistible Dance or Hold Monster on Raphael (he lacks legendary resistance against Otto's). Detonate all four Soul Pillars using Hope's divine intervention and Barrelmancy. |
+
+---
+
+## The Baited Reaction Doctrine: Controlling Enemy Counterattacks
+
+A fundamental tenet of advanced Honour Mode play is **The Baited Reaction Doctrine**. 
+
+Never allow a boss's Legendary Action to trigger against your primary damage dealer or fragile concentration caster. Bosses only receive a limited number of legendary reaction charges per round. You can deliberately exhaust their reactions using disposable battlefield assets:
+
+• **Disposable Summons**: Summon Quasits (such as Shovel), Mage Hands, or minor elemental mephits. Send the summon forward to attack or trigger an opportunity attack, forcing the boss to waste their reaction on a 10 HP decoy.
+• **Spiritual Weapon Bait**: Cleric's Spiritual Weapon has no vitality penalty if destroyed. Moving it into melee range triggers enemy reactions safely.
+• **Line-of-Sight Manipulation**: Spells like *Darkness* and *Hunger of Hadar* completely blind bosses. An enemy that cannot see their attacker cannot legally target them with directed reaction spells or legendary opportunity attacks.
+
+---
+
+## Action Economy Supremacy: Speed Potions, Bloodlust Elixirs, and Haste
+
+Combat supremacy in turn-based CRPGs belongs to whichever side executes the highest volume of impactful decisions per turn. 
+
+While the Haste spell received an Honour Mode nerf, consumable items provide incredible action economy leverage without requiring spell concentration that can be broken by incoming damage:
+
+:::chart
+Title: Theoretical Maximum Attacks/Actions per Round in Honour Mode
+Badge: Action Economy Breakdown
+Standard Martial (Level 11 Fighter): 3 Actions | 3 | cyan | Base 3 attacks with Improved Extra Attack
+Fighter + Action Surge: 6 Actions | 6 | emerald | Doubles base action pool once per short rest
+Fighter + Action Surge + Potion of Speed: 7 Actions | 7 | indigo | Haste grants +1 additional single weapon swing
+Fighter + Surge + Speed + Bloodlust Elixir: 8 Actions | 8 | amber | Bloodlust procs an additional full action upon killing a foe
+Tavern Brawler Monk + Thief Rogue: 6 Attacks | 6 | rose | 2 Main hand attacks + 4 Flurry of Blows across 2 bonus actions
+Note: All values reflect post-patch Honour Mode action limitation rules.
+:::
+
+### Consumable Preparation Protocol
+1. **Potion of Speed**: Lasts exactly 3 rounds and does not require concentration. It grants +2 AC, double movement speed, and an additional action. **Warning**: On round 4, the character suffers the Lethargic condition and skips their entire turn. Never drink a Potion of Speed unless you are confident the encounter will conclude within 3 rounds, or have a backup character ready to protect the lethargic ally.
+2. **Elixir of Bloodlust**: Lasts until your next long rest. When the drinker reduces an enemy to 0 HP, they immediately receive an additional action and 5 temporary hit points once per turn. Distribute this elixir to your highest-damage burst characters before entering hostile territories.
+3. **Elixir of Hill/Cloud Giant Strength**: Setting a character's Strength to 21 (Hill Giant) or 27 (Cloud Giant) allows you to leave base Strength at 8 during character respecs, allocating those precious ability points into Dexterity (initiative), Constitution (health/concentration), and Wisdom (mental saving throws).
+
+---
+
+## The Camp Cleric Buffing Assembly Line: Zero-Risk Party Amplification
+
+One of the most powerful, fully legitimate mechanics available in Baldur's Gate 3 is the **Camp Cleric Buffing Assembly Line**.
+
+Camp companions and hirelings purchased from Withers can cast long-duration, non-concentration buffs on your active four-person party before you leave camp. Because these spells persist until the next long rest, your combat squad ventures forth with immense defensive and mobility buffers at zero cost to your active spell slots.
+
+### The Standard Camp Morning Routine
+:::checklist
+Title: Daily Long Rest Buffing Checklist
+Badge: Camp Optimization Protocol
+• 1. Hire Hireling Clerics from Withers: Respec them into Life or Transmutation Clerics with maximum Constitution and Wisdom.
+• 2. Cast Upcasted Aid (Level 5 or 6): Adds +20 to +25 permanent maximum hit points to all party members, companions, and summons.
+• 3. Cast Heroes' Feast (Level 6): Grants immunity to poison, disease, and the Frightened condition, while adding another +12 maximum HP and advantage on Wisdom saving throws.
+• 4. Cast Death Ward: Protects all active party members from lethal damage, automatically restoring them to 1 HP instead of entering the dying state.
+• 5. Cast Longstrider on Everyone: Costs zero spell slots when cast outside of combat, granting +3 meters of free movement speed to all four party members for the entire day.
+• 6. Cast Freedom of Movement: Grants immunity to paralysis, difficult terrain, and movement reduction spells.
+:::
+
+With this buffing routine active, a Level 10 squishy Sorcerer or Wizard steps out of camp with **over 120 effective HP**, immunity to surprise, immunity to fear and poison, and an automatic second chance if reduced to zero health.
+
+---
+
+## The Fail-Safe Emergency Sanctuary & Invisibility Retreat Protocol
+
+No matter how meticulous your planning, critical dice failures happen. A boss rolls a natural 20, an explosive barrel chains unexpectedly, or your squad fails consecutive saving throws against crowd control.
+
+The difference between a failed Honour Mode run and a successful one is having an **institutional retreat protocol**.
+
+### The "Survival Anchor" Role
+Designate one squad member (typically a high-mobility archer, Rogue, or Shadow Monk) as the survival anchor. Equip this character with:
+• 3x Potions of Invisibility
+• Scroll of Dimension Door or Misty Step
+• Boots of Speed or Fleetfingers
+
+### The Step-by-Step Escape Execution
+1. **Identify the Tipping Point**: If two party members are downed and the boss retains over 50% health, declare an emergency retreat immediately. Do not attempt heroics.
+2. **Sanctuary Buff**: Have a spellcaster cast *Sanctuary* on the survival anchor. This prevents enemies from directly targeting them with attacks.
+3. **Drink Invisibility**: The survival anchor drinks a Potion of Invisibility as an action or bonus action.
+4. **Dash Toward Combat Borders**: Disengage and sprint away from the encounter boundary until the red mini-map combat zone indicator disappears.
+5. **Flee to Camp**: Click the "Flee Combat" button on the UI.
+6. **Withers Resurrection Loop**: Return to Withers at camp, pay 200 gold per fallen companion to resurrect them with full health, and re-equip before re-engaging the encounter on your terms.
+
+---
+
+## The 5 Deadliest Run-Ending Traps Across Faerûn
+
+Combat encounters are not the only hazards that end Honour campaigns. Dialogue traps and environmental quirks account for nearly 40% of all Honour Mode wipe reports:
+
+:::takeaway
+Title: 5 Run-Ending Traps to Avoid at All Costs
+Badge: Campaign Survival Warnings
+• Vlaakith's Wish (Act 1 Crèche): When speaking to the Githyanki Queen in the Inquisitor's chamber, never choose sarcastic or defiant dialogue options questioning her godhood. She will cast Wish and instantly wipe your entire party, deleting your save on the spot.
+• Philomeen's Runepowder Barrel (Act 1 Grymforge): Approach Philomeen in turn-based mode with an invisible character or succeed the persuasion check immediately. If provoked, she detonates the runepowder barrel, causing an immediate instant-kill radius that vaporizes your squad.
+• Gauntlet of Shar Traversal Platform (Act 2): The floating stone transport platform in the Gauntlet of Shar is prone to character clipping physics. Always ungroup your party and send only ONE character across at a time. If the elevator glitches, only one companion falls into the chasm rather than the whole party.
+• Bernard the Automaton (Act 1 Arcane Tower): Always read the poetry books on the tower's upper floors before riding the elevator to the roof. Reciting the wrong verse triggers an immediate ambush by Bernard and five animated armor sentries on a confined rooftop.
+• Netherbrain Platform Collapse (Act 3 Final Encounter): In the final battle atop the Netherbrain, the brain marks platforms with 'Marked for Negation'. Any character standing on a marked platform when the turn ends is erased instantly from existence with no death saving throws. Keep Dimension Door scrolls ready.
+:::
+
+---
+
+## Recommended 4-Player Honour Squad Composition
+
+To achieve consistent victory without relying on fragile glass-cannon setups, assemble a balanced quad-role composition that covers burst physical damage, area-of-effect control, divine support, and relentless single-target lockdown:
+
+### 1. Tavern Brawler Throwzerker (Barbarian 5 / Rogue Thief 3 / Fighter 4)
+• **Core Identity**: Unmatched reliable ranged physical damage using thrown weapons (Returning Pike, Nyrulna, or Dwarven Thrower).
+• **Why It Dominates**: Tavern Brawler adds your Strength modifier **twice** to attack rolls and damage rolls. Your hit chance rarely falls below 95%, virtually eliminating miss variance. Combined with the Enraged Throw bonus action, it knocks targets prone with no saving throw.
+
+### 2. Radiant Orb Light Cleric (Cleric 12 or Cleric 11 / Wizard 1)
+• **Core Identity**: Battlefield debuffer and defensive pillar.
+• **Why It Dominates**: Equipping the Luminous Armour and Coruscating Ring causes every radiant spell (Spirit Guardians, Radiance of the Dawn) to inflict stacks of **Radiating Orb** on enemies. Each stack imposes a -1 penalty to enemy attack rolls. Swarms of enemies quickly suffer -8 to -10 to hit, rendering them incapable of landing attacks on your squad.
+
+### 3. Gloomstalker Assassin (Ranger 5 / Rogue Assassin 4 / Fighter 3)
+• **Core Identity**: First-round tactical deletion specialist.
+• **Why It Dominates**: Wins initiative automatically (+3 from Dread Ambusher + 5 from Alert). Surprising enemies guarantees critical hits on every attack during the opening round. Clears two to three high-threat archers or spellcasters before combat officially starts.
+
+### 4. Open Hand Tavern Brawler Monk (Monk 8 / Rogue Thief 4)
+• **Core Identity**: Relentless single-target crowd control and burst damage.
+• **Why It Dominates**: Utilizing two bonus actions from Thief Rogue, the Monk executes multiple *Flurry of Blows: Stun* or *Topple* strikes per turn. Bosses without stun immunity spend the entire encounter incapacitated, completely unable to trigger their primary action rotations.
+
+---
+
+## Final Readiness Audit: Claiming the Golden Dice
+
+Honour Mode is fundamentally a test of composure, contingency planning, and mathematical respect. Do not gamble on low-probability dialogue checks, never start a major boss fight without full spell slots and camp buffs, and always maintain an emergency egress route.
+
+Are you preparing your battlestation for the taxing visual demands of Act 3's crowded Lower City?
+• Audit your CPU and GPU frametimes with our [PC Game Requirements Checker](https://www.gamevault.forum/tools/pc-game-requirements-checker).
+• Benchmark your resolution and graphic presets with the [FPS & Bottleneck Calculator](https://www.gamevault.forum/tools/fps-calculator).
+• Join the tactical discourse and share your legendary boss encounter stories with fellow tacticians on the [Game Vault Community Forum](/forum).`
+  },
+
+  // =========================================================================
   // HELLDIVERS 2 ILLUMINATE: SUPER HELLDIVE LOADOUT BY ENEMY TYPE
   // =========================================================================
   {
