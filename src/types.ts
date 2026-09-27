@@ -146,6 +146,9 @@ export interface Article {
   comments?: ArticleComment[];
   relatedArticleId?: string;
   relatedArticlePrompt?: string;
+  pdfUrl?: string;
+  pdfFileName?: string;
+  pdfFileSize?: string;
 }
 
 export interface PostComment {

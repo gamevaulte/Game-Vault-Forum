@@ -63,6 +63,10 @@ Official Headquarters & Community: Game Vault Forum Global Gaming Network
   * Full interactive privileges: Start new forum discussions (/forum/new), post replies, leave comments on articles and videos, like content, bookmark guides to their private profile, earn reputation badges, and enjoy unlimited Vault AI queries with synchronized conversation history.
 
 3. EDITORIAL ARTICLES, REVIEWS & GUIDES IN THE VAULT:
+- Article: "Cloud Gaming: Latency vs. Bandwidth – Why Your 1 Gbps Fiber Still Feels Sluggish" (/articles/cloud-gaming-latency-vs-bandwidth, ID 'cloud-gaming-latency-vs-bandwidth')
+  * In-depth engineering whitepaper on bufferbloat, network jitter, 7-hop input-to-photon latency budget, GeForce NOW vs xCloud vs PS Plus, and official PDF download.
+- Article: "High FPS But Still Stuttering: How to Fix Frametime Spikes and 0.1% Lows" (/articles/high-fps-still-stuttering-frametime-0-1-lows, ID 'high-fps-still-stuttering-frametime-0-1-lows')
+  * 7-step optimization guide for frametime consistency, shader cache expansion, VRR G-Sync golden rule, and Unreal Engine 5 stutter fixes.
 - Article: "Helldivers 2 Illuminate: A Super Helldive Loadout by Enemy Type" (/articles/helldivers-2-illuminate-super-helldive-loadout-by-enemy-type)
   * Breakdown: Coverage-first doctrine against Voteless, Watchers, Elevated Overseers, Harvesters, Crushers, and Wretches.
   * Recommended setup: Primary LAS-16 Sickle or stagger shotgun; Secondary P-40-K Bolt Pistol; Support StA-X3 W.A.S.P. Launcher; Backpack Guard Dog Rover; Offensive Stratagems: Orbital Railcannon Strike & Eagle Airstrike.
@@ -640,6 +644,9 @@ ${JSON.stringify(calendarContext, null, 2)}`;
       return res.status(500).json({ valid: false, error: 'Internal validation error.' });
     }
   });
+
+  // Serve static files from public directory (images, pdfs, documents, icons)
+  app.use(express.static(path.join(process.cwd(), 'public')));
 
   // SEO & Googlebot Pre-Rendering Middleware for Articles & Authors
   app.use((req, res, next) => {

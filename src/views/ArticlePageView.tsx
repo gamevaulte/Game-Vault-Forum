@@ -29,7 +29,9 @@ import {
   Zap,
   Flame,
   Info,
-  CornerDownRight
+  CornerDownRight,
+  FileText,
+  Download
 } from 'lucide-react';
 import { Article, PostComment, UserAccount, PageTab } from '../types';
 import { AdBanner } from '../components/AdBanner';
@@ -768,6 +770,53 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
           "{article.excerpt}"
         </p>
       </div>
+
+      {/* Attached Technical Document / PDF Whitepaper Banner */}
+      {article.pdfUrl && (
+        <div className="p-5 sm:p-6 rounded-2xl bg-gradient-to-r from-cyan-950/40 via-purple-950/30 to-[#0a0d18] border border-cyan-500/30 shadow-2xl relative overflow-hidden backdrop-blur-md">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex items-start sm:items-center gap-3.5">
+              <div className="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center shrink-0 text-cyan-400 shadow-lg shadow-cyan-950/50">
+                <FileText className="w-6 h-6" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h3 className="text-base sm:text-lg font-bold font-['Space_Grotesk'] text-white">
+                    Attached Technical Whitepaper (PDF)
+                  </h3>
+                  <span className="px-2 py-0.5 text-[10px] font-mono font-bold uppercase tracking-wider rounded bg-cyan-950/70 border border-cyan-500/40 text-cyan-300">
+                    {article.pdfFileSize || 'PDF Document'}
+                  </span>
+                </div>
+                <p className="text-xs sm:text-sm text-slate-300 mt-0.5">
+                  Complete offline engineering guide with latency budgets, hardware decode tables, and network checklists.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2.5 w-full sm:w-auto shrink-0">
+              <a
+                href={article.pdfUrl}
+                download={article.pdfFileName || 'gamevault-technical-guide.pdf'}
+                className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-black font-bold font-['Rajdhani'] uppercase tracking-wider text-xs sm:text-sm transition-all shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 cursor-pointer"
+              >
+                <Download className="w-4 h-4" />
+                <span>Download PDF</span>
+              </a>
+              <a
+                href={article.pdfUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 hover:text-white font-medium text-xs sm:text-sm transition-colors cursor-pointer"
+                title="View PDF in new tab"
+              >
+                <ExternalLink className="w-4 h-4" />
+                <span className="hidden sm:inline">Open</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Structured Article Markdown Body */}
       <div className="space-y-6 text-base sm:text-lg leading-relaxed font-['Inter'] text-gray-300">

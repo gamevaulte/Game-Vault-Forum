@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Calendar, Clock, ThumbsUp, Bookmark, Share2, Tag, BookOpen, Sparkles, CheckCircle2, Cpu, ShieldCheck } from 'lucide-react';
+import { X, Calendar, Clock, ThumbsUp, Bookmark, Share2, Tag, BookOpen, Sparkles, CheckCircle2, Cpu, ShieldCheck, FileText, Download, ExternalLink } from 'lucide-react';
 import { Article } from '../types';
 
 interface ArticleModalProps {
@@ -125,6 +125,44 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
           <p className="text-base sm:text-lg text-purple-200/90 font-medium leading-relaxed font-['Space_Grotesk'] italic pl-4 border-l-2 border-purple-500">
             {article.excerpt}
           </p>
+
+          {/* Attached PDF Whitepaper Banner */}
+          {article.pdfUrl && (
+            <div className="p-4 sm:p-5 rounded-xl bg-gradient-to-r from-cyan-950/40 via-[#0e1324] to-[#0a0d18] border border-cyan-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-lg">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 shrink-0">
+                  <FileText className="w-5 h-5" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-bold text-white font-['Space_Grotesk']">
+                    Attached Technical Whitepaper (PDF)
+                  </h4>
+                  <p className="text-xs text-slate-300">
+                    {article.pdfFileSize || 'Official Engineering Document (PDF)'}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 w-full sm:w-auto">
+                <a
+                  href={article.pdfUrl}
+                  download={article.pdfFileName || 'gamevault-guide.pdf'}
+                  className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-black font-bold text-xs font-['Rajdhani'] uppercase tracking-wider transition-all shadow-md cursor-pointer"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  <span>Download PDF</span>
+                </a>
+                <a
+                  href={article.pdfUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-1 px-2.5 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 hover:text-white text-xs transition-colors cursor-pointer"
+                >
+                  <ExternalLink className="w-3.5 h-3.5" />
+                  <span>Open</span>
+                </a>
+              </div>
+            </div>
+          )}
 
           {/* Full content */}
           <div className="space-y-4 text-sm sm:text-base leading-relaxed font-['Inter']">
