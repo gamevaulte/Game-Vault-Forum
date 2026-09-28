@@ -126,6 +126,7 @@ export const AuthProfileModal: React.FC<AuthProfileModalProps> = ({
   const [saveError, setSaveError] = useState<string | null>(null);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [savedAvatars, setSavedAvatars] = useState<SavedAvatar[]>([]);
+  const [testingNotificationId, setTestingNotificationId] = useState<string | null>(null);
 
   // Sync tab with initialTab prop when modal opens
   useEffect(() => {
@@ -335,8 +336,6 @@ export const AuthProfileModal: React.FC<AuthProfileModalProps> = ({
   }).filter((e): e is { id: string; timing: 'day_of' | 'day_before' | 'week_before'; game: GameRelease } => Boolean(e.game));
 
   const totalReleasesTracked = watchlistedGames.length + remindedEntries.length;
-
-  const [testingNotificationId, setTestingNotificationId] = useState<string | null>(null);
 
   const handleTestNotification = (release: GameRelease, timing: 'day_of' | 'day_before' | 'week_before') => {
     setTestingNotificationId(release.id);

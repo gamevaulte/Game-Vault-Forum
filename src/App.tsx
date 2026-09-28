@@ -2278,55 +2278,57 @@ export default function App() {
       </Suspense>
 
       {/* Community Profile & Bookmarks Modal */}
-      <AuthProfileModal
-        isOpen={isProfileOpen || route.type === 'profile'}
-        onClose={() => {
-          setIsProfileOpen(false);
-          if (route.type === 'profile') {
-            navigate('/');
-          }
-        }}
-        user={user}
-        videos={MOCK_VIDEOS}
-        games={MOCK_GAMES}
-        articles={MOCK_ARTICLES}
-        reviews={MOCK_REVIEWS}
-        guides={MOCK_GUIDES}
-        onSelectVideo={(v) => {
-          setIsProfileOpen(false);
-          navigate(`/videos/${getSeoSlug(v)}`);
-        }}
-        onSelectGame={(g) => {
-          setIsProfileOpen(false);
-          navigate(`/games/${getSeoSlug(g)}`);
-        }}
-        onSelectArticle={(a) => {
-          setIsProfileOpen(false);
-          navigate(`/articles/${getSeoSlug(a)}`);
-        }}
-        onSelectReview={(r) => {
-          setIsProfileOpen(false);
-          navigate(`/reviews/${getSeoSlug({ id: r.id, title: `${r.gameTitle} review` })}`);
-        }}
-        onSelectGuide={(g) => {
-          setIsProfileOpen(false);
-          navigate(`/guides/${getSeoSlug(g)}`);
-        }}
-        onSignOut={handleSignOut}
-        onUpdateProfile={handleUpdateProfile}
-        initialTab={profileInitialTab}
-        onNavigateToAvatarGenerator={() => {
-          setIsProfileOpen(false);
-          navigate('/game-avatar-generator');
-        }}
-        onNavigateToCalendar={(gameSlug) => {
-          setIsProfileOpen(false);
-          navigate(gameSlug ? `/game-release-calendar?game=${encodeURIComponent(gameSlug)}` : '/game-release-calendar');
-        }}
-        onRemoveFromWatchlist={handleRemoveFromWatchlist}
-        onRemoveReminder={handleRemoveReminder}
-        onShowToast={(msg, type) => addToast(msg, type === 'alert' ? 'error' : type)}
-      />
+      {(isProfileOpen || route.type === 'profile') && (
+        <AuthProfileModal
+          isOpen={true}
+          onClose={() => {
+            setIsProfileOpen(false);
+            if (route.type === 'profile') {
+              navigate('/');
+            }
+          }}
+          user={user}
+          videos={MOCK_VIDEOS}
+          games={MOCK_GAMES}
+          articles={MOCK_ARTICLES}
+          reviews={MOCK_REVIEWS}
+          guides={MOCK_GUIDES}
+          onSelectVideo={(v) => {
+            setIsProfileOpen(false);
+            navigate(`/videos/${getSeoSlug(v)}`);
+          }}
+          onSelectGame={(g) => {
+            setIsProfileOpen(false);
+            navigate(`/games/${getSeoSlug(g)}`);
+          }}
+          onSelectArticle={(a) => {
+            setIsProfileOpen(false);
+            navigate(`/articles/${getSeoSlug(a)}`);
+          }}
+          onSelectReview={(r) => {
+            setIsProfileOpen(false);
+            navigate(`/reviews/${getSeoSlug({ id: r.id, title: `${r.gameTitle} review` })}`);
+          }}
+          onSelectGuide={(g) => {
+            setIsProfileOpen(false);
+            navigate(`/guides/${getSeoSlug(g)}`);
+          }}
+          onSignOut={handleSignOut}
+          onUpdateProfile={handleUpdateProfile}
+          initialTab={profileInitialTab}
+          onNavigateToAvatarGenerator={() => {
+            setIsProfileOpen(false);
+            navigate('/game-avatar-generator');
+          }}
+          onNavigateToCalendar={(gameSlug) => {
+            setIsProfileOpen(false);
+            navigate(gameSlug ? `/game-release-calendar?game=${encodeURIComponent(gameSlug)}` : '/game-release-calendar');
+          }}
+          onRemoveFromWatchlist={handleRemoveFromWatchlist}
+          onRemoveReminder={handleRemoveReminder}
+          onShowToast={(msg, type) => addToast(msg, type === 'alert' ? 'error' : type)}
+        />
+      )}
 
       {/* Auth Modal: Prompted when guest attempts to like/comment, or after 60s timed visitor prompt */}
       {isAuthModalOpen && (
