@@ -45,6 +45,8 @@ import {
   getNotificationPermission 
 } from '../utils/notificationService';
 import { SavedAvatar } from '../types/avatar';
+import { normalizeUserAccount } from '../utils/userUtils';
+import { DEFAULT_USER } from '../data/mockData';
 import { 
   getContactSubmissionsFromFirestore, 
   getSubscribersFromFirestore, 
@@ -110,19 +112,30 @@ export const AuthProfileModal: React.FC<AuthProfileModalProps> = ({
   onRemoveReminder,
   onShowToast
 }) => {
+  const safeUser = normalizeUserAccount(user);
   const [activeTab, setActiveTab] = useState<'profile' | 'guidelines' | 'admin'>(initialTab);
-  const isAdmin = user.email === 'contact@gamevault.forum' || user.email === 'joelotis40@gmail.com' || user.role === 'admin';
+  const isAdmin = safeUser.email === 'contact@gamevault.forum' || safeUser.email === 'joelotis40@gmail.com' || safeUser.role === 'admin';
 
   // Profile Edit State
   const [isEditing, setIsEditing] = useState(false);
-  const [editName, setEditName] = useState(user.name);
-  const [editUsername, setEditUsername] = useState(user.username);
-  const [editAvatar, setEditAvatar] = useState(user.avatar);
-  const [editBio, setEditBio] = useState(user.bio || '');
+  const [editName, setEditName] = useState(safeUser.name);
+  const [editUsername, setEditUsername] = useState(safeUser.username);
+  const [editAvatar, setEditAvatar] = useState(safeUser.avatar);
+  const [editBio, setEditBio] = useState(safeUser.bio || '');
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [savedAvatars, setSavedAvatars] = useState<SavedAvatar[]>([]);
+
+  // Sync tab with initialTab prop when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      setActiveTab(initialTab || 'profile');
+      setIsEditing(false);
+      setSaveError(null);
+      setSaveSuccess(false);
+    }
+  }, [isOpen, initialTab]);
 
   // Load user saved avatars from local storage and Firestore when modal opens
   useEffect(() => {
@@ -136,8 +149,8 @@ export const AuthProfileModal: React.FC<AuthProfileModalProps> = ({
       }
       setSavedAvatars(localList);
 
-      if (user.id) {
-        getUserSavedAvatarsFromFirestore(user.id).then((cloudAvatars) => {
+      if (safeUser.id) {
+        getUserSavedAvatarsFromFirestore(safeUser.id).then((cloudAvatars) => {
           if (cloudAvatars && cloudAvatars.length > 0) {
             setSavedAvatars((prev) => {
               const map = new Map<string, SavedAvatar>();
@@ -150,14 +163,15 @@ export const AuthProfileModal: React.FC<AuthProfileModalProps> = ({
         });
       }
     }
-  }, [isOpen, user.id]);
+  }, [isOpen, safeUser.id]);
 
   // Sync edits when user prop changes
   useEffect(() => {
-    setEditName(user.name);
-    setEditUsername(user.username);
-    setEditAvatar(user.avatar);
-    setEditBio(user.bio || '');
+    const fresh = normalizeUserAccount(user);
+    setEditName(fresh.name);
+    setEditUsername(fresh.username);
+    setEditAvatar(fresh.avatar);
+    setEditBio(fresh.bio || '');
   }, [user]);
 
   // Admin Firestore state
@@ -250,9 +264,9 @@ export const AuthProfileModal: React.FC<AuthProfileModalProps> = ({
     if (e) e.preventDefault();
     const cleanName = editName.trim();
     let cleanUsername = editUsername.trim();
-    if (!cleanUsername) cleanUsername = user.username;
+    if (!cleanUsername) cleanUsername = safeUser.username;
     if (!cleanUsername.startsWith('@')) cleanUsername = `@${cleanUsername}`;
-    const cleanAvatar = editAvatar.trim() || user.avatar;
+    const cleanAvatar = editAvatar.trim() || safeUser.avatar;
     const cleanBio = editBio.trim();
 
     if (cleanName.length < 2) {
@@ -287,11 +301,11 @@ export const AuthProfileModal: React.FC<AuthProfileModalProps> = ({
 
   if (!isOpen) return null;
 
-  const bookmarkedVideos = videos.filter((v) => user.bookmarks.videos.includes(v.id));
-  const bookmarkedGames = games.filter((g) => user.bookmarks.games.includes(g.id));
-  const bookmarkedArticles = articles.filter((a) => user.bookmarks.articles.includes(a.id));
-  const bookmarkedReviews = reviews.filter((r) => user.bookmarks.reviews.includes(r.id));
-  const bookmarkedGuides = guides.filter((gd) => user.bookmarks.guides.includes(gd.id));
+  const bookmarkedVideos = (videos || []).filter((v) => v && (safeUser.bookmarks?.videos || []).includes(v.id));
+  const bookmarkedGames = (games || []).filter((g) => g && (safeUser.bookmarks?.games || []).includes(g.id));
+  const bookmarkedArticles = (articles || []).filter((a) => a && (safeUser.bookmarks?.articles || []).includes(a.id));
+  const bookmarkedReviews = (reviews || []).filter((r) => r && (safeUser.bookmarks?.reviews || []).includes(r.id));
+  const bookmarkedGuides = (guides || []).filter((gd) => gd && (safeUser.bookmarks?.guides || []).includes(gd.id));
 
   const totalSaved =
     bookmarkedVideos.length +
@@ -300,25 +314,25 @@ export const AuthProfileModal: React.FC<AuthProfileModalProps> = ({
     bookmarkedReviews.length +
     bookmarkedGuides.length;
 
-  const userLikes = user.stats?.likesCount ?? user.likedIds?.length ?? 0;
-  const userComments = user.stats?.commentsCount ?? 0;
-  const userSaves = user.stats?.savesCount ?? totalSaved;
-  const userTopics = user.stats?.topicsCount ?? 0;
-  const userRep = user.reputation ?? 0;
+  const userLikes = typeof safeUser.stats?.likesCount === 'number' ? safeUser.stats.likesCount : (safeUser.likedIds?.length ?? 0);
+  const userComments = typeof safeUser.stats?.commentsCount === 'number' ? safeUser.stats.commentsCount : 0;
+  const userSaves = typeof safeUser.stats?.savesCount === 'number' ? safeUser.stats.savesCount : totalSaved;
+  const userTopics = typeof safeUser.stats?.topicsCount === 'number' ? safeUser.stats.topicsCount : 0;
+  const userRep = typeof safeUser.reputation === 'number' ? safeUser.reputation : 0;
 
   // Release Watchlist & Reminders
-  const watchlistedIds = user.releaseWatchlist || [];
-  const watchlistedGames = GAME_RELEASES_DATABASE.filter((r) => watchlistedIds.includes(r.id));
+  const watchlistedIds = Array.isArray(safeUser.releaseWatchlist) ? safeUser.releaseWatchlist : [];
+  const watchlistedGames = (GAME_RELEASES_DATABASE || []).filter((r) => r && watchlistedIds.includes(r.id));
 
-  const reminderMap = user.releaseReminders || {};
+  const reminderMap = (safeUser.releaseReminders && typeof safeUser.releaseReminders === 'object' && !Array.isArray(safeUser.releaseReminders)) ? safeUser.releaseReminders : {};
   const remindedEntries = Object.entries(reminderMap).map(([id, timing]) => {
-    const game = GAME_RELEASES_DATABASE.find((r) => r.id === id);
+    const game = (GAME_RELEASES_DATABASE || []).find((r) => r && r.id === id);
     return {
       id,
       timing: timing as 'day_of' | 'day_before' | 'week_before',
       game
     };
-  }).filter((e): e is { id: string; timing: 'day_of' | 'day_before' | 'week_before'; game: GameRelease } => e.game != null);
+  }).filter((e): e is { id: string; timing: 'day_of' | 'day_before' | 'week_before'; game: GameRelease } => Boolean(e.game));
 
   const totalReleasesTracked = watchlistedGames.length + remindedEntries.length;
 
@@ -422,12 +436,12 @@ export const AuthProfileModal: React.FC<AuthProfileModalProps> = ({
                       {/* Avatar Preview */}
                       <div className="relative group shrink-0">
                         <img
-                          src={editAvatar || user.avatar}
+                          src={editAvatar || safeUser.avatar}
                           alt={editName || 'Preview'}
                           className="w-20 h-20 rounded-2xl object-cover border-2 border-purple-500 shadow-lg shadow-purple-950/60 bg-black/40"
                           onError={(e) => {
                             // Fallback if broken URL entered
-                            (e.target as HTMLImageElement).src = user.avatar;
+                            (e.target as HTMLImageElement).src = safeUser.avatar || DEFAULT_USER.avatar;
                           }}
                         />
                         <div className="absolute inset-0 rounded-2xl bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
@@ -646,10 +660,10 @@ export const AuthProfileModal: React.FC<AuthProfileModalProps> = ({
                       type="button"
                       onClick={() => {
                         setIsEditing(false);
-                        setEditName(user.name);
-                        setEditUsername(user.username);
-                        setEditAvatar(user.avatar);
-                        setEditBio(user.bio || '');
+                        setEditName(safeUser.name);
+                        setEditUsername(safeUser.username);
+                        setEditAvatar(safeUser.avatar);
+                        setEditBio(safeUser.bio || '');
                         setSaveError(null);
                       }}
                       disabled={isSaving}
@@ -679,29 +693,32 @@ export const AuthProfileModal: React.FC<AuthProfileModalProps> = ({
               ) : (
                 <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 p-5 rounded-2xl bg-[#131625] border border-[#232942]">
                   <img
-                    src={user.avatar}
-                    alt={user.name}
+                    src={safeUser.avatar}
+                    alt={safeUser.name}
                     className="w-16 h-16 rounded-xl object-cover border-2 border-purple-500/60 shadow-lg shadow-purple-950/50"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = DEFAULT_USER.avatar;
+                    }}
                   />
                   <div className="space-y-1 text-center sm:text-left flex-1 min-w-0">
                     <div className="flex flex-col sm:flex-row sm:items-center gap-2">
                       <h2 className="text-xl font-['Space_Grotesk'] font-bold text-white truncate">
-                        {user.name}
+                        {safeUser.name}
                       </h2>
                       <span className="text-xs font-mono text-purple-400 bg-purple-950/70 px-2 py-0.5 rounded border border-purple-800/40 w-fit mx-auto sm:mx-0">
-                        {user.badge}
+                        {safeUser.badge}
                       </span>
                     </div>
-                    <p className="text-xs text-slate-400 font-mono truncate">{user.username} • Joined {user.joinDate}</p>
-                    {user.bio && (
+                    <p className="text-xs text-slate-400 font-mono truncate">{safeUser.username} • Joined {safeUser.joinDate}</p>
+                    {safeUser.bio && (
                       <p className="text-xs text-slate-300 italic pt-0.5 pb-0.5 max-w-lg leading-relaxed break-words">
-                        "{user.bio}"
+                        "{safeUser.bio}"
                       </p>
                     )}
-                    {user.email && (
+                    {safeUser.email && (
                       <p className="text-xs text-purple-300 font-mono flex items-center gap-1.5 justify-center sm:justify-start">
                         <Mail className="w-3.5 h-3.5 text-purple-400" />
-                        {user.email}
+                        {safeUser.email}
                       </p>
                     )}
 
@@ -1068,7 +1085,7 @@ export const AuthProfileModal: React.FC<AuthProfileModalProps> = ({
                               <p className="text-[11px] text-slate-400 flex items-center gap-2">
                                 <span className="text-purple-300 font-medium">{game.releaseDateDisplay}</span>
                                 <span>•</span>
-                                <span className="text-slate-500">{game.platforms.slice(0, 3).join(', ')}</span>
+                                <span className="text-slate-500">{(game.platforms || []).slice(0, 3).join(', ')}</span>
                               </p>
                               <div className="mt-1 flex items-center gap-2">
                                 <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-600/20 text-purple-300 border border-purple-500/30">
@@ -1232,7 +1249,7 @@ export const AuthProfileModal: React.FC<AuthProfileModalProps> = ({
                             </a>
                           </div>
                           <span className="text-[11px] text-slate-500 font-mono">
-                            {new Date(item.createdAt).toLocaleString()}
+                            {item.createdAt ? new Date(item.createdAt).toLocaleString() : 'Recent'}
                           </span>
                         </div>
 
@@ -1296,7 +1313,7 @@ export const AuthProfileModal: React.FC<AuthProfileModalProps> = ({
                             </div>
                           </div>
                           <span className="text-[11px] text-slate-500 font-mono">
-                            {new Date(sub.subscribedAt).toLocaleDateString()}
+                            {sub.subscribedAt ? new Date(sub.subscribedAt).toLocaleDateString() : 'Recent'}
                           </span>
                         </div>
                       ))}

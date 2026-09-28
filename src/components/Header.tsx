@@ -616,14 +616,17 @@ export const Header: React.FC<HeaderProps> = ({
                 id="header-profile-btn"
                 onClick={onOpenProfile}
                 className="flex items-center justify-center h-9 sm:h-9.5 w-9 sm:w-9.5 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 rounded-lg text-gray-200 backdrop-blur-md transition-all cursor-pointer shrink-0"
-                title={`Your Vault Profile (${user.name})`}
-                aria-label={`Your Vault Profile (${user.name})`}
+                title={`Your Vault Profile (${user?.name || 'Operative'})`}
+                aria-label={`Your Vault Profile (${user?.name || 'Operative'})`}
               >
-                {user.avatar ? (
+                {user?.avatar ? (
                   <img
                     src={user.avatar}
-                    alt={user.name}
+                    alt={user.name || 'Operative'}
                     className="w-6 h-6 rounded-md object-cover border border-purple-500/50 shrink-0"
+                    onError={(e) => {
+                      (e.currentTarget as HTMLImageElement).src = 'https://images.unsplash.com/photo-1566492031773-4f4e44671857?w=150&auto=format&fit=crop&q=80';
+                    }}
                   />
                 ) : (
                   <User className="w-4 h-4 text-purple-400 shrink-0" />
@@ -843,8 +846,15 @@ export const Header: React.FC<HeaderProps> = ({
                     }}
                     className="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-white/5 text-gray-200 rounded-xl text-xs font-medium border border-white/10 cursor-pointer"
                   >
-                    <img src={user.avatar} alt={user.name} className="w-5 h-5 rounded-md object-cover border border-purple-500/50" />
-                    <span>{user.name} (Vault Profile)</span>
+                    <img 
+                      src={user?.avatar || 'https://images.unsplash.com/photo-1566492031773-4f4e44671857?w=150&auto=format&fit=crop&q=80'} 
+                      alt={user?.name || 'Operative'} 
+                      className="w-5 h-5 rounded-md object-cover border border-purple-500/50"
+                      onError={(e) => {
+                        (e.currentTarget as HTMLImageElement).src = 'https://images.unsplash.com/photo-1566492031773-4f4e44671857?w=150&auto=format&fit=crop&q=80';
+                      }}
+                    />
+                    <span>{user?.name || 'Vault Operative'} (Vault Profile)</span>
                   </button>
                   {onSignOut && (
                     <button

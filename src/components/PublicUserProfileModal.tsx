@@ -52,7 +52,8 @@ export const PublicUserProfileModal: React.FC<PublicUserProfileModalProps> = ({
   if (!isOpen || !profile) return null;
 
   // Format username with leading @
-  const rawUsername = profile.username || profile.name.toLowerCase().replace(/\s+/g, '_');
+  const safeName = profile.name || 'Vault Operative';
+  const rawUsername = profile.username || safeName.toLowerCase().replace(/\s+/g, '_');
   const formattedUsername = rawUsername.startsWith('@') ? rawUsername : `@${rawUsername}`;
 
   // Role and badge

@@ -66,7 +66,8 @@ const GamingSectionView = lazy(() => import('./views/GamingSectionView').then(m 
 
 // Interactive Secondary Modals
 const GlobalSearchModal = lazy(() => import('./components/GlobalSearchModal').then(m => ({ default: m.GlobalSearchModal })));
-const AuthProfileModal = lazy(() => import('./components/AuthProfileModal').then(m => ({ default: m.AuthProfileModal })));
+import { AuthProfileModal } from './components/AuthProfileModal';
+import { normalizeUserAccount } from './utils/userUtils';
 const ShareModal = lazy(() => import('./components/ShareModal').then(m => ({ default: m.ShareModal })));
 const EmailSubscribeModal = lazy(() => import('./components/EmailSubscribeModal').then(m => ({ default: m.EmailSubscribeModal })));
 const PublicUserProfileModal = lazy(() => import('./components/PublicUserProfileModal').then(m => ({ default: m.PublicUserProfileModal })));
@@ -145,12 +146,12 @@ export default function App() {
     const saved = localStorage.getItem('gv_forum_user_v2');
     if (saved) {
       try {
-        return JSON.parse(saved);
+        return normalizeUserAccount(JSON.parse(saved));
       } catch (e) {
         console.error('Failed to parse saved user', e);
       }
     }
-    return DEFAULT_USER;
+    return normalizeUserAccount(DEFAULT_USER);
   });
 
   // Post Likes Map: itemId -> like count (starts at 0)
@@ -229,99 +230,101 @@ export default function App() {
 
   // Synchronize with Firebase Auth
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (fbUser) => {
-      setFirebaseUser(fbUser);
+    // Safety fallback: Never allow auth loading to indefinitely hang the application
+    const authTimeout = setTimeout(() => {
       setAuthLoading(false);
+    }, 1200);
 
-      if (fbUser) {
-        // Optimistic fast local sync
-        setUser((prev) => ({
-          ...prev,
-          id: fbUser.uid,
-          name: fbUser.displayName || fbUser.email?.split('@')[0] || 'Vault Operative',
-          username: `@${(fbUser.displayName || fbUser.email?.split('@')[0] || 'operative').toLowerCase().replace(/[^a-z0-9]/g, '_')}`,
-          email: fbUser.email || undefined,
-          avatar: fbUser.photoURL || prev.avatar || DEFAULT_USER.avatar
-        }));
+    const unsubscribe = onAuthStateChanged(
+      auth,
+      (fbUser) => {
+        clearTimeout(authTimeout);
+        setFirebaseUser(fbUser);
+        setAuthLoading(false);
 
-        // Fetch authoritative profile from Firestore collection 'Users'
-        getUserFromFirestore(fbUser.uid)
-          .then((firestoreRecord) => {
-            if (firestoreRecord) {
-              setUser((prev) => ({
-                ...prev,
-                id: firestoreRecord.uid,
-                name: firestoreRecord.displayName || prev.name,
-                username: firestoreRecord.username || prev.username,
-                email: firestoreRecord.email || prev.email,
-                avatar: firestoreRecord.photoURL || prev.avatar,
-                bio: firestoreRecord.bio || prev.bio,
-                badge: firestoreRecord.badge || prev.badge,
-                level: firestoreRecord.level || prev.level,
-                reputation: firestoreRecord.reputation ?? 0,
-                bookmarks: firestoreRecord.bookmarks || {
-                  videos: [],
-                  games: [],
-                  articles: [],
-                  reviews: [],
-                  guides: [],
-                  topics: []
-                },
-                releaseWatchlist: firestoreRecord.releaseWatchlist || [],
-                releaseReminders: firestoreRecord.releaseReminders || {},
-                stats: firestoreRecord.stats || {
-                  likesCount: 0,
-                  commentsCount: 0,
-                  savesCount: 0,
-                  topicsCount: 0
-                }
-              }));
-            } else {
-              // Ensure doc exists in Firestore 'Users' if created externally
-              addRegisteredUserToFirestore({
-                uid: fbUser.uid,
-                email: fbUser.email || '',
-                displayName: fbUser.displayName,
-                photoURL: fbUser.photoURL,
-                emailVerified: fbUser.emailVerified
-              }).then((createdRecord) => {
-                if (createdRecord) {
-                  setUser((prev) => ({
-                    ...prev,
-                    id: createdRecord.uid,
-                    name: createdRecord.displayName || prev.name,
-                    username: createdRecord.username || prev.username,
-                    email: createdRecord.email || prev.email,
-                    avatar: createdRecord.photoURL || prev.avatar,
-                    bio: createdRecord.bio || prev.bio,
-                    badge: createdRecord.badge || prev.badge,
-                    level: createdRecord.level || prev.level,
-                    reputation: createdRecord.reputation ?? 0,
-                    releaseWatchlist: createdRecord.releaseWatchlist || [],
-                    releaseReminders: createdRecord.releaseReminders || {}
-                  }));
-                }
-              });
+        if (fbUser) {
+          // Optimistic fast local sync
+          setUser((prev) => normalizeUserAccount({
+            ...prev,
+            id: fbUser.uid,
+            name: fbUser.displayName || fbUser.email?.split('@')[0] || 'Vault Operative',
+            username: `@${(fbUser.displayName || fbUser.email?.split('@')[0] || 'operative').toLowerCase().replace(/[^a-z0-9]/g, '_')}`,
+            email: fbUser.email || undefined,
+            avatar: fbUser.photoURL || prev.avatar || DEFAULT_USER.avatar
+          }));
+
+          // Fetch authoritative profile from Firestore collection 'Users'
+          getUserFromFirestore(fbUser.uid)
+            .then((firestoreRecord) => {
+              if (firestoreRecord) {
+                setUser((prev) => normalizeUserAccount({
+                  ...prev,
+                  id: firestoreRecord.uid,
+                  name: firestoreRecord.displayName || prev.name,
+                  username: firestoreRecord.username || prev.username,
+                  email: firestoreRecord.email || prev.email,
+                  avatar: firestoreRecord.photoURL || prev.avatar,
+                  bio: firestoreRecord.bio || prev.bio,
+                  badge: firestoreRecord.badge || prev.badge,
+                  level: firestoreRecord.level || prev.level,
+                  reputation: firestoreRecord.reputation ?? 0,
+                  bookmarks: firestoreRecord.bookmarks,
+                  releaseWatchlist: firestoreRecord.releaseWatchlist,
+                  releaseReminders: firestoreRecord.releaseReminders,
+                  stats: firestoreRecord.stats
+                }));
+              } else {
+                // Ensure doc exists in Firestore 'Users' if created externally
+                addRegisteredUserToFirestore({
+                  uid: fbUser.uid,
+                  email: fbUser.email || '',
+                  displayName: fbUser.displayName,
+                  photoURL: fbUser.photoURL,
+                  emailVerified: fbUser.emailVerified
+                }).then((createdRecord) => {
+                  if (createdRecord) {
+                    setUser((prev) => normalizeUserAccount({
+                      ...prev,
+                      id: createdRecord.uid,
+                      name: createdRecord.displayName || prev.name,
+                      username: createdRecord.username || prev.username,
+                      email: createdRecord.email || prev.email,
+                      avatar: createdRecord.photoURL || prev.avatar,
+                      bio: createdRecord.bio || prev.bio,
+                      badge: createdRecord.badge || prev.badge,
+                      level: createdRecord.level || prev.level,
+                      reputation: createdRecord.reputation ?? 0,
+                      releaseWatchlist: createdRecord.releaseWatchlist,
+                      releaseReminders: createdRecord.releaseReminders
+                    }));
+                  }
+                });
+              }
+            })
+            .catch((err) => {
+              console.warn('Firestore user profile sync warning:', err);
+            });
+
+          // Load liked posts for this user
+          const savedLikes = localStorage.getItem(`gv_user_liked_${fbUser.uid}`);
+          if (savedLikes) {
+            try {
+              setUserLikedSet(new Set(JSON.parse(savedLikes)));
+            } catch (e) {
+              setUserLikedSet(new Set());
             }
-          })
-          .catch((err) => {
-            console.warn('Firestore user profile sync warning:', err);
-          });
-
-        // Load liked posts for this user
-        const savedLikes = localStorage.getItem(`gv_user_liked_${fbUser.uid}`);
-        if (savedLikes) {
-          try {
-            setUserLikedSet(new Set(JSON.parse(savedLikes)));
-          } catch (e) {
-            setUserLikedSet(new Set());
           }
+        } else {
+          setUser(normalizeUserAccount(DEFAULT_USER));
+          setUserLikedSet(new Set());
         }
-      } else {
-        setUser(DEFAULT_USER);
-        setUserLikedSet(new Set());
+      },
+      (error) => {
+        clearTimeout(authTimeout);
+        console.warn('Firebase onAuthStateChanged error caught gracefully:', error);
+        setAuthLoading(false);
       }
-    });
+    );
 
     const handleOpenAuth = () => {
       setAuthPromptMessage('Sign in or register to get unlimited queries and unlock full community perks.');
@@ -330,8 +333,26 @@ export default function App() {
     window.addEventListener('gv-open-auth-modal', handleOpenAuth);
 
     return () => {
+      clearTimeout(authTimeout);
       unsubscribe();
       window.removeEventListener('gv-open-auth-modal', handleOpenAuth);
+    };
+  }, []);
+
+  // Dormant Tab Recovery: clear reload markers when tab wakes from dormant sleep
+  useEffect(() => {
+    const handleAwaken = () => {
+      if (document.visibilityState === 'visible') {
+        try {
+          sessionStorage.removeItem('gv_chunk_retry_ts');
+        } catch (_) {}
+      }
+    };
+    document.addEventListener('visibilitychange', handleAwaken);
+    window.addEventListener('focus', handleAwaken);
+    return () => {
+      document.removeEventListener('visibilitychange', handleAwaken);
+      window.removeEventListener('focus', handleAwaken);
     };
   }, []);
 
@@ -552,13 +573,13 @@ export default function App() {
 
     // 1. Update React User State & Local Storage
     setUser((prev) => {
-      const updated: UserAccount = {
+      const updated: UserAccount = normalizeUserAccount({
         ...prev,
         name: cleanName,
         username: cleanUsername,
         avatar: cleanAvatar,
         bio: cleanBio
-      };
+      });
       try {
         localStorage.setItem('gv_forum_user_v2', JSON.stringify(updated));
       } catch {}
@@ -617,7 +638,7 @@ export default function App() {
     try {
       await signOut(auth);
       setFirebaseUser(null);
-      setUser(DEFAULT_USER);
+      setUser(normalizeUserAccount(DEFAULT_USER));
       setUserLikedSet(new Set());
       addToast('Signed out of Game Vault.', 'info');
     } catch (err) {
@@ -1452,8 +1473,8 @@ export default function App() {
     }
   };
 
-  // Initial Auth Loading Screen
-  if (authLoading) {
+  // Initial Auth Loading Screen: Only block when navigating directly to auth-specific routes (/login, /register)
+  if (authLoading && (route.type === 'login' || route.type === 'register')) {
     return (
       <div className="min-h-screen bg-[#050507] flex flex-col items-center justify-center p-4 text-white font-sans">
         <div className="relative w-16 h-16 mb-4 flex items-center justify-center">
@@ -2257,57 +2278,55 @@ export default function App() {
       </Suspense>
 
       {/* Community Profile & Bookmarks Modal */}
-      <Suspense fallback={null}>
-        <AuthProfileModal
-          isOpen={isProfileOpen || route.type === 'profile'}
-          onClose={() => {
-            setIsProfileOpen(false);
-            if (route.type === 'profile') {
-              navigate('/');
-            }
-          }}
-          user={user}
-          videos={MOCK_VIDEOS}
-          games={MOCK_GAMES}
-          articles={MOCK_ARTICLES}
-          reviews={MOCK_REVIEWS}
-          guides={MOCK_GUIDES}
-          onSelectVideo={(v) => {
-            setIsProfileOpen(false);
-            navigate(`/videos/${getSeoSlug(v)}`);
-          }}
-          onSelectGame={(g) => {
-            setIsProfileOpen(false);
-            navigate(`/games/${getSeoSlug(g)}`);
-          }}
-          onSelectArticle={(a) => {
-            setIsProfileOpen(false);
-            navigate(`/articles/${getSeoSlug(a)}`);
-          }}
-          onSelectReview={(r) => {
-            setIsProfileOpen(false);
-            navigate(`/reviews/${getSeoSlug({ id: r.id, title: `${r.gameTitle} review` })}`);
-          }}
-          onSelectGuide={(g) => {
-            setIsProfileOpen(false);
-            navigate(`/guides/${getSeoSlug(g)}`);
-          }}
-          onSignOut={handleSignOut}
-          onUpdateProfile={handleUpdateProfile}
-          initialTab={profileInitialTab}
-          onNavigateToAvatarGenerator={() => {
-            setIsProfileOpen(false);
-            navigate('/game-avatar-generator');
-          }}
-          onNavigateToCalendar={(gameSlug) => {
-            setIsProfileOpen(false);
-            navigate(gameSlug ? `/game-release-calendar?game=${encodeURIComponent(gameSlug)}` : '/game-release-calendar');
-          }}
-          onRemoveFromWatchlist={handleRemoveFromWatchlist}
-          onRemoveReminder={handleRemoveReminder}
-          onShowToast={(msg, type) => addToast(msg, type === 'alert' ? 'error' : type)}
-        />
-      </Suspense>
+      <AuthProfileModal
+        isOpen={isProfileOpen || route.type === 'profile'}
+        onClose={() => {
+          setIsProfileOpen(false);
+          if (route.type === 'profile') {
+            navigate('/');
+          }
+        }}
+        user={user}
+        videos={MOCK_VIDEOS}
+        games={MOCK_GAMES}
+        articles={MOCK_ARTICLES}
+        reviews={MOCK_REVIEWS}
+        guides={MOCK_GUIDES}
+        onSelectVideo={(v) => {
+          setIsProfileOpen(false);
+          navigate(`/videos/${getSeoSlug(v)}`);
+        }}
+        onSelectGame={(g) => {
+          setIsProfileOpen(false);
+          navigate(`/games/${getSeoSlug(g)}`);
+        }}
+        onSelectArticle={(a) => {
+          setIsProfileOpen(false);
+          navigate(`/articles/${getSeoSlug(a)}`);
+        }}
+        onSelectReview={(r) => {
+          setIsProfileOpen(false);
+          navigate(`/reviews/${getSeoSlug({ id: r.id, title: `${r.gameTitle} review` })}`);
+        }}
+        onSelectGuide={(g) => {
+          setIsProfileOpen(false);
+          navigate(`/guides/${getSeoSlug(g)}`);
+        }}
+        onSignOut={handleSignOut}
+        onUpdateProfile={handleUpdateProfile}
+        initialTab={profileInitialTab}
+        onNavigateToAvatarGenerator={() => {
+          setIsProfileOpen(false);
+          navigate('/game-avatar-generator');
+        }}
+        onNavigateToCalendar={(gameSlug) => {
+          setIsProfileOpen(false);
+          navigate(gameSlug ? `/game-release-calendar?game=${encodeURIComponent(gameSlug)}` : '/game-release-calendar');
+        }}
+        onRemoveFromWatchlist={handleRemoveFromWatchlist}
+        onRemoveReminder={handleRemoveReminder}
+        onShowToast={(msg, type) => addToast(msg, type === 'alert' ? 'error' : type)}
+      />
 
       {/* Auth Modal: Prompted when guest attempts to like/comment, or after 60s timed visitor prompt */}
       {isAuthModalOpen && (

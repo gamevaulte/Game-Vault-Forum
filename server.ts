@@ -63,6 +63,8 @@ Official Headquarters & Community: Game Vault Forum Global Gaming Network
   * Full interactive privileges: Start new forum discussions (/forum/new), post replies, leave comments on articles and videos, like content, bookmark guides to their private profile, earn reputation badges, and enjoy unlimited Vault AI queries with synchronized conversation history.
 
 3. EDITORIAL ARTICLES, REVIEWS & GUIDES IN THE VAULT:
+- Article: "Cyberpunk 2077: Controller Deadzone Settings for Patch 2.2 and Later" (/articles/cyberpunk-2077-controller-deadzone-settings-2-2, ID 'cyberpunk-2077-controller-deadzone-settings-2-2')
+  * Practical inner and outer deadzone calibration, PS5 (0.15) vs Xbox/PC (0.35) platform defaults, 5-minute isolation test, stick drift solutions, and official PDF download.
 - Article: "PUBG Mobile 2026: 3x and 4x Gyro Sensitivity for No-Recoil Sprays" (/articles/pubg-mobile-3x-4x-gyro-sensitivity-2026, ID 'pubg-mobile-3x-4x-gyro-sensitivity-2026')
   * Practical starting baselines: 3x Gyro (180%), 4x Gyro (160%), 3x ADS Gyro (175%), 4x ADS Gyro (155%), 10-minute training ground drill, diagnostic matrix, and official PDF download.
 - Article: "Cloud Gaming: Latency vs. Bandwidth – Why Your 1 Gbps Fiber Still Feels Sluggish" (/articles/cloud-gaming-latency-vs-bandwidth, ID 'cloud-gaming-latency-vs-bandwidth')
@@ -1327,15 +1329,18 @@ Elden Ring holds a **10/10 rating** on Game Vault Forum.
 Cyberpunk 2077 stands as one of the most technically demanding and visually stunning RPGs in modern gaming.
 
 #### Key Highlights from Our Coverage:
+- **Patch 2.2 Controller Deadzone Guide**: Fix stick drift and sluggish aiming across PS5 (0.15) and Xbox/PC (0.35) with our 5-minute calibration protocol.
 - **Patch 2.1 Overhaul**: Completely revamps police AI, cyberware limiters, vehicle combat, and perk trees.
 - **Phantom Liberty Expansion**: Introduces Dogtown, an espionage thriller narrative starring Idris Elba, and the Relic perk tree.
 - **Hardware Demand**: Ray Tracing Overdrive (Full Path Tracing) requires DLSS 3.5 Frame Generation and an RTX 4070 or above for 60+ FPS at 1440p.`,
       sources: [
+        { title: 'Game Vault Forum — Cyberpunk 2077: Controller Deadzone Settings Guide', url: '/articles/cyberpunk-2077-controller-deadzone-settings-2-2' },
         { title: 'Game Vault Forum — Cyberpunk 2077 in 2026 Overhaul Article', url: '/articles/cyberpunk-2077-in-2026-complete-overhaul-journey' },
         { title: 'Game Vault Forum — Games Catalog: Cyberpunk 2077', url: '/games/cyberpunk-2077' },
       ],
-      cardIds: { games: ['cyberpunk-2077'], articles: ['art-2'], videos: ['vid-3'], hardware: ['gpu-4070s'] },
+      cardIds: { games: ['cyberpunk-2077'], articles: ['cyberpunk-2077-controller-deadzone-settings-2-2', 'art-2'], videos: ['vid-3'], hardware: ['gpu-4070s'] },
       actions: [
+        { id: 'act-cp-deadzone', type: 'navigate', label: 'Read Deadzone Settings Guide', target: '/articles/cyberpunk-2077-controller-deadzone-settings-2-2' },
         { id: 'act-cp-1', type: 'requirements', label: 'Check Cyberpunk 2077 PC Specs', target: 'cyberpunk-2077' },
         { id: 'act-cp-2', type: 'video', label: 'Watch Overhaul Journey Video', target: 'vid-3' },
         { id: 'act-cp-3', type: 'navigate', label: 'Read 2026 Modding Article', target: '/articles/cyberpunk-2077-in-2026-complete-overhaul-journey' },
