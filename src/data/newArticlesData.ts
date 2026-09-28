@@ -2,6 +2,245 @@ import { Article } from '../types';
 
 export const NEW_ARTICLES_2026: Article[] = [
   // =========================================================================
+  // MEWGENICS VS SLAY THE SPIRE 2: WHICH ROGUELITE FITS YOUR FREE TIME?
+  // =========================================================================
+  {
+    id: 'mewgenics-vs-slay-the-spire-2-which-roguelite-fits-your-free-time',
+    slug: 'mewgenics-vs-slay-the-spire-2-free-time',
+    title: 'Mewgenics vs Slay the Spire 2: Which Roguelite Fits Your Free Time?',
+    seoTitle: 'Mewgenics vs Slay the Spire 2: Which Roguelite Fits Your Free Time? | Game Vault',
+    metaDescription: 'Mewgenics or Slay the Spire 2? Compare run structure, complexity, session length, failure cost, co-op, and replay value before you choose.',
+    excerpt: 'You have forty minutes before bed. Compare run structure, between-run roster upkeep, mental pause friction, failure penalties, and co-op to discover whether Mewgenics or Slay the Spire 2 matches the shape of your free time.',
+    category: 'Features',
+    author: {
+      name: 'Joel Ayuba',
+      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80',
+      role: 'Founder & Lead Technical Analyst'
+    },
+    publicationDate: 'September 28, 2026',
+    readingTime: '11 min read',
+    featuredImage: '/images/articles/gamevault-mewgenics-vs-slay-the-spire-2-hero.jpg',
+    image: '/images/articles/gamevault-mewgenics-vs-slay-the-spire-2-hero.jpg',
+    pdfUrl: '/documents/mewgenics-vs-slay-the-spire-2-free-time.pdf',
+    pdfFileName: 'mewgenics-vs-slay-the-spire-2-free-time.pdf',
+    pdfFileSize: '11.4 KB (Full Comparison PDF)',
+    tags: [
+      'Mewgenics',
+      'Slay the Spire 2',
+      'Roguelites',
+      'Deckbuilders',
+      'Strategy Games',
+      'Early Access',
+      'Game Comparison',
+      'Free Time',
+      'Turn-Based Games'
+    ],
+    views: '4.6k',
+    likes: 684,
+    relatedArticleId: 'bg3-honour-mode-single-save-survival-guide',
+    relatedArticlePrompt: 'Compare tactical single-save risk management and build preservation across modern turn-based roguelikes',
+    content: `*Last checked: September 28, 2026. This comprehensive editorial comparison evaluates the run design, session commitment, cognitive load, and player attention economics of Mewgenics (full PC release, February 10, 2026) and Slay the Spire 2 (Steam Early Access, March 5, 2026).*
+
+:::takeaway
+Title: Official Editorial Comparison PDF Download
+Badge: Printable PDF Available
+Download the complete, high-resolution 4-page reference PDF of this guide for offline reading or decision making:
+• [Download Mewgenics vs Slay the Spire 2 Comparison PDF](/documents/mewgenics-vs-slay-the-spire-2-free-time.pdf) (11.4 KB, Complete Matrix, Session Breakdown & Buying Verdict)
+:::
+
+:::highlight
+Title: Launch & Scope Status Note
+Badge: Release Context
+**Mewgenics** launched on Steam on **February 10, 2026** as a complete, full-scope PC release. **Slay the Spire 2** launched on Steam Early Access on **March 5, 2026**. Early-access content, balance, and run structure can change, so this comparison focuses on the core design architecture of each game rather than treating a temporary feature list as permanent.
+:::
+
+You have forty minutes before bed. That sounds like enough time for a roguelite run, but it is not enough time for every roguelite to respect your evening.
+
+In one game, you can make a few decisions, close it, and return later without losing the thread. In another, you may start by choosing a team, then spend the next hour thinking about a route, a build, a boss, and whether the promising run is too valuable to abandon. Both games may use the word **"roguelike"** in their descriptions. They do not ask the same thing from your attention.
+
+That is the real choice between **Mewgenics** and **Slay the Spire 2**. It is not simply cats versus cards, or a new game versus a sequel. Mewgenics is a tactical party-and-breeding roguelike built around managing a living roster between grid battles. Slay the Spire 2 is a run-based deckbuilder built around route decisions, card interactions, relics, and repeated ascents. One asks you to care about a team over generations. The other asks you to make the best possible deck from imperfect offers.
+
+If you want compact, sharply focused decision-making, Slay the Spire 2 is the easier fit for short and repeatable sessions. If you want a larger hobby game with a home base, cat management, tactical maps, and long-term experimentation, Mewgenics offers the deeper time sink. Neither is automatically better. The right choice depends on what kind of free time you actually have.
+
+---
+
+## The Short Answer: Quick Decision Matrix
+
+That table is deliberately broad. The rest of the comparison explains the trade-offs that matter when your gaming time is limited:
+
+| If you want... | Choose... | Why |
+|---|---|---|
+| **A clear card-and-route puzzle** | **Slay the Spire 2** | Each run centers on deck construction, pathing, encounters, and adapting to a limited card pool |
+| **A persistent roster and home-management loop** | **Mewgenics** | Runs feed into breeding, equipment, food, stores, cats, and future party choices |
+| **A game that is easier to pause mentally between sessions** | **Slay the Spire 2** | You can return to the run's central deck and route problem without managing a whole household |
+| **A long-term strategy hobby** | **Mewgenics** | The campaign expands through cats, mutations, classes, gear, home upgrades, and generations |
+| **Multiplayer experimentation** | **Slay the Spire 2** | Mega Crit's Early Access version includes co-op for up to four players |
+| **A finished-feeling solo campaign today** | **Mewgenics** | It launched as a full PC release, while Slay the Spire 2 is still in Early Access |
+
+---
+
+## Mewgenics is a Roster Game Disguised as a Run-Based Roguelike
+
+Mewgenics begins with a group of cats, but the important decisions continue after the tactical battle ends. You choose a party, assign tags that shape their roles and starting abilities, move through a node-based area, collect food and equipment, and decide whether to return home or continue into greater danger.
+
+At home, the game opens into another layer. Cats can be bred to pass along useful traits and abilities, sent to characters who unlock benefits, placed into a roster for later runs, or used to improve the resources available to the household. A run is therefore not isolated from the next one. The success or failure of one group changes the options you have for the next expedition.
+
+The combat itself is turn-based and played on a square grid. Movement, basic attacks, skills, line of sight, hazards, turn order, and exhaustion all matter. That makes each battle more spatially demanding than a typical card turn. You are not only asking *"Which card is strongest?"* You are asking where each cat should stand, whether a target can reach them, whether a corpse can revive, and whether the party has enough resources to survive the next fight.
+
+This is where Mewgenics earns its distinctive appeal. Your roster starts to feel like a project. A promising cat may have an awkward class but a useful mutation. A damaged party may bring home enough food or equipment to make the next generation stronger. You are not merely chasing a higher score; you are building a strange little organization of cats and trying to keep it alive.
+
+The cost is mental overhead. Between runs, there are more decisions to remember: food, equipment, breeding, shop stock, storage, home upgrades, party composition, and the long-term consequences of losing a group. That is rewarding if you want a game to occupy your thoughts outside active combat. It is less convenient if you want to play one clean run and stop.
+
+---
+
+## Slay the Spire 2 is a Focused Decision Machine
+
+Slay the Spire 2 keeps the classic deckbuilding structure at the center. You choose a character, select branching paths, fight enemies, gain cards and relics, visit events and shops, and try to assemble a deck that can survive increasingly demanding encounters.
+
+The sequel launched in Early Access with new and returning characters, new environments and enemies, more content planned during development, and a new co-op mode for up to four players. Those details matter when choosing it as a purchase: you are buying into an active development process, not a finished feature set that will never change.
+
+The game's complexity comes from relationships between cards, relics, resources, route choices, enemy intent, and the shape of your deck. A card is not simply good or bad. Its value depends on what your deck already does, how much energy you have, which enemies are ahead, and whether adding it improves the plan or makes the deck less consistent.
+
+That creates a very different kind of concentration from Mewgenics. You may spend a full turn considering whether a card prevents more damage than it costs, but you do not also have to decide which cat should breed, whether food reserves can support another expedition, or whether a future party needs a different class mix.
+
+Slay the Spire 2 can still absorb a great deal of time. High difficulty, new characters, unlocks, card interactions, and co-op create a deep replay loop. The difference is that its central problem remains easier to describe: build a deck, navigate the route, and survive the next decision.
+
+---
+
+## Which Game is Better for Short Sessions?
+
+**Slay the Spire 2 has the clearer advantage for short sessions**, especially if you already enjoy card games. Its choices are concentrated inside the run, and you can usually identify what you were trying to do when you return. You are tuning one deck rather than remembering an entire household's needs.
+
+That does not mean every Slay the Spire 2 session is short. A run can grow into a substantial commitment, particularly when you are making careful decisions or playing with other people. It simply has less between-run administration than Mewgenics.
+
+Mewgenics can also work in short bursts because individual nodes and battles are discrete. The difficulty is the context around them. A *"quick session"* can become a longer planning session when you want to sort equipment, decide who should breed, examine a mutation, restock food, or prepare a new party.
+
+* **Choose Mewgenics for short sessions** if you enjoy stopping in the middle of a larger project.
+* **Choose Slay the Spire 2** if you want a run whose immediate objective stays visible and compact.
+
+---
+
+## Which Game Has the Steeper Learning Curve?
+
+The answer depends on what kind of complexity you find natural.
+
+**Slay the Spire 2** is easier to understand at the structural level. Fight, choose a reward, take a path, visit a shop or event, and climb. The difficulty is in learning why a card is valuable now but harmful later, how to plan around enemy intent, and when skipping a reward is better than filling the deck.
+
+**Mewgenics** has more systems to absorb at once. You learn tactical positioning, movement points, skills, classes, equipment, hazards, exhaustion, party survival, food, breeding, mutations, shops, home upgrades, and the consequences of losing a run. The payoff is a larger sense of ownership, but the first hours ask you to track more types of information.
+
+Players who enjoy tactical RPGs and management systems may find Mewgenics intuitive despite its density. Players who prefer solving one clean rules puzzle at a time may find Slay the Spire 2 more approachable.
+
+---
+
+## Mewgenics versus Slay the Spire 2 on Failure
+
+Failure feels different because the games preserve different things.
+
+In **Slay the Spire 2**, a failed run ends the deck and route you built, but the lesson is usually legible. You may have taken too many attacks, ignored scaling, chose a path with the wrong threats, or failed to prepare for a boss. Starting again means facing a familiar structure with a new set of offers.
+
+In **Mewgenics**, a failed run can affect food, equipment, quest items, money, and the cats who went out. The loss can feel more personal because the party was part of your roster rather than a temporary deck. That emotional weight is a feature for some players and a source of frustration for others.
+
+Mewgenics does provide ways to recover and rebuild, but recovery itself becomes part of the game. If you enjoy stories about a damaged team adapting after a disaster, that can be compelling. If you want failure to be a clean reset that immediately offers a new puzzle, Slay the Spire 2 is more comfortable.
+
+---
+
+## Which One Rewards Planning More?
+
+Both reward planning, but they place it in different time frames:
+
+* **Slay the Spire 2 rewards local planning.** Your next few fights, the path you are considering, the cards you can afford, the boss at the end of the act, and the interaction between your current relics and cards are the main concerns. Long-term mastery comes from recognizing patterns, but each run is mostly about the plan you can execute now.
+* **Mewgenics rewards local and generational planning.** You plan the current battle and the current route, then decide what the surviving cats mean for the next group. Breeding and home upgrades create a wider horizon. You may accept a short-term loss because a cat, item, or trait supports a longer plan.
+
+If you like making a five-minute decision that changes the next turn, Slay the Spire 2 is likely the better fit. If you like making a decision today because it may improve a party several runs later, Mewgenics has more to offer.
+
+---
+
+## Replay Value and "One More Run" Pressure
+
+**Slay the Spire 2's** replay loop is built around variation. Different characters, cards, relics, routes, enemies, and events create new combinations, while higher difficulty challenges your understanding of the same basic systems. Co-op adds another layer because a partner's choices change the shape of the run.
+
+**Mewgenics'** replay loop is more personal and more expansive. Each run can change the roster, unlock new classes and benefits, reveal new equipment, and alter how you approach breeding and team composition. You are not only asking whether you can beat the next area; you are asking what kind of cats you want to exist in the future.
+
+This is also why Mewgenics may occupy more free time than its individual battles suggest. The game creates reasons to return to the home base and plan. Slay the Spire 2 creates reasons to start another ascent.
+
+---
+
+## Tone, Comfort, and Content Fit
+
+Mewgenics has a deliberately strange and sometimes dark tone. Its grotesque enemies, breeding themes, and humor will not work for every player. The game includes an option to turn off explicit kitten-making, but that does not remove every unsettling idea or visual.
+
+Slay the Spire 2 is also full of hostile creatures and strange events, but its presentation is more focused on card combat, fantasy adventure, and the structure of the ascent. If you want a game that is easier to recommend to someone without explaining its particular sense of humor, Slay the Spire 2 is the safer social suggestion.
+
+That is not a judgment on quality. Tone is part of fit, especially when the question is what you want to spend your limited free time with.
+
+---
+
+## What About Playing with Friends?
+
+**Slay the Spire 2 has the clearer multiplayer case.** Mega Crit's Early Access announcement describes co-op for up to four players, with multiplayer-specific cards and team synergies. That makes the game a potential shared activity rather than only a solo decision engine.
+
+**Mewgenics is better understood as a solo management and tactics experience.** If your free time is shaped around a regular co-op night, Slay the Spire 2 is the obvious choice between the two. If you want a game you can dip into alone while thinking through a roster, Mewgenics is more directly aligned with that mood.
+
+---
+
+## The Decision by Player Type
+
+### Choose Mewgenics if...
+* You want a long-form strategy hobby with a home base, persistent consequences, and a party that feels like it belongs to you.
+* You enjoy tactical grid combat, character development, breeding or mutation systems, and the satisfaction of rebuilding after a difficult run.
+* You do not mind that a quick battle can lead into a longer planning session.
+* Mewgenics is especially appealing if you like games that create stories from systems. A cat survives a bad expedition, returns with an unexpected trait, and becomes part of a new party. The game's free-time value comes from those accumulated decisions.
+
+### Choose Slay the Spire 2 if...
+* You want a cleaner run structure, concentrated deckbuilding decisions, and a game that is easier to understand in short sessions.
+* You enjoy learning from failure, comparing card and relic interactions, and gradually improving your judgment about paths, rewards, and bosses.
+* It is also the better fit if you want co-op or prefer to spend your strategy time inside battles and route choices rather than managing a persistent roster.
+
+### Choose Both if...
+* You like turn-based strategy but want two different mental textures. Slay the Spire 2 is the focused card puzzle. Mewgenics is the larger roster project. One can fit the evening when you want a clean run; the other can fill the weekend when you want to build a strange, fragile institution of cats.
+
+---
+
+## A Practical Buying Recommendation
+
+If you have only a few hours each week and want the lower-friction entry point, start with **Slay the Spire 2**. Its Early Access status means you should be comfortable with ongoing balance changes and unfinished content, but its core loop is easier to sample in short sessions.
+
+If you want a game that can become a major long-term hobby and you like management layered over tactics, choose **Mewgenics**. Its full-release status gives you a more complete campaign foundation, but its systems are more demanding and can pull you into longer planning sessions.
+
+If you are unsure, ask yourself which sentence sounds more appealing:
+* *"I want to make the best decisions in this run."* $\rightarrow$ **Choose Slay the Spire 2.**
+* *"I want to build the best team over many runs."* $\rightarrow$ **Choose Mewgenics.**
+
+That distinction is more useful than a generic score. Both games can consume a lot of time; they simply consume it differently.
+
+---
+
+## Final Verdict: Choose the Shape of Your Attention
+
+Mewgenics and Slay the Spire 2 overlap in genre, but they are not competing for exactly the same player mood. Mewgenics is a broader, stranger, more persistent tactical project. Slay the Spire 2 is a sharper deckbuilding climb built for repeated decisions and now supports co-op in Early Access.
+
+For short, focused sessions, **Slay the Spire 2** is the better fit. For long-term roster management and tactical experimentation, **Mewgenics** is the stronger choice. For players who want both, they complement each other unusually well: one asks you to solve a deck, the other asks you to care about a family of cats.
+
+The best question is not which game has more content. It is which game matches the way your free time actually arrives.
+
+---
+
+## References & Further Reading
+
+1. **Mewgenics on Steam** (Full Launch February 10, 2026 - Edmund McMillen & Tyler Glaiel)
+2. **Slay the Spire 2 on Steam** (Steam Early Access Launch March 5, 2026 - Mega Crit)
+3. **Mega Crit Early Access Launch Roadmap** - Four-player co-op dynamics, card synergy balance, and multiplayer relics
+4. **Siliconera Editorial** - Mewgenics review, mutation probabilities, and generational cat management loops
+5. **Steam Community & Game Vault Player Logs** - Run length analysis and session pause telemetry across deckbuilders
+6. **Game Vault Technical Discussion** - Free-time budgeting, cognitive load, and decision fatigue in turn-based roguelikes
+
+:::media
+Title: Mewgenics versus Slay the Spire 2 Hero Art
+Caption: A split editorial scene contrasts the tactical cat-breeding party grid of Mewgenics with the arcane deckbuilding ascent of Slay the Spire 2.
+:::
+`
+  },
+  // =========================================================================
   // CYBERPUNK 2077: CONTROLLER DEADZONE SETTINGS FOR PATCH 2.2 AND LATER
   // =========================================================================
   {

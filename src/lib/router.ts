@@ -186,7 +186,7 @@ export function parseRoute(rawPath: string): Route {
     return { type: 'games', genre: queryGenre || queryCategory };
   }
 
-  if (seg1 === 'articles') {
+  if (seg1 === 'articles' || seg1 === 'features') {
     if (seg2 === 'category' && seg3) return { type: 'articles', category: seg3 };
     if (seg2) return { type: 'article', id: seg2, slug: seg2 };
     return { type: 'articles', category: queryCategory };

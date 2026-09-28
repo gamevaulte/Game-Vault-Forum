@@ -51,6 +51,10 @@ export function findItemBySlugOrId<T extends { id: string; title?: string; gameT
   const exactIdMatch = items.find((item) => item.id.toLowerCase() === cleanId);
   if (exactIdMatch) return exactIdMatch;
 
+  // 1b. Direct slug match (if item has custom slug property)
+  const directSlugPropMatch = items.find((item: any) => item.slug && item.slug.toLowerCase() === cleanId);
+  if (directSlugPropMatch) return directSlugPropMatch;
+
   // 2. Exact slug match
   const exactSlugMatch = items.find((item) => {
     const itemSlug = getSeoSlug(item);
