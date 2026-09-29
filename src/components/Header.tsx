@@ -276,7 +276,7 @@ export const Header: React.FC<HeaderProps> = ({
       style={{ position: 'sticky', top: 0 }}
     >
       {/* Container with guaranteed minimum edge margins across all devices */}
-      <div className="w-full max-w-7xl mx-auto px-3.5 sm:px-5 md:px-6 lg:px-8 h-15 sm:h-16 lg:h-18 flex items-center justify-between gap-2 sm:gap-4">
+      <div className="w-full max-w-7xl mx-auto px-2.5 sm:px-4 md:px-6 lg:px-8 h-15 sm:h-16 lg:h-18 flex items-center justify-between gap-1.5 sm:gap-3 md:gap-4">
         
         {/* Brand Logo - shrink-0 to prevent compression */}
         <a
@@ -605,13 +605,13 @@ export const Header: React.FC<HeaderProps> = ({
             </kbd>
           </button>
 
-          {/* YouTube Channel CTA - Solely renders as an icon button without text label across all desktop & laptop devices */}
+          {/* YouTube Channel CTA - Solely renders on desktop (lg+), hidden on mobile & tablet devices where it is accessible via the hamburger menu */}
           <a
             id="header-youtube-btn"
             href={YOUTUBE_CHANNEL.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center justify-center w-9 sm:w-9.5 h-9 sm:h-9.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 hover:border-red-500/40 shadow-sm transition-all duration-150 shrink-0 hover:scale-105 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#070913]"
+            className="hidden lg:flex items-center justify-center w-9 sm:w-9.5 h-9 sm:h-9.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 hover:border-red-500/40 shadow-sm transition-all duration-150 shrink-0 hover:scale-105 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#070913]"
             title={`Game Vault Official YouTube Channel (${YOUTUBE_CHANNEL.handle})`}
             aria-label="Game Vault Official YouTube Channel"
           >

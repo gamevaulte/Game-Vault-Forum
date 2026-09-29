@@ -262,7 +262,7 @@ export const VaultAiFloatingButton: React.FC<VaultAiFloatingButtonProps> = ({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             transition={{ duration: 0.2 }}
-            className="w-[92vw] sm:w-[420px] h-[560px] max-h-[82vh] mb-3 rounded-2xl bg-[#0e111d]/95 backdrop-blur-2xl border border-purple-500/30 shadow-2xl shadow-purple-950/50 flex flex-col overflow-hidden"
+            className="w-[calc(100vw-2rem)] sm:w-[420px] max-w-[420px] h-[560px] max-h-[82vh] mb-3 rounded-2xl bg-[#0e111d]/95 backdrop-blur-2xl border border-purple-500/30 shadow-2xl shadow-purple-950/50 flex flex-col overflow-hidden"
           >
             {/* Header */}
             <div className="p-3.5 bg-zinc-900/80 border-b border-white/10 flex items-center justify-between">

@@ -16,6 +16,10 @@
   --color-vault-cyan: #38bdf8;
 }
 
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
 @layer base {
   html {
     color-scheme: dark;
@@ -25,6 +29,12 @@
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    position: relative;
+    touch-action: pan-y;
+    overscroll-behavior-x: none !important;
   }
 
   body {
@@ -33,6 +43,21 @@
     color: #e2e8f0;
     margin: 0;
     padding: 0;
+    overflow-x: hidden !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    position: relative;
+    touch-action: pan-y;
+    overscroll-behavior-x: none !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  #root {
+    min-height: 100vh;
+    overflow-x: hidden !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    position: relative;
   }
 
   /* Accessible contrast enhancements for muted and secondary copy on dark backgrounds */
@@ -45,8 +70,14 @@
   }
 
   /* Optimize media and image rendering off the critical path */
-  img {
+  img, video, iframe, embed, object {
     content-visibility: auto;
+    max-width: 100%;
+    height: auto;
+  }
+
+  pre, code, table {
+    max-width: 100%;
   }
 }
 

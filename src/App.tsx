@@ -2216,7 +2216,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#050507] text-gray-100 flex flex-col selection:bg-purple-600 selection:text-white font-['Inter'] relative">
+    <div className="min-h-screen bg-[#050507] text-gray-100 flex flex-col selection:bg-purple-600 selection:text-white font-['Inter'] relative w-full max-w-full overflow-x-hidden">
       {/* Frosted Glass Ambient Atmospheric Lighting - Contained in fixed viewport layer */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
         <div className="absolute top-[-10%] left-[-10%] w-[500px] lg:w-[45%] h-[500px] lg:h-[45%] bg-purple-900/30 blur-[130px] rounded-full animate-vault-glow" />
@@ -2243,7 +2243,7 @@ export default function App() {
       />
 
       {/* Main Routed Content Area with horizontal overflow containment */}
-      <main className="flex-1 w-full overflow-x-clip">
+      <main className="flex-1 w-full max-w-full overflow-x-hidden">
         <Suspense
           fallback={
             <div className="min-h-[50vh] flex flex-col items-center justify-center py-20 space-y-3">
