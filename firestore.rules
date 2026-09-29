@@ -174,6 +174,23 @@ service cloud.firestore {
       );
       allow delete: if isAuthenticated() && (resource.data.hostId == request.auth.uid || isAdmin());
     }
+
+    // User Saved Game Stories & Overviews (Private user library, no public indexing)
+    match /user_game_stories/{storyId} {
+      allow read: if isAuthenticated() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if isAuthenticated() && isValidId(storyId) && request.resource.data.userId == request.auth.uid;
+      allow update: if isAuthenticated() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow delete: if isAuthenticated() && (resource.data.userId == request.auth.uid || isAdmin());
+    }
+
+    // Nested user game stories subcollections
+    match /Users/{userId}/game_stories/{storyId} {
+      allow read, write: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
+    }
+
+    match /users/{userId}/game_stories/{storyId} {
+      allow read, write: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
+    }
   }
 }
 

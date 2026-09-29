@@ -168,6 +168,14 @@ export const Header: React.FC<HeaderProps> = ({
 
   const toolsItems = [
     {
+      id: 'game-story-overview-generator' as PageTab,
+      label: 'Game Story Generator',
+      desc: 'Factual game lore, plot summaries & analysis',
+      href: '/tools/game-story-overview-generator',
+      icon: BookOpen,
+      badge: 'Flagship'
+    },
+    {
       id: 'game-release-calendar' as PageTab,
       label: 'Game Release Calendar',
       desc: 'Track launch dates, countdowns & delays',
@@ -232,6 +240,7 @@ export const Header: React.FC<HeaderProps> = ({
 
   const isToolsActive =
     currentTab === 'tools' ||
+    currentTab === 'game-story-overview-generator' ||
     currentTab === 'fps-calculator' ||
     currentTab === 'vault-ai' ||
     currentTab === 'game-avatar-generator' ||

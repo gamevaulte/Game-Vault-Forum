@@ -33,6 +33,7 @@ export type Route =
   | { type: 'gaming-pc-builder'; buildId?: string }
   | { type: 'game-picker-wheel'; games?: string[] }
   | { type: 'game-release-calendar'; gameSlug?: string }
+  | { type: 'game-story-overview-generator'; gameSlug?: string }
   | { type: 'vault-ai'; initialPrompt?: string }
   | { type: 'author'; slug: string }
   | { type: 'sitemap' }
@@ -139,10 +140,16 @@ export function parseRoute(rawPath: string): Route {
     if (seg2 === 'game-release-calendar' || seg2 === 'release-calendar' || seg2 === 'calendar') {
       return { type: 'game-release-calendar', gameSlug: seg3 || queryGame };
     }
+    if (seg2 === 'game-story-overview-generator' || seg2 === 'game-story-generator' || seg2 === 'story-generator' || seg2 === 'game-story') {
+      return { type: 'game-story-overview-generator', gameSlug: seg3 || queryGame };
+    }
     return { type: 'tools' };
   }
 
   // Direct root tool paths
+  if (seg1 === 'game-story-overview-generator' || seg1 === 'game-story-generator' || seg1 === 'story-generator' || seg1 === 'game-story') {
+    return { type: 'game-story-overview-generator', gameSlug: seg2 || queryGame };
+  }
   if (seg1 === 'game-release-calendar' || seg1 === 'release-calendar' || seg1 === 'calendar' || seg1 === 'game-releases') {
     return { type: 'game-release-calendar', gameSlug: seg2 || queryGame };
   }
@@ -299,6 +306,10 @@ export function routeToUrl(route: Route): string {
         : '/tools/gaming-pc-builder';
     case 'vault-ai':
       return '/tools/vault-ai';
+    case 'game-story-overview-generator':
+      return route.gameSlug
+        ? `/tools/game-story-overview-generator/${route.gameSlug}`
+        : '/tools/game-story-overview-generator';
     case 'game-picker-wheel':
       return '/game-picker-wheel';
     case 'game-release-calendar':

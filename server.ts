@@ -6,6 +6,12 @@ import { GoogleGenAI } from '@google/genai';
 import dotenv from 'dotenv';
 import { handleSeoPrerender } from './src/server/seoPrerender';
 import { validateConnectFourMove, validateTicTacToeMove } from './src/server/gameValidation';
+import { 
+  handleGameStorySearch, 
+  handleGameStoryPreview, 
+  handleGameStoryGenerate, 
+  handleGameStoryAdminStats 
+} from './src/server/gameStoryRoutes';
 
 dotenv.config();
 
@@ -648,6 +654,12 @@ ${JSON.stringify(calendarContext, null, 2)}`;
       return res.status(500).json({ valid: false, error: 'Internal validation error.' });
     }
   });
+
+  // Game Story & Overview Generator Authoritative API Endpoints
+  app.get('/api/game-story/search', handleGameStorySearch);
+  app.get('/api/game-story/preview/:id', handleGameStoryPreview);
+  app.post('/api/game-story/generate', handleGameStoryGenerate);
+  app.get('/api/game-story/admin-stats', handleGameStoryAdminStats);
 
   // Serve static files from public directory (images, pdfs, documents, icons)
   app.use(express.static(path.join(process.cwd(), 'public')));

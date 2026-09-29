@@ -3,11 +3,12 @@ import {
   Sparkles, 
   Wrench, 
   Monitor, 
-  ShieldCheck,
-  Bot,
-  Dices,
-  Gauge,
-  Calendar
+  ShieldCheck, 
+  Bot, 
+  Dices, 
+  Gauge, 
+  Calendar,
+  BookOpen
 } from 'lucide-react';
 import { ToolHeader } from '../components/tools/ToolHeader';
 import { ToolCard } from '../components/tools/ToolCard';
@@ -30,6 +31,17 @@ export const ToolsHubView: React.FC<ToolsHubViewProps> = ({ onNavigateTab }) => 
 
       {/* Featured Primary Tools Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+        <ToolCard
+          title="Game Story & Overview Generator"
+          subtitle="Factual game lore, plot summaries & narrative analysis"
+          description="Search global gaming databases and generate factually verified game overviews, spoiler-controlled plot summaries, character rosters, timeline events, and exportable PDF dossiers."
+          badge="Flagship Lore Engine"
+          icon={<BookOpen className="w-6 h-6 text-purple-400" />}
+          actionText="Open Story Generator"
+          onClick={() => onNavigateTab('game-story-overview-generator')}
+          featured={true}
+        />
+
         <ToolCard
           title="Game Release Calendar"
           subtitle="Discover upcoming video game releases"

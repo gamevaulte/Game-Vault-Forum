@@ -145,6 +145,31 @@ export function handleSeoPrerender(reqPath: string, isProd: boolean): string | n
       return html;
     }
 
+    // Check if path is game story generator
+    if (cleanPath === '/tools/game-story-overview-generator' || cleanPath === '/game-story-overview-generator') {
+      const htmlPath = isProd 
+        ? path.join(process.cwd(), 'dist', 'index.html') 
+        : path.join(process.cwd(), 'index.html');
+
+      if (!fs.existsSync(htmlPath)) return null;
+      let html = fs.readFileSync(htmlPath, 'utf8');
+
+      const title = 'Game Story & Overview Generator | Factual Game Lore & Plot Summaries | Game Vault Forum';
+      const description = 'Search a global database of video games to generate factually verified overviews, spoiler-controlled story summaries, character profiles, timelines, and downloadable PDF dossiers.';
+      const canonicalUrl = 'https://www.gamevault.forum/tools/game-story-overview-generator';
+
+      html = html.replace(/<title>.*?<\/title>/, `<title>${escapeHtml(title)}</title>`);
+      html = html.replace(/<meta name="description" content=".*?" \/>/, `<meta name="description" content="${escapeHtml(description)}" />`);
+      html = html.replace(/<link rel="canonical" href=".*?" \/>/, `<link rel="canonical" href="${canonicalUrl}" />`);
+      html = html.replace(/<meta property="og:title" content=".*?" \/>/, `<meta property="og:title" content="${escapeHtml(title)}" />`);
+      html = html.replace(/<meta property="og:description" content=".*?" \/>/, `<meta property="og:description" content="${escapeHtml(description)}" />`);
+      html = html.replace(/<meta property="og:url" content=".*?" \/>/, `<meta property="og:url" content="${canonicalUrl}" />`);
+      html = html.replace(/<meta name="twitter:title" content=".*?" \/>/, `<meta name="twitter:title" content="${escapeHtml(title)}" />`);
+      html = html.replace(/<meta name="twitter:description" content=".*?" \/>/, `<meta name="twitter:description" content="${escapeHtml(description)}" />`);
+
+      return html;
+    }
+
     // Check if path is author page
     if (cleanPath.startsWith('/authors/')) {
       const slug = cleanPath.replace('/authors/', '');

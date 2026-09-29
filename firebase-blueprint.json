@@ -240,9 +240,35 @@
         "lastActivityAt": { "type": "string", "description": "ISO timestamp of last player activity" }
       },
       "required": ["id", "gameId", "inviteCode", "hostId", "status", "createdAt"]
+    },
+    "UserGameStory": {
+      "title": "UserGameStory",
+      "description": "User saved game stories, lore overviews, and narrative reports with version history",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique story report identifier" },
+        "userId": { "type": "string", "description": "Owner Firebase user UID" },
+        "gameId": { "type": "string", "description": "ID of the verified game" },
+        "gameTitle": { "type": "string", "description": "Official title of the game" },
+        "gameSlug": { "type": "string", "description": "SEO friendly slug of the game" },
+        "coverImage": { "type": "string", "description": "Verified cover image URL" },
+        "generationMode": { "type": "string", "enum": ["quick", "standard", "deep"], "description": "Report detail mode" },
+        "spoilerLevel": { "type": "string", "enum": ["none", "light", "full", "ending"], "description": "Spoiler sensitivity level" },
+        "report": { "type": "object", "description": "Complete structured report with setting, premise, characters, story, and sources" },
+        "customTitle": { "type": "string", "description": "Optional user custom title" },
+        "notes": { "type": "string", "description": "Optional personal research notes" },
+        "version": { "type": "number", "description": "Report revision number" },
+        "createdAt": { "type": "string", "description": "Creation timestamp" },
+        "updatedAt": { "type": "string", "description": "Last update timestamp" }
+      },
+      "required": ["id", "userId", "gameId", "gameTitle", "generationMode", "spoilerLevel", "report", "createdAt"]
     }
   },
   "firestore": {
+    "/user_game_stories/{storyId}": {
+      "schema": "UserGameStory",
+      "description": "Private library of generated and saved game stories for registered members"
+    },
     "/avatar_presets/{presetId}": {
       "schema": "AvatarPreset",
       "description": "Public catalog of gaming avatar presets across all genres"

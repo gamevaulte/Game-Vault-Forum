@@ -303,6 +303,18 @@ export const SitemapView: React.FC<SitemapViewProps> = ({ onNavigate }) => {
         isNew: true
       },
       {
+        id: 'game-story-overview-generator',
+        title: 'Game Story & Overview Generator — Factual Lore & Plot Summaries',
+        url: '/tools/game-story-overview-generator',
+        category: 'tools',
+        badge: 'Flagship Tool',
+        badgeColor: 'bg-purple-500/20 text-purple-300 border-purple-500/30',
+        description: 'Search global gaming databases and generate factually verified game overviews, spoiler-controlled plot summaries, character rosters, timeline events, and exportable PDF dossiers.',
+        priority: '0.98',
+        changefreq: 'Daily',
+        isNew: true
+      },
+      {
         id: 'fps-performance-calculator',
         title: 'FPS / Performance Calculator — PC Gaming Benchmark & Bottleneck Estimator',
         url: '/tools/fps-calculator',

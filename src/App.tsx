@@ -60,6 +60,7 @@ const AvatarGeneratorView = lazy(() => import('./views/AvatarGeneratorView').the
 const GamePickerWheelView = lazy(() => import('./views/GamePickerWheelView').then(m => ({ default: m.GamePickerWheelView })));
 const VaultAiView = lazy(() => import('./views/VaultAiView').then(m => ({ default: m.VaultAiView })));
 const GameReleaseCalendarView = lazy(() => import('./views/GameReleaseCalendarView').then(m => ({ default: m.GameReleaseCalendarView })));
+const GameStoryGeneratorView = lazy(() => import('./views/GameStoryGeneratorView').then(m => ({ default: m.GameStoryGeneratorView })));
 const SitemapView = lazy(() => import('./views/SitemapView').then(m => ({ default: m.SitemapView })));
 const AuthorPageView = lazy(() => import('./views/AuthorPageView').then(m => ({ default: m.AuthorPageView })));
 const GamingSectionView = lazy(() => import('./views/GamingSectionView').then(m => ({ default: m.GamingSectionView })));
@@ -1404,6 +1405,17 @@ export default function App() {
           ]
         });
         break;
+      case 'game-story-overview-generator':
+        updatePageSeo({
+          title: 'Game Story & Overview Generator | Factual Game Lore & Plot Summaries | Game Vault Forum',
+          description: 'Search a global database of video games to generate factually verified overviews, spoiler-controlled story summaries, character profiles, timelines, and downloadable PDF dossiers.',
+          canonicalPath: route.gameSlug ? `/tools/game-story-overview-generator/${route.gameSlug}` : '/tools/game-story-overview-generator',
+          breadcrumbs: [
+            { name: 'Gaming Tools', path: '/tools' },
+            { name: 'Game Story & Overview Generator', path: '/tools/game-story-overview-generator' }
+          ]
+        });
+        break;
       case 'login':
       case 'register':
       case 'profile':
@@ -1456,6 +1468,8 @@ export default function App() {
         return 'game-picker-wheel';
       case 'game-release-calendar':
         return 'game-release-calendar';
+      case 'game-story-overview-generator':
+        return 'game-story-overview-generator';
       case 'vault-ai':
         return 'vault-ai';
       case 'tools':
@@ -1527,6 +1541,7 @@ export default function App() {
     else if (tab === 'gaming-pc-builder') navigate('/tools/gaming-pc-builder');
     else if (tab === 'game-picker-wheel') navigate('/game-picker-wheel');
     else if (tab === 'game-release-calendar') navigate('/tools/game-release-calendar');
+    else if (tab === 'game-story-overview-generator') navigate('/tools/game-story-overview-generator');
     else if (tab === 'tools') navigate('/tools');
     else if (tab === 'sitemap') navigate('/sitemap');
     else navigate(`/${tab}`);
@@ -2154,6 +2169,22 @@ export default function App() {
             initialGameSlug={route.type === 'game-release-calendar' ? route.gameSlug : undefined}
             onUpdateWatchlist={handleUpdateWatchlist}
             onUpdateReminders={handleUpdateReminders}
+          />
+        );
+
+      case 'game-story-overview-generator':
+        return (
+          <GameStoryGeneratorView
+            initialGameSlug={route.gameSlug}
+            currentUser={user}
+            isSignedIn={Boolean(firebaseUser)}
+            onOpenSignIn={() => {
+              setAuthPromptMessage('Sign in or register to save custom generated game stories and build your personal lore library.');
+              setIsAuthModalOpen(true);
+            }}
+            onNavigateTab={handleNavigateTab}
+            onShowToast={(msg, type) => addToast(msg, type)}
+            onShare={handleShare}
           />
         );
 

@@ -18,6 +18,7 @@ export type PageTab =
   | 'game-picker-wheel'
   | 'game-release-calendar'
   | 'vault-ai'
+  | 'game-story-overview-generator'
   | 'sitemap'
   | 'new-topic'
   | 'profile'
