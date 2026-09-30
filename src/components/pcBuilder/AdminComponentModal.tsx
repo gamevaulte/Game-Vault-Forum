@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Database, Plus, Edit2, Check, ShieldCheck } from 'lucide-react';
+import { X, Database, Plus, Edit2, Check, ShieldCheck, Sparkles, Globe, Loader2 } from 'lucide-react';
 import { PcComponent, ComponentCategory } from '../../types/pcBuilder';
 import { INITIAL_COMPONENTS } from '../../data/pcComponentsData';
 
@@ -20,8 +20,59 @@ export const AdminComponentModal: React.FC<AdminComponentModalProps> = ({
 }) => {
   const [selectedCategory, setSelectedCategory] = useState<ComponentCategory>('gpu');
   const [searchTerm, setSearchTerm] = useState('');
+  const [aiHardwareQuery, setAiHardwareQuery] = useState('');
+  const [isSearchingAi, setIsSearchingAi] = useState(false);
 
   if (!isOpen) return null;
+
+  const handleAiLookup = async () => {
+    const q = aiHardwareQuery.trim();
+    if (!q) return;
+
+    setIsSearchingAi(true);
+    try {
+      const res = await fetch('/api/pc-builder/hardware-ai-sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: q,
+          type: selectedCategory === 'cpu' ? 'cpu' : 'gpu',
+        }),
+      });
+
+      const data = await res.json();
+      if (data.success && data.hardware) {
+        const h = data.hardware;
+        const newComp: PcComponent = {
+          id: h.id || `comp-${Date.now()}`,
+          category: selectedCategory === 'cpu' ? 'cpu' : 'gpu',
+          manufacturer: h.brand || (selectedCategory === 'cpu' ? 'AMD' : 'NVIDIA'),
+          model: h.name || q,
+          specifications: selectedCategory === 'cpu'
+            ? `${h.cores || 8}-Core, ${h.threads || 16}-Threads, Socket ${h.socket || 'AM5'}`
+            : `${h.vramGb || 16}GB VRAM, ${h.architecture || 'Modern Architecture'}`,
+          socketOrInterface: h.socket || (selectedCategory === 'gpu' ? 'PCIe 4.0 x16' : 'AM5'),
+          powerRequirementWatts: Number(h.tdpWatts) || 150,
+          tierScore: Number(h.tier) || 8,
+          priceUsd: typeof h.releaseMsrp === 'string' ? parseInt(h.releaseMsrp.replace(/[^0-9]/g, '')) || 499 : 499,
+          currency: 'USD',
+          retailer: 'Authorized Retailer',
+          isAvailable: true,
+          dateUpdated: 'Live AI Verified'
+        };
+
+        onUpdateComponents([newComp, ...components]);
+        onShowToast(`Verified and registered ${newComp.model} into the component database!`, 'success');
+        setAiHardwareQuery('');
+      } else {
+        onShowToast(data.error || 'Could not verify hardware specs.', 'info');
+      }
+    } catch (err: any) {
+      onShowToast('Failed to connect to AI hardware lookup service.', 'info');
+    } finally {
+      setIsSearchingAi(false);
+    }
+  };
 
   const handleToggleAvailability = (id: string) => {
     const updated = components.map(c => (c.id === id ? { ...c, isAvailable: !c.isAvailable } : c));
@@ -107,6 +158,43 @@ export const AdminComponentModal: React.FC<AdminComponentModalProps> = ({
             className="px-3 py-1.5 rounded-xl bg-black/40 border border-white/10 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-purple-500"
           />
         </div>
+
+        {/* AI Hardware Specs & Real-Time Lookup (Google Grounded) */}
+        {(selectedCategory === 'cpu' || selectedCategory === 'gpu') && (
+          <div className="py-2.5 px-3.5 my-2 rounded-xl bg-purple-950/20 border border-purple-500/30 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
+            <div className="flex items-center gap-2 flex-1">
+              <Sparkles className="w-4 h-4 text-cyan-400 shrink-0" />
+              <input
+                type="text"
+                value={aiHardwareQuery}
+                onChange={(e) => setAiHardwareQuery(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') handleAiLookup();
+                }}
+                placeholder={`Search Google for unlisted ${selectedCategory.toUpperCase()} (e.g. ${selectedCategory === 'cpu' ? 'Ryzen 7 9800X3D, Core Ultra 9 285K' : 'RTX 5080, RTX 5090, RX 8800 XT'})...`}
+                className="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400"
+              />
+            </div>
+            <button
+              type="button"
+              onClick={handleAiLookup}
+              disabled={isSearchingAi || !aiHardwareQuery.trim()}
+              className="flex items-center justify-center gap-1.5 px-3.5 py-1.5 bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-500 hover:to-cyan-500 text-white rounded-lg text-xs font-['Rajdhani'] font-bold uppercase tracking-wider transition-all disabled:opacity-50 cursor-pointer shrink-0 shadow-sm"
+            >
+              {isSearchingAi ? (
+                <>
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  <span>Looking up...</span>
+                </>
+              ) : (
+                <>
+                  <Globe className="w-3.5 h-3.5 text-yellow-300" />
+                  <span>Lookup & Add to Database</span>
+                </>
+              )}
+            </button>
+          </div>
+        )}
 
         {/* Component Table / List */}
         <div className="flex-1 overflow-y-auto py-3 space-y-2">

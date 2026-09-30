@@ -1,21 +1,26 @@
 import React, { useState } from 'react';
-import { Search, Gamepad2, ChevronRight, Sparkles, Check } from 'lucide-react';
+import { Search, Gamepad2, ChevronRight, Sparkles, Check, Globe, Loader2, Plus, ExternalLink, ShieldCheck } from 'lucide-react';
 import { PcGameRequirements } from '../../types/pcRequirements';
 
 interface GameSelectorProps {
   games: PcGameRequirements[];
   selectedGame: PcGameRequirements;
   onSelectGame: (game: PcGameRequirements) => void;
+  onAddGame?: (game: PcGameRequirements) => void;
 }
 
 export const GameSelector: React.FC<GameSelectorProps> = ({
   games,
   selectedGame,
-  onSelectGame
+  onSelectGame,
+  onAddGame
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedGenre, setSelectedGenre] = useState<string>('All');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isAiSearching, setIsAiSearching] = useState(false);
+  const [aiSearchError, setAiSearchError] = useState<string | null>(null);
+  const [lastDiscoveredGame, setLastDiscoveredGame] = useState<PcGameRequirements | null>(null);
 
   // Popular quick game list mentioned in user prompt
   const popularSlugs = [
@@ -34,6 +39,42 @@ export const GameSelector: React.FC<GameSelectorProps> = ({
   ];
 
   const genres = ['All', 'Action', 'RPG', 'FPS', 'Multiplayer', 'Simulation', 'Adventure'];
+
+  const handleSearchAndAddFromInternet = async (customQuery?: string) => {
+    const q = (customQuery || searchQuery).trim();
+    if (!q || q.length < 2) return;
+
+    setIsAiSearching(true);
+    setAiSearchError(null);
+
+    try {
+      const response = await fetch('/api/pc-requirements/ai-sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: q }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Server returned ${response.status}`);
+      }
+
+      const data = await response.json();
+      if (data.success && data.game) {
+        setLastDiscoveredGame(data.game);
+        if (onAddGame) {
+          onAddGame(data.game);
+        }
+        onSelectGame(data.game);
+        setIsDropdownOpen(false);
+      } else {
+        setAiSearchError(data.error || 'Could not verify official system requirements for this game.');
+      }
+    } catch (err: any) {
+      setAiSearchError(err?.message || 'Failed to search live internet.');
+    } finally {
+      setIsAiSearching(false);
+    }
+  };
 
   const filteredGames = games.filter((game) => {
     const matchesSearch =
@@ -79,7 +120,7 @@ export const GameSelector: React.FC<GameSelectorProps> = ({
       </div>
 
       {/* Search Input */}
-      <div className="relative mb-5">
+      <div className="relative mb-3">
         <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
         <input
           type="text"
@@ -87,20 +128,82 @@ export const GameSelector: React.FC<GameSelectorProps> = ({
           onChange={(e) => {
             setSearchQuery(e.target.value);
             setIsDropdownOpen(true);
+            setAiSearchError(null);
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && searchQuery.trim().length >= 2 && filteredGames.length === 0) {
+              handleSearchAndAddFromInternet();
+            }
           }}
           onFocus={() => setIsDropdownOpen(true)}
-          placeholder="Type to search games (e.g., Cyberpunk 2077, GTA V, Elden Ring, Fortnite...)"
-          className="w-full pl-12 pr-4 py-3.5 bg-black/50 border border-white/10 focus:border-cyan-400/80 rounded-xl text-white placeholder-gray-500 text-sm sm:text-base transition-colors outline-none"
+          placeholder="Type to search any game on earth (e.g., Monster Hunter Wilds, GTA VI, Clair Obscur, Elden Ring...)"
+          className="w-full pl-12 pr-28 py-3.5 bg-black/50 border border-white/10 focus:border-cyan-400/80 rounded-xl text-white placeholder-gray-500 text-sm sm:text-base transition-colors outline-none"
         />
-        {searchQuery && (
-          <button
-            onClick={() => setSearchQuery('')}
-            className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-gray-400 hover:text-white uppercase font-bold px-2 py-1 bg-white/5 rounded"
-          >
-            Clear
-          </button>
-        )}
+        <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
+          {searchQuery && (
+            <button
+              onClick={() => {
+                setSearchQuery('');
+                setAiSearchError(null);
+              }}
+              className="text-xs text-gray-400 hover:text-white uppercase font-bold px-2 py-1 bg-white/5 rounded"
+            >
+              Clear
+            </button>
+          )}
+          {searchQuery.trim().length >= 2 && (
+            <button
+              onClick={() => handleSearchAndAddFromInternet()}
+              disabled={isAiSearching}
+              title="Search Google with AI Grounding for official system requirements"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 bg-purple-600/80 hover:bg-purple-600 text-white rounded-lg text-xs font-['Rajdhani'] font-bold uppercase tracking-wider transition-colors disabled:opacity-50 cursor-pointer shadow-md shadow-purple-950/40"
+            >
+              {isAiSearching ? (
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              ) : (
+                <Sparkles className="w-3.5 h-3.5 text-cyan-300" />
+              )}
+              <span className="hidden sm:inline">AI Search</span>
+            </button>
+          )}
+        </div>
       </div>
+
+      {/* AI Live Internet Search Banner & Status */}
+      {searchQuery.trim().length >= 2 && (
+        <div className="mb-4 p-3 rounded-xl bg-purple-950/25 border border-purple-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+          <div className="flex items-center gap-2">
+            <Globe className="w-4 h-4 text-cyan-400 shrink-0" />
+            <div className="text-xs text-gray-300">
+              <span className="font-semibold text-white">Search any video game on the internet:</span> AI Google Grounding retrieves verified Steam & publisher requirements.
+            </div>
+          </div>
+          <button
+            onClick={() => handleSearchAndAddFromInternet()}
+            disabled={isAiSearching}
+            className="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-500 hover:to-cyan-500 text-white font-['Rajdhani'] font-bold text-xs uppercase tracking-wider transition-all disabled:opacity-50 cursor-pointer shrink-0"
+          >
+            {isAiSearching ? (
+              <>
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                <span>Searching Google...</span>
+              </>
+            ) : (
+              <>
+                <Sparkles className="w-3.5 h-3.5 text-yellow-300" />
+                <span>Add "{searchQuery.slice(0, 16)}" via AI</span>
+              </>
+            )}
+          </button>
+        </div>
+      )}
+
+      {aiSearchError && (
+        <div className="mb-4 p-3 rounded-xl bg-red-950/30 border border-red-500/30 text-red-300 text-xs flex items-center justify-between">
+          <span>{aiSearchError}</span>
+          <button onClick={() => setAiSearchError(null)} className="text-red-400 hover:text-white font-bold text-xs uppercase ml-2">Dismiss</button>
+        </div>
+      )}
 
       {/* Genre Filter Pills */}
       <div className="flex items-center gap-2 overflow-x-auto pb-3 mb-4 scrollbar-none">
@@ -176,8 +279,31 @@ export const GameSelector: React.FC<GameSelectorProps> = ({
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 max-h-72 overflow-y-auto pr-1">
             {filteredGames.length === 0 ? (
-              <div className="col-span-full py-8 text-center text-gray-400 text-sm bg-black/20 rounded-xl border border-dashed border-white/10">
-                No games found matching "{searchQuery}". Try selecting another genre or searching another title.
+              <div className="col-span-full py-8 px-4 text-center bg-black/30 rounded-xl border border-dashed border-purple-500/30 flex flex-col items-center">
+                <Globe className="w-8 h-8 text-cyan-400 mb-2 opacity-80" />
+                <div className="text-white font-['Rajdhani'] font-bold text-base mb-1">
+                  "{searchQuery}" is not yet in the local catalog
+                </div>
+                <p className="text-gray-400 text-xs max-w-md mb-4">
+                  Game Vault AI can search Google for the official minimum and recommended PC requirements directly from official publisher specifications and storefront records, and automatically add this game to the database.
+                </p>
+                <button
+                  onClick={() => handleSearchAndAddFromInternet()}
+                  disabled={isAiSearching}
+                  className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-500 hover:to-cyan-500 text-white font-['Rajdhani'] font-bold text-sm uppercase tracking-wider transition-all disabled:opacity-50 cursor-pointer shadow-lg shadow-purple-950/50"
+                >
+                  {isAiSearching ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>Searching Google for Official Specs...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="w-4 h-4 text-yellow-300" />
+                      <span>Search & Add "{searchQuery}" via AI</span>
+                    </>
+                  )}
+                </button>
               </div>
             ) : (
               filteredGames.map((game) => {

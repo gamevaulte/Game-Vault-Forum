@@ -108,10 +108,100 @@ export const GameReleaseCalendarView: React.FC<GameReleaseCalendarViewProps> = (
 
   // AI Assistant Modal State
   const [isAiAssistantOpen, setIsAiAssistantOpen] = useState(false);
+  const [isSyncingInternet, setIsSyncingInternet] = useState(false);
+
+  // Dynamic releases synced from internet via AI
+  const [dynamicReleases, setDynamicReleases] = useState<GameRelease[]>(() => {
+    try {
+      const saved = localStorage.getItem('gv_dynamic_calendar_releases');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  // Merged releases database (Static fact-checked base + dynamic live internet releases)
+  const allReleasesDatabase = useMemo(() => {
+    const map = new Map<string, GameRelease>();
+    for (const r of GAME_RELEASES_DATABASE) {
+      map.set(r.slug.toLowerCase(), r);
+    }
+    for (const r of dynamicReleases) {
+      map.set(r.slug.toLowerCase(), r);
+    }
+    return Array.from(map.values());
+  }, [dynamicReleases]);
+
+  // Sync with server dynamic database to load all internet-grounded releases
+  useEffect(() => {
+    let isMounted = true;
+    fetch('/api/release-calendar/dynamic-database')
+      .then(res => res.json())
+      .then(data => {
+        if (isMounted && data.success && Array.isArray(data.releases) && data.releases.length > 0) {
+          setDynamicReleases(prev => {
+            const existingIds = new Set(prev.map(r => r.id));
+            const newReleases = data.releases.filter((r: GameRelease) => !existingIds.has(r.id));
+            if (newReleases.length > 0) {
+              const updated = [...prev, ...newReleases];
+              try {
+                localStorage.setItem('gv_dynamic_calendar_releases', JSON.stringify(updated));
+              } catch {}
+              return updated;
+            }
+            return prev;
+          });
+        }
+      })
+      .catch(err => console.warn('Could not load dynamic release calendar:', err));
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const handleSyncInternetReleases = async (queryToSync?: string) => {
+    const q = (queryToSync || searchQuery || 'upcoming video game releases 2025 2026').trim();
+    setIsSyncingInternet(true);
+
+    try {
+      const res = await fetch('/api/release-calendar/ai-sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: q }),
+      });
+      const data = await res.json();
+      if (data.success && Array.isArray(data.releases) && data.releases.length > 0) {
+        setDynamicReleases(prev => {
+          const map = new Map<string, GameRelease>();
+          prev.forEach(r => map.set(r.slug.toLowerCase(), r));
+          data.releases.forEach((r: GameRelease) => map.set(r.slug.toLowerCase(), r));
+          const updated = Array.from(map.values());
+          try {
+            localStorage.setItem('gv_dynamic_calendar_releases', JSON.stringify(updated));
+          } catch {}
+          return updated;
+        });
+        if (onShowToast) {
+          onShowToast(`Synced ${data.releases.length} verified releases from live Google Search Grounding!`, 'success');
+        }
+      } else {
+        if (onShowToast) {
+          onShowToast(data.error || 'No new releases found for this query.', 'info');
+        }
+      }
+    } catch (err: any) {
+      if (onShowToast) {
+        onShowToast('Failed to sync live releases from internet.', 'alert');
+      }
+    } finally {
+      setIsSyncingInternet(false);
+    }
+  };
 
   // Factual Integrity Audit Modal State & Audit Cache
   const [isFactCheckModalOpen, setIsFactCheckModalOpen] = useState(false);
-  const databaseAudit = useMemo(() => auditCalendarDatabase(GAME_RELEASES_DATABASE), []);
+  const databaseAudit = useMemo(() => auditCalendarDatabase(allReleasesDatabase), [allReleasesDatabase]);
 
   // User Watchlist State (loaded from currentUser or localStorage)
   const [watchlistIds, setWatchlistIds] = useState<string[]>(() => {
@@ -304,7 +394,7 @@ export const GameReleaseCalendarView: React.FC<GameReleaseCalendarViewProps> = (
 
   // Filtered & Sorted Releases
   const filteredReleases = useMemo(() => {
-    let result = [...GAME_RELEASES_DATABASE];
+    let result = [...allReleasesDatabase];
 
     // 1. Search Query
     if (searchQuery.trim()) {
@@ -578,14 +668,34 @@ export const GameReleaseCalendarView: React.FC<GameReleaseCalendarViewProps> = (
             </div>
           </div>
 
-          <button
-            type="button"
-            onClick={() => setIsAiAssistantOpen(true)}
-            className="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-['Rajdhani'] font-bold uppercase tracking-wider text-xs sm:text-sm flex items-center justify-center gap-2 transition-all shadow-lg shadow-purple-900/40 cursor-pointer shrink-0"
-          >
-            <Sparkles className="w-4 h-4" />
-            <span>Ask Release AI</span>
-          </button>
+          <div className="flex items-center gap-2.5 shrink-0 flex-wrap">
+            <button
+              type="button"
+              onClick={() => handleSyncInternetReleases()}
+              disabled={isSyncingInternet}
+              className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-['Rajdhani'] font-bold uppercase tracking-wider text-xs sm:text-sm flex items-center justify-center gap-2 transition-all shadow-lg shadow-cyan-950/40 cursor-pointer disabled:opacity-50"
+            >
+              {isSyncingInternet ? (
+                <>
+                  <RefreshCw className="w-4 h-4 animate-spin" />
+                  <span>Syncing Radar...</span>
+                </>
+              ) : (
+                <>
+                  <Globe className="w-4 h-4 text-cyan-200" />
+                  <span>Sync Internet Radar</span>
+                </>
+              )}
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsAiAssistantOpen(true)}
+              className="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-['Rajdhani'] font-bold uppercase tracking-wider text-xs sm:text-sm flex items-center justify-center gap-2 transition-all shadow-lg shadow-purple-900/40 cursor-pointer shrink-0"
+            >
+              <Sparkles className="w-4 h-4" />
+              <span>Ask Release AI</span>
+            </button>
+          </div>
         </div>
 
         {/* Section 1: RELEASING TODAY */}
@@ -790,18 +900,36 @@ export const GameReleaseCalendarView: React.FC<GameReleaseCalendarViewProps> = (
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search game title, developer, publisher, or genre..."
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#060812] border border-white/10 text-white placeholder-slate-500 text-xs sm:text-sm focus:outline-none focus:border-purple-500 transition-colors"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && searchQuery.trim().length >= 2) {
+                    handleSyncInternetReleases(searchQuery);
+                  }
+                }}
+                placeholder="Search game title, developer, or sync any game on the internet..."
+                className="w-full pl-10 pr-24 py-2.5 rounded-xl bg-[#060812] border border-white/10 text-white placeholder-slate-500 text-xs sm:text-sm focus:outline-none focus:border-purple-500 transition-colors"
               />
-              {searchQuery && (
-                <button
-                  type="button"
-                  onClick={() => setSearchQuery('')}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-white"
-                >
-                  ✕
-                </button>
-              )}
+              <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
+                {searchQuery && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchQuery('')}
+                    className="text-xs text-slate-400 hover:text-white px-1.5 py-0.5"
+                  >
+                    ✕
+                  </button>
+                )}
+                {searchQuery.trim().length >= 2 && (
+                  <button
+                    type="button"
+                    onClick={() => handleSyncInternetReleases(searchQuery)}
+                    disabled={isSyncingInternet}
+                    className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-cyan-600/80 hover:bg-cyan-600 text-white text-xs font-['Rajdhani'] font-bold uppercase tracking-wider transition-colors disabled:opacity-50 shadow-sm cursor-pointer"
+                  >
+                    {isSyncingInternet ? <RefreshCw className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3 text-yellow-300" />}
+                    <span>AI Sync</span>
+                  </button>
+                )}
+              </div>
             </div>
 
             {/* View Mode Toggle (Month / List / Grid) */}

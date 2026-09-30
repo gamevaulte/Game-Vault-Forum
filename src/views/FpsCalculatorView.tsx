@@ -99,6 +99,34 @@ export const FpsCalculatorView: React.FC<FpsCalculatorViewProps> = ({
     }
   });
 
+  // Sync with server dynamic database to load all internet-grounded benchmark profiles
+  useEffect(() => {
+    let isMounted = true;
+    fetch('/api/fps-calculator/dynamic-database')
+      .then(res => res.json())
+      .then(data => {
+        if (isMounted && data.success && Array.isArray(data.profiles) && data.profiles.length > 0) {
+          setCustomGames(prev => {
+            const existingIds = new Set(prev.map(p => p.id));
+            const newServerProfiles = data.profiles.filter((p: GamePerformanceProfile) => !existingIds.has(p.id));
+            if (newServerProfiles.length > 0) {
+              const updated = [...prev, ...newServerProfiles];
+              try {
+                localStorage.setItem('gv_custom_pc_games_v1', JSON.stringify(updated));
+              } catch {}
+              return updated;
+            }
+            return prev;
+          });
+        }
+      })
+      .catch(err => console.warn('Could not load dynamic FPS profiles:', err));
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   // Modal for adding any PC game on earth
   const [isCustomGameModalOpen, setIsCustomGameModalOpen] = useState(false);
   const [modalInitialTitle, setModalInitialTitle] = useState('');

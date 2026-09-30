@@ -29,6 +29,29 @@ export const ToolsHubView: React.FC<ToolsHubViewProps> = ({ onNavigateTab }) => 
         icon={<Wrench className="w-6 h-6" />}
       />
 
+      {/* AI Grounded & Self-Updating Databases Live Banner */}
+      <div className="mb-8 p-5 sm:p-6 rounded-2xl bg-gradient-to-r from-purple-950/50 via-[#0e1224] to-cyan-950/40 border border-purple-500/30 shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div className="flex items-start gap-3.5">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-600 to-cyan-600 flex items-center justify-center text-white shrink-0 shadow-lg shadow-purple-950/50">
+            <Sparkles className="w-5 h-5 text-yellow-300" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2 flex-wrap">
+              <h3 className="font-['Space_Grotesk'] font-bold text-base sm:text-lg text-white">
+                Live AI Search Grounding & Constantly Updating Databases
+              </h3>
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 flex items-center gap-1">
+                <ShieldCheck className="w-3 h-3 text-cyan-400" />
+                Zero Hallucinations Guarantee
+              </span>
+            </div>
+            <p className="text-xs sm:text-sm text-slate-300 mt-1 max-w-3xl font-['Inter']">
+              Every utility tool in Game Vault Forum now actively searches the global internet via Gemini and Google Search Grounding to source official game requirements, benchmark profiles, launch countdowns, and component architectures, continuously expanding and refreshing our databases in real time.
+            </p>
+          </div>
+        </div>
+      </div>
+
       {/* Featured Primary Tools Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
         <ToolCard

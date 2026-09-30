@@ -12,6 +12,19 @@ import {
   handleGameStoryGenerate, 
   handleGameStoryAdminStats 
 } from './src/server/gameStoryRoutes';
+import {
+  searchAndSyncPcRequirements,
+  searchAndSyncFpsGame,
+  searchAndSyncReleaseCalendar,
+  syncWheelGamesWithAi,
+  syncHardwareSpecsWithAi,
+  DYNAMIC_PC_REQUIREMENTS_STORE,
+  DYNAMIC_FPS_GAMES_STORE,
+  DYNAMIC_CALENDAR_RELEASES_STORE,
+  DYNAMIC_WHEEL_GAMES_STORE,
+  DYNAMIC_HARDWARE_STORE,
+  toolsSyncStats
+} from './src/server/aiToolsDataSync';
 
 dotenv.config();
 
@@ -660,6 +673,155 @@ ${JSON.stringify(calendarContext, null, 2)}`;
   app.get('/api/game-story/preview/:id', handleGameStoryPreview);
   app.post('/api/game-story/generate', handleGameStoryGenerate);
   app.get('/api/game-story/admin-stats', handleGameStoryAdminStats);
+
+  // ============================================================================
+  // AI GROUNDED DATA SYNC ENDPOINTS FOR UTILITY TOOLS (Constantly updates databases)
+  // ============================================================================
+
+  // 1. PC Game Requirements Checker (AI Internet Search & Dynamic Database)
+  app.get('/api/pc-requirements/search', async (req, res) => {
+    try {
+      const query = String(req.query.q || '').trim();
+      if (!query) return res.status(400).json({ success: false, error: 'Query parameter q is required' });
+      const result = await searchAndSyncPcRequirements(query);
+      return res.json(result);
+    } catch (err: any) {
+      console.error('[API PC Requirements Search]:', err);
+      return res.status(500).json({ success: false, error: err?.message || 'Server error' });
+    }
+  });
+
+  app.post('/api/pc-requirements/ai-sync', async (req, res) => {
+    try {
+      const { query } = req.body || {};
+      const cleanQ = String(query || '').trim();
+      if (!cleanQ) return res.status(400).json({ success: false, error: 'Query is required' });
+      const result = await searchAndSyncPcRequirements(cleanQ);
+      return res.json(result);
+    } catch (err: any) {
+      console.error('[API PC Requirements AI Sync]:', err);
+      return res.status(500).json({ success: false, error: err?.message || 'Server error' });
+    }
+  });
+
+  app.get('/api/pc-requirements/dynamic-database', (_req, res) => {
+    return res.json({
+      success: true,
+      total: DYNAMIC_PC_REQUIREMENTS_STORE.size,
+      games: Array.from(DYNAMIC_PC_REQUIREMENTS_STORE.values())
+    });
+  });
+
+  // 2. FPS Performance Calculator (AI Benchmark Auto-Calibration & Dynamic Profiles)
+  app.get('/api/fps-calculator/search', async (req, res) => {
+    try {
+      const query = String(req.query.q || '').trim();
+      if (!query) return res.status(400).json({ success: false, error: 'Query parameter q is required' });
+      const result = await searchAndSyncFpsGame(query);
+      return res.json(result);
+    } catch (err: any) {
+      console.error('[API FPS Calculator Search]:', err);
+      return res.status(500).json({ success: false, error: err?.message || 'Server error' });
+    }
+  });
+
+  app.post('/api/fps-calculator/ai-sync', async (req, res) => {
+    try {
+      const { query } = req.body || {};
+      const cleanQ = String(query || '').trim();
+      if (!cleanQ) return res.status(400).json({ success: false, error: 'Query is required' });
+      const result = await searchAndSyncFpsGame(cleanQ);
+      return res.json(result);
+    } catch (err: any) {
+      console.error('[API FPS Calculator AI Sync]:', err);
+      return res.status(500).json({ success: false, error: err?.message || 'Server error' });
+    }
+  });
+
+  app.get('/api/fps-calculator/dynamic-database', (_req, res) => {
+    return res.json({
+      success: true,
+      total: DYNAMIC_FPS_GAMES_STORE.size,
+      profiles: Array.from(DYNAMIC_FPS_GAMES_STORE.values())
+    });
+  });
+
+  // 3. Game Release Calendar (AI Live Radar & Release Schedule Sync)
+  app.get('/api/release-calendar/search', async (req, res) => {
+    try {
+      const query = String(req.query.q || '').trim();
+      if (!query) return res.status(400).json({ success: false, error: 'Query parameter q is required' });
+      const result = await searchAndSyncReleaseCalendar(query);
+      return res.json(result);
+    } catch (err: any) {
+      console.error('[API Release Calendar Search]:', err);
+      return res.status(500).json({ success: false, error: err?.message || 'Server error' });
+    }
+  });
+
+  app.post('/api/release-calendar/ai-sync', async (req, res) => {
+    try {
+      const { query } = req.body || {};
+      const cleanQ = String(query || '').trim();
+      if (!cleanQ) return res.status(400).json({ success: false, error: 'Query is required' });
+      const result = await searchAndSyncReleaseCalendar(cleanQ);
+      return res.json(result);
+    } catch (err: any) {
+      console.error('[API Release Calendar AI Sync]:', err);
+      return res.status(500).json({ success: false, error: err?.message || 'Server error' });
+    }
+  });
+
+  app.get('/api/release-calendar/dynamic-database', (_req, res) => {
+    return res.json({
+      success: true,
+      total: DYNAMIC_CALENDAR_RELEASES_STORE.size,
+      releases: Array.from(DYNAMIC_CALENDAR_RELEASES_STORE.values())
+    });
+  });
+
+  // 4. Random Game Picker Wheel AI Generator
+  app.post('/api/game-picker-wheel/ai', async (req, res) => {
+    try {
+      const { prompt, count = 8 } = req.body || {};
+      const cleanPrompt = String(prompt || '').trim();
+      if (!cleanPrompt) return res.status(400).json({ success: false, error: 'Prompt is required' });
+      const result = await syncWheelGamesWithAi(cleanPrompt, Number(count) || 8);
+      return res.json(result);
+    } catch (err: any) {
+      console.error('[API Game Picker Wheel AI]:', err);
+      return res.status(500).json({ success: false, error: err?.message || 'Server error' });
+    }
+  });
+
+  // 5. Gaming PC Builder Hardware AI Lookup
+  app.post('/api/pc-builder/hardware-ai-sync', async (req, res) => {
+    try {
+      const { name, type = 'gpu' } = req.body || {};
+      const cleanName = String(name || '').trim();
+      if (!cleanName) return res.status(400).json({ success: false, error: 'Hardware name is required' });
+      const result = await syncHardwareSpecsWithAi(cleanName, type === 'cpu' ? 'cpu' : 'gpu');
+      return res.json(result);
+    } catch (err: any) {
+      console.error('[API Hardware AI Sync]:', err);
+      return res.status(500).json({ success: false, error: err?.message || 'Server error' });
+    }
+  });
+
+  // 6. Global Tools Synchronization & Database Telemetry
+  app.get('/api/tools/sync-stats', (_req, res) => {
+    return res.json({
+      success: true,
+      stats: toolsSyncStats,
+      databases: {
+        pcRequirementsCount: DYNAMIC_PC_REQUIREMENTS_STORE.size,
+        fpsProfilesCount: DYNAMIC_FPS_GAMES_STORE.size,
+        calendarReleasesCount: DYNAMIC_CALENDAR_RELEASES_STORE.size,
+        wheelGamesCount: DYNAMIC_WHEEL_GAMES_STORE.size,
+        hardwareComponentsCount: DYNAMIC_HARDWARE_STORE.size,
+      }
+    });
+  });
 
   // Serve static files from public directory (images, pdfs, documents, icons)
   app.use(express.static(path.join(process.cwd(), 'public')));

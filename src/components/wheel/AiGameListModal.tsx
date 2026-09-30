@@ -27,6 +27,7 @@ export const AiGameListModal: React.FC<AiGameListModalProps> = ({
   const [loading, setLoading] = useState(false);
   const [suggestions, setSuggestions] = useState<AiGameSuggestion[]>([]);
   const [addedTitles, setAddedTitles] = useState<Set<string>>(new Set());
+  const [citations, setCitations] = useState<any[]>([]);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   if (!isOpen) return null;
@@ -55,6 +56,9 @@ export const AiGameListModal: React.FC<AiGameListModalProps> = ({
       if (Array.isArray(data.games) && data.games.length > 0) {
         setSuggestions(data.games);
         setAddedTitles(new Set());
+        if (Array.isArray(data.citations)) {
+          setCitations(data.citations);
+        }
       } else {
         setErrorMessage('No game suggestions returned. Please try a different query.');
       }
@@ -199,11 +203,18 @@ export const AiGameListModal: React.FC<AiGameListModalProps> = ({
               <button
                 type="button"
                 onClick={handleAddAll}
-                className="text-purple-400 hover:text-purple-300 font-bold uppercase tracking-wider text-[11px]"
+                className="text-purple-400 hover:text-purple-300 font-bold uppercase tracking-wider text-[11px] cursor-pointer"
               >
                 Add All to Wheel +
               </button>
             </div>
+
+            {citations.length > 0 && (
+              <div className="flex items-center gap-1.5 text-[11px] text-cyan-300 bg-cyan-950/20 px-2.5 py-1 rounded-lg border border-cyan-500/20">
+                <span className="font-mono text-[10px] text-cyan-400 font-bold">SOURCE:</span>
+                <span className="truncate">Grounded via Google Search ({citations[0]?.sourceName || 'Live Web'})</span>
+              </div>
+            )}
 
             <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
               {suggestions.map((sug, idx) => {

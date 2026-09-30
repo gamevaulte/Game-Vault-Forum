@@ -10,7 +10,11 @@ import {
   Check, 
   Layers, 
   HelpCircle,
-  Gamepad2
+  Gamepad2,
+  Globe,
+  Loader2,
+  ExternalLink,
+  ShieldCheck
 } from 'lucide-react';
 import { GamePerformanceProfile, createUniversalGameProfile } from '../../data/fpsCalculatorData';
 
@@ -37,6 +41,48 @@ export const CustomGameCalibrationModal: React.FC<CustomGameCalibrationModalProp
   const [supportsXeSS, setSupportsXeSS] = useState(true);
   const [supportsFrameGen, setSupportsFrameGen] = useState(false);
   const [engine, setEngine] = useState('DirectX 12 Engine');
+  const [isAiCalibrating, setIsAiCalibrating] = useState(false);
+  const [aiError, setAiError] = useState<string | null>(null);
+  const [aiCitations, setAiCitations] = useState<any[]>([]);
+
+  const handleAiCalibrate = async (overrideTitle?: string) => {
+    const targetTitle = (overrideTitle || title).trim();
+    if (!targetTitle || targetTitle.length < 2) return;
+
+    setIsAiCalibrating(true);
+    setAiError(null);
+
+    try {
+      const res = await fetch('/api/fps-calculator/ai-sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: targetTitle }),
+      });
+      const data = await res.json();
+      if (data.success && data.profile) {
+        const p = data.profile;
+        setTitle(p.title);
+        setGenre(p.genre);
+        setDemandTier(p.demandTier);
+        setCpuHeavy(p.cpuHeavy);
+        setSupportsRayTracing(p.supportsRayTracing);
+        setSupportsDlss(p.supportsDlss);
+        setSupportsFsr(p.supportsFsr);
+        setSupportsXeSS(p.supportsXeSS);
+        setSupportsFrameGen(p.supportsFrameGen);
+        setEngine(p.engine);
+        if (Array.isArray(data.citations)) {
+          setAiCitations(data.citations);
+        }
+      } else {
+        setAiError(data.error || 'Could not verify benchmarks. Falling back to universal profile estimation.');
+      }
+    } catch (err: any) {
+      setAiError(err?.message || 'Failed to connect to AI benchmark search.');
+    } finally {
+      setIsAiCalibrating(false);
+    }
+  };
 
   useEffect(() => {
     if (isOpen) {
@@ -152,21 +198,83 @@ export const CustomGameCalibrationModal: React.FC<CustomGameCalibrationModalProp
 
         {/* Content Form */}
         <form onSubmit={handleSave} className="p-6 overflow-y-auto space-y-6 text-left">
-          {/* Game Title */}
+          {/* Game Title with AI Auto-Calibration */}
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-purple-300 mb-1.5">
-              Game Title *
-            </label>
-            <input
-              type="text"
-              required
-              placeholder="e.g., Subnautica, Civilization VII, Crysis 4, Deadlock..."
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 text-sm font-medium"
-              autoFocus
-            />
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="text-xs font-bold uppercase tracking-wider text-purple-300">
+                Game Title *
+              </label>
+              <span className="text-[11px] text-gray-400">
+                Type any game to pull verified engine specs
+              </span>
+            </div>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                required
+                placeholder="e.g., Monster Hunter Wilds, GTA VI, Clair Obscur, Stalker 2..."
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleAiCalibrate();
+                  }
+                }}
+                className="flex-1 px-4 py-2.5 rounded-xl bg-slate-900 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 text-sm font-medium"
+                autoFocus
+              />
+              <button
+                type="button"
+                onClick={() => handleAiCalibrate()}
+                disabled={isAiCalibrating || !title.trim()}
+                title="Search Google Benchmarks via AI Grounding to auto-configure engine & tier"
+                className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-500 hover:to-cyan-500 text-white font-['Rajdhani'] font-bold text-xs uppercase tracking-wider transition-all disabled:opacity-50 cursor-pointer shrink-0 shadow-md shadow-purple-950/40"
+              >
+                {isAiCalibrating ? (
+                  <>
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    <span>Searching Web...</span>
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-3.5 h-3.5 text-yellow-300" />
+                    <span>AI Auto-Calibrate</span>
+                  </>
+                )}
+              </button>
+            </div>
           </div>
+
+          {/* AI Citations / Status Notice */}
+          {aiCitations.length > 0 && (
+            <div className="p-3 rounded-xl bg-cyan-950/20 border border-cyan-500/30 text-xs text-cyan-200">
+              <div className="flex items-center gap-1.5 font-bold mb-1">
+                <ShieldCheck className="w-4 h-4 text-cyan-400" />
+                <span>AI Sourced & Grounded Benchmarks Active:</span>
+              </div>
+              <div className="flex flex-wrap gap-2 mt-1.5">
+                {aiCitations.slice(0, 3).map((cit, idx) => (
+                  <a
+                    key={idx}
+                    href={cit.url}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-black/40 border border-cyan-500/20 hover:border-cyan-400 text-[11px] text-cyan-300 hover:underline"
+                  >
+                    <span>{cit.sourceName || 'Benchmark Source'}</span>
+                    <ExternalLink className="w-2.5 h-2.5 opacity-70" />
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {aiError && (
+            <div className="p-2.5 rounded-lg bg-red-950/30 border border-red-500/30 text-red-300 text-xs">
+              {aiError}
+            </div>
+          )}
 
           {/* Presets */}
           <div>

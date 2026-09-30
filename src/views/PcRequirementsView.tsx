@@ -109,6 +109,48 @@ export const PcRequirementsView: React.FC<PcRequirementsViewProps> = ({
   const [checkerResult, setCheckerResult] = useState<CheckerResult | null>(null);
   const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
 
+  // Sync with server dynamic database on mount to constantly update local catalog with newly discovered internet games
+  useEffect(() => {
+    let isMounted = true;
+    fetch('/api/pc-requirements/dynamic-database')
+      .then((res) => res.json())
+      .then((data) => {
+        if (isMounted && data.success && Array.isArray(data.games) && data.games.length > 0) {
+          setGames((prev) => {
+            const existingIds = new Set(prev.map((g) => g.id));
+            const newServerGames = data.games.filter((g: PcGameRequirements) => !existingIds.has(g.id));
+            if (newServerGames.length > 0) {
+              const updated = [...prev, ...newServerGames];
+              try {
+                localStorage.setItem(STORAGE_KEY_CUSTOM_GAMES, JSON.stringify(updated));
+              } catch (e) {}
+              return updated;
+            }
+            return prev;
+          });
+        }
+      })
+      .catch((e) => console.warn('Could not fetch dynamic requirements store:', e));
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const handleAddGame = (newGame: PcGameRequirements) => {
+    setGames((prev) => {
+      const exists = prev.some((g) => g.id === newGame.id || g.slug === newGame.slug);
+      const updated = exists 
+        ? prev.map((g) => (g.id === newGame.id || g.slug === newGame.slug ? newGame : g))
+        : [newGame, ...prev];
+      try {
+        localStorage.setItem(STORAGE_KEY_CUSTOM_GAMES, JSON.stringify(updated));
+      } catch (e) {}
+      return updated;
+    });
+    setSelectedGame(newGame);
+  };
+
   // Check if current user is admin
   const isAdmin = currentUser?.email === 'contact@gamevault.forum' || currentUser?.role === 'admin';
 
@@ -271,6 +313,7 @@ export const PcRequirementsView: React.FC<PcRequirementsViewProps> = ({
             games={games}
             selectedGame={selectedGame}
             onSelectGame={handleSelectGame}
+            onAddGame={handleAddGame}
           />
         </section>
 

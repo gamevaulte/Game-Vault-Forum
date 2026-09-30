@@ -1,4 +1,6 @@
 import { VerifiedGameRecord } from '../types/gameStory';
+import { EXTENDED_INTERNET_GAMES } from './extendedInternetGames';
+import { EXTENDED_INTERNET_GAMES_PART2 } from './extendedInternetGamesPart2';
 
 export const VERIFIED_GAME_DATABASE: VerifiedGameRecord[] = [
   // =========================================================================
@@ -1557,12 +1559,39 @@ export const VERIFIED_GAME_DATABASE: VerifiedGameRecord[] = [
 ];
 
 /**
+ * Dynamic registry for games discovered across the global internet via AI & Google Search
+ */
+export const DYNAMIC_INTERNET_GAMES: Map<string, VerifiedGameRecord> = new Map();
+
+/**
+ * Registers or updates a verified game in the global database registry.
+ */
+export function registerVerifiedGame(game: VerifiedGameRecord): VerifiedGameRecord {
+  DYNAMIC_INTERNET_GAMES.set(game.id.toLowerCase(), game);
+  DYNAMIC_INTERNET_GAMES.set(game.slug.toLowerCase(), game);
+  return game;
+}
+
+/**
+ * Returns all games in the combined verified database (base + internet discovered)
+ */
+export function getAllVerifiedGames(): VerifiedGameRecord[] {
+  const map = new Map<string, VerifiedGameRecord>();
+  VERIFIED_GAME_DATABASE.forEach(g => map.set(g.id.toLowerCase(), g));
+  EXTENDED_INTERNET_GAMES.forEach(g => map.set(g.id.toLowerCase(), g));
+  EXTENDED_INTERNET_GAMES_PART2.forEach(g => map.set(g.id.toLowerCase(), g));
+  DYNAMIC_INTERNET_GAMES.forEach((g, key) => map.set(key, g));
+  return Array.from(new Set(map.values()));
+}
+
+/**
  * Searches the verified game database by query, title, genre, platform, and year.
  */
 export function searchVerifiedGames(query: string, options?: { genre?: string; platform?: string; year?: string }): VerifiedGameRecord[] {
   const cleanQ = query.trim().toLowerCase();
+  const allGames = getAllVerifiedGames();
   
-  return VERIFIED_GAME_DATABASE.filter(game => {
+  return allGames.filter(game => {
     // Query matching
     if (cleanQ) {
       const matchTitle = game.title.toLowerCase().includes(cleanQ);
@@ -1610,5 +1639,9 @@ export function searchVerifiedGames(query: string, options?: { genre?: string; p
  */
 export function getVerifiedGameById(idOrSlug: string): VerifiedGameRecord | undefined {
   const clean = idOrSlug.trim().toLowerCase();
-  return VERIFIED_GAME_DATABASE.find(g => g.id.toLowerCase() === clean || g.slug.toLowerCase() === clean);
+  if (DYNAMIC_INTERNET_GAMES.has(clean)) {
+    return DYNAMIC_INTERNET_GAMES.get(clean);
+  }
+  const all = getAllVerifiedGames();
+  return all.find(g => g.id.toLowerCase() === clean || g.slug.toLowerCase() === clean);
 }

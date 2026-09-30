@@ -49,6 +49,7 @@ import {
 } from '../types/gameStory';
 import { 
   VERIFIED_GAME_DATABASE, 
+  getAllVerifiedGames,
   searchVerifiedGames, 
   getVerifiedGameById 
 } from '../data/gameStoryDatabase';
@@ -114,16 +115,21 @@ export const GameStoryGeneratorView: React.FC<GameStoryGeneratorViewProps> = ({
   const [isCopied, setIsCopied] = useState(false);
   const [isExportingPdf, setIsExportingPdf] = useState(false);
 
-  // Available Filter Options derived from Database
+  // Live AI Internet Search State
+  const [serverDiscoveredGames, setServerDiscoveredGames] = useState<VerifiedGameRecord[]>([]);
+  const [isSearchingInternet, setIsSearchingInternet] = useState(false);
+  const [lastSearchedInternetQuery, setLastSearchedInternetQuery] = useState('');
+
+  // Available Filter Options derived from Database (including extended internet games)
   const allGenres = useMemo(() => {
     const set = new Set<string>();
-    VERIFIED_GAME_DATABASE.forEach(g => g.genres.forEach(genre => set.add(genre)));
+    getAllVerifiedGames().forEach(g => g.genres.forEach(genre => set.add(genre)));
     return ['All', ...Array.from(set).sort()];
-  }, []);
+  }, [serverDiscoveredGames]);
 
   const allPlatforms = useMemo(() => {
     const set = new Set<string>();
-    VERIFIED_GAME_DATABASE.forEach(g => g.platforms.forEach(p => {
+    getAllVerifiedGames().forEach(g => g.platforms.forEach(p => {
       if (p.includes('PlayStation')) set.add('PlayStation');
       else if (p.includes('Xbox')) set.add('Xbox');
       else if (p.includes('PC') || p.includes('Windows')) set.add('PC');
@@ -131,22 +137,68 @@ export const GameStoryGeneratorView: React.FC<GameStoryGeneratorViewProps> = ({
       else set.add(p);
     }));
     return ['All', ...Array.from(set).sort()];
-  }, []);
+  }, [serverDiscoveredGames]);
 
   const allYears = useMemo(() => {
     const set = new Set<string>();
-    VERIFIED_GAME_DATABASE.forEach(g => set.add(String(g.releaseYear)));
+    getAllVerifiedGames().forEach(g => set.add(String(g.releaseYear)));
     return ['All', ...Array.from(set).sort((a, b) => Number(b) - Number(a))];
-  }, []);
+  }, [serverDiscoveredGames]);
 
-  // Filtered search results
+  // Combined search results (Local verified database + live internet discovered games)
   const searchResults = useMemo(() => {
-    return searchVerifiedGames(searchQuery, {
+    const local = searchVerifiedGames(searchQuery, {
       genre: selectedGenre,
       platform: selectedPlatform,
       year: selectedYear
     });
-  }, [searchQuery, selectedGenre, selectedPlatform, selectedYear]);
+
+    const existingIds = new Set(local.map(g => g.id.toLowerCase()));
+    const additional = serverDiscoveredGames.filter(g => !existingIds.has(g.id.toLowerCase()));
+
+    return [...local, ...additional];
+  }, [searchQuery, selectedGenre, selectedPlatform, selectedYear, serverDiscoveredGames]);
+
+  // Live Internet Search Trigger using AI Google Search Grounding
+  const triggerInternetSearch = async (overrideQuery?: string) => {
+    const q = (overrideQuery ?? searchQuery).trim();
+    if (!q || q.length < 2) return;
+    setIsSearchingInternet(true);
+    try {
+      const response = await fetch(`/api/game-story/search?q=${encodeURIComponent(q)}&live=true`);
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && Array.isArray(data.results)) {
+          setServerDiscoveredGames(prev => {
+            const map = new Map<string, VerifiedGameRecord>();
+            prev.forEach(g => map.set(g.id.toLowerCase(), g));
+            data.results.forEach((g: VerifiedGameRecord) => map.set(g.id.toLowerCase(), g));
+            return Array.from(map.values());
+          });
+          setLastSearchedInternetQuery(q);
+          if (data.results.length > 0) {
+            onShowToast(`Found ${data.results.length} game(s) from global internet search!`, 'success');
+          }
+        }
+      }
+    } catch (err) {
+      console.warn('Live internet search error:', err);
+    } finally {
+      setIsSearchingInternet(false);
+    }
+  };
+
+  // Debounced live internet search for any game on the internet
+  useEffect(() => {
+    const q = searchQuery.trim();
+    if (!q || q.length < 2 || q.toLowerCase() === lastSearchedInternetQuery.toLowerCase()) return;
+
+    const timer = setTimeout(() => {
+      triggerInternetSearch(q);
+    }, 600);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
   // Load Saved Stories for user
   const loadUserStories = async () => {
@@ -400,19 +452,44 @@ export const GameStoryGeneratorView: React.FC<GameStoryGeneratorViewProps> = ({
                 </p>
               </div>
 
-              {/* Search Input Bar */}
-              <div className="mt-6 relative">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
-                  <Search className="w-5 h-5 text-purple-400" />
+              {/* Search Input Bar with AI Live Internet Search Trigger */}
+              <div className="mt-6 flex flex-col sm:flex-row gap-3">
+                <div className="relative flex-1">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                    <Search className="w-5 h-5 text-purple-400" />
+                  </div>
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        triggerInternetSearch();
+                      }
+                    }}
+                    placeholder="Search any game title across the internet (e.g. Silksong, Elden Ring, GTA V, Clair Obscur)..."
+                    className="w-full pl-12 pr-4 py-3.5 rounded-2xl bg-[#070913] border border-white/10 hover:border-purple-500/40 focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20 text-white placeholder-slate-500 text-sm font-medium transition-all"
+                  />
                 </div>
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search for a game title..."
-                  className="w-full pl-12 pr-4 py-3.5 rounded-2xl bg-[#070913] border border-white/10 hover:border-purple-500/40 focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20 text-white placeholder-slate-500 text-sm font-medium transition-all"
-                />
+                <button
+                  type="button"
+                  onClick={() => triggerInternetSearch()}
+                  disabled={isSearchingInternet}
+                  className="px-5 py-3.5 rounded-2xl bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-600 hover:from-purple-500 hover:to-cyan-500 text-white text-xs font-['Rajdhani'] font-bold uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-purple-900/40 transition-all shrink-0 disabled:opacity-50 cursor-pointer"
+                  title="Search the entire internet for this game using AI Google Grounding"
+                >
+                  <Sparkles className={`w-4 h-4 text-cyan-200 ${isSearchingInternet ? 'animate-spin' : ''}`} />
+                  <span>{isSearchingInternet ? 'Searching Internet...' : 'Search All Internet via AI'}</span>
+                </button>
               </div>
+
+              {/* Live Search Indicator */}
+              {isSearchingInternet && (
+                <div className="mt-3 p-3 rounded-2xl bg-purple-950/40 border border-purple-500/30 flex items-center gap-3 text-xs text-purple-200 animate-pulse">
+                  <Sparkles className="w-4 h-4 text-cyan-400 animate-spin shrink-0" />
+                  <span>Querying Google Search Grounding for verified game records matching <strong>"{searchQuery}"</strong>...</span>
+                </div>
+              )}
 
               {/* Quick Pills Example Titles */}
               <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-slate-400">
@@ -627,23 +704,43 @@ export const GameStoryGeneratorView: React.FC<GameStoryGeneratorViewProps> = ({
               </div>
 
               {searchResults.length === 0 && (
-                <div className="p-12 text-center rounded-3xl bg-[#0b0e1b] border border-white/5 space-y-3">
-                  <HelpCircle className="w-10 h-10 text-slate-500 mx-auto" />
-                  <h3 className="text-lg font-bold text-white">No Matching Game Found</h3>
-                  <p className="text-xs text-slate-400 max-w-md mx-auto">
-                    We couldn’t verify enough information about this game in our authoritative registry to generate a reliable report. Try searching another title.
+                <div className="p-10 sm:p-12 text-center rounded-3xl bg-[#0b0e1b] border border-white/5 space-y-4">
+                  <div className="w-14 h-14 rounded-2xl bg-purple-950/60 border border-purple-500/30 flex items-center justify-center mx-auto text-purple-400">
+                    <Sparkles className="w-7 h-7 text-cyan-400" />
+                  </div>
+                  <h3 className="text-lg font-bold text-white font-['Space_Grotesk']">
+                    {searchQuery.trim() ? `Search Global Internet for "${searchQuery}"?` : 'No Matching Game Found'}
+                  </h3>
+                  <p className="text-xs text-slate-400 max-w-md mx-auto leading-relaxed">
+                    {searchQuery.trim()
+                      ? `"${searchQuery}" isn't currently cached in local records. Use AI with live Google Search Grounding to discover, fact-check, and register this game into Game Vault.`
+                      : 'We couldn’t verify enough information with the current filter settings. Try searching another title or clearing your filters.'}
                   </p>
-                  <button
-                    onClick={() => {
-                      setSearchQuery('');
-                      setSelectedGenre('All');
-                      setSelectedPlatform('All');
-                      setSelectedYear('All');
-                    }}
-                    className="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-xl text-xs font-bold transition-colors"
-                  >
-                    Reset Filters
-                  </button>
+                  <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+                    {searchQuery.trim() && (
+                      <button
+                        type="button"
+                        onClick={() => triggerInternetSearch()}
+                        disabled={isSearchingInternet}
+                        className="px-6 py-3 bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-600 hover:from-purple-500 hover:to-cyan-500 text-white rounded-xl text-xs font-bold font-['Rajdhani'] uppercase tracking-wider flex items-center gap-2 shadow-xl shadow-purple-900/40 transition-all cursor-pointer disabled:opacity-50"
+                      >
+                        <Sparkles className={`w-4 h-4 text-cyan-200 ${isSearchingInternet ? 'animate-spin' : ''}`} />
+                        <span>{isSearchingInternet ? 'Searching Internet...' : `Search Internet for "${searchQuery}"`}</span>
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSearchQuery('');
+                        setSelectedGenre('All');
+                        setSelectedPlatform('All');
+                        setSelectedYear('All');
+                      }}
+                      className="px-4 py-3 bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white rounded-xl text-xs font-bold transition-colors border border-white/10 cursor-pointer"
+                    >
+                      Reset Filters
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
