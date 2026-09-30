@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Sparkles, Gamepad2, CheckCircle2, ChevronRight, Filter, Zap } from 'lucide-react';
 import { UserPcSpec, PcGameRequirements } from '../../types/pcRequirements';
 import { findGamesPcCanRun } from '../../lib/pcRequirementsChecker';
+import { getGameTitleArtwork } from '../../utils/gameImageService';
 
 interface GamesMyPcCanRunProps {
   userPc: UserPcSpec;
@@ -112,7 +113,7 @@ export const GamesMyPcCanRun: React.FC<GamesMyPcCanRunProps> = ({
                 className="flex items-center gap-3.5 p-3.5 rounded-xl bg-black/40 hover:bg-white/[0.04] border border-white/5 hover:border-purple-500/40 text-left transition-all cursor-pointer group"
               >
                 <img
-                  src={game.coverImage}
+                  src={getGameTitleArtwork(game.title, game.genre, game.coverImage)}
                   alt={game.title}
                   className="w-14 h-14 rounded-lg object-cover border border-white/10 group-hover:scale-105 transition-transform shrink-0"
                   referrerPolicy="no-referrer"

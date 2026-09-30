@@ -62,6 +62,7 @@ import {
   generateLocalUpgradeAdvice 
 } from '../services/fpsCalculationEngine';
 import { PageTab, UserAccount } from '../types';
+import { getGameTitleArtwork } from '../utils/gameImageService';
 
 interface FpsCalculatorViewProps {
   currentUser?: UserAccount | null;
@@ -690,7 +691,7 @@ Calculate your PC performance at: ${window.location.origin}/tools/fps-calculator
                   >
                     <div className="flex items-center gap-3 truncate">
                       <img 
-                        src={activeGame.coverImage} 
+                        src={getGameTitleArtwork(activeGame.title, activeGame.genre, activeGame.coverImage)} 
                         alt={activeGame.title}
                         referrerPolicy="no-referrer"
                         className="w-9 h-9 rounded-lg object-cover border border-white/10 shrink-0" 
@@ -772,7 +773,7 @@ Calculate your PC performance at: ${window.location.origin}/tools/fps-calculator
                             >
                               <div className="flex items-center gap-3 truncate">
                                 <img 
-                                  src={game.coverImage} 
+                                  src={getGameTitleArtwork(game.title, game.genre, game.coverImage)} 
                                   alt={game.title}
                                   referrerPolicy="no-referrer"
                                   className="w-8 h-8 rounded object-cover shrink-0 border border-white/10" 

@@ -3,6 +3,7 @@ import { PcGameRequirements } from '../types/pcRequirements';
 import { GamePerformanceProfile } from '../data/fpsCalculatorData';
 import { GameRelease, CalendarPlatform, ReleaseGenre, ReleaseStatus } from '../types/releaseCalendar';
 import { GameSourceCitation } from '../types/gameStory';
+import { getGameTitleArtwork } from '../utils/gameImageService';
 
 // ============================================================================
 // DYNAMIC IN-MEMORY STORES FOR TOOLS (Continuously populated via Live AI Search)
@@ -264,9 +265,7 @@ Output ONLY valid JSON.`;
 
     const citations = extractCitations(response, cleanQ);
     const id = `game-req-${slugBase}-${Date.now().toString(36)}`;
-    const coverImage = parsed.coverImage && parsed.coverImage.startsWith('http')
-      ? parsed.coverImage
-      : 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&auto=format&fit=crop&q=80';
+    const coverImage = getGameTitleArtwork(parsed.title, parsed.genre, parsed.coverImage);
 
     const gameRecord: PcGameRequirements = {
       id,
@@ -442,7 +441,7 @@ Output ONLY valid JSON.`;
       id,
       title: parsed.title,
       slug,
-      coverImage: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&auto=format&fit=crop&q=80',
+      coverImage: getGameTitleArtwork(parsed.title, parsed.genre, parsed.coverImage),
       genre: parsed.genre || 'Action / PC Game',
       releaseYear: Number(parsed.releaseYear) || new Date().getFullYear(),
       engine: parsed.engine || 'DirectX 12 Engine',
@@ -558,9 +557,7 @@ Output ONLY valid JSON.`;
 
       const slug = String(item.title).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
       const id = `dyn-rel-${slug}-${Date.now().toString(36)}`;
-      const cover = item.cover && item.cover.startsWith('http')
-        ? item.cover
-        : 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&auto=format&fit=crop&q=80';
+      const cover = getGameTitleArtwork(item.title, item.genre, item.cover);
 
       const releaseRecord: GameRelease = {
         id,
@@ -672,7 +669,7 @@ Output ONLY valid JSON.`;
       reason: g.reason || 'Critically acclaimed title with outstanding gameplay.',
       platforms: g.platforms || ['PC'],
       releaseYear: Number(g.releaseYear) || new Date().getFullYear(),
-      coverImage: g.coverImage || 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&auto=format&fit=crop&q=80',
+      coverImage: getGameTitleArtwork(g.title, g.genre, g.coverImage),
     }));
 
     // Cache in wheel games store

@@ -22,6 +22,7 @@ import {
 import { GameRelease } from '../../types/releaseCalendar';
 import { downloadIcsFile, getGoogleCalendarUrl, getOutlookCalendarUrl } from '../../utils/calendarExport';
 import { validateGameRelease } from '../../utils/factCheck';
+import { getGameTitleArtwork } from '../../utils/gameImageService';
 
 interface ReleaseDetailsModalProps {
   release: GameRelease | null;
@@ -84,7 +85,7 @@ export const ReleaseDetailsModal: React.FC<ReleaseDetailsModalProps> = ({
         {/* Modal Backdrop Banner */}
         <div className="relative h-48 sm:h-64 w-full overflow-hidden bg-slate-900">
           <img
-            src={release.cover}
+            src={getGameTitleArtwork(release.title, release.genre, release.cover)}
             alt={release.title}
             className="w-full h-full object-cover opacity-60"
           />

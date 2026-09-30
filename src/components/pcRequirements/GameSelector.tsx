@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Search, Gamepad2, ChevronRight, Sparkles, Check, Globe, Loader2, Plus, ExternalLink, ShieldCheck } from 'lucide-react';
 import { PcGameRequirements } from '../../types/pcRequirements';
+import { getGameTitleArtwork } from '../../utils/gameImageService';
 
 interface GameSelectorProps {
   games: PcGameRequirements[];
@@ -251,7 +252,7 @@ export const GameSelector: React.FC<GameSelectorProps> = ({
                   }`}
                 >
                   <img
-                    src={game.coverImage}
+                    src={getGameTitleArtwork(game.title, game.genre, game.coverImage)}
                     alt={game.title}
                     className="w-4 h-4 rounded-full object-cover"
                     referrerPolicy="no-referrer"
@@ -323,7 +324,7 @@ export const GameSelector: React.FC<GameSelectorProps> = ({
                     }`}
                   >
                     <img
-                      src={game.coverImage}
+                      src={getGameTitleArtwork(game.title, game.genre, game.coverImage)}
                       alt={game.title}
                       className="w-12 h-12 rounded-lg object-cover shrink-0 border border-white/10"
                       referrerPolicy="no-referrer"

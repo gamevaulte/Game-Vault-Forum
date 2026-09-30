@@ -14,6 +14,7 @@ import {
   VerifiedGameRecord,
   GameSourceCitation
 } from '../types/gameStory';
+import { getGameTitleArtwork } from '../utils/gameImageService';
 
 // In-memory cache for fast deduplicated responses and cost optimization
 const reportCache = new Map<string, { report: GeneratedGameStoryReport; cachedAt: number }>();
@@ -245,7 +246,7 @@ Output ONLY valid JSON.`;
         gameModes: Array.isArray(item.gameModes) && item.gameModes.length > 0 ? item.gameModes : ['Single-player'],
         engine: item.engine || 'Verified Game Engine',
         franchise: item.franchise || item.title,
-        coverImage: item.coverImage || 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&auto=format&fit=crop&q=80',
+        coverImage: getGameTitleArtwork(item.title, Array.isArray(item.genres) ? item.genres[0] : undefined, item.coverImage),
         shortOverview: item.shortOverview || `${item.title} is an officially verified video game developed by ${item.developer} (${year}).`,
         setting: item.setting || `The verified narrative world of ${item.title}.`,
         storyPremise: item.storyPremise || `${item.title} follows an intricate journey grounded in verified lore.`,

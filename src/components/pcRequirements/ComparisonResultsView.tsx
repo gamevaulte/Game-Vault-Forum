@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import { CheckerResult, PcGameRequirements, UserPcSpec } from '../../types/pcRequirements';
 import { generateShareLinks } from '../../lib/pcRequirementsChecker';
+import { getGameTitleArtwork } from '../../utils/gameImageService';
 
 interface ComparisonResultsViewProps {
   result: CheckerResult;
@@ -100,7 +101,7 @@ export const ComparisonResultsView: React.FC<ComparisonResultsViewProps> = ({
           {/* Quick game thumbnail & title */}
           <div className="flex items-center gap-3 bg-black/50 border border-white/10 rounded-xl p-3 shrink-0 self-start md:self-auto">
             <img
-              src={game.coverImage}
+              src={getGameTitleArtwork(game.title, game.genre, game.coverImage)}
               alt={game.title}
               className="w-14 h-14 rounded-lg object-cover border border-purple-400/30"
               referrerPolicy="no-referrer"

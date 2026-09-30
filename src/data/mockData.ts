@@ -286,7 +286,7 @@ The artistic direction and audio composition remain unmatched in modern dark fan
     developer: 'FromSoftware',
     publisher: 'Bandai Namco',
     rating: 9.8,
-    artwork: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&auto=format&fit=crop&q=80',
+    artwork: '/src/assets/images/elden_ring_cover_1790767174737.jpg',
     tags: ['Soulslike', 'Open World', 'Dark Fantasy', 'Masterpiece', 'Hardcore RPG'],
     featured: true
   },
@@ -305,7 +305,7 @@ Visually, Night City and Dogtown stand as the premier showcase for modern graphi
     developer: 'CD Projekt RED',
     publisher: 'CD Projekt',
     rating: 9.2,
-    artwork: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=800&auto=format&fit=crop&q=80',
+    artwork: '/src/assets/images/cyberpunk_phantom_liberty_1790767191132.jpg',
     tags: ['Cyberpunk', 'Open World', 'Sci-Fi', 'Ray Tracing', 'Story Rich'],
     featured: true
   },
@@ -324,7 +324,7 @@ The emotional depth of its companion characters — including Shadowheart, Astar
     developer: 'Larian Studios',
     publisher: 'Larian Studios',
     rating: 9.7,
-    artwork: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800&auto=format&fit=crop&q=80',
+    artwork: '/src/assets/images/bg3_honour_hero_1790442560266.jpg',
     tags: ['CRPG', 'Turn-Based', 'Choice Matters', 'Fantasy', 'D&D 5e'],
     featured: true
   },
@@ -343,7 +343,7 @@ The game's enduring appeal lies in its cerebral pacing: momentum, turning circle
     developer: 'Wargaming',
     publisher: 'Wargaming',
     rating: 8.3,
-    artwork: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=800&auto=format&fit=crop&q=80',
+    artwork: '/src/assets/images/world_of_warships_cover_1790767205719.jpg',
     tags: ['Naval Combat', 'Tactical', 'Free to Play', 'Multiplayer', 'Military Strategy'],
     featured: true
   },
@@ -362,7 +362,7 @@ Underpinning the moment-to-moment firefights is a persistent, overarching Galact
     developer: 'Arrowhead Game Studios',
     publisher: 'PlayStation Publishing',
     rating: 8.8,
-    artwork: 'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=800&auto=format&fit=crop&q=80',
+    artwork: '/src/assets/images/helldivers_tactical_cover_1790767233421.jpg',
     tags: ['Co-op', 'Shooter', 'PvE', 'Sci-Fi', 'Tactical Squad'],
     featured: true
   },
@@ -381,7 +381,7 @@ A dynamic weather engine introduces seasonal shifts, blinding dust storms, and t
     developer: 'Playground Games',
     publisher: 'Xbox Game Studios',
     rating: 9.0,
-    artwork: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=800&auto=format&fit=crop&q=80',
+    artwork: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=1200&auto=format&fit=crop&q=80',
     tags: ['Open World', 'Driving', 'Automotive', 'Arcade Sim', 'Photorealistic'],
     featured: false
   },
@@ -400,7 +400,7 @@ The visual presentation elevates traditional 2D hand-drawn animation with multi-
     developer: 'Team Cherry',
     publisher: 'Team Cherry',
     rating: 9.5,
-    artwork: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&auto=format&fit=crop&q=80',
+    artwork: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1200&auto=format&fit=crop&q=80',
     tags: ['Metroidvania', 'Souls-like', 'Hand-Drawn', 'Challenging', 'Indie Gem'],
     featured: false
   },
@@ -419,7 +419,7 @@ Faction questlines — including the UC Vanguard, Freestar Rangers, Ryujin Indus
     developer: 'Bethesda Game Studios',
     publisher: 'Bethesda Softworks',
     rating: 7.8,
-    artwork: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&auto=format&fit=crop&q=80',
+    artwork: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1200&auto=format&fit=crop&q=80',
     tags: ['Space', 'Exploration', 'RPG', 'Ship Customization', 'Sci-Fi'],
     featured: false
   },
@@ -438,7 +438,7 @@ Supported by massive global esports tournaments and frequent seasonal game mode 
     developer: 'LightSpeed & Quantum Studio',
     publisher: 'Krafton / Level Infinite',
     rating: 8.8,
-    artwork: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&auto=format&fit=crop&q=80',
+    artwork: '/src/assets/images/pubg_mobile_cover_1790767220593.jpg',
     tags: ['Battle Royale', 'Shooter', 'PvP', 'Tactical', 'Competitive Mobile'],
     featured: true
   }

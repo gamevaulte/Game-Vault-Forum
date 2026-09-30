@@ -62,6 +62,7 @@ import {
 import { generateGameStoryPdf } from '../lib/gameStoryPdf';
 import { saveUserGameStory, getUserGameStories } from '../lib/userGameStoriesStorage';
 import { UserAccount } from '../types';
+import { getGameTitleArtwork } from '../utils/gameImageService';
 
 interface GameStoryGeneratorViewProps {
   initialGameSlug?: string;
@@ -593,7 +594,7 @@ export const GameStoryGeneratorView: React.FC<GameStoryGeneratorViewProps> = ({
                           className="flex items-center gap-3 p-3 rounded-2xl bg-[#0a0d18] border border-white/10 hover:border-amber-400 cursor-pointer transition-all hover:bg-white/5"
                         >
                           <img
-                            src={opt.coverImage}
+                            src={getGameTitleArtwork(opt.title, opt.editionLabel, opt.coverImage)}
                             alt={opt.title}
                             className="w-14 h-16 rounded-xl object-cover shrink-0"
                           />
@@ -634,7 +635,7 @@ export const GameStoryGeneratorView: React.FC<GameStoryGeneratorViewProps> = ({
                     {/* Cover Art Image */}
                     <div className="relative h-48 w-full overflow-hidden bg-slate-900">
                       <img
-                        src={game.coverImage}
+                        src={getGameTitleArtwork(game.title, game.genres?.[0], game.coverImage)}
                         alt={game.title}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                         loading="lazy"
@@ -765,7 +766,7 @@ export const GameStoryGeneratorView: React.FC<GameStoryGeneratorViewProps> = ({
             <div className="rounded-3xl bg-[#0b0e1b] border border-purple-500/30 overflow-hidden shadow-2xl">
               <div className="relative h-64 sm:h-80 w-full overflow-hidden">
                 <img
-                  src={selectedGame.coverImage}
+                  src={getGameTitleArtwork(selectedGame.title, selectedGame.genres?.[0], selectedGame.coverImage)}
                   alt={selectedGame.title}
                   className="w-full h-full object-cover"
                 />
@@ -1108,7 +1109,7 @@ export const GameStoryGeneratorView: React.FC<GameStoryGeneratorViewProps> = ({
               <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
                 <div className="flex items-start sm:items-center gap-5">
                   <img
-                    src={currentReport.coverImage}
+                    src={getGameTitleArtwork(currentReport.gameTitle, currentReport.gameInfo.genre, currentReport.coverImage)}
                     alt={currentReport.gameTitle}
                     className="w-20 h-24 sm:w-24 sm:h-28 rounded-2xl object-cover border border-white/10 shadow-lg shrink-0"
                   />
@@ -1470,7 +1471,7 @@ export const GameStoryGeneratorView: React.FC<GameStoryGeneratorViewProps> = ({
                         >
                           {rg.coverImage && (
                             <img
-                              src={rg.coverImage}
+                              src={getGameTitleArtwork(rg.title, undefined, rg.coverImage)}
                               alt={rg.title}
                               className="w-12 h-14 rounded-xl object-cover shrink-0"
                             />

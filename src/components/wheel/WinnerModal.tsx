@@ -4,6 +4,7 @@ import { MOCK_GAMES, MOCK_VIDEOS, MOCK_ARTICLES, MOCK_GUIDES, MOCK_REVIEWS } fro
 import { INITIAL_GAMES_REQUIREMENTS } from '../../data/pcRequirementsData';
 import { getSeoSlug } from '../../lib/seo';
 import { RotateCw, Trash2, Check, Plus, ExternalLink, Trophy, X } from 'lucide-react';
+import { getGameTitleArtwork } from '../../utils/gameImageService';
 
 interface WinnerModalProps {
   winner: WheelGameEntry | null;
@@ -193,11 +194,21 @@ export const WinnerModal: React.FC<WinnerModalProps> = ({
           YOU SHOULD PLAY:
         </h2>
 
-        {/* Winning Game Title Display */}
-        <div className="my-5 p-4 sm:p-5 rounded-xl bg-gradient-to-r from-purple-950/60 via-slate-800/80 to-purple-950/60 border border-purple-500/50 shadow-inner">
-          <h3 className="text-2xl sm:text-3xl font-black font-['Space_Grotesk'] text-transparent bg-clip-text bg-gradient-to-r from-purple-300 via-white to-pink-300 break-words">
-            {winner.name}
-          </h3>
+        {/* Winning Game Title Display & Title-Specific Artwork */}
+        <div className="my-5 rounded-xl overflow-hidden border border-purple-500/50 shadow-inner bg-slate-800/80">
+          <div className="relative aspect-[21/9] w-full overflow-hidden bg-slate-950">
+            <img 
+              src={getGameTitleArtwork(winner.name, matchedGame?.genre)} 
+              alt={winner.name}
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/60 to-transparent" />
+            <div className="absolute bottom-2.5 left-4 right-4 text-center">
+              <h3 className="text-xl sm:text-2xl font-black font-['Space_Grotesk'] text-white drop-shadow-md break-words">
+                {winner.name}
+              </h3>
+            </div>
+          </div>
         </div>
 
         {/* Matched Game Vault Database Details */}

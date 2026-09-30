@@ -1,4 +1,5 @@
 import { GamingCategory, PlayableGameMeta } from '../types/gaming';
+import { AI_GAME_ASSETS } from '../utils/gameImageService';
 
 export const GAMING_CATEGORIES: GamingCategory[] = [
   {
@@ -103,7 +104,7 @@ export const PLAYABLE_GAMES: PlayableGameMeta[] = [
       { key: 'Spacebar', action: 'Fire Laser Pulse' },
       { key: 'P or Esc', action: 'Pause Game' }
     ],
-    thumbnail: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=600&auto=format&fit=crop&q=80',
+    thumbnail: AI_GAME_ASSETS.SPACE_INVADERS,
     supportsMultiplayer: false,
     difficulty: 'Medium',
     tags: ['Arcade', 'Retro', 'Shooter', 'Sci-Fi'],
@@ -129,7 +130,7 @@ export const PLAYABLE_GAMES: PlayableGameMeta[] = [
       { key: 'Arrow Keys / WASD', action: 'Change Snake Direction' },
       { key: 'Spacebar', action: 'Pause / Resume' }
     ],
-    thumbnail: 'https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=600&auto=format&fit=crop&q=80',
+    thumbnail: AI_GAME_ASSETS.NEON_SNAKE,
     supportsMultiplayer: false,
     difficulty: 'Easy',
     tags: ['Arcade', 'Casual', 'Cyberpunk', 'Classic'],
@@ -156,7 +157,7 @@ export const PLAYABLE_GAMES: PlayableGameMeta[] = [
       { key: 'Spacebar / Click', action: 'Launch Ball' },
       { key: 'P', action: 'Pause / Resume' }
     ],
-    thumbnail: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=600&auto=format&fit=crop&q=80',
+    thumbnail: AI_GAME_ASSETS.BRICK_BREAKER,
     supportsMultiplayer: false,
     difficulty: 'Medium',
     tags: ['Arcade', 'Breakout', 'Physics', 'Action'],
@@ -348,7 +349,7 @@ export const PLAYABLE_GAMES: PlayableGameMeta[] = [
       { key: 'Flip Board', action: 'Switch White / Black Perspective' },
       { key: 'Undo', action: 'Take Back Move' }
     ],
-    thumbnail: 'https://images.unsplash.com/photo-1529699211952-734e80c4d42b?w=600&auto=format&fit=crop&q=80',
+    thumbnail: AI_GAME_ASSETS.TACTICAL_CHESS,
     supportsMultiplayer: false,
     difficulty: 'Hard',
     tags: ['Strategy', 'Chess', 'Board', 'AI'],
@@ -402,7 +403,7 @@ export const PLAYABLE_GAMES: PlayableGameMeta[] = [
       { key: 'Click Grid', action: 'Launch Radar Salvo' },
       { key: 'R', action: 'Rotate Ship Placement' }
     ],
-    thumbnail: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=600&auto=format&fit=crop&q=80',
+    thumbnail: AI_GAME_ASSETS.NAVAL_COMMAND,
     supportsMultiplayer: false,
     difficulty: 'Medium',
     tags: ['Strategy', 'Battleship', 'Naval', 'Turn-Based'],
@@ -483,7 +484,7 @@ export const PLAYABLE_GAMES: PlayableGameMeta[] = [
       { key: 'Click Ocean Grid', action: 'Launch Radar Strike' },
       { key: 'Invite a Friend', action: 'Generate Session Token' }
     ],
-    thumbnail: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=600&auto=format&fit=crop&q=80',
+    thumbnail: AI_GAME_ASSETS.NAVAL_COMMAND,
     supportsMultiplayer: true,
     difficulty: 'Medium',
     tags: ['Multiplayer', 'Naval', 'Strategy', 'Real-Time'],

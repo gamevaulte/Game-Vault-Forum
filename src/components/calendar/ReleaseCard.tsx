@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { GameRelease, ReleaseStatus } from '../../types/releaseCalendar';
 import { downloadIcsFile, getGoogleCalendarUrl } from '../../utils/calendarExport';
+import { getGameTitleArtwork } from '../../utils/gameImageService';
 
 interface ReleaseCardProps {
   release: GameRelease;
@@ -118,7 +119,7 @@ export const ReleaseCard: React.FC<ReleaseCardProps> = ({
       {/* Cover Artwork & Overlays */}
       <div className="relative aspect-[16/9] w-full overflow-hidden bg-slate-900">
         <img
-          src={release.cover}
+          src={getGameTitleArtwork(release.title, release.genre, release.cover)}
           alt={release.title}
           loading="lazy"
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
