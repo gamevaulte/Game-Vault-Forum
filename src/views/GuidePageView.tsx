@@ -14,6 +14,7 @@ import {
   MessageSquare
 } from 'lucide-react';
 import { Guide, PageTab } from '../types';
+import { getGameTitleArtwork } from '../utils/gameImageService';
 
 interface GuidePageViewProps {
   guide: Guide;
@@ -168,9 +169,10 @@ export const GuidePageView: React.FC<GuidePageViewProps> = ({
         {/* Guide Cover Artwork */}
         <div className="w-full h-64 sm:h-80 lg:h-96 rounded-2xl overflow-hidden border border-white/10 relative bg-black">
           <img
-            src={guide.image}
+            src={getGameTitleArtwork(guide.game || guide.title, undefined, guide.image)}
             alt={guide.title}
             className="w-full h-full object-cover"
+            referrerPolicy="no-referrer"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-[#0e101a] via-transparent to-transparent opacity-60" />
         </div>

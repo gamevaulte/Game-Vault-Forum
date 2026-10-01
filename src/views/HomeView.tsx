@@ -34,6 +34,7 @@ import {
 import { YOUTUBE_CHANNEL } from '../lib/constants';
 import { AdBanner } from '../components/AdBanner';
 import { formatTopicDate } from '../lib/forumUtils';
+import { getGameTitleArtwork } from '../utils/gameImageService';
 
 interface HomeViewProps {
   videos: Video[];
@@ -410,10 +411,11 @@ const HomeViewComponent: React.FC<HomeViewProps> = ({
             >
               <div className="relative h-48 overflow-hidden bg-black shrink-0 border-b border-white/5">
                 <img
-                  src={game.artwork}
+                  src={getGameTitleArtwork(game.title, game.genre, game.artwork)}
                   alt={game.title}
                   loading="lazy"
                   decoding="async"
+                  referrerPolicy="no-referrer"
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
@@ -590,10 +592,11 @@ const HomeViewComponent: React.FC<HomeViewProps> = ({
               <div className="space-y-3">
                 <div className="flex items-start justify-between gap-2">
                   <img
-                    src={rev.artwork}
+                    src={getGameTitleArtwork(rev.gameTitle, rev.genre, rev.artwork)}
                     alt={rev.gameTitle}
                     loading="lazy"
                     decoding="async"
+                    referrerPolicy="no-referrer"
                     className="w-14 h-16 object-cover rounded-xl border border-white/10"
                   />
                   <div className="flex flex-col items-end">

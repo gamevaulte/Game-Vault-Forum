@@ -1,6 +1,7 @@
 import React from 'react';
 import { GAMING_CATEGORIES, PLAYABLE_GAMES } from '../../data/gamingData';
 import { Play, Swords, Gamepad2, Sparkles, Trophy, ArrowRight, ShieldCheck, Flame } from 'lucide-react';
+import { getGameTitleArtwork } from '../../utils/gameImageService';
 
 interface GamingHubViewProps {
   onSelectCategory: (slug: string) => void;
@@ -131,7 +132,12 @@ export const GamingHubView: React.FC<GamingHubViewProps> = ({
             >
               <div className="space-y-3">
                 <div className="relative aspect-[16/9] rounded-xl overflow-hidden">
-                  <img src={game.thumbnail} alt={game.title} className="w-full h-full object-cover" />
+                  <img
+                    src={getGameTitleArtwork(game.title, undefined, game.thumbnail)}
+                    alt={game.title}
+                    className="w-full h-full object-cover"
+                    referrerPolicy="no-referrer"
+                  />
                   <span className="absolute top-2 left-2 px-2 py-0.5 rounded bg-pink-600 text-white text-[10px] font-bold">
                     PVP Match
                   </span>
@@ -169,9 +175,10 @@ export const GamingHubView: React.FC<GamingHubViewProps> = ({
               <div className="space-y-3">
                 <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-black/40">
                   <img
-                    src={game.thumbnail}
+                    src={getGameTitleArtwork(game.title, undefined, game.thumbnail)}
                     alt={game.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    referrerPolicy="no-referrer"
                   />
                   <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition" />
                 </div>

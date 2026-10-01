@@ -2,6 +2,7 @@ import React from 'react';
 import { GamingCategory, PlayableGame } from '../../types/gaming';
 import { GAMING_CATEGORIES } from '../../data/gamingData';
 import { Play, Users, Sparkles, ArrowLeft, ArrowRight, Gamepad2, Swords, Trophy } from 'lucide-react';
+import { getGameTitleArtwork } from '../../utils/gameImageService';
 
 interface CategoryPageViewProps {
   category: GamingCategory;
@@ -75,9 +76,10 @@ export const CategoryPageView: React.FC<CategoryPageViewProps> = ({
               {/* Thumbnail with overlay badge */}
               <div className="relative aspect-[16/9] overflow-hidden bg-black/40">
                 <img
-                  src={game.thumbnail}
+                  src={getGameTitleArtwork(game.title, undefined, game.thumbnail)}
                   alt={game.title}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  referrerPolicy="no-referrer"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#0F0F1A] via-transparent to-black/30" />
 

@@ -1,6 +1,7 @@
 import React from 'react';
 import { X, Clock, Compass, Lightbulb, Bookmark, Share2, Gamepad2 } from 'lucide-react';
 import { Guide } from '../types';
+import { getGameTitleArtwork } from '../utils/gameImageService';
 
 interface GuideModalProps {
   guide: Guide | null;
@@ -78,9 +79,10 @@ export const GuideModal: React.FC<GuideModalProps> = ({
           {/* Guide Banner Image */}
           <div className="w-full h-56 sm:h-64 rounded-xl overflow-hidden border border-[#22273e]">
             <img
-              src={guide.image}
+              src={getGameTitleArtwork(guide.game || guide.title, undefined, guide.image)}
               alt={guide.title}
               className="w-full h-full object-cover"
+              referrerPolicy="no-referrer"
             />
           </div>
 

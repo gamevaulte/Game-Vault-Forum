@@ -1,5 +1,6 @@
 import { Video, Game, Article, Review, Guide, ForumTopic, UserAccount, ForumCategory } from '../types';
 import { YOUTUBE_CHANNEL } from '../lib/constants';
+import { AI_GAME_ASSETS } from '../utils/gameImageService';
 
 export { YOUTUBE_CHANNEL };
 
@@ -381,7 +382,7 @@ A dynamic weather engine introduces seasonal shifts, blinding dust storms, and t
     developer: 'Playground Games',
     publisher: 'Xbox Game Studios',
     rating: 9.0,
-    artwork: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=1200&auto=format&fit=crop&q=80',
+    artwork: '/src/assets/images/forza_horizon_1790767537063.jpg',
     tags: ['Open World', 'Driving', 'Automotive', 'Arcade Sim', 'Photorealistic'],
     featured: false
   },
@@ -400,7 +401,7 @@ The visual presentation elevates traditional 2D hand-drawn animation with multi-
     developer: 'Team Cherry',
     publisher: 'Team Cherry',
     rating: 9.5,
-    artwork: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1200&auto=format&fit=crop&q=80',
+    artwork: '/src/assets/images/silksong_cover_1790767404702.jpg',
     tags: ['Metroidvania', 'Souls-like', 'Hand-Drawn', 'Challenging', 'Indie Gem'],
     featured: false
   },
@@ -419,7 +420,7 @@ Faction questlines — including the UC Vanguard, Freestar Rangers, Ryujin Indus
     developer: 'Bethesda Game Studios',
     publisher: 'Bethesda Softworks',
     rating: 7.8,
-    artwork: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1200&auto=format&fit=crop&q=80',
+    artwork: '/src/assets/images/starfield_hero_1790845838611.jpg',
     tags: ['Space', 'Exploration', 'RPG', 'Ship Customization', 'Sci-Fi'],
     featured: false
   },
@@ -450,7 +451,7 @@ export const MOCK_REVIEWS: Review[] = [
   {
     id: 'rev-1',
     gameTitle: 'Elden Ring: Shadow of the Erdtree',
-    artwork: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&auto=format&fit=crop&q=80',
+    artwork: '/src/assets/images/elden_ring_cover_1790767174737.jpg',
     score: 9.8,
     scoreLabel: 'Masterpiece',
     genre: 'Action RPG',
@@ -479,7 +480,7 @@ Boss encounters in the expansion are among the most visually breathtaking and pu
   {
     id: 'rev-2',
     gameTitle: "Baldur's Gate 3",
-    artwork: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800&auto=format&fit=crop&q=80',
+    artwork: '/src/assets/images/bg3_honour_hero_1790442560266.jpg',
     score: 9.7,
     scoreLabel: 'Masterpiece',
     genre: 'CRPG / Turn-Based',
@@ -508,7 +509,7 @@ Yet it is the emotional resonance of the companions that cements Baldur’s Gate
   {
     id: 'rev-3',
     gameTitle: 'Cyberpunk 2077: Phantom Liberty',
-    artwork: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=800&auto=format&fit=crop&q=80',
+    artwork: '/src/assets/images/cyberpunk_phantom_liberty_1790767191132.jpg',
     score: 9.3,
     scoreLabel: 'Masterpiece',
     genre: 'Sci-Fi RPG / Action',
@@ -537,7 +538,7 @@ On a visual and technical level, Phantom Liberty is an unrivaled technological s
   {
     id: 'rev-4',
     gameTitle: 'Helldivers 2',
-    artwork: 'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=800&auto=format&fit=crop&q=80',
+    artwork: '/src/assets/images/helldivers_tactical_cover_1790767233421.jpg',
     score: 8.9,
     scoreLabel: 'Very Good',
     genre: 'Co-op Tactical Shooter',
@@ -566,7 +567,7 @@ The overarching Galactic War campaign — orchestrated behind the scenes by Arro
   {
     id: 'rev-5',
     gameTitle: 'World of Warships',
-    artwork: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=800&auto=format&fit=crop&q=80',
+    artwork: '/src/assets/images/world_of_warships_cover_1790767205719.jpg',
     score: 8.4,
     scoreLabel: 'Very Good',
     genre: 'Naval Combat / Tactical Simulation',
@@ -595,7 +596,7 @@ While the free-to-play economy and high-tier credit grinds require careful manag
   {
     id: 'rev-6',
     gameTitle: 'Forza Horizon 5',
-    artwork: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=800&auto=format&fit=crop&q=80',
+    artwork: '/src/assets/images/forza_horizon_1790767537063.jpg',
     score: 9.1,
     scoreLabel: 'Excellent',
     genre: 'Open World Racing / Sim-Cade',
@@ -624,7 +625,7 @@ A dynamic weather model brings tropical storms and blinding haboobs that dynamic
   {
     id: 'rev-7',
     gameTitle: 'PUBG Mobile',
-    artwork: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&auto=format&fit=crop&q=80',
+    artwork: '/src/assets/images/pubg_mobile_cover_1790767220593.jpg',
     score: 8.7,
     scoreLabel: 'Very Good',
     genre: 'Tactical Battle Royale / Competitive Mobile',
@@ -653,7 +654,7 @@ The mobile client is packed with tactical options: vehicle tire mechanics, smoke
   {
     id: 'rev-8',
     gameTitle: 'Starfield',
-    artwork: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&auto=format&fit=crop&q=80',
+    artwork: '/src/assets/images/starfield_hero_1790845838611.jpg',
     score: 8.0,
     scoreLabel: 'Good',
     genre: 'Space Action RPG',
@@ -690,7 +691,7 @@ export const MOCK_GUIDES: Guide[] = [
     estimatedReadingTime: '9 min',
     shortDescription: 'The definitive early-game exploration blueprint to acquire 12 Scadutree blessings before facing Divine Beast Dancing Lion and Rellana.',
     category: 'Strategy',
-    image: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&auto=format&fit=crop&q=80',
+    image: AI_GAME_ASSETS.ELDEN_RING,
     sections: [
       {
         heading: '1. Scadutree Blessing Math: Multiplicative Defense vs Flat Runes',
@@ -727,7 +728,7 @@ export const MOCK_GUIDES: Guide[] = [
     estimatedReadingTime: '11 min',
     shortDescription: 'Master shell velocity, ricochet angles, the 14.3 caliber overmatch formula, and defensive kiting postures in high-tier fleet battles.',
     category: 'Game Mechanics',
-    image: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=800&auto=format&fit=crop&q=80',
+    image: AI_GAME_ASSETS.WORLD_OF_WARSHIPS,
     sections: [
       {
         heading: '1. The 14.3 Caliber Overmatch Rule Explained',
@@ -764,7 +765,7 @@ export const MOCK_GUIDES: Guide[] = [
     estimatedReadingTime: '8 min',
     shortDescription: 'How to combine cyberware capacity, overclock RAM loops, and dash kinetic mobility for unstoppable combat tempo in Night City.',
     category: 'Builds',
-    image: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=800&auto=format&fit=crop&q=80',
+    image: AI_GAME_ASSETS.CYBERPUNK_2077,
     sections: [
       {
         heading: '1. Attribute Allocation & Core Perk Milestones',
@@ -801,7 +802,7 @@ export const MOCK_GUIDES: Guide[] = [
     estimatedReadingTime: '7 min',
     shortDescription: 'The four graphics and system settings that drain 40% of your GPU budget with zero perceptible visual gain, plus optimal G-Sync setup.',
     category: 'Settings',
-    image: 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=800&auto=format&fit=crop&q=80',
+    image: '/src/assets/images/gaming_pc_monitor_setup_1789298315930.jpg',
     sections: [
       {
         heading: '1. G-Sync, FreeSync & The 3-FPS Refresh Rate Cap',
@@ -838,7 +839,7 @@ export const MOCK_GUIDES: Guide[] = [
     estimatedReadingTime: '12 min',
     shortDescription: 'How to conquer single-save Honor Mode: mitigating boss Legendary Actions, optimizing initiative, and establishing emergency retreat protocols.',
     category: 'Walkthroughs',
-    image: '/images/articles/gamevault-bg3-honour-mode-hero.jpg',
+    image: AI_GAME_ASSETS.BALDURS_GATE_3,
     sections: [
       {
         heading: '1. The Golden Rule: Initiative Priority & The Alert Feat',
@@ -875,7 +876,7 @@ export const MOCK_GUIDES: Guide[] = [
     estimatedReadingTime: '10 min',
     shortDescription: 'Coordinate team roles, anti-tank rotations, crowd control stun grenades, and perimeter extraction defense on max difficulty.',
     category: 'Strategy',
-    image: 'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=800&auto=format&fit=crop&q=80',
+    image: AI_GAME_ASSETS.HELLDIVERS_2,
     sections: [
       {
         heading: '1. Squad Role Specialization: Anti-Armor vs Chaff Clear',
@@ -912,7 +913,7 @@ export const MOCK_GUIDES: Guide[] = [
     estimatedReadingTime: '8 min',
     shortDescription: 'Calibrate ADS gyroscope sensitivity, master four-finger claw ergonomics, and execute clean vehicular compound rotations.',
     category: 'Tips & Tricks',
-    image: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&auto=format&fit=crop&q=80',
+    image: AI_GAME_ASSETS.PUBG_MOBILE,
     sections: [
       {
         heading: '1. Gyroscope Aiming Calibration: Separating ADS from Camera Movement',

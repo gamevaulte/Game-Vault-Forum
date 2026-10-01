@@ -18,6 +18,7 @@ import {
   Gamepad2
 } from 'lucide-react';
 import { Game, Guide, Video, Review, PageTab } from '../types';
+import { getGameTitleArtwork } from '../utils/gameImageService';
 
 interface GamePageViewProps {
   game: Game;
@@ -136,9 +137,10 @@ export const GamePageView: React.FC<GamePageViewProps> = ({
         {/* Banner Artwork */}
         <div className="relative h-64 sm:h-96 w-full overflow-hidden bg-black">
           <img
-            src={game.artwork}
+            src={getGameTitleArtwork(game.title, game.genre, game.artwork)}
             alt={game.title}
             className="w-full h-full object-cover"
+            referrerPolicy="no-referrer"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-[#0e101a] via-[#0e101a]/60 to-transparent" />
 
@@ -436,9 +438,10 @@ export const GamePageView: React.FC<GamePageViewProps> = ({
                 <div className="space-y-2">
                   <div className="relative h-32 rounded-xl overflow-hidden bg-black">
                     <img
-                      src={og.artwork}
+                      src={getGameTitleArtwork(og.title, og.genre, og.artwork)}
                       alt={og.title}
                       className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      referrerPolicy="no-referrer"
                     />
                     <span className="absolute top-2 right-2 px-2 py-0.5 text-[10px] font-mono bg-black/80 text-amber-400 font-bold rounded border border-amber-500/30">
                       ★ {og.rating}

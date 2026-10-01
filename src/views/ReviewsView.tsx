@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Star, Check, AlertCircle, Calendar, ArrowRight, ShieldCheck } from 'lucide-react';
 import { Review } from '../types';
+import { getGameTitleArtwork } from '../utils/gameImageService';
 
 interface ReviewsViewProps {
   reviews: Review[];
@@ -70,10 +71,11 @@ const ReviewsViewComponent: React.FC<ReviewsViewProps> = ({ reviews, onSelectRev
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-center gap-4">
                   <img
-                    src={rev.artwork}
+                    src={getGameTitleArtwork(rev.gameTitle, rev.genre, rev.artwork)}
                     alt={rev.gameTitle}
                     loading="lazy"
                     decoding="async"
+                    referrerPolicy="no-referrer"
                     className="w-18 h-22 object-cover rounded-xl border border-[#262c45] shrink-0"
                   />
                   <div>

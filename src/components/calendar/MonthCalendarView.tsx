@@ -1,6 +1,7 @@
 import React from 'react';
 import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Clock } from 'lucide-react';
 import { GameRelease } from '../../types/releaseCalendar';
+import { getGameTitleArtwork } from '../../utils/gameImageService';
 
 interface MonthCalendarViewProps {
   currentYear: number;
@@ -238,9 +239,10 @@ export const MonthCalendarView: React.FC<MonthCalendarViewProps> = ({
                   className="p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-purple-500/40 transition-colors flex items-center gap-3 cursor-pointer"
                 >
                   <img
-                    src={rel.cover}
+                    src={getGameTitleArtwork(rel.title, rel.genre, rel.cover)}
                     alt={rel.title}
                     className="w-12 h-12 rounded-lg object-cover shrink-0"
+                    referrerPolicy="no-referrer"
                   />
                   <div className="min-w-0 flex-1">
                     <h5 className="text-sm font-bold text-white truncate font-['Space_Grotesk']">
@@ -282,9 +284,10 @@ export const MonthCalendarView: React.FC<MonthCalendarViewProps> = ({
                 className="p-2.5 rounded-xl bg-amber-950/10 hover:bg-amber-950/20 border border-amber-500/20 hover:border-amber-500/40 transition-colors flex items-center gap-2.5 cursor-pointer"
               >
                 <img
-                  src={rel.cover}
+                  src={getGameTitleArtwork(rel.title, rel.genre, rel.cover)}
                   alt={rel.title}
                   className="w-10 h-10 rounded-lg object-cover shrink-0"
+                  referrerPolicy="no-referrer"
                 />
                 <div className="min-w-0 flex-1">
                   <h5 className="text-xs font-bold text-white truncate font-['Space_Grotesk']">

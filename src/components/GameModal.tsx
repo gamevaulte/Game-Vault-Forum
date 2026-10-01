@@ -1,6 +1,7 @@
 import React from 'react';
 import { X, Star, Bookmark, Share2, Layers, Monitor, Calendar, Building2, Tag } from 'lucide-react';
 import { Game } from '../types';
+import { getGameTitleArtwork } from '../utils/gameImageService';
 
 interface GameModalProps {
   game: Game | null;
@@ -31,9 +32,10 @@ export const GameModal: React.FC<GameModalProps> = ({
         {/* Banner with artwork */}
         <div className="relative h-56 sm:h-72 w-full overflow-hidden shrink-0">
           <img
-            src={game.artwork}
+            src={getGameTitleArtwork(game.title, game.genre, game.artwork)}
             alt={game.title}
             className="w-full h-full object-cover"
+            referrerPolicy="no-referrer"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-[#0e101a] via-[#0e101a]/40 to-transparent" />
 

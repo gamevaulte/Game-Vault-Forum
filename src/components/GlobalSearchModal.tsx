@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { Search, X, Film, Gamepad2, BookOpen, Star, Compass, MessageSquare, ArrowRight } from 'lucide-react';
 import { Video, Game, Article, Review, Guide, ForumTopic } from '../types';
+import { getGameTitleArtwork } from '../utils/gameImageService';
 
 interface GlobalSearchModalProps {
   isOpen: boolean;
@@ -243,9 +244,10 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
                           className="flex items-center gap-3 p-2.5 rounded-xl bg-[#141725] hover:bg-[#1a1e32] border border-[#21263c] hover:border-cyan-500/40 cursor-pointer transition-all group"
                         >
                           <img
-                            src={game.artwork}
+                            src={getGameTitleArtwork(game.title, game.genre, game.artwork)}
                             alt={game.title}
                             className="w-12 h-14 object-cover rounded-md border border-[#282d46]"
+                            referrerPolicy="no-referrer"
                           />
                           <div className="min-w-0">
                             <p className="text-sm font-semibold text-white group-hover:text-cyan-300 truncate">

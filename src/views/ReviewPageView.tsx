@@ -11,6 +11,7 @@ import {
   UserCheck 
 } from 'lucide-react';
 import { Review, PageTab } from '../types';
+import { getGameTitleArtwork } from '../utils/gameImageService';
 
 interface ReviewPageViewProps {
   review: Review;
@@ -99,9 +100,21 @@ export const ReviewPageView: React.FC<ReviewPageViewProps> = ({
       </div>
 
       {/* Review Dossier Card */}
-      <div className="rounded-3xl bg-[#0e101a] border border-white/10 shadow-2xl overflow-hidden space-y-6 p-6 sm:p-8">
-        {/* Review Header Banner */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 pb-6 border-b border-white/10">
+      <div className="rounded-3xl bg-[#0e101a] border border-white/10 shadow-2xl overflow-hidden space-y-6">
+        {/* Game Hero Artwork Banner */}
+        <div className="relative h-64 sm:h-80 lg:h-96 w-full overflow-hidden bg-black">
+          <img
+            src={getGameTitleArtwork(review.gameTitle, review.genre, review.artwork || review.thumbnail)}
+            alt={review.gameTitle}
+            className="w-full h-full object-cover"
+            referrerPolicy="no-referrer"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0e101a] via-[#0e101a]/50 to-transparent" />
+        </div>
+
+        <div className="p-6 sm:p-8 pt-0 space-y-6">
+          {/* Review Header Banner */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 pb-6 border-b border-white/10">
           <div className="space-y-2">
             <div className="flex items-center gap-2">
               <span className="px-3 py-1 text-xs font-['Rajdhani'] font-bold uppercase tracking-wider bg-purple-600 text-white rounded-lg shadow-md shadow-purple-900/40">
@@ -228,5 +241,6 @@ export const ReviewPageView: React.FC<ReviewPageViewProps> = ({
         </div>
       </div>
     </div>
+  </div>
   );
 };

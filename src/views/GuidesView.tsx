@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Compass, Clock, Lightbulb, ChevronRight, Gamepad2, Filter } from 'lucide-react';
 import { Guide } from '../types';
+import { getGameTitleArtwork } from '../utils/gameImageService';
 
 interface GuidesViewProps {
   guides: Guide[];
@@ -133,10 +134,11 @@ const GuidesViewComponent: React.FC<GuidesViewProps> = ({ guides, onSelectGuide,
             <div>
               <div className="relative h-48 overflow-hidden bg-black shrink-0">
                 <img
-                  src={guide.image}
+                  src={getGameTitleArtwork(guide.game || guide.title, undefined, guide.image)}
                   alt={guide.title}
                   loading="lazy"
                   decoding="async"
+                  referrerPolicy="no-referrer"
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
                 <span className={`absolute top-2.5 left-2.5 px-2 py-0.5 text-[10px] font-['Rajdhani'] font-bold uppercase tracking-wider rounded border ${getDifficultyBadge(guide.difficulty)}`}>

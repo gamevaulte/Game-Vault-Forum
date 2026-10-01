@@ -104,7 +104,7 @@ export const GameSelector: React.FC<GameSelectorProps> = ({
         {/* Selected Game Quick Card */}
         <div className="flex items-center gap-3.5 bg-black/40 border border-purple-500/30 rounded-xl px-4 py-2.5 max-w-sm">
           <img
-            src={selectedGame.coverImage}
+            src={getGameTitleArtwork(selectedGame.title, selectedGame.genre, selectedGame.coverImage)}
             alt={selectedGame.title}
             className="w-11 h-11 rounded-lg object-cover border border-purple-400/40"
             referrerPolicy="no-referrer"

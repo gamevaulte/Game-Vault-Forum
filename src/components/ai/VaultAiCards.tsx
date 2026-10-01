@@ -15,6 +15,7 @@ import { PcComponent } from '../../types/pcBuilder';
 import { MOCK_GAMES, MOCK_ARTICLES, MOCK_REVIEWS, MOCK_GUIDES, MOCK_VIDEOS } from '../../data/mockData';
 import { INITIAL_COMPONENTS } from '../../data/pcComponentsData';
 import { navigateTo } from '../../lib/router';
+import { getGameTitleArtwork } from '../../utils/gameImageService';
 
 // Helper to resolve games by ID or slug
 export function resolveGame(idOrSlug: string): Game | undefined {
@@ -90,9 +91,10 @@ export const VaultAiGameCard: React.FC<{ game: Game }> = ({ game }) => {
       <div className="flex items-center gap-3 min-w-0">
         <div className="w-14 h-14 rounded-lg bg-zinc-900 border border-white/10 flex-shrink-0 overflow-hidden relative">
           <img 
-            src={game.artwork} 
+            src={getGameTitleArtwork(game.title, game.genre, game.artwork)} 
             alt={game.title} 
             className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+            referrerPolicy="no-referrer"
             onError={(e) => {
               (e.currentTarget as HTMLElement).style.display = 'none';
             }}

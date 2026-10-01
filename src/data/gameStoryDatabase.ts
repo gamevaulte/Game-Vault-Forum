@@ -1,6 +1,7 @@
 import { VerifiedGameRecord } from '../types/gameStory';
 import { EXTENDED_INTERNET_GAMES } from './extendedInternetGames';
 import { EXTENDED_INTERNET_GAMES_PART2 } from './extendedInternetGamesPart2';
+import { AI_GAME_ASSETS } from '../utils/gameImageService';
 
 export const VERIFIED_GAME_DATABASE: VerifiedGameRecord[] = [
   // =========================================================================
@@ -22,7 +23,7 @@ export const VERIFIED_GAME_DATABASE: VerifiedGameRecord[] = [
     engine: 'Proprietary Naughty Dog Engine',
     franchise: 'The Last of Us',
     seriesPosition: 'First entry in the main franchise',
-    coverImage: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&auto=format&fit=crop&q=80',
+    coverImage: AI_GAME_ASSETS.THE_LAST_OF_US,
     shortOverview: 'A gripping post-pandemic odyssey across a devastated United States following hardened smuggler Joel and immune teenager Ellie.',
     setting: 'A decaying post-apocalyptic United States, twenty years after a mutant Cordyceps fungal outbreak collapsed modern civilization in 2013. The surviving populace is divided between totalitarian Federal Disaster Response Agency (FEDRA) quarantine zones, lawless hunter territories, and rebel cells.',
     storyPremise: 'Hardened black-market smuggler Joel is hired by Firefly rebel leader Marlene to smuggle a feisty 14-year-old girl named Ellie out of a Boston quarantine zone to a distant laboratory. When Ellie reveals an infected bite that never turned, what starts as a mercenary escort mission becomes a desperate trek across a broken continent.',
@@ -185,7 +186,7 @@ export const VERIFIED_GAME_DATABASE: VerifiedGameRecord[] = [
         releaseYear: 2013,
         developer: 'Naughty Dog',
         platforms: ['PlayStation 3', 'PlayStation 4'],
-        coverImage: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&auto=format&fit=crop&q=80'
+        coverImage: AI_GAME_ASSETS.THE_LAST_OF_US
       },
       {
         id: 'the-last-of-us-part-1-2022',
@@ -194,7 +195,7 @@ export const VERIFIED_GAME_DATABASE: VerifiedGameRecord[] = [
         releaseYear: 2022,
         developer: 'Naughty Dog',
         platforms: ['PlayStation 5', 'PC'],
-        coverImage: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&auto=format&fit=crop&q=80'
+        coverImage: AI_GAME_ASSETS.THE_LAST_OF_US
       }
     ]
   },
@@ -218,7 +219,7 @@ export const VERIFIED_GAME_DATABASE: VerifiedGameRecord[] = [
     engine: 'Naughty Dog Next-Gen Engine (Part II Tech Branch)',
     franchise: 'The Last of Us',
     seriesPosition: 'Definitive rebuilt rendition of the first game',
-    coverImage: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&auto=format&fit=crop&q=80',
+    coverImage: AI_GAME_ASSETS.THE_LAST_OF_US,
     shortOverview: 'A ground-up remake rebuilt for PlayStation 5 and PC leveraging the cutting-edge animation, facial fidelity, and combat AI engine developed for The Last of Us Part II.',
     setting: 'A faithful visual overhaul of the post-pandemic United States in 2033, featuring physically based lighting, realistic environmental destruction, photorealistic facial performance capture, and volumetric spore atmospheric fog.',
     storyPremise: 'Faithfully retains the narrative script, vocal performances, and story progression of the 2013 classic, while completely revamping visual fidelity, combat artificial intelligence, companion behavioral physics, and accessibility options.',
@@ -284,7 +285,7 @@ export const VERIFIED_GAME_DATABASE: VerifiedGameRecord[] = [
         releaseYear: 2013,
         developer: 'Naughty Dog',
         platforms: ['PlayStation 3', 'PlayStation 4'],
-        coverImage: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&auto=format&fit=crop&q=80'
+        coverImage: AI_GAME_ASSETS.THE_LAST_OF_US
       },
       {
         id: 'the-last-of-us-part-1-2022',
@@ -293,7 +294,7 @@ export const VERIFIED_GAME_DATABASE: VerifiedGameRecord[] = [
         releaseYear: 2022,
         developer: 'Naughty Dog',
         platforms: ['PlayStation 5', 'PC'],
-        coverImage: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&auto=format&fit=crop&q=80'
+        coverImage: AI_GAME_ASSETS.THE_LAST_OF_US
       }
     ]
   },
@@ -317,7 +318,7 @@ export const VERIFIED_GAME_DATABASE: VerifiedGameRecord[] = [
     engine: 'Capcom In-House GameCube Engine',
     franchise: 'Resident Evil',
     seriesPosition: 'Mainline fourth installment; revolutionized third-person gaming',
-    coverImage: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&auto=format&fit=crop&q=80',
+    coverImage: AI_GAME_ASSETS.RESIDENT_EVIL_4,
     shortOverview: 'Shinji Mikami’s genre-defining masterpiece that established the modern over-the-shoulder third-person camera perspective, following special agent Leon S. Kennedy into rural Spain.',
     setting: 'A secluded, mountainous rural region in Spain controlled by the secretive religious cult Los Iluminados, dominated by damp autumn villages, a sprawling subterranean mining network, a gothic fortress castle, and a militarized island laboratory.',
     storyPremise: 'Six years after the nuclear sterilization of Raccoon City, former rookie cop Leon S. Kennedy is dispatched by the US President on a solo covert mission to rural Spain to rescue the President’s kidnapped daughter, Ashley Graham. Upon arrival, Leon finds the villagers infected with a mind-controlling ancient parasite known as Las Plagas.',
@@ -457,7 +458,7 @@ export const VERIFIED_GAME_DATABASE: VerifiedGameRecord[] = [
         releaseYear: 2005,
         developer: 'Capcom Production Studio 4',
         platforms: ['GameCube', 'PS2', 'PC', 'Wii', 'Modern Remasters'],
-        coverImage: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&auto=format&fit=crop&q=80'
+        coverImage: AI_GAME_ASSETS.RESIDENT_EVIL_4
       },
       {
         id: 'resident-evil-4-2023',
@@ -466,7 +467,7 @@ export const VERIFIED_GAME_DATABASE: VerifiedGameRecord[] = [
         releaseYear: 2023,
         developer: 'Capcom Consumer Games Development',
         platforms: ['PC', 'PS4', 'PS5', 'Xbox Series X/S'],
-        coverImage: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&auto=format&fit=crop&q=80'
+        coverImage: AI_GAME_ASSETS.RESIDENT_EVIL_4
       }
     ]
   },
@@ -490,7 +491,7 @@ export const VERIFIED_GAME_DATABASE: VerifiedGameRecord[] = [
     engine: 'RE Engine',
     franchise: 'Resident Evil',
     seriesPosition: 'Modern ground-up reimagining of the 2005 classic',
-    coverImage: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&auto=format&fit=crop&q=80',
+    coverImage: AI_GAME_ASSETS.RESIDENT_EVIL_4,
     shortOverview: 'Capcom’s acclaimed RE Engine remake that reimagines the 2005 classic with grounded survival horror tone, moving-while-aiming, dynamic knife durability and parrying mechanics, and expanded emotional storytelling.',
     setting: 'A rain-slicked, oppressive rural Spanish countryside and castle, dramatically amplified with ray-traced shadows, dense fog, and visceral biological body horror.',
     storyPremise: 'Follows the same foundational rescue mission of Ashley Graham, but enriches character motivations: Leon grapples with PTSD from Raccoon City, Ashley displays greater self-reliance, and Luis Sera is given an extensive redemption arc as a former Umbrella researcher.',
@@ -563,7 +564,7 @@ export const VERIFIED_GAME_DATABASE: VerifiedGameRecord[] = [
         releaseYear: 2005,
         developer: 'Capcom Production Studio 4',
         platforms: ['GameCube', 'PS2', 'PC', 'Wii', 'Modern Remasters'],
-        coverImage: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&auto=format&fit=crop&q=80'
+        coverImage: AI_GAME_ASSETS.RESIDENT_EVIL_4
       },
       {
         id: 'resident-evil-4-2023',
@@ -572,7 +573,7 @@ export const VERIFIED_GAME_DATABASE: VerifiedGameRecord[] = [
         releaseYear: 2023,
         developer: 'Capcom',
         platforms: ['PC', 'PS4', 'PS5', 'Xbox Series X/S'],
-        coverImage: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&auto=format&fit=crop&q=80'
+        coverImage: AI_GAME_ASSETS.RESIDENT_EVIL_4
       }
     ]
   },
@@ -596,7 +597,7 @@ export const VERIFIED_GAME_DATABASE: VerifiedGameRecord[] = [
     engine: 'Proprietary FromSoftware Engine',
     franchise: 'Elden Ring',
     seriesPosition: 'Standalone dark fantasy IP created by Hidetaka Miyazaki and George R.R. Martin',
-    coverImage: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&auto=format&fit=crop&q=80',
+    coverImage: AI_GAME_ASSETS.ELDEN_RING,
     shortOverview: 'An open-world action RPG masterpiece directed by Hidetaka Miyazaki with mythos by George R.R. Martin, tasking a Tarnished warrior with repairing the shattered Elden Ring in the Lands Between.',
     setting: 'The Lands Between, a vast fantasy continent centered around the luminous golden Erdtree, fractured into ruinous fiefdoms ruled by the demigod offspring of Queen Marika the Eternal after the catastrophic war known as The Shattering.',
     storyPremise: 'The source of the Erdtree’s Grace and cosmic order—the Elden Ring—has been broken. Queen Marika’s demigod children claimed the Great Runes, but their mad taint triggered a devastating civil war with no victor. As a Tarnished, an exile dead yet revived by Grace, you return to cross the fog, defeat the demigods, and claim the title of Elden Lord.',
@@ -708,7 +709,7 @@ export const VERIFIED_GAME_DATABASE: VerifiedGameRecord[] = [
     engine: 'Rockstar Advanced Game Engine (RAGE)',
     franchise: 'Red Dead',
     seriesPosition: 'Prequel to the 2010 Red Dead Redemption',
-    coverImage: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800&auto=format&fit=crop&q=80',
+    coverImage: AI_GAME_ASSETS.RED_DEAD_REDEMPTION_2,
     shortOverview: 'Rockstar Games’ monumental Western epic chronicling the tragic collapse of the Van der Linde outlaw gang through the eyes of senior enforcer Arthur Morgan at the turn of the 20th century.',
     setting: 'Five fictional American territories (Ambarino, New Hanover, Lemoyne, West Elizabeth, and New Austin) in 1899, depicting the twilight of the Wild West as industrialization, federal lawmen, and modern civilization extinguish the outlaw frontier.',
     storyPremise: 'After a botched ferry robbery in Blackwater forces the Van der Linde gang into snowy Ambarino, charismatic leader Dutch van der Linde promises one final big score to escape to freedom. Senior gun and Dutch’s adoptive son Arthur Morgan begins to question Dutch’s disintegrating morality as loyalty gives way to betrayal.',
@@ -811,7 +812,7 @@ export const VERIFIED_GAME_DATABASE: VerifiedGameRecord[] = [
     engine: 'REDengine 4 (DirectX 12 Ultimate)',
     franchise: 'Cyberpunk (Mike Pondsmith)',
     seriesPosition: 'Standalone AAA adaptation of Mike Pondsmith’s tabletop RPG',
-    coverImage: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=800&auto=format&fit=crop&q=80',
+    coverImage: AI_GAME_ASSETS.CYBERPUNK_2077,
     shortOverview: 'An open-world action RPG set in the megalopolis of Night City, following cybernetically enhanced mercenary V battling for survival against a biochip holding the consciousness of rockerboy Johnny Silverhand.',
     setting: 'Night City, a dystopian coastal megacity in the Free State of Northern California, obsessed with power, glamour, and body modification, governed by ruthless megacorporations like Arasaka and Militech.',
     storyPremise: 'Mercenary V and best friend Jackie Welles take a high-stakes heist contract to steal the prototype "Relic" biochip from Arasaka heir Yorinobu Arasaka. When Yorinobu murders his emperor father Saburo, the heist implodes; Jackie is killed, and V is shot in the head. The Relic revives V by initiating a fatal overwrite process containing the digital construct of legendary anti-corpo terrorist Johnny Silverhand.',
@@ -914,7 +915,7 @@ export const VERIFIED_GAME_DATABASE: VerifiedGameRecord[] = [
     engine: 'Proprietary Santa Monica Studio Engine',
     franchise: 'God of War',
     seriesPosition: 'Soft reboot and eighth chronological entry, inaugurating the Norse era',
-    coverImage: 'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=800&auto=format&fit=crop&q=80',
+    coverImage: AI_GAME_ASSETS.GOD_OF_WAR_RAGNAROK,
     shortOverview: 'A masterclass in narrative reinvention directed by Cory Barlog, following an aging Kratos and his young son Atreus on a pilgrimage across the mythical realms of Midgard to scatter their wife and mother’s ashes.',
     setting: 'The untamed wilds, frozen peaks, and magical realms of Norse mythology, centered around Midgard, the Lake of Nine, the elven light of Alfheim, and the fiery trials of Muspelheim.',
     storyPremise: 'Having exacted bloody vengeance against Olympus decades ago, Kratos lives as a mortal in the Norse realm of Midgard. Following the death of his warrior wife Faye, Kratos and his estranged young son Atreus must journey to the highest peak in the nine realms to scatter her ashes. Their departure is disrupted when a mysterious, invulnerable stranger (Baldur) attacks their cabin.',
@@ -1011,7 +1012,7 @@ export const VERIFIED_GAME_DATABASE: VerifiedGameRecord[] = [
     engine: 'Divinity 4.0 Engine',
     franchise: "Baldur's Gate / Dungeons & Dragons Forgotten Realms",
     seriesPosition: 'Sequel to BioWare’s Baldur’s Gate II: Shadows of Amn',
-    coverImage: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800&auto=format&fit=crop&q=80',
+    coverImage: AI_GAME_ASSETS.BALDURS_GATE_3,
     shortOverview: 'Larian Studios’ landmark role-playing masterpiece adapting D&D 5th Edition rules into an unprecedentedly reactive, cinematic narrative of survival against mind flayer tadpole corruption.',
     setting: 'The Forgotten Realms of Faerûn, traversing the Sword Coast wilderness, the Underdark, the shadow-cursed lands around Moonrise Towers, and the dense, politically turbulent metropolis of Baldur’s Gate.',
     storyPremise: 'Abducted aboard an Illithid nautiloid ship and implanted with an illithid tadpole, the protagonist and a ragtag band of afflicted companions must find a healer before turning into mind flayers. Instead of undergoing immediate ceremorphosis, their parasites grant strange psychic powers tied to a mysterious cosmic entity: The Absolute.',
@@ -1351,7 +1352,7 @@ export const VERIFIED_GAME_DATABASE: VerifiedGameRecord[] = [
     engine: 'Autodesk Stingray (Bitsquid)',
     franchise: 'Helldivers',
     seriesPosition: 'Third-person sequel to 2015 top-down twin-stick shooter',
-    coverImage: 'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=800&auto=format&fit=crop&q=80',
+    coverImage: AI_GAME_ASSETS.HELLDIVERS_2,
     shortOverview: 'Arrowhead Game Studios’ breakout cooperative third-person shooter satiring imperial militarism, thrusting squads of four into an ongoing Galactic War for Super Earth against Terminids and Automatons.',
     setting: 'A galaxy-wide theater of war divided into planetary sectors, where Super Earth enforces "Managed Democracy" against swarming insectoid Terminids and socialist Automaton cyborg legions.',
     storyPremise: 'Players enlist as patriotic shock troopers (Helldivers) launched from Super Destroyers in orbital Hellpods onto alien battlefields to complete tactical objectives, call down orbital stratagems, and extract alive.',
@@ -1419,7 +1420,7 @@ export const VERIFIED_GAME_DATABASE: VerifiedGameRecord[] = [
     engine: 'Unity',
     franchise: 'Hollow Knight',
     seriesPosition: 'Foundational entry in Team Cherry’s universe',
-    coverImage: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&auto=format&fit=crop&q=80',
+    coverImage: AI_GAME_ASSETS.SILKSONG,
     shortOverview: 'Team Cherry’s hand-drawn 2D metroidvania masterpiece chronicling a silent insect warrior descending through the melancholic, ruined subterranean kingdom of Hallownest.',
     setting: 'Hallownest, an ancient subterranean empire of bugs fallen to an orange glowing dream-plague known as The Infection, spanning forgotten crossroads, fungal wastes, the weeping City of Tears, and the shadowy Abyss.',
     storyPremise: 'A nameless, vessel bug armed with a worn nail arrives in the fading hamlet of Dirtmouth and descends into the depths of Hallownest to break the seals of the three Dreamers and confront the source of the golden Infection.',
@@ -1501,7 +1502,7 @@ export const VERIFIED_GAME_DATABASE: VerifiedGameRecord[] = [
     engine: 'Supergiant Proprietary 2D Engine',
     franchise: 'Hades',
     seriesPosition: 'First entry in Supergiant’s mythological saga',
-    coverImage: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&auto=format&fit=crop&q=80',
+    coverImage: AI_GAME_ASSETS.HADES_2,
     shortOverview: 'Supergiant Games’ critically acclaimed rogue-lite hack-and-slash weaving narrative progression into every death, following Zagreus, Prince of the Underworld, defying his father to reach the surface.',
     setting: 'The Greek Underworld, divided into the fiery chambers of Tartarus, the magma seas of Asphodel, the warrior paradise of Elysium, and the frozen gates of the Temple of Styx.',
     storyPremise: 'Zagreus, son of the Lord of the Dead Hades, discovers that his biological mother is not Nyx, but Persephone, who fled the Underworld long ago. Aided by Olympian gods who offer boons, Zagreus fights through legions of shades to reach the surface.',

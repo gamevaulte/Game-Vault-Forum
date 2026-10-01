@@ -1,6 +1,7 @@
 import React from 'react';
 import { X, Star, Check, AlertCircle, Bookmark, Share2, Calendar, UserCheck } from 'lucide-react';
 import { Review } from '../types';
+import { getGameTitleArtwork } from '../utils/gameImageService';
 
 interface ReviewModalProps {
   review: Review | null;
@@ -52,9 +53,10 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
           <div className="flex flex-col sm:flex-row items-center justify-between p-5 rounded-2xl bg-[#131625] border border-[#232942] gap-5">
             <div className="flex items-center gap-4">
               <img
-                src={review.artwork}
+                src={getGameTitleArtwork(review.gameTitle, review.genre, review.artwork)}
                 alt={review.gameTitle}
                 className="w-20 h-24 object-cover rounded-xl border border-[#2c3352]"
+                referrerPolicy="no-referrer"
               />
               <div className="space-y-1">
                 <span className="text-xs font-semibold text-purple-400 uppercase tracking-wider">

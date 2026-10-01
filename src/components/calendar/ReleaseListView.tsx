@@ -1,6 +1,7 @@
 import React from 'react';
 import { Calendar as CalendarIcon, Clock, Bell, Bookmark, ExternalLink } from 'lucide-react';
 import { GameRelease } from '../../types/releaseCalendar';
+import { getGameTitleArtwork } from '../../utils/gameImageService';
 
 interface ReleaseListViewProps {
   releases: GameRelease[];
@@ -63,10 +64,11 @@ export const ReleaseListView: React.FC<ReleaseListViewProps> = ({
                   {/* Left: Thumbnail & Details */}
                   <div className="flex items-center gap-3.5 min-w-0">
                     <img
-                      src={rel.cover}
+                      src={getGameTitleArtwork(rel.title, rel.genre, rel.cover)}
                       alt={rel.title}
                       loading="lazy"
                       className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl object-cover shrink-0 border border-white/10"
+                      referrerPolicy="no-referrer"
                     />
 
                     <div className="min-w-0">

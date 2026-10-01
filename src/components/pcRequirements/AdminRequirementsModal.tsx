@@ -11,6 +11,7 @@ import {
   Database
 } from 'lucide-react';
 import { PcGameRequirements, GameRequirementSpec } from '../../types/pcRequirements';
+import { getGameTitleArtwork } from '../../utils/gameImageService';
 
 interface AdminRequirementsModalProps {
   isOpen: boolean;
@@ -152,7 +153,7 @@ export const AdminRequirementsModal: React.FC<AdminRequirementsModalProps> = ({
                   <div key={g.id} className="flex items-center justify-between p-3.5 hover:bg-white/[0.02]">
                     <div className="flex items-center gap-3 min-w-0">
                       <img
-                        src={g.coverImage}
+                        src={getGameTitleArtwork(g.title, g.genre, g.coverImage)}
                         alt={g.title}
                         className="w-10 h-10 rounded-lg object-cover border border-white/10 shrink-0"
                         referrerPolicy="no-referrer"

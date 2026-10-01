@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Gamepad2, Search, Filter, Star, Tag, Monitor, Layers } from 'lucide-react';
 import { Game, GameGenre, Platform } from '../types';
+import { getGameTitleArtwork } from '../utils/gameImageService';
 
 interface GamesViewProps {
   games: Game[];
@@ -164,10 +165,11 @@ const GamesViewComponent: React.FC<GamesViewProps> = ({ games, onSelectGame, ini
               >
                 <div className="relative h-52 overflow-hidden bg-black shrink-0">
                   <img
-                    src={game.artwork}
+                    src={getGameTitleArtwork(game.title, game.genre, game.artwork)}
                     alt={game.title}
                     loading="lazy"
                     decoding="async"
+                    referrerPolicy="no-referrer"
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#10121d] via-transparent to-transparent" />

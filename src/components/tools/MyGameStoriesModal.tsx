@@ -18,6 +18,7 @@ import { UserSavedGameStory, GeneratedGameStoryReport } from '../../types/gameSt
 import { deleteUserGameStory, updateUserStoryMetadata } from '../../lib/userGameStoriesStorage';
 import { exportReportAsTxt, exportReportAsMarkdown, downloadFile } from '../../lib/gameStoryEngine';
 import { generateGameStoryPdf } from '../../lib/gameStoryPdf';
+import { getGameTitleArtwork } from '../../utils/gameImageService';
 
 interface MyGameStoriesModalProps {
   isOpen: boolean;
@@ -150,9 +151,10 @@ export const MyGameStoriesModal: React.FC<MyGameStoriesModalProps> = ({
                 {/* Game Info & Custom Details */}
                 <div className="flex items-start gap-4 flex-1">
                   <img
-                    src={story.coverImage}
+                    src={getGameTitleArtwork(story.gameTitle, story.report?.gameInfo?.genre, story.coverImage)}
                     alt={story.gameTitle}
                     className="w-16 h-20 rounded-xl object-cover border border-white/10 shrink-0 shadow-md"
+                    referrerPolicy="no-referrer"
                   />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap mb-1">

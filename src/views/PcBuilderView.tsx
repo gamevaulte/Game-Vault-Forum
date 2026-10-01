@@ -43,6 +43,7 @@ import {
   CURRENCY_CONFIGS, 
   INITIAL_COMPONENTS 
 } from '../data/pcComponentsData';
+import { getGameTitleArtwork } from '../utils/gameImageService';
 import { 
   buildRecommendedPc, 
   formatPrice 
@@ -520,9 +521,10 @@ export const PcBuilderView: React.FC<PcBuilderViewProps> = ({
                       }`}
                     >
                       <img
-                        src={game.artwork}
+                        src={getGameTitleArtwork(game.title, game.genre, game.artwork)}
                         alt={game.title}
                         className="w-10 h-10 rounded-lg object-cover shrink-0"
+                        referrerPolicy="no-referrer"
                       />
                       <div className="min-w-0">
                         <div className="text-xs font-bold font-['Space_Grotesk'] text-white truncate">

@@ -26,6 +26,24 @@ export const AI_GAME_ASSETS = {
   MINECRAFT: '/src/assets/images/minecraft_cover_1790767549987.jpg',
   DOOM_DARK_AGES: '/src/assets/images/doom_dark_ages_1790767563600.jpg',
   CIVILIZATION_VII: '/src/assets/images/civ_seven_cover_1790767580239.jpg',
+  STARFIELD: '/src/assets/images/starfield_hero_1790845838611.jpg',
+  THE_LAST_OF_US: '/src/assets/images/tlou_hero_1790845808902.jpg',
+  RESIDENT_EVIL_4: '/src/assets/images/re4_hero_1790845821039.jpg',
+  RED_DEAD_REDEMPTION_2: '/src/assets/images/rdr2_hero_1790845852299.jpg',
+  SILENT_HILL_2: '/src/assets/images/silent_hill_hero_1790845870975.jpg',
+  GOD_OF_WAR_RAGNAROK: '/src/assets/images/god_of_war_hero_1790845884311.jpg',
+  ALAN_WAKE_2: '/src/assets/images/alan_wake_hero_1790845897329.jpg',
+  FINAL_FANTASY_VII_REBIRTH: '/src/assets/images/ff7_rebirth_hero_1790845910054.jpg',
+  HADES_2: '/src/assets/images/hades_two_hero_1790846096295.jpg',
+  STALKER_2: '/src/assets/images/stalker_two_hero_1790846106441.jpg',
+  DEATH_STRANDING_2: '/src/assets/images/death_stranding_two_hero_1790846116765.jpg',
+  VALORANT: '/src/assets/images/valorant_hero_1790846127818.jpg',
+  APEX_LEGENDS: '/src/assets/images/apex_legends_hero_1790846139361.jpg',
+  FORTNITE: '/src/assets/images/fortnite_hero_1790846149967.jpg',
+  CALL_OF_DUTY: '/src/assets/images/call_of_duty_hero_1790846159699.jpg',
+  HOGWARTS_LEGACY: '/src/assets/images/hogwarts_legacy_hero_1790846170160.jpg',
+  KINGDOM_COME_2: '/src/assets/images/kingdom_come_hero_1790846180698.jpg',
+  EXPEDITION_33: '/src/assets/images/expedition_hero_1790846192200.jpg',
 };
 
 // Title-specific, authentic game art catalog mapped to exact game titles and slugs
@@ -47,15 +65,16 @@ export const TITLE_SPECIFIC_GAME_ARTWORK: Record<string, string> = {
   'baldurs-gate-3': AI_GAME_ASSETS.BALDURS_GATE_3,
   'bg3': AI_GAME_ASSETS.BALDURS_GATE_3,
 
-  // Grand Theft Auto & Rockstar (AI Generated GTA VI)
+  // Grand Theft Auto & Rockstar (AI Generated GTA VI & RDR2)
   'grand-theft-auto-vi': AI_GAME_ASSETS.GTA_VI,
   'gta-vi': AI_GAME_ASSETS.GTA_VI,
   'gta-6': AI_GAME_ASSETS.GTA_VI,
   'grand-theft-auto-v': AI_GAME_ASSETS.GTA_VI,
   'gta-v': AI_GAME_ASSETS.GTA_VI,
   'gta-5': AI_GAME_ASSETS.GTA_VI,
-  'red-dead-redemption-2': 'https://images.unsplash.com/photo-1533158307587-828f0a76ef46?w=1200&auto=format&fit=crop&q=80',
-  'rdr2': 'https://images.unsplash.com/photo-1533158307587-828f0a76ef46?w=1200&auto=format&fit=crop&q=80',
+  'red-dead-redemption-2': AI_GAME_ASSETS.RED_DEAD_REDEMPTION_2,
+  'rdr2': AI_GAME_ASSETS.RED_DEAD_REDEMPTION_2,
+  'red-dead': AI_GAME_ASSETS.RED_DEAD_REDEMPTION_2,
 
   // Major Action & RPG Hits (AI Generated)
   'black-myth-wukong': AI_GAME_ASSETS.BLACK_MYTH_WUKONG,
@@ -65,40 +84,64 @@ export const TITLE_SPECIFIC_GAME_ARTWORK: Record<string, string> = {
   'the-witcher-3-wild-hunt': AI_GAME_ASSETS.WITCHER_3,
   'the-witcher-3': AI_GAME_ASSETS.WITCHER_3,
   'witcher-3': AI_GAME_ASSETS.WITCHER_3,
-  'hades-2': 'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=1200&auto=format&fit=crop&q=80',
-  'hades-ii': 'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=1200&auto=format&fit=crop&q=80',
+  'the-last-of-us': AI_GAME_ASSETS.THE_LAST_OF_US,
+  'the-last-of-us-part-i': AI_GAME_ASSETS.THE_LAST_OF_US,
+  'the-last-of-us-2013': AI_GAME_ASSETS.THE_LAST_OF_US,
+  'tlou': AI_GAME_ASSETS.THE_LAST_OF_US,
+  'resident-evil-4': AI_GAME_ASSETS.RESIDENT_EVIL_4,
+  'resident-evil': AI_GAME_ASSETS.RESIDENT_EVIL_4,
+  're4': AI_GAME_ASSETS.RESIDENT_EVIL_4,
+  'silent-hill-2': AI_GAME_ASSETS.SILENT_HILL_2,
+  'silent-hill': AI_GAME_ASSETS.SILENT_HILL_2,
+  'god-of-war-ragnarok': AI_GAME_ASSETS.GOD_OF_WAR_RAGNAROK,
+  'god-of-war': AI_GAME_ASSETS.GOD_OF_WAR_RAGNAROK,
+  'alan-wake-2': AI_GAME_ASSETS.ALAN_WAKE_2,
+  'alan-wake': AI_GAME_ASSETS.ALAN_WAKE_2,
+  'final-fantasy-vii-rebirth': AI_GAME_ASSETS.FINAL_FANTASY_VII_REBIRTH,
+  'ff7-rebirth': AI_GAME_ASSETS.FINAL_FANTASY_VII_REBIRTH,
+  'final-fantasy-7-rebirth': AI_GAME_ASSETS.FINAL_FANTASY_VII_REBIRTH,
+  'starfield': AI_GAME_ASSETS.STARFIELD,
+  'hades-2': AI_GAME_ASSETS.HADES_2,
+  'hades-ii': AI_GAME_ASSETS.HADES_2,
+  'hades': AI_GAME_ASSETS.HADES_2,
   'hollow-knight-silksong': AI_GAME_ASSETS.SILKSONG,
   'silksong': AI_GAME_ASSETS.SILKSONG,
   'hollow-knight': AI_GAME_ASSETS.SILKSONG,
   'forza-horizon-5': AI_GAME_ASSETS.FORZA_HORIZON_5,
   'forza-horizon': AI_GAME_ASSETS.FORZA_HORIZON_5,
+  'forza': AI_GAME_ASSETS.FORZA_HORIZON_5,
   'minecraft': AI_GAME_ASSETS.MINECRAFT,
   'doom-the-dark-ages': AI_GAME_ASSETS.DOOM_DARK_AGES,
   'doom-dark-ages': AI_GAME_ASSETS.DOOM_DARK_AGES,
+  'doom': AI_GAME_ASSETS.DOOM_DARK_AGES,
   'civilization-vii': AI_GAME_ASSETS.CIVILIZATION_VII,
   'civ-7': AI_GAME_ASSETS.CIVILIZATION_VII,
   'civ-vii': AI_GAME_ASSETS.CIVILIZATION_VII,
-  'starfield': 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1200&auto=format&fit=crop&q=80',
-  's-t-a-l-k-e-r-2-heart-of-chornobyl': 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=1200&auto=format&fit=crop&q=80',
-  'stalker-2': 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=1200&auto=format&fit=crop&q=80',
-  'death-stranding-2-on-the-beach': 'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1200&auto=format&fit=crop&q=80',
-  'death-stranding-2': 'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1200&auto=format&fit=crop&q=80',
-  'kingdom-come-deliverance-2': 'https://images.unsplash.com/photo-1533158307587-828f0a76ef46?w=1200&auto=format&fit=crop&q=80',
-  'clair-obscur-expedition-33': 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1200&auto=format&fit=crop&q=80',
-  'expedition-33': 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1200&auto=format&fit=crop&q=80',
-  'silent-hill-2': 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=1200&auto=format&fit=crop&q=80',
-  'resident-evil-4': 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=1200&auto=format&fit=crop&q=80',
+  's-t-a-l-k-e-r-2-heart-of-chornobyl': AI_GAME_ASSETS.STALKER_2,
+  'stalker-2': AI_GAME_ASSETS.STALKER_2,
+  'stalker': AI_GAME_ASSETS.STALKER_2,
+  'death-stranding-2-on-the-beach': AI_GAME_ASSETS.DEATH_STRANDING_2,
+  'death-stranding-2': AI_GAME_ASSETS.DEATH_STRANDING_2,
+  'death-stranding': AI_GAME_ASSETS.DEATH_STRANDING_2,
+  'kingdom-come-deliverance-2': AI_GAME_ASSETS.KINGDOM_COME_2,
+  'kingdom-come-2': AI_GAME_ASSETS.KINGDOM_COME_2,
+  'kingdom-come': AI_GAME_ASSETS.KINGDOM_COME_2,
+  'clair-obscur-expedition-33': AI_GAME_ASSETS.EXPEDITION_33,
+  'expedition-33': AI_GAME_ASSETS.EXPEDITION_33,
 
   // Competitive Esports & Shooters (AI Generated)
   'counter-strike-2': AI_GAME_ASSETS.COUNTER_STRIKE_2,
   'cs2': AI_GAME_ASSETS.COUNTER_STRIKE_2,
   'counter-strike': AI_GAME_ASSETS.COUNTER_STRIKE_2,
-  'valorant': 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1200&auto=format&fit=crop&q=80',
-  'apex-legends': 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1200&auto=format&fit=crop&q=80',
-  'fortnite': 'https://images.unsplash.com/photo-1563089145-599997674d42?w=1200&auto=format&fit=crop&q=80',
-  'call-of-duty': 'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=1200&auto=format&fit=crop&q=80',
-  'call-of-duty-warzone': 'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=1200&auto=format&fit=crop&q=80',
-  'hogwarts-legacy': 'https://images.unsplash.com/photo-1514539079130-25950c84af65?w=1200&auto=format&fit=crop&q=80',
+  'valorant': AI_GAME_ASSETS.VALORANT,
+  'apex-legends': AI_GAME_ASSETS.APEX_LEGENDS,
+  'apex': AI_GAME_ASSETS.APEX_LEGENDS,
+  'fortnite': AI_GAME_ASSETS.FORTNITE,
+  'call-of-duty': AI_GAME_ASSETS.CALL_OF_DUTY,
+  'call-of-duty-warzone': AI_GAME_ASSETS.CALL_OF_DUTY,
+  'warzone': AI_GAME_ASSETS.CALL_OF_DUTY,
+  'cod': AI_GAME_ASSETS.CALL_OF_DUTY,
+  'hogwarts-legacy': AI_GAME_ASSETS.HOGWARTS_LEGACY,
 
   // Built-in Playable Arcade & Board Games (AI Generated)
   'space-invaders': AI_GAME_ASSETS.SPACE_INVADERS,
@@ -110,23 +153,24 @@ export const TITLE_SPECIFIC_GAME_ARTWORK: Record<string, string> = {
   'naval-duel': AI_GAME_ASSETS.NAVAL_COMMAND,
 };
 
-// Genre thematic fallback artwork (atmospheric, non-generic)
+// Genre thematic fallback artwork (always authentic game-rendered art, never generic stock photography)
 export const GENRE_THEMATIC_ARTWORK: Record<string, string> = {
-  rpg: 'https://images.unsplash.com/photo-1514539079130-25950c84af65?w=1200&auto=format&fit=crop&q=80',
-  action: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1200&auto=format&fit=crop&q=80',
-  fps: 'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=1200&auto=format&fit=crop&q=80',
-  shooter: 'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=1200&auto=format&fit=crop&q=80',
-  strategy: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1200&auto=format&fit=crop&q=80',
-  simulation: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=1200&auto=format&fit=crop&q=80',
-  racing: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=1200&auto=format&fit=crop&q=80',
-  horror: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=1200&auto=format&fit=crop&q=80',
-  adventure: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1200&auto=format&fit=crop&q=80',
+  rpg: AI_GAME_ASSETS.ELDEN_RING,
+  action: AI_GAME_ASSETS.BLACK_MYTH_WUKONG,
+  fps: AI_GAME_ASSETS.COUNTER_STRIKE_2,
+  shooter: AI_GAME_ASSETS.CALL_OF_DUTY,
+  strategy: AI_GAME_ASSETS.CIVILIZATION_VII,
+  simulation: AI_GAME_ASSETS.WORLD_OF_WARSHIPS,
+  racing: AI_GAME_ASSETS.FORZA_HORIZON_5,
+  horror: AI_GAME_ASSETS.SILENT_HILL_2,
+  adventure: AI_GAME_ASSETS.THE_LAST_OF_US,
   cyberpunk: AI_GAME_ASSETS.CYBERPUNK_2077,
-  scifi: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1200&auto=format&fit=crop&q=80',
-  fantasy: AI_GAME_ASSETS.ELDEN_RING,
+  scifi: AI_GAME_ASSETS.STARFIELD,
+  fantasy: AI_GAME_ASSETS.WITCHER_3,
   naval: AI_GAME_ASSETS.WORLD_OF_WARSHIPS,
   battleroyale: AI_GAME_ASSETS.PUBG_MOBILE,
-  default: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1200&auto=format&fit=crop&q=80',
+  roguelike: AI_GAME_ASSETS.HADES_2,
+  default: AI_GAME_ASSETS.ELDEN_RING,
 };
 
 /**
@@ -178,7 +222,25 @@ export function getGameTitleArtwork(titleOrSlug: string, genre?: string, origina
     return TITLE_SPECIFIC_GAME_ARTWORK['gta-v'];
   }
   if (key.includes('red-dead') || key.includes('rdr')) {
-    return TITLE_SPECIFIC_GAME_ARTWORK['red-dead-redemption-2'];
+    return AI_GAME_ASSETS.RED_DEAD_REDEMPTION_2;
+  }
+  if (key.includes('last-of-us') || key.includes('tlou')) {
+    return AI_GAME_ASSETS.THE_LAST_OF_US;
+  }
+  if (key.includes('resident-evil') || key.includes('re4')) {
+    return AI_GAME_ASSETS.RESIDENT_EVIL_4;
+  }
+  if (key.includes('silent-hill')) {
+    return AI_GAME_ASSETS.SILENT_HILL_2;
+  }
+  if (key.includes('god-of-war') || key.includes('ragnarok')) {
+    return AI_GAME_ASSETS.GOD_OF_WAR_RAGNAROK;
+  }
+  if (key.includes('alan-wake')) {
+    return AI_GAME_ASSETS.ALAN_WAKE_2;
+  }
+  if (key.includes('final-fantasy') || key.includes('ff7') || key.includes('rebirth')) {
+    return AI_GAME_ASSETS.FINAL_FANTASY_VII_REBIRTH;
   }
   if (key.includes('wukong') || key.includes('black-myth')) {
     return TITLE_SPECIFIC_GAME_ARTWORK['black-myth-wukong'];
@@ -225,6 +287,18 @@ export function getGameTitleArtwork(titleOrSlug: string, genre?: string, origina
   if (key.includes('civilization') || key.includes('civ')) {
     return TITLE_SPECIFIC_GAME_ARTWORK['civilization-vii'];
   }
+  if (key.includes('stalker')) {
+    return AI_GAME_ASSETS.STALKER_2;
+  }
+  if (key.includes('death-stranding')) {
+    return AI_GAME_ASSETS.DEATH_STRANDING_2;
+  }
+  if (key.includes('kingdom-come')) {
+    return AI_GAME_ASSETS.KINGDOM_COME_2;
+  }
+  if (key.includes('expedition')) {
+    return AI_GAME_ASSETS.EXPEDITION_33;
+  }
   if (key.includes('doom')) {
     return AI_GAME_ASSETS.DOOM_DARK_AGES;
   }
@@ -245,7 +319,13 @@ export function getGameTitleArtwork(titleOrSlug: string, genre?: string, origina
   }
 
   // 3. If originalUrl was provided and is an authentic custom asset or non-generic art, keep it
-  if (originalUrl && !originalUrl.includes('photo-1542751371-adc38448a05e') && !originalUrl.includes('photo-1511512578047-dfb367046420') && !originalUrl.includes('photo-1518709268805-4e9042af9f23') && !originalUrl.includes('photo-1579783902614') && !originalUrl.includes('photo-1509198397868') && !originalUrl.includes('photo-1550745165') && !originalUrl.includes('photo-1579546929518')) {
+  // Strictly reject generic stock imagery hosts like unsplash and picsum
+  if (
+    originalUrl &&
+    !originalUrl.includes('unsplash.com') &&
+    !originalUrl.includes('picsum.photos') &&
+    (originalUrl.startsWith('/src/assets/images/') || originalUrl.startsWith('/images/articles/'))
+  ) {
     return originalUrl;
   }
 
