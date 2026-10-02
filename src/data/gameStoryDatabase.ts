@@ -1102,7 +1102,7 @@ export const VERIFIED_GAME_DATABASE: VerifiedGameRecord[] = [
     engine: 'Source Engine (Havok Physics)',
     franchise: 'Half-Life',
     seriesPosition: 'Sequel to 1998’s original Half-Life',
-    coverImage: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&auto=format&fit=crop&q=80',
+    coverImage: AI_GAME_ASSETS.HALF_LIFE_2,
     shortOverview: 'Valve’s revolutionary physics-driven sci-fi first-person shooter following theoretical physicist Gordon Freeman as he ignites an uprising against the multidimensional Combine empire in City 17.',
     setting: 'City 17 and surrounding coastal outskirts in Eastern Europe, subjugated under the brutal colonial dominion of the Combine following the Seven Hour War.',
     storyPremise: 'Awakened from stasis by the enigmatic G-Man twenty years after the Black Mesa incident, Dr. Gordon Freeman arrives by train in City 17. Finding humanity suppressed by a fertility field and monitored by civil protection drones, Gordon is reunited with former Black Mesa scientists and takes up the crowbar to lead the human resistance.',

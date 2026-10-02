@@ -1,4 +1,5 @@
 import { GameRelease, CalendarPlatform, ReleaseGenre, ReleaseStatus } from '../types/releaseCalendar';
+import { getGameTitleArtwork } from '../utils/gameImageService';
 
 export const ALL_PLATFORMS: CalendarPlatform[] = [
   'PC',
@@ -951,6 +952,7 @@ const RAW_GAME_RELEASES_DATABASE: GameRelease[] = [
  */
 export const GAME_RELEASES_DATABASE: GameRelease[] = RAW_GAME_RELEASES_DATABASE.map(r => ({
   ...r,
+  cover: getGameTitleArtwork(r.title, r.genre, r.cover),
   status: resolveReleaseStatus(r)
 }));
 

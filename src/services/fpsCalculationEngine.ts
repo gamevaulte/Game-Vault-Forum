@@ -15,6 +15,7 @@ import {
 } from '../data/fpsCalculatorData';
 import { EXPANDED_GAMES_REQUIREMENTS } from '../data/expandedPcGamesData';
 import { PcGameRequirements } from '../types/pcRequirements';
+import { getGameTitleArtwork } from '../utils/gameImageService';
 
 // Helper to look up or construct game profile
 export function getGameProfileOrFallback(gameId: string, gameTitle: string): {
@@ -34,7 +35,7 @@ export function getGameProfileOrFallback(gameId: string, gameTitle: string): {
     id: gameId || 'custom-game',
     title: gameTitle || 'Custom PC Game',
     slug: 'custom-game',
-    coverImage: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&auto=format&fit=crop&q=80',
+    coverImage: getGameTitleArtwork(gameTitle || 'Custom PC Game', 'General PC Title'),
     genre: 'General PC Title',
     releaseYear: 2024,
     engine: 'DirectX 12 / Modern Engine',

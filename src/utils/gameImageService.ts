@@ -44,6 +44,24 @@ export const AI_GAME_ASSETS = {
   HOGWARTS_LEGACY: '/src/assets/images/hogwarts_legacy_hero_1790846170160.jpg',
   KINGDOM_COME_2: '/src/assets/images/kingdom_come_hero_1790846180698.jpg',
   EXPEDITION_33: '/src/assets/images/expedition_hero_1790846192200.jpg',
+  ZELDA_TOTK: '/src/assets/images/zelda_totk_hero_1790931936695.jpg',
+  DARK_SOULS_3: '/src/assets/images/dark_souls_hero_1790931948803.jpg',
+  BLOODBORNE: '/src/assets/images/bloodborne_hero_1790931961410.jpg',
+  SEKIRO: '/src/assets/images/sekiro_hero_1790931975993.jpg',
+  GHOST_OF_TSUSHIMA: '/src/assets/images/ghost_of_tsushima_hero_1790931988319.jpg',
+  METAPHOR_REFANTAZIO: '/src/assets/images/metaphor_hero_1790932001199.jpg',
+  PERSONA_5: '/src/assets/images/persona_five_hero_1790932013970.jpg',
+  SKYRIM: '/src/assets/images/skyrim_hero_1790932027549.jpg',
+  FALLOUT_NEW_VEGAS: '/src/assets/images/fallout_nv_hero_1790932039977.jpg',
+  PORTAL_2: '/src/assets/images/portal_two_hero_1790932053477.jpg',
+  HALF_LIFE_2: '/src/assets/images/half_life_two_hero_1790932548578.jpg',
+  DIABLO_4: '/src/assets/images/diablo_four_hero_1790932570864.jpg',
+  SPACE_MARINE_2: '/src/assets/images/space_marine_hero_1790932584093.jpg',
+  HORIZON_FORBIDDEN_WEST: '/src/assets/images/horizon_hero_1790932596311.jpg',
+  STARDEW_VALLEY: '/src/assets/images/stardew_valley_hero_1790932609739.jpg',
+  MOBA_LEGENDS: '/src/assets/images/moba_legends_hero_1790932621917.jpg',
+  SUPERHERO_ACTION: '/src/assets/images/superhero_patrol_hero_1790932634138.jpg',
+  FLIGHT_SIMULATOR: '/src/assets/images/flight_simulator_hero_1790932647032.jpg',
 };
 
 // Title-specific, authentic game art catalog mapped to exact game titles and slugs
@@ -142,6 +160,78 @@ export const TITLE_SPECIFIC_GAME_ARTWORK: Record<string, string> = {
   'warzone': AI_GAME_ASSETS.CALL_OF_DUTY,
   'cod': AI_GAME_ASSETS.CALL_OF_DUTY,
   'hogwarts-legacy': AI_GAME_ASSETS.HOGWARTS_LEGACY,
+
+  // RPG & Action Classics (AI Generated)
+  'the-legend-of-zelda-tears-of-the-kingdom': AI_GAME_ASSETS.ZELDA_TOTK,
+  'tears-of-the-kingdom': AI_GAME_ASSETS.ZELDA_TOTK,
+  'zelda-totk': AI_GAME_ASSETS.ZELDA_TOTK,
+  'zelda': AI_GAME_ASSETS.ZELDA_TOTK,
+  'dark-souls-iii': AI_GAME_ASSETS.DARK_SOULS_3,
+  'dark-souls-3': AI_GAME_ASSETS.DARK_SOULS_3,
+  'dark-souls': AI_GAME_ASSETS.DARK_SOULS_3,
+  'bloodborne': AI_GAME_ASSETS.BLOODBORNE,
+  'sekiro-shadows-die-twice': AI_GAME_ASSETS.SEKIRO,
+  'sekiro': AI_GAME_ASSETS.SEKIRO,
+  'ghost-of-tsushima': AI_GAME_ASSETS.GHOST_OF_TSUSHIMA,
+  'ghost-of-tsushima-directors-cut': AI_GAME_ASSETS.GHOST_OF_TSUSHIMA,
+  'metaphor-refantazio': AI_GAME_ASSETS.METAPHOR_REFANTAZIO,
+  'metaphor': AI_GAME_ASSETS.METAPHOR_REFANTAZIO,
+  'persona-5-royal': AI_GAME_ASSETS.PERSONA_5,
+  'persona-5': AI_GAME_ASSETS.PERSONA_5,
+  'p5r': AI_GAME_ASSETS.PERSONA_5,
+  'the-elder-scrolls-v-skyrim': AI_GAME_ASSETS.SKYRIM,
+  'skyrim': AI_GAME_ASSETS.SKYRIM,
+  'the-elder-scrolls-v-skyrim-special-edition': AI_GAME_ASSETS.SKYRIM,
+  'fallout-new-vegas': AI_GAME_ASSETS.FALLOUT_NEW_VEGAS,
+  'new-vegas': AI_GAME_ASSETS.FALLOUT_NEW_VEGAS,
+  'portal-2': AI_GAME_ASSETS.PORTAL_2,
+  'portal': AI_GAME_ASSETS.PORTAL_2,
+  'half-life-2': AI_GAME_ASSETS.HALF_LIFE_2,
+  'half-life': AI_GAME_ASSETS.HALF_LIFE_2,
+  'hl2': AI_GAME_ASSETS.HALF_LIFE_2,
+
+  // Additional Popular PC & Console Hits (AI Generated)
+  'spiderman': AI_GAME_ASSETS.SUPERHERO_ACTION,
+  'marvels-spider-man': AI_GAME_ASSETS.SUPERHERO_ACTION,
+  'marvels-spider-man-remastered': AI_GAME_ASSETS.SUPERHERO_ACTION,
+  'spider-man-remastered': AI_GAME_ASSETS.SUPERHERO_ACTION,
+  'diablo-4': AI_GAME_ASSETS.DIABLO_4,
+  'diablo-iv': AI_GAME_ASSETS.DIABLO_4,
+  'diablo': AI_GAME_ASSETS.DIABLO_4,
+  'horizon-forbidden-west': AI_GAME_ASSETS.HORIZON_FORBIDDEN_WEST,
+  'horizon-zero-dawn': AI_GAME_ASSETS.HORIZON_FORBIDDEN_WEST,
+  'horizon': AI_GAME_ASSETS.HORIZON_FORBIDDEN_WEST,
+  'warhammer-40000-space-marine-2': AI_GAME_ASSETS.SPACE_MARINE_2,
+  'space-marine-2': AI_GAME_ASSETS.SPACE_MARINE_2,
+  'space-marine': AI_GAME_ASSETS.SPACE_MARINE_2,
+  'warhammer': AI_GAME_ASSETS.SPACE_MARINE_2,
+  'escape-from-tarkov': AI_GAME_ASSETS.STALKER_2,
+  'tarkov': AI_GAME_ASSETS.STALKER_2,
+  'rust': AI_GAME_ASSETS.STALKER_2,
+  'sea-of-thieves': AI_GAME_ASSETS.NAVAL_COMMAND,
+  'destiny-2': AI_GAME_ASSETS.STARFIELD,
+  'destiny': AI_GAME_ASSETS.STARFIELD,
+  'warframe': AI_GAME_ASSETS.STARFIELD,
+  'final-fantasy-xiv': AI_GAME_ASSETS.FINAL_FANTASY_VII_REBIRTH,
+  'ffxiv': AI_GAME_ASSETS.FINAL_FANTASY_VII_REBIRTH,
+  'rainbow-six-siege': AI_GAME_ASSETS.COUNTER_STRIKE_2,
+  'rainbow-six': AI_GAME_ASSETS.COUNTER_STRIKE_2,
+  'overwatch-2': AI_GAME_ASSETS.VALORANT,
+  'overwatch': AI_GAME_ASSETS.VALORANT,
+  'dota-2': AI_GAME_ASSETS.MOBA_LEGENDS,
+  'dota': AI_GAME_ASSETS.MOBA_LEGENDS,
+  'league-of-legends': AI_GAME_ASSETS.MOBA_LEGENDS,
+  'lol': AI_GAME_ASSETS.MOBA_LEGENDS,
+  'palworld': AI_GAME_ASSETS.STARDEW_VALLEY,
+  'stardew-valley': AI_GAME_ASSETS.STARDEW_VALLEY,
+  'terraria': AI_GAME_ASSETS.STARDEW_VALLEY,
+  'rocket-league': AI_GAME_ASSETS.FORZA_HORIZON_5,
+  'ea-sports-fc-25': AI_GAME_ASSETS.FORZA_HORIZON_5,
+  'ea-sports-fc': AI_GAME_ASSETS.FORZA_HORIZON_5,
+  'tekken-8': AI_GAME_ASSETS.SEKIRO,
+  'tekken': AI_GAME_ASSETS.SEKIRO,
+  'microsoft-flight-simulator': AI_GAME_ASSETS.FLIGHT_SIMULATOR,
+  'microsoft-flight-simulator-2024': AI_GAME_ASSETS.FLIGHT_SIMULATOR,
 
   // Built-in Playable Arcade & Board Games (AI Generated)
   'space-invaders': AI_GAME_ASSETS.SPACE_INVADERS,
@@ -316,6 +406,87 @@ export function getGameTitleArtwork(titleOrSlug: string, genre?: string, origina
   }
   if (key.includes('naval') || key.includes('battleship')) {
     return AI_GAME_ASSETS.NAVAL_COMMAND;
+  }
+  if (key.includes('zelda') || key.includes('hyrule') || key.includes('tears-of-the-kingdom')) {
+    return AI_GAME_ASSETS.ZELDA_TOTK;
+  }
+  if (key.includes('dark-souls') || key.includes('darksouls')) {
+    return AI_GAME_ASSETS.DARK_SOULS_3;
+  }
+  if (key.includes('bloodborne') || key.includes('yharnam')) {
+    return AI_GAME_ASSETS.BLOODBORNE;
+  }
+  if (key.includes('sekiro')) {
+    return AI_GAME_ASSETS.SEKIRO;
+  }
+  if (key.includes('ghost-of-tsushima') || key.includes('tsushima')) {
+    return AI_GAME_ASSETS.GHOST_OF_TSUSHIMA;
+  }
+  if (key.includes('metaphor')) {
+    return AI_GAME_ASSETS.METAPHOR_REFANTAZIO;
+  }
+  if (key.includes('persona')) {
+    return AI_GAME_ASSETS.PERSONA_5;
+  }
+  if (key.includes('skyrim') || key.includes('elder-scrolls') || key.includes('dovahkiin')) {
+    return AI_GAME_ASSETS.SKYRIM;
+  }
+  if (key.includes('fallout') || key.includes('new-vegas')) {
+    return AI_GAME_ASSETS.FALLOUT_NEW_VEGAS;
+  }
+  if (key.includes('portal') || key.includes('glados')) {
+    return AI_GAME_ASSETS.PORTAL_2;
+  }
+  if (key.includes('half-life') || key.includes('freeman') || key.includes('black-mesa') || key.includes('city-17')) {
+    return AI_GAME_ASSETS.HALF_LIFE_2;
+  }
+  if (key.includes('spider-man') || key.includes('spiderman') || key.includes('marvel') || key.includes('superhero')) {
+    return AI_GAME_ASSETS.SUPERHERO_ACTION;
+  }
+  if (key.includes('diablo')) {
+    return AI_GAME_ASSETS.DIABLO_4;
+  }
+  if (key.includes('horizon') && (key.includes('forbidden') || key.includes('dawn') || key.includes('west'))) {
+    return AI_GAME_ASSETS.HORIZON_FORBIDDEN_WEST;
+  }
+  if (key.includes('warhammer') || key.includes('space-marine')) {
+    return AI_GAME_ASSETS.SPACE_MARINE_2;
+  }
+  if (key.includes('tarkov')) {
+    return AI_GAME_ASSETS.STALKER_2;
+  }
+  if (key.includes('rust')) {
+    return AI_GAME_ASSETS.STALKER_2;
+  }
+  if (key.includes('sea-of-thieves') || key.includes('thieves')) {
+    return AI_GAME_ASSETS.NAVAL_COMMAND;
+  }
+  if (key.includes('destiny')) {
+    return AI_GAME_ASSETS.STARFIELD;
+  }
+  if (key.includes('warframe')) {
+    return AI_GAME_ASSETS.STARFIELD;
+  }
+  if (key.includes('rainbow-six') || key.includes('siege')) {
+    return AI_GAME_ASSETS.COUNTER_STRIKE_2;
+  }
+  if (key.includes('overwatch')) {
+    return AI_GAME_ASSETS.VALORANT;
+  }
+  if (key.includes('dota') || key.includes('league-of-legends') || key.includes('moba')) {
+    return AI_GAME_ASSETS.MOBA_LEGENDS;
+  }
+  if (key.includes('palworld') || key.includes('stardew') || key.includes('terraria') || key.includes('farm')) {
+    return AI_GAME_ASSETS.STARDEW_VALLEY;
+  }
+  if (key.includes('tekken') || key.includes('mortal-kombat') || key.includes('street-fighter')) {
+    return AI_GAME_ASSETS.SEKIRO;
+  }
+  if (key.includes('flight-sim') || key.includes('flight-simulator') || key.includes('aviation')) {
+    return AI_GAME_ASSETS.FLIGHT_SIMULATOR;
+  }
+  if (key.includes('rocket-league') || key.includes('fifa') || key.includes('ea-sports')) {
+    return AI_GAME_ASSETS.FORZA_HORIZON_5;
   }
 
   // 3. If originalUrl was provided and is an authentic custom asset or non-generic art, keep it

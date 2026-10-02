@@ -82,7 +82,11 @@ export type GameGenre =
   | 'Multiplayer'
   | 'FPS'
   | 'Sports'
-  | 'Racing';
+  | 'Racing'
+  | 'Shooter'
+  | 'Action RPG'
+  | 'Survival Horror'
+  | (string & {});
 
 export type Platform = 'All' | 'PC' | 'PS5' | 'Xbox' | 'Switch' | 'Mobile';
 

@@ -664,10 +664,11 @@ const HomeViewComponent: React.FC<HomeViewProps> = ({
             >
               <div className="relative h-40 overflow-hidden bg-black shrink-0 border-b border-white/5">
                 <img
-                  src={gd.image}
+                  src={getGameTitleArtwork(gd.game || gd.title, undefined, gd.image)}
                   alt={gd.title}
                   loading="lazy"
                   decoding="async"
+                  referrerPolicy="no-referrer"
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
                 <span className="absolute top-2.5 left-2.5 px-2.5 py-0.5 text-[10px] font-['Rajdhani'] font-bold uppercase tracking-wider bg-black/80 backdrop-blur-md text-emerald-300 rounded-full border border-emerald-500/30">

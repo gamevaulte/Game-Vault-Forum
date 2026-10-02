@@ -1,7 +1,8 @@
 import { PcGameRequirements } from '../types/pcRequirements';
 import { Game } from '../types';
+import { getGameTitleArtwork } from '../utils/gameImageService';
 
-export const EXPANDED_GAMES_REQUIREMENTS: PcGameRequirements[] = [
+const RAW_EXPANDED_GAMES_REQUIREMENTS: PcGameRequirements[] = [
   {
     id: 'game-req-baldurs-gate-3',
     gameId: 'game-bg3',
@@ -1648,3 +1649,8 @@ export const EXPANDED_GAMES_REQUIREMENTS: PcGameRequirements[] = [
     }
   }
 ];
+
+export const EXPANDED_GAMES_REQUIREMENTS: PcGameRequirements[] = RAW_EXPANDED_GAMES_REQUIREMENTS.map((req) => ({
+  ...req,
+  coverImage: getGameTitleArtwork(req.title, req.genre, req.coverImage),
+}));

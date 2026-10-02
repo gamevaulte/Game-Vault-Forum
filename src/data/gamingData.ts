@@ -1,5 +1,5 @@
 import { GamingCategory, PlayableGameMeta } from '../types/gaming';
-import { AI_GAME_ASSETS } from '../utils/gameImageService';
+import { AI_GAME_ASSETS, getGameTitleArtwork } from '../utils/gameImageService';
 
 export const GAMING_CATEGORIES: GamingCategory[] = [
   {
@@ -12,7 +12,7 @@ export const GAMING_CATEGORIES: GamingCategory[] = [
     icon: 'Gamepad2',
     color: '#8B5CF6',
     gradient: 'from-purple-600/30 via-indigo-600/20 to-transparent',
-    bannerImage: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1200&auto=format&fit=crop&q=80',
+    bannerImage: AI_GAME_ASSETS.SPACE_INVADERS,
     gameCount: 3
   },
   {
@@ -25,7 +25,7 @@ export const GAMING_CATEGORIES: GamingCategory[] = [
     icon: 'Brain',
     color: '#3B82F6',
     gradient: 'from-blue-600/30 via-cyan-600/20 to-transparent',
-    bannerImage: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1200&auto=format&fit=crop&q=80',
+    bannerImage: AI_GAME_ASSETS.BRICK_BREAKER,
     gameCount: 3
   },
   {
@@ -38,7 +38,7 @@ export const GAMING_CATEGORIES: GamingCategory[] = [
     icon: 'Trophy',
     color: '#10B981',
     gradient: 'from-emerald-600/30 via-teal-600/20 to-transparent',
-    bannerImage: 'https://images.unsplash.com/photo-1518091043644-c1d4457512c6?w=1200&auto=format&fit=crop&q=80',
+    bannerImage: AI_GAME_ASSETS.FORZA_HORIZON_5,
     gameCount: 3
   },
   {
@@ -51,7 +51,7 @@ export const GAMING_CATEGORIES: GamingCategory[] = [
     icon: 'Shield',
     color: '#F59E0B',
     gradient: 'from-amber-600/30 via-orange-600/20 to-transparent',
-    bannerImage: 'https://images.unsplash.com/photo-1529699211952-734e80c4d42b?w=1200&auto=format&fit=crop&q=80',
+    bannerImage: AI_GAME_ASSETS.CIVILIZATION_VII,
     gameCount: 3
   },
   {
@@ -64,7 +64,7 @@ export const GAMING_CATEGORIES: GamingCategory[] = [
     icon: 'Users',
     color: '#EC4899',
     gradient: 'from-pink-600/30 via-purple-600/20 to-transparent',
-    bannerImage: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1200&auto=format&fit=crop&q=80',
+    bannerImage: AI_GAME_ASSETS.COUNTER_STRIKE_2,
     gameCount: 3
   },
   {
@@ -77,7 +77,7 @@ export const GAMING_CATEGORIES: GamingCategory[] = [
     icon: 'Layers',
     color: '#06B6D4',
     gradient: 'from-cyan-600/30 via-sky-600/20 to-transparent',
-    bannerImage: 'https://images.unsplash.com/photo-1511193311914-0346f16efe90?w=1200&auto=format&fit=crop&q=80',
+    bannerImage: AI_GAME_ASSETS.TACTICAL_CHESS,
     gameCount: 3
   }
 ];
@@ -576,7 +576,10 @@ export const PLAYABLE_GAMES: PlayableGameMeta[] = [
     playUrl: '/play-games/card-and-board-games/checkers',
     features: ['Crowned King Mechanics', 'Forced Jump Prompts', 'Smart AI Opponent', 'Pass & Play 2-Player']
   }
-];
+].map((g) => ({
+  ...g,
+  thumbnail: getGameTitleArtwork(g.title, g.categoryName, g.thumbnail)
+}));
 
 export function getCategoryById(id: string): GamingCategory | undefined {
   return GAMING_CATEGORIES.find((cat) => cat.id === id || cat.slug === id);

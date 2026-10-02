@@ -60,7 +60,7 @@ export function sendDeviceNotification(
   }
 
   try {
-    const defaultIcon = 'https://images.unsplash.com/photo-1612287233207-681b4f4945d8?w=128&auto=format&fit=crop&q=80';
+    const defaultIcon = '/src/assets/images/vault_logo_emblem_1788798870748.jpg';
     const notif = new Notification(title, {
       icon: defaultIcon,
       badge: defaultIcon,

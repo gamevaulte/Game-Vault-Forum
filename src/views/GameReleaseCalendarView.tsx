@@ -59,6 +59,7 @@ import { ReleaseDetailsModal } from '../components/calendar/ReleaseDetailsModal'
 import { AiReleaseAssistantModal } from '../components/calendar/AiReleaseAssistantModal';
 import { FactCheckAuditModal } from '../components/calendar/FactCheckAuditModal';
 import { CalendarEducationalFaq } from '../components/calendar/CalendarEducationalFaq';
+import { getGameTitleArtwork } from '../utils/gameImageService';
 
 interface GameReleaseCalendarViewProps {
   onNavigateTab: (tab: PageTab) => void;
@@ -785,9 +786,10 @@ export const GameReleaseCalendarView: React.FC<GameReleaseCalendarViewProps> = (
                   >
                     <div className="flex items-center gap-3 min-w-0">
                       <img
-                        src={rel.cover}
+                        src={getGameTitleArtwork(rel.title, rel.genre, rel.cover)}
                         alt={rel.title}
                         className="w-12 h-12 rounded-lg object-cover shrink-0"
+                        referrerPolicy="no-referrer"
                       />
                       <div className="min-w-0">
                         <div className="flex items-center gap-2 text-xs">
@@ -1266,9 +1268,10 @@ export const GameReleaseCalendarView: React.FC<GameReleaseCalendarViewProps> = (
                 <div>
                   <div className="relative aspect-[16/9] rounded-lg overflow-hidden mb-3 bg-slate-900">
                     <img
-                      src={rel.cover}
+                      src={getGameTitleArtwork(rel.title, rel.genre, rel.cover)}
                       alt={rel.title}
                       loading="lazy"
+                      referrerPolicy="no-referrer"
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                     <div className="absolute top-2 left-2 px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-black/70 text-amber-300 border border-white/15">

@@ -1,6 +1,7 @@
 /**
  * SEO & URL Slug Optimization Utilities for Game Vault Forum
  */
+import { AI_GAME_ASSETS } from '../utils/gameImageService';
 
 /**
  * Converts a text title into an SEO-friendly URL slug:
@@ -158,7 +159,7 @@ export function updatePageSeo(meta: PageSeoOptions) {
   }
 
   // 7. Update Images for Open Graph & Twitter
-  const defaultImage = 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1200&h=630&auto=format&fit=crop&q=80';
+  const defaultImage = AI_GAME_ASSETS.CYBERPUNK_2077;
   const resolvedImage = meta.imageUrl || defaultImage;
 
   const ogImageTag = document.querySelector('meta[property="og:image"]');

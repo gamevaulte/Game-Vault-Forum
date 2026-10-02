@@ -4,7 +4,8 @@ export type GamingCategoryId =
   | 'sports-games'
   | 'strategy-games'
   | 'multiplayer-games'
-  | 'card-and-board-games';
+  | 'card-and-board-games'
+  | (string & {});
 
 export interface GamingCategory {
   id: GamingCategoryId;

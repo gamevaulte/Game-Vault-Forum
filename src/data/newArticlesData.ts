@@ -1,4 +1,5 @@
 import { Article } from '../types';
+import { AI_GAME_ASSETS } from '../utils/gameImageService';
 
 export const NEW_ARTICLES_2026: Article[] = [
   // =========================================================================
@@ -1554,8 +1555,8 @@ Are you experiencing frametime drops when swarms of Illuminate enemies and Void 
     },
     publicationDate: 'September 14, 2026',
     readingTime: '10 min read',
-    featuredImage: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=1200&auto=format&fit=crop&q=80',
-    image: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=1200&auto=format&fit=crop&q=80',
+    featuredImage: AI_GAME_ASSETS.SILENT_HILL_2,
+    image: AI_GAME_ASSETS.SILENT_HILL_2,
     tags: [
       'Horror Games',
       'Game Design',
@@ -1729,8 +1730,8 @@ Ready to test your gaming rig's readiness for the latest path-traced horror titl
     },
     publicationDate: 'September 14, 2026',
     readingTime: '12 min read',
-    featuredImage: 'https://images.unsplash.com/photo-1544652478-6653e09f18a2?w=1200&auto=format&fit=crop&q=80',
-    image: 'https://images.unsplash.com/photo-1544652478-6653e09f18a2?w=1200&auto=format&fit=crop&q=80',
+    featuredImage: '/images/articles/gamevault-cloud-gaming-latency-vs-bandwidth-hero.jpg',
+    image: '/images/articles/gamevault-cloud-gaming-latency-vs-bandwidth-hero.jpg',
     tags: [
       'Gaming PC',
       'Cloud Gaming',
@@ -1913,8 +1914,8 @@ Ready to price out a dedicated rig? Experiment with our [Gaming PC Builder](/too
     },
     publicationDate: 'September 14, 2026',
     readingTime: '11 min read',
-    featuredImage: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=1200&auto=format&fit=crop&q=80',
-    image: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=1200&auto=format&fit=crop&q=80',
+    featuredImage: '/images/articles/gamevault-cloud-gaming-latency-vs-bandwidth-hero.jpg',
+    image: '/images/articles/gamevault-cloud-gaming-latency-vs-bandwidth-hero.jpg',
     tags: [
       'Cloud Gaming',
       'Internet Speed',

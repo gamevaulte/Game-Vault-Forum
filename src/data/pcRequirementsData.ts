@@ -1,5 +1,6 @@
 import { PcGameRequirements, CpuSpec, GpuSpec, UserPcSpec } from '../types/pcRequirements';
 import { EXPANDED_GAMES_REQUIREMENTS } from './expandedPcGamesData';
+import { getGameTitleArtwork } from '../utils/gameImageService';
 
 // ==========================================
 // VERIFIED PUBLISHED PC GAMES DATABASE
@@ -715,7 +716,10 @@ const BASE_GAMES_REQUIREMENTS: PcGameRequirements[] = [
 export const INITIAL_GAMES_REQUIREMENTS: PcGameRequirements[] = [
   ...BASE_GAMES_REQUIREMENTS,
   ...EXPANDED_GAMES_REQUIREMENTS
-];
+].map((game) => ({
+  ...game,
+  coverImage: getGameTitleArtwork(game.title, game.genre, game.coverImage)
+}));
 
 // ==========================================
 // SEARCHABLE CPU SPECIFICATIONS DATABASE

@@ -310,15 +310,23 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
                             onClose();
                             onSelectReview(rev);
                           }}
-                          className="flex items-center justify-between p-2.5 rounded-xl bg-[#141725] hover:bg-[#1a1e32] border border-[#21263c] hover:border-amber-500/40 cursor-pointer transition-all group"
+                          className="flex items-center justify-between p-2.5 rounded-xl bg-[#141725] hover:bg-[#1a1e32] border border-[#21263c] hover:border-amber-500/40 cursor-pointer transition-all group gap-3"
                         >
-                          <div>
-                            <p className="text-sm font-semibold text-white group-hover:text-amber-300 transition-colors">
-                              {rev.gameTitle}
-                            </p>
-                            <p className="text-xs text-slate-400">{rev.shortVerdict}</p>
+                          <div className="flex items-center gap-3 min-w-0">
+                            <img
+                              src={getGameTitleArtwork(rev.gameTitle, rev.genre, rev.artwork)}
+                              alt={rev.gameTitle}
+                              className="w-12 h-14 object-cover rounded-md border border-[#282d46] shrink-0"
+                              referrerPolicy="no-referrer"
+                            />
+                            <div className="min-w-0">
+                              <p className="text-sm font-semibold text-white group-hover:text-amber-300 transition-colors truncate">
+                                {rev.gameTitle}
+                              </p>
+                              <p className="text-xs text-slate-400 line-clamp-1">{rev.shortVerdict}</p>
+                            </div>
                           </div>
-                          <span className="px-2.5 py-1 text-xs font-bold font-mono bg-amber-950 text-amber-300 border border-amber-800/40 rounded-lg">
+                          <span className="px-2.5 py-1 text-xs font-bold font-mono bg-amber-950 text-amber-300 border border-amber-800/40 rounded-lg shrink-0">
                             {rev.score}/10
                           </span>
                         </div>
@@ -341,15 +349,23 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
                             onClose();
                             onSelectGuide(gd);
                           }}
-                          className="p-2.5 rounded-xl bg-[#141725] hover:bg-[#1a1e32] border border-[#21263c] hover:border-emerald-500/40 cursor-pointer transition-all group"
+                          className="flex items-center gap-3 p-2.5 rounded-xl bg-[#141725] hover:bg-[#1a1e32] border border-[#21263c] hover:border-emerald-500/40 cursor-pointer transition-all group"
                         >
-                          <div className="flex items-center justify-between text-xs">
-                            <span className="text-emerald-400 font-medium">{gd.game} • {gd.category}</span>
-                            <span className="text-slate-500">{gd.estimatedReadingTime}</span>
+                          <img
+                            src={getGameTitleArtwork(gd.game || gd.title, undefined, gd.image)}
+                            alt={gd.title}
+                            className="w-12 h-12 object-cover rounded-md border border-[#282d46] shrink-0"
+                            referrerPolicy="no-referrer"
+                          />
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center justify-between text-xs">
+                              <span className="text-emerald-400 font-medium truncate">{gd.game} • {gd.category}</span>
+                              <span className="text-slate-500 shrink-0 ml-2">{gd.estimatedReadingTime}</span>
+                            </div>
+                            <p className="text-sm font-semibold text-white group-hover:text-emerald-300 mt-0.5 truncate">
+                              {gd.title}
+                            </p>
                           </div>
-                          <p className="text-sm font-semibold text-white group-hover:text-emerald-300 mt-1">
-                            {gd.title}
-                          </p>
                         </div>
                       ))}
                     </div>
