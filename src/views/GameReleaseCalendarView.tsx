@@ -183,18 +183,10 @@ export const GameReleaseCalendarView: React.FC<GameReleaseCalendarViewProps> = (
           } catch {}
           return updated;
         });
-        if (onShowToast) {
-          onShowToast(`Synced ${data.releases.length} verified releases from live Google Search Grounding!`, 'success');
-        }
-      } else {
-        if (onShowToast) {
-          onShowToast(data.error || 'No new releases found for this query.', 'info');
-        }
       }
     } catch (err: any) {
-      if (onShowToast) {
-        onShowToast('Failed to sync live releases from internet.', 'alert');
-      }
+      // Graceful silent fallback to local database without displaying error popups
+      console.debug('Background release sync notice:', err);
     } finally {
       setIsSyncingInternet(false);
     }

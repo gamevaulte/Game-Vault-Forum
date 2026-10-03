@@ -109,6 +109,9 @@ export interface GeneratedGameStoryReport {
   gameSlug: string;
   coverImage: string;
   generationMode: GenerationMode;
+  targetWordCount?: number;
+  actualWordCount?: number;
+  readingTimeMinutes?: number;
   spoilerLevel: SpoilerLevel;
   strictAccuracyMode: boolean;
   confidenceLevel: 'High confidence' | 'Good source coverage' | 'Limited verified information';

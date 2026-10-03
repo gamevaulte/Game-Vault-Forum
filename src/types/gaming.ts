@@ -41,7 +41,7 @@ export interface PlayableGameMeta {
   controls: PlayableGameControl[];
   thumbnail: string;
   supportsMultiplayer: boolean;
-  difficulty: 'Casual' | 'Easy' | 'Medium' | 'Hard';
+  difficulty: 'Casual' | 'Easy' | 'Medium' | 'Hard' | (string & {});
   tags: string[];
   playUrl: string;
   features: string[];

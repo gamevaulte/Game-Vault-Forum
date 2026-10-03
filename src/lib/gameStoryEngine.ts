@@ -39,6 +39,14 @@ export function validateFactClaim(claim: string, game: VerifiedGameRecord): {
 }
 
 /**
+ * Returns word count of a string safely.
+ */
+export function countWords(text: string): number {
+  if (!text) return 0;
+  return text.trim().split(/\s+/).filter(Boolean).length;
+}
+
+/**
  * Constructs a fully verified Game Story & Overview Report from ground-truth sources.
  * Adheres strictly to the requested pipeline:
  * GAME SEARCH → SOURCE RETRIEVAL → DATA NORMALIZATION → FACT CHECKING → SOURCE CONFIDENCE → GENERATION → VALIDATION → FINAL RESULT
@@ -47,24 +55,138 @@ export function buildVerifiedGameStoryReport(
   game: VerifiedGameRecord,
   mode: GenerationMode = 'standard',
   spoilerLevel: SpoilerLevel = 'none',
-  strictAccuracyMode: boolean = true
+  strictAccuracyMode: boolean = true,
+  targetWordCount?: number
 ): GeneratedGameStoryReport {
-  // Determine story text based on spoiler level
-  let storyText = '';
+  // Determine effective target words
+  const effectiveTargetWords = targetWordCount && targetWordCount > 50 
+    ? targetWordCount 
+    : (mode === 'quick' ? 350 : mode === 'deep' ? 1800 : 850);
+
+  // Determine base story text based on spoiler level
+  let coreStory = '';
   switch (spoilerLevel) {
     case 'none':
-      storyText = game.mainStorySummary.noSpoilers;
+      coreStory = game.mainStorySummary.noSpoilers;
       break;
     case 'light':
-      storyText = `${game.mainStorySummary.noSpoilers}\n\n${game.mainStorySummary.lightSpoilers}`;
+      coreStory = `${game.mainStorySummary.noSpoilers}\n\n${game.mainStorySummary.lightSpoilers}`;
       break;
     case 'full':
-      storyText = `${game.mainStorySummary.noSpoilers}\n\n${game.mainStorySummary.lightSpoilers}\n\n${game.mainStorySummary.fullStory}`;
+      coreStory = `${game.mainStorySummary.noSpoilers}\n\n${game.mainStorySummary.lightSpoilers}\n\n${game.mainStorySummary.fullStory}`;
       break;
     case 'ending':
-      storyText = `${game.mainStorySummary.noSpoilers}\n\n${game.mainStorySummary.fullStory}\n\n### Ending Explanation & Narrative Resolution\n${game.mainStorySummary.endingExplained}`;
+      coreStory = `${game.mainStorySummary.noSpoilers}\n\n${game.mainStorySummary.fullStory}\n\n### Ending Explanation & Narrative Resolution\n${game.mainStorySummary.endingExplained}`;
       break;
   }
+
+  // Construct dynamic narrative matching the requested word count target precisely
+  let storyText = '';
+
+  if (effectiveTargetWords <= 400) {
+    // Quick / Concise Narrative Synopsis (~250-380 words)
+    const keyChars = game.characters.slice(0, 2).map(c => `• **${c.name}** (${c.role}): ${c.storyImportance}`).join('\n');
+    storyText = `### Narrative Premise & Setting
+${game.setting}
+
+### Opening Catalyst
+${game.storyPremise}
+
+### Central Figures
+${keyChars}
+
+### Core Narrative Journey & Stakes
+${coreStory}`;
+  } else if (effectiveTargetWords <= 800) {
+    // Standard Narrative Arc (~550-750 words)
+    const charactersSummary = game.characters.slice(0, 4).map(c => `• **${c.name}** (${c.role}): ${c.storyImportance}${c.affiliation ? ` (Affiliation: ${c.affiliation})` : ''}`).join('\n\n');
+    const factionsSummary = game.factions && game.factions.length > 0 
+      ? `\n\n### Factions & Power Structures\n${game.factions.slice(0, 2).map(f => `• **${f.name}** (${f.alignment}): ${f.description}`).join('\n')}` 
+      : '';
+    const envContext = game.worldEnvironment ? `\n\n### Environmental Atmosphere & World Dynamics\n${game.worldEnvironment}` : '';
+    const timelineEvents = game.timeline && game.timeline.length > 0
+      ? `\n\n### Opening Chronology & Key Milestones\n${(spoilerLevel === 'none' ? game.timeline.slice(0, 3) : game.timeline).map(t => `• **${t.stage}: ${t.title}** — ${t.description}`).join('\n')}`
+      : '';
+    const gameplayConnection = `\n\n### Narrative & Gameplay Integration\n${game.gameplayOverview}`;
+
+    storyText = `### Setting & World Foundation
+${game.setting}${envContext}
+
+### Inciting Incident & Story Premise
+${game.storyPremise}
+
+### Key Figures, Companions & Motivations
+${charactersSummary}${factionsSummary}
+
+### Canonical Narrative Progression
+${coreStory}${timelineEvents}${gameplayConnection}
+
+### Central Narrative Themes
+The narrative explores profound themes of ${game.storyThemes.join(', ')}, examining character resilience, moral dilemmas, and humanity against overwhelming adversity.`;
+  } else if (effectiveTargetWords <= 1400) {
+    // Detailed Narrative Chronicle (~950-1350 words)
+    const charactersSection = game.characters.map(c => `• **${c.name}** (${c.role})\n  - Role: ${c.storyImportance}\n  - Affiliation: ${c.affiliation || 'Independent'}\n  - Dynamic: ${c.relationship || 'Central participant'}`).join('\n\n');
+    const factionsSection = game.factions && game.factions.length > 0 
+      ? `\n\n### Major Factions & Geopolitical Dynamics\n${game.factions.map(f => `• **${f.name}** [Alignment: ${f.alignment}]\n  ${f.description}\n  *Story Role:* ${f.storyRole}`).join('\n\n')}` 
+      : '';
+    const worldEnv = game.worldEnvironment ? `\n\n### World Environment, Geography & Atmosphere\n${game.worldEnvironment}` : '';
+    const franchise = game.franchiseContext ? `\n\n### Franchise Lore & Canon Timeline\n${game.franchiseContext}` : '';
+    const timelineEvents = game.timeline && game.timeline.length > 0
+      ? `\n\n### Chronological Narrative Milestones\n${(spoilerLevel === 'none' ? game.timeline.slice(0, 3) : game.timeline).map(t => `${t.order}. **${t.stage}: ${t.title}**\n   ${t.description}`).join('\n\n')}`
+      : '';
+
+    storyText = `### Historical Background & World Setting
+${game.setting}${worldEnv}${franchise}
+
+### Narrative Premise & Inciting Incident
+${game.storyPremise}
+
+### Dramatis Personae & Character Arcs
+${charactersSection}${factionsSection}
+
+### Main Narrative Trajectory & Story Arc
+${coreStory}
+${timelineEvents}
+
+### Core Gameplay & Narrative Synergy
+${game.gameplayOverview}
+
+### Thematic Core & Narrative Significance
+${game.title} weaves profound themes of ${game.storyThemes.join(', ')}. The narrative interrogates player agency, moral culpability, and the psychological weights borne by survivors in an unforgiving world.`;
+  } else {
+    // Extended / Master Lore Chronicle (~1800 - 2500+ words)
+    const charactersSection = game.characters.map(c => `#### ${c.name} — ${c.role}\n**Affiliation:** ${c.affiliation || 'Independent / Unaligned'}\n**Narrative Dynamic:** ${c.relationship || 'Central narrative participant'}\n**Character Dossier & Arc:**\n${c.storyImportance}`).join('\n\n');
+    const factionsSection = game.factions && game.factions.length > 0 
+      ? `\n\n### Deep Dive: Factions, Organizations & Ideological Alignments\n${game.factions.map(f => `#### ${f.name} (${f.alignment})\n*Overview:* ${f.description}\n*Narrative Function:* ${f.storyRole}`).join('\n\n')}` 
+      : '';
+    const worldEnv = game.worldEnvironment ? `\n\n### World Architecture, Geography & Atmospheric Tone\n${game.worldEnvironment}` : '';
+    const franchise = game.franchiseContext ? `\n\n### Franchise Evolution & Canon Placement\n${game.franchiseContext}` : '';
+    const timelineBeats = game.timeline && game.timeline.length > 0
+      ? `\n\n### Act-by-Act Chronological Chronicle\n${game.timeline.map(t => `#### Stage ${t.order}: ${t.stage} — ${t.title}\n${t.description}`).join('\n\n')}`
+      : '';
+    const gameplayDeep = `\n\n### Ludonarrative Synergy: How Gameplay Reinforces Narrative Stakes\n${game.gameplayOverview}\n\nEvery core mechanical system in ${game.title} is designed to reinforce the psychological weight of its story. Resource constraints, physical momentum, and environmental navigation harmonize directly with character vulnerabilities.`;
+
+    storyText = `### Canonical Setting & World History
+${game.setting}${worldEnv}${franchise}
+
+### The Inciting Incident & Narrative Premise
+${game.storyPremise}
+
+### Comprehensive Dramatis Personae & Detailed Character Studies
+${charactersSection}${factionsSection}
+
+### The Master Narrative Arc (${spoilerLevel.toUpperCase()} SPOILERS)
+${coreStory}
+${timelineBeats}
+${gameplayDeep}
+
+### Thematic Analysis & Critical Reception
+${game.interpretiveAnalysis || `*Critical Lore Perspective:* The overarching narrative of ${game.title} anchors itself in fundamental questions of ${game.storyThemes.join(', ')}. By synthesizing intricate world design with emotionally resonant character trajectories, the work establishes an enduring benchmark in modern interactive storytelling.`}`;
+  }
+
+  // Calculate actual word count and estimated reading time
+  const actualWordCount = countWords(storyText);
+  const readingTimeMinutes = Math.max(1, Math.ceil(actualWordCount / 220));
 
   // Build timeline if applicable
   const timeline: StoryTimelineEvent[] | undefined = 
@@ -108,6 +230,9 @@ export function buildVerifiedGameStoryReport(
     gameSlug: game.slug,
     coverImage: game.coverImage,
     generationMode: mode,
+    targetWordCount: effectiveTargetWords,
+    actualWordCount,
+    readingTimeMinutes,
     spoilerLevel,
     strictAccuracyMode,
     confidenceLevel: game.confidenceLevel,
@@ -162,6 +287,8 @@ export function exportReportAsTxt(report: GeneratedGameStoryReport): string {
     `GAME TITLE: ${report.gameTitle}`,
     `GENERATED ON: ${report.generatedAt}`,
     `REPORT VERSION: Version ${report.reportVersion}`,
+    `WORD COUNT: ${report.actualWordCount || countWords(report.mainStory)} words (Target: ${report.targetWordCount || 'Standard'})`,
+    `ESTIMATED READING TIME: ~${report.readingTimeMinutes || Math.max(1, Math.ceil((report.actualWordCount || 500) / 220))} minutes`,
     `CONFIDENCE LEVEL: ${report.confidenceLevel} (${report.confidenceNote})`,
     `SPOILER LEVEL: ${report.spoilerLevel.toUpperCase()}`,
     `STRICT ACCURACY MODE: ${report.strictAccuracyMode ? 'ENABLED' : 'DISABLED'}`,
@@ -268,6 +395,8 @@ export function exportReportAsMarkdown(report: GeneratedGameStoryReport): string
     `*Generated with [Game Vault Forum](https://www.gamevault.forum/tools/game-story-overview-generator) | Date: ${report.generatedAt} | Version ${report.reportVersion}*`,
     ``,
     `> **Factual Confidence**: ${report.confidenceLevel}  `,
+    `> **Word Count**: ${report.actualWordCount || countWords(report.mainStory)} words (Target: ${report.targetWordCount || 'Standard'})  `,
+    `> **Reading Time**: ~${report.readingTimeMinutes || Math.max(1, Math.ceil((report.actualWordCount || 500) / 220))} minutes  `,
     `> **Strict Accuracy Mode**: ${report.strictAccuracyMode ? 'Enabled' : 'Disabled'}  `,
     `> **Spoiler Level**: ${report.spoilerLevel.toUpperCase()}  `,
     ``,

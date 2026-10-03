@@ -491,50 +491,7 @@ export default function App() {
     localStorage.setItem('gv_post_comments_v2', JSON.stringify(commentsMap));
   }, [commentsMap]);
 
-  // 1. Timed Newsletter Subscription Popup: Displays after ~10 seconds for new visitors to stay in the know
-  useEffect(() => {
-    const isSubscribed = localStorage.getItem('gv_newsletter_subscribed') === 'true';
-    const isDismissed = sessionStorage.getItem('gv_newsletter_popup_closed') === 'true';
-
-    if (isSubscribed || isDismissed) {
-      return;
-    }
-
-    const timer = setTimeout(() => {
-      const currentSubscribed = localStorage.getItem('gv_newsletter_subscribed') === 'true';
-      const currentDismissed = sessionStorage.getItem('gv_newsletter_popup_closed') === 'true';
-      if (!currentSubscribed && !currentDismissed) {
-        setIsSubscribeModalOpen(true);
-      }
-    }, 10000); // 10 seconds
-
-    return () => clearTimeout(timer);
-  }, []);
-
-  // 2. Timed Sign In / Sign Up Popup: Displays after ~60 seconds for unauthenticated visitors / guests
-  useEffect(() => {
-    // If visitor is already authenticated, don't trigger the prompt
-    if (firebaseUser) {
-      return;
-    }
-
-    const isDismissed = sessionStorage.getItem('gv_auth_popup_closed') === 'true';
-    if (isDismissed) {
-      return;
-    }
-
-    const timer = setTimeout(() => {
-      if (!auth.currentUser && sessionStorage.getItem('gv_auth_popup_closed') !== 'true') {
-        // Dismiss subscription modal if currently open to prevent overlapping dialogs
-        setIsSubscribeModalOpen(false);
-        setAuthPromptMessage('Join the Game Vault community! Sign in or register for free to bookmark titles, vote on articles, join tactical discussions, and unlock personalized recommendations.');
-        setIsAuthModalOpen(true);
-      }
-    }, 60000); // 60 seconds
-
-    return () => clearTimeout(timer);
-  }, [firebaseUser]);
-
+  // Voluntary subscription and auth modal handlers (no intrusive automatic popups)
   const handleCloseSubscribeModal = () => {
     try {
       sessionStorage.setItem('gv_newsletter_popup_closed', 'true');

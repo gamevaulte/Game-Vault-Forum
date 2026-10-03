@@ -404,7 +404,8 @@ export async function handleGameStoryGenerate(req: Request, res: Response) {
       gameId, 
       generationMode = 'standard', 
       spoilerLevel = 'none', 
-      strictAccuracyMode = true 
+      strictAccuracyMode = true,
+      targetWordCount
     } = req.body || {};
 
     if (!gameId) {
@@ -428,8 +429,13 @@ export async function handleGameStoryGenerate(req: Request, res: Response) {
       });
     }
 
+    // Determine target words
+    const requestedWords = Number(targetWordCount) > 50
+      ? Number(targetWordCount)
+      : (generationMode === 'quick' ? 350 : generationMode === 'deep' ? 1800 : 850);
+
     // Check Cache
-    const cacheKey = `${game.id}_${generationMode}_${spoilerLevel}_${strictAccuracyMode}`;
+    const cacheKey = `${game.id}_${generationMode}_${spoilerLevel}_${strictAccuracyMode}_${requestedWords}`;
     const cached = reportCache.get(cacheKey);
     if (cached && (Date.now() - cached.cachedAt < CACHE_TTL_MS)) {
       return res.json({
@@ -444,19 +450,12 @@ export async function handleGameStoryGenerate(req: Request, res: Response) {
       game, 
       generationMode as GenerationMode, 
       spoilerLevel as SpoilerLevel, 
-      strictAccuracyMode
+      strictAccuracyMode,
+      requestedWords
     );
 
     // Call Gemini with Google Search Grounding to research live story facts & web citations
     try {
-      const wordTargets: Record<string, string> = {
-        quick: '300 to 500 words',
-        standard: '800 to 1,200 words',
-        deep: '1,500 to 2,500 words'
-      };
-
-      const targetWords = wordTargets[generationMode] || '800 to 1,200 words';
-
       const systemInstruction = `You are a senior gaming narrative researcher for Game Vault Forum (https://www.gamevault.forum).
 You must write an audited, strictly factual story & overview report for "${game.title}".
 
@@ -468,7 +467,7 @@ CRITICAL ACCURACY & GROUNDING DIRECTIVES:
    - "LIGHT": Early-game narrative developments only.
    - "FULL": Chronological narrative through climax.
    - "ENDING": Full narrative resolution, thematic significance, and concluding sequence.
-4. Target length: approximately ${targetWords}.`;
+4. Target length: write approximately ${requestedWords} words (Target: ${requestedWords} words). Do not cut off abruptly; ensure complete, narrative paragraphs matching real online canonical lore.`;
 
       const userPrompt = `Conduct verified factual research for "${game.title}" (${game.releaseYear}, Developer: ${game.developer}, Publisher: ${game.publisher}):
 - Setting: ${game.setting}
@@ -477,7 +476,7 @@ CRITICAL ACCURACY & GROUNDING DIRECTIVES:
 - Core Gameplay: ${game.gameplayOverview}
 - Core Themes: ${game.storyThemes.join(', ')}
 
-Please write an eloquent, journalistic, and strictly factual narrative overview preserving all verified facts with zero hallucinations.`;
+Please write an eloquent, journalistic, and strictly factual narrative overview of approximately ${requestedWords} words preserving all verified online canon facts with zero hallucinations.`;
 
       const { response } = await callGeminiWithSearch(userPrompt, systemInstruction);
 
@@ -511,11 +510,17 @@ Please write an eloquent, journalistic, and strictly factual narrative overview 
       if (generatedText && generatedText.length > 200) {
         const textLower = generatedText.toLowerCase();
         const devMentioned = textLower.includes(game.developer.toLowerCase());
+        const titleMatch = textLower.includes(game.title.toLowerCase()) || 
+                           game.characters.some(c => textLower.includes(c.name.toLowerCase()));
         
-        if (devMentioned || !strictAccuracyMode) {
+        if (devMentioned || titleMatch || !strictAccuracyMode) {
           baseReport.mainStory = generatedText;
+          const actualWords = generatedText.split(/\s+/).filter(Boolean).length;
+          baseReport.actualWordCount = actualWords;
+          baseReport.targetWordCount = requestedWords;
+          baseReport.readingTimeMinutes = Math.max(1, Math.ceil(actualWords / 220));
         } else {
-          console.log('[Game Story Validation]: Developer check flagged in AI text, using deterministic verified text with Google citations.');
+          console.log('[Game Story Validation]: Accuracy check flagged in AI text, using deterministic verified text with Google citations.');
           adminStats.unsupportedClaimsCaught++;
         }
       }

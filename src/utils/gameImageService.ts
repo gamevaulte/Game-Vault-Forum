@@ -62,6 +62,9 @@ export const AI_GAME_ASSETS = {
   MOBA_LEGENDS: '/src/assets/images/moba_legends_hero_1790932621917.jpg',
   SUPERHERO_ACTION: '/src/assets/images/superhero_patrol_hero_1790932634138.jpg',
   FLIGHT_SIMULATOR: '/src/assets/images/flight_simulator_hero_1790932647032.jpg',
+  GEARS_E_DAY: '/src/assets/images/gears_eday_hero_1791022082594.jpg',
+  METROID_PRIME_4: '/src/assets/images/metroid_prime_hero_1791022095986.jpg',
+  GHOST_OF_YOTEI: '/src/assets/images/ghost_yotei_hero_1791022108495.jpg',
 };
 
 // Title-specific, authentic game art catalog mapped to exact game titles and slugs
@@ -232,6 +235,15 @@ export const TITLE_SPECIFIC_GAME_ARTWORK: Record<string, string> = {
   'tekken': AI_GAME_ASSETS.SEKIRO,
   'microsoft-flight-simulator': AI_GAME_ASSETS.FLIGHT_SIMULATOR,
   'microsoft-flight-simulator-2024': AI_GAME_ASSETS.FLIGHT_SIMULATOR,
+  'gears-of-war-e-day': AI_GAME_ASSETS.GEARS_E_DAY,
+  'gears-e-day': AI_GAME_ASSETS.GEARS_E_DAY,
+  'gears-of-war': AI_GAME_ASSETS.GEARS_E_DAY,
+  'metroid-prime-4-beyond': AI_GAME_ASSETS.METROID_PRIME_4,
+  'metroid-prime-4': AI_GAME_ASSETS.METROID_PRIME_4,
+  'metroid-prime': AI_GAME_ASSETS.METROID_PRIME_4,
+  'ghost-of-yotei': AI_GAME_ASSETS.GHOST_OF_YOTEI,
+  'ghost-of-yōtei': AI_GAME_ASSETS.GHOST_OF_YOTEI,
+  'yotei': AI_GAME_ASSETS.GHOST_OF_YOTEI,
 
   // Built-in Playable Arcade & Board Games (AI Generated)
   'space-invaders': AI_GAME_ASSETS.SPACE_INVADERS,
@@ -484,6 +496,15 @@ export function getGameTitleArtwork(titleOrSlug: string, genre?: string, origina
   }
   if (key.includes('flight-sim') || key.includes('flight-simulator') || key.includes('aviation')) {
     return AI_GAME_ASSETS.FLIGHT_SIMULATOR;
+  }
+  if (key.includes('gears') || key.includes('e-day') || key.includes('lancer')) {
+    return AI_GAME_ASSETS.GEARS_E_DAY;
+  }
+  if (key.includes('metroid') || key.includes('samus')) {
+    return AI_GAME_ASSETS.METROID_PRIME_4;
+  }
+  if (key.includes('yotei') || key.includes('yōtei')) {
+    return AI_GAME_ASSETS.GHOST_OF_YOTEI;
   }
   if (key.includes('rocket-league') || key.includes('fifa') || key.includes('ea-sports')) {
     return AI_GAME_ASSETS.FORZA_HORIZON_5;

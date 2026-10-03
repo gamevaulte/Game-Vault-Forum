@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { CheckCircle2, Info, AlertCircle, X } from 'lucide-react';
 
 export interface ToastMessage {
@@ -15,34 +15,48 @@ interface ToastProps {
 }
 
 export const ToastContainer: React.FC<ToastProps> = ({ toasts, onDismiss, onCloseToast }) => {
-  if (toasts.length === 0) return null;
-
   const handleClose = (id: string) => {
     if (onCloseToast) onCloseToast(id);
     else if (onDismiss) onDismiss(id);
   };
 
+  useEffect(() => {
+    if (toasts.length === 0) return;
+    const timers = toasts.map((t) =>
+      setTimeout(() => {
+        handleClose(t.id);
+      }, 3500)
+    );
+    return () => {
+      timers.forEach((timer) => clearTimeout(timer));
+    };
+  }, [toasts]);
+
+  if (toasts.length === 0) return null;
+
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-2 pointer-events-none">
-      {toasts.map((toast) => (
+    <div className="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none max-w-sm w-full px-3">
+      {toasts.slice(-3).map((toast) => (
         <div
           key={toast.id}
-          className="pointer-events-auto flex items-center gap-3 px-4 py-3 bg-[#141624] border border-purple-500/30 text-white rounded-xl shadow-2xl shadow-purple-950/40 backdrop-blur-md animate-in slide-in-from-bottom-3 duration-200"
+          className="pointer-events-auto flex items-center justify-between gap-3 px-3.5 py-2.5 bg-[#0e1122]/95 border border-white/15 text-white rounded-xl shadow-lg shadow-black/50 backdrop-blur-sm animate-in slide-in-from-bottom-2 duration-150"
         >
-          {toast.type === 'success' ? (
-            <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
-          ) : toast.type === 'error' ? (
-            <AlertCircle className="w-5 h-5 text-rose-400 shrink-0" />
-          ) : (
-            <Info className="w-5 h-5 text-cyan-400 shrink-0" />
-          )}
-          <span className="text-sm font-medium text-slate-200">{toast.message || toast.text}</span>
+          <div className="flex items-center gap-2.5 min-w-0">
+            {toast.type === 'success' ? (
+              <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+            ) : toast.type === 'error' ? (
+              <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
+            ) : (
+              <Info className="w-4 h-4 text-cyan-400 shrink-0" />
+            )}
+            <span className="text-xs font-medium text-slate-200 truncate">{toast.message || toast.text}</span>
+          </div>
           <button
             onClick={() => handleClose(toast.id)}
-            className="p-1 text-slate-400 hover:text-white transition-colors ml-2"
+            className="p-1 text-slate-400 hover:text-white transition-colors shrink-0 cursor-pointer"
             aria-label="Close notification"
           >
-            <X className="w-4 h-4" />
+            <X className="w-3.5 h-3.5" />
           </button>
         </div>
       ))}
